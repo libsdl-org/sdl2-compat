@@ -471,12 +471,20 @@ BOOL WINAPI _DllMainCRTStartup(HANDLE dllhandle, DWORD reason, LPVOID reserved)
     #error Please define an init procedure for your platform.
 #endif
 
-
-DECLSPEC const SDL_version * SDLCALL
-SDL_Linked_Version(void)
+/* obviously we have to override this so we don't report ourselves as SDL3. */
+DECLSPEC void SDLCALL
+SDL_GetVersion(SDL_version * ver)
 {
-    static const SDL_version version = { 2, SDL2_COMPAT_VERSION_MINOR, SDL2_COMPAT_VERSION_PATCH };
-    return &version;
+    if (ver) {
+        ver->major = 2;
+        ver->minor = SDL2_COMPAT_VERSION_MINOR;
+        ver->patch = SDL2_COMPAT_VERSION_PATCH;
+        if (SDL_GetHintBoolean("SDL_LEGACY_VERSION", SDL_FALSE)) {
+            /* Prior to SDL 2.24.0, the patch version was incremented with every release */
+            ver->patch = ver->minor;
+            ver->minor = 0;
+        }
+    }
 }
 
 DECLSPEC int SDLCALL
