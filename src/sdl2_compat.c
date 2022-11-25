@@ -489,6 +489,42 @@ SDL_GetVersion(SDL_version * ver)
     }
 }
 
+DECLSPEC void SDLCALL
+SDL_SetError(const char *fmt, ...)
+{
+    char ch;
+    char *str = NULL;
+    size_t len = 0;
+    va_list ap;
+
+    va_start(ap, fmt);
+    len = SDL3_vsnprintf(&ch, 1, fmt, ap);
+    va_end(ap);
+
+    str = (char *) SDL3_malloc(len + 1);
+    if (!str) {
+        SDL3_OutOfMemory();
+    } else {
+        va_start(ap, fmt);
+        SDL3_vsnprintf(str, len + 1, fmt, ap);
+        va_end(ap);
+        SDL3_SetError("%s", str);
+        SDL3_free(str);
+    }
+}
+
+DECLSPEC const char * SDLCALL
+SDL_GetError(void)
+{
+    /* !!! FIXME: can this actually happen? or did we always terminate the process in this case? */
+    if (SDL3_GetError == NULL) {
+        static const char noload_errstr[] = "SDL3 library isn't loaded.";
+        return noload_errstr;
+    }
+    return SDL3_GetError();
+}
+
+
 DECLSPEC int SDLCALL
 SDL_sscanf(const char *text, const char *fmt, ...)
 {
