@@ -1,7 +1,6 @@
 /*
     SDL_dummy_main.c, placed in the public domain by Sam Lantinga  3/13/14
 */
-#include "../../SDL_internal.h"
 
 /* Include the SDL main definition header */
 #include "SDL_main.h"

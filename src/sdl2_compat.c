@@ -104,6 +104,11 @@ extern "C" {
 #define SDL3_zerop(x) SDL3_memset((x), 0, sizeof(*(x)))
 #define SDL_ReportAssertion SDL3_ReportAssertion
 
+
+static SDL_bool WantDebugLogging = SDL_FALSE;
+static Uint32 LinkedSDL3VersionInt = 0;
+
+
 /* Obviously we can't use SDL_LoadObject() to load SDL2.  :)  */
 static char loaderror[256];
 #if defined(_WIN32)
@@ -293,18 +298,6 @@ SDL2Compat_GetHintBoolean(const char *name, SDL_bool default_value)
     return (SDL3_atoi(val) != 0) ? SDL_TRUE : SDL_FALSE;
 }
 
-static float
-SDL2Compat_GetHintFloat(const char *name, float default_value)
-{
-    const char *val = SDL2Compat_GetHint(name);
-
-    if (!val) {
-        return default_value;
-    }
-
-    return (float) SDL3_atof(val);
-}
-
 static void
 SDL2Compat_ApplyQuirks(SDL_bool force_x11)
 {
@@ -383,8 +376,8 @@ LoadSDL3(void)
             if (okay) {
                 SDL_version v;
                 SDL3_GetVersion(&v);
-                LinkedSDL2VersionInt = SDL_VERSIONNUM(v.major, v.minor, v.patch);
-                okay = (LinkedSDL2VersionInt >= SDL3_REQUIRED_VER);
+                LinkedSDL3VersionInt = SDL_VERSIONNUM(v.major, v.minor, v.patch);
+                okay = (LinkedSDL3VersionInt >= SDL3_REQUIRED_VER);
                 if (!okay) {
                     sprintf_fn(loaderror, "SDL3 %d.%d.%d library is too old.", v.major, v.minor, v.patch);
                 } else {

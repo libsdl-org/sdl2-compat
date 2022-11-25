@@ -910,11 +910,13 @@
 
 #define __BUILDING_SDL2_COMPAT__ 1
 #include "SDL.h"
-#include "SDL_syswm.h"    /* includes windows.h for _WIN32, os2.h for __OS2__ */
 
 #if !SDL_VERSION_ATLEAST(3,0,0)
 #error You need to compile against SDL >= 3.0.0 headers.
 #endif
+
+#include "SDL_syswm.h"    /* includes windows.h for _WIN32, os2.h for __OS2__ */
+#include "SDL_vulkan.h"
 
 /* Missing SDL_thread.h stuff (see above): */
 #if defined(_WIN32)
