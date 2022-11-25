@@ -547,6 +547,49 @@ SDL_snprintf(char *text, size_t maxlen, const char *fmt, ...)
     return retval;
 }
 
+DECLSPEC int SDLCALL
+SDL_asprintf(char **str, SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
+{
+    int retval;
+    va_list ap;
+    va_start(ap, fmt);
+    retval = (int) SDL3_vasprintf(str, fmt, ap);
+    va_end(ap);
+    return retval;
+}
+
+DECLSPEC void SDLCALL
+SDL_Log(SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    SDL3_LogMessageV(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, fmt, ap);
+    va_end(ap);
+}
+
+DECLSPEC void SDLCALL
+SDL_LogMessage(int category, SDL_LogPriority priority, SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    SDL3_LogMessageV(category, priority, fmt, ap);
+    va_end(ap);
+}
+
+#define SDL3_LOG_IMPL(name, prio) \
+    DECLSPEC void SDLCALL SDL_Log##name(int category, SDL_PRINTF_FORMAT_STRING const char *fmt, ...) { \
+        va_list ap; va_start(ap, fmt); \
+        SDL3_LogMessageV(category, SDL_LOG_PRIORITY_##prio, fmt, ap); \
+        va_end(ap); \
+    }
+SDL3_LOG_IMPL(Verbose, VERBOSE)
+SDL3_LOG_IMPL(Debug, DEBUG)
+SDL3_LOG_IMPL(Info, INFO)
+SDL3_LOG_IMPL(Warn, WARN)
+SDL3_LOG_IMPL(Error, ERROR)
+SDL3_LOG_IMPL(Critical, CRITICAL)
+#undef SDL3_LOG_IMPL
+
 
 #if !HAVE_STDIO_H
 DECLSPEC SDL_RWops * SDLCALL
