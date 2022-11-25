@@ -277,8 +277,6 @@
 #define SDL_LoadFunction IGNORE_THIS_VERSION_OF_SDL_LoadFunction
 #define SDL_UnloadObject IGNORE_THIS_VERSION_OF_SDL_UnloadObject
 #define SDL_RWFromFile IGNORE_THIS_VERSION_OF_SDL_RWFromFile
-#define SDL_RWFromFP IGNORE_THIS_VERSION_OF_SDL_RWFromFP
-#define SDL_RWFromFP IGNORE_THIS_VERSION_OF_SDL_RWFromFP
 #define SDL_RWFromMem IGNORE_THIS_VERSION_OF_SDL_RWFromMem
 #define SDL_RWFromConstMem IGNORE_THIS_VERSION_OF_SDL_RWFromConstMem
 #define SDL_AllocRW IGNORE_THIS_VERSION_OF_SDL_AllocRW
@@ -1925,14 +1923,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_RWFromFile
 #undef SDL_RWFromFile
-#endif
-
-#ifdef SDL_RWFromFP
-#undef SDL_RWFromFP
-#endif
-
-#ifdef SDL_RWFromFP
-#undef SDL_RWFromFP
 #endif
 
 #ifdef SDL_RWFromMem

@@ -49,10 +49,12 @@
 #define WIN32_LEAN_AND_MEAN 1
 #endif
 #include <windows.h>
+#define HAVE_STDIO_H 0  /* !!! FIXME: we _currently_ don't include stdio.h on windows. Should we? */
 #else
 #include <stdio.h> /* fprintf(), etc. */
 #include <stdlib.h>    /* for abort() */
 #include <string.h>
+#define HAVE_STDIO_H 1
 #endif
 
 /* mingw headers may define these ... */
@@ -508,6 +510,130 @@ SDL_snprintf(char *text, size_t maxlen, const char *fmt, ...)
     va_end(ap);
     return retval;
 }
+
+
+#if !HAVE_STDIO_H
+DECLSPEC SDL_RWops * SDLCALL
+SDL_RWFromFP(void *fp, SDL_bool autoclose)
+{
+    SDL3_SetError("SDL not compiled with stdio support");
+    return NULL;
+}
+#else
+
+/* !!! FIXME: SDL2 has a bunch of macro salsa to try and use the most 64-bit
+fseek, etc, and I'm avoiding that for now; this can change if it becomes a
+problem.  --ryan. */
+
+/* Functions to read/write stdio file pointers */
+
+static Sint64 SDLCALL
+stdio_size(SDL_RWops * context)
+{
+    Sint64 pos, size;
+
+    pos = SDL3_RWseek(context, 0, RW_SEEK_CUR);
+    if (pos < 0) {
+        return -1;
+    }
+    size = SDL3_RWseek(context, 0, RW_SEEK_END);
+
+    SDL3_RWseek(context, pos, RW_SEEK_SET);
+    return size;
+}
+
+static Sint64 SDLCALL
+stdio_seek(SDL_RWops * context, Sint64 offset, int whence)
+{
+    int stdiowhence;
+
+    switch (whence) {
+    case RW_SEEK_SET:
+        stdiowhence = SEEK_SET;
+        break;
+    case RW_SEEK_CUR:
+        stdiowhence = SEEK_CUR;
+        break;
+    case RW_SEEK_END:
+        stdiowhence = SEEK_END;
+        break;
+    default:
+        return SDL3_SetError("Unknown value for 'whence'");
+    }
+
+#if defined(FSEEK_OFF_MIN) && defined(FSEEK_OFF_MAX)
+    if (offset < (Sint64)(FSEEK_OFF_MIN) || offset > (Sint64)(FSEEK_OFF_MAX)) {
+        return SDL3_SetError("Seek offset out of range");
+    }
+#endif
+
+    if (fseek(context->hidden.stdio.fp, (long)offset, stdiowhence) == 0) {
+        Sint64 pos = ftell(context->hidden.stdio.fp);
+        if (pos < 0) {
+            return SDL3_SetError("Couldn't get stream offset");
+        }
+        return pos;
+    }
+    return SDL3_Error(SDL_EFSEEK);
+}
+
+static size_t SDLCALL
+stdio_read(SDL_RWops * context, void *ptr, size_t size, size_t maxnum)
+{
+    size_t nread;
+
+    nread = fread(ptr, size, maxnum, context->hidden.stdio.fp);
+    if (nread == 0 && ferror(context->hidden.stdio.fp)) {
+        SDL3_Error(SDL_EFREAD);
+    }
+    return nread;
+}
+
+static size_t SDLCALL
+stdio_write(SDL_RWops * context, const void *ptr, size_t size, size_t num)
+{
+    size_t nwrote;
+
+    nwrote = fwrite(ptr, size, num, context->hidden.stdio.fp);
+    if (nwrote == 0 && ferror(context->hidden.stdio.fp)) {
+        SDL3_Error(SDL_EFWRITE);
+    }
+    return nwrote;
+}
+
+static int SDLCALL
+stdio_close(SDL_RWops * context)
+{
+    int status = 0;
+    if (context) {
+        if (context->hidden.stdio.autoclose) {
+            /* WARNING:  Check the return value here! */
+            if (fclose(context->hidden.stdio.fp) != 0) {
+                status = SDL3_Error(SDL_EFWRITE);
+            }
+        }
+        SDL3_FreeRW(context);
+    }
+    return status;
+}
+
+DECLSPEC SDL_RWops * SDLCALL
+SDL_RWFromFP(FILE *fp, SDL_bool autoclose)
+{
+    SDL_RWops *rwops = SDL3_AllocRW();
+    if (rwops != NULL) {
+        rwops->size = stdio_size;
+        rwops->seek = stdio_seek;
+        rwops->read = stdio_read;
+        rwops->write = stdio_write;
+        rwops->close = stdio_close;
+        rwops->hidden.stdio.fp = fp;
+        rwops->hidden.stdio.autoclose = autoclose;
+        rwops->type = SDL_RWOPS_STDFILE;
+    }
+    return rwops;
+}
+#endif
 
 #ifdef __cplusplus
 }

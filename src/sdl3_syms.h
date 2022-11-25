@@ -60,12 +60,6 @@ SDL3_SYM_PASSTHROUGH(SDL_Thread*,CreateThread,(SDL_ThreadFunction a, const char 
 SDL3_SYM_PASSTHROUGH(SDL_Thread*,CreateThread,(SDL_ThreadFunction a, const char *b, void *c),(a,b,c),return)
 #endif
 
-#ifdef HAVE_STDIO_H
-SDL3_SYM_PASSTHROUGH(SDL_RWops*,RWFromFP,(FILE *a, SDL_bool b),(a,b),return)
-#else
-SDL3_SYM_PASSTHROUGH(SDL_RWops*,RWFromFP,(void *a, SDL_bool b),(a,b),return)
-#endif
-
 #if defined(__WIN32__) || defined(__GDK__)
 SDL3_SYM_PASSTHROUGH(int,RegisterApp,(const char *a, Uint32 b, void *c),(a,b,c),return)
 SDL3_SYM_PASSTHROUGH(void,UnregisterApp,(void),(),)
