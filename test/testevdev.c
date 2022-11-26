@@ -11,7 +11,9 @@
   freely.
 */
 
+#if 0  /* SDL2 Classic included this here, but we don't. */
 #include "../src/SDL_internal.h"
+#endif
 
 #include <stdio.h>
 #include <string.h>

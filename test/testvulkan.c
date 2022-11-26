@@ -27,12 +27,17 @@ int main(int argc, char *argv[])
 #else
 
 #define VK_NO_PROTOTYPES
+#if 0
 #ifdef HAVE_VULKAN_H
 #include <vulkan/vulkan.h>
 #else
 /* SDL includes a copy for building on systems without the Vulkan SDK */
 #include "../src/video/khronos/vulkan/vulkan.h"
 #endif
+#else  /* sdl2-compat just keeps a copy of the headers in the test dir. */
+#include "vulkan/vulkan.h"
+#endif
+
 #include "SDL_vulkan.h"
 
 #ifndef UINT64_MAX /* VS2008 */

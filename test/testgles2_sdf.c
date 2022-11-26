@@ -32,7 +32,11 @@
 typedef struct GLES2_Context
 {
 #define SDL_PROC(ret,func,params) ret (APIENTRY *func) params;
+#if 0
 #include "../src/render/opengles2/SDL_gles2funcs.h"
+#else
+#include "gles2funcs.h"
+#endif
 #undef SDL_PROC
 } GLES2_Context;
 
@@ -88,7 +92,11 @@ static int LoadContext(GLES2_Context * data)
     } while ( 0 );
 #endif /* __SDL_NOGETPROCADDR__ */
 
+#if 0
 #include "../src/render/opengles2/SDL_gles2funcs.h"
+#else
+#include "gles2funcs.h"
+#endif
 #undef SDL_PROC
     return 0;
 }

@@ -4,7 +4,13 @@
 
 #include "SDL.h"
 #include "SDL_test.h"
+
+#if 0
 #include "../src/joystick/usb_ids.h"
+#else
+#define USB_VENDOR_NVIDIA       0x0955
+#define USB_PRODUCT_NVIDIA_SHIELD_CONTROLLER_V104           0x7214
+#endif
 
 /* ================= Test Case Implementation ================== */
 
