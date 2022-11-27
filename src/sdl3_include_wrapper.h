@@ -913,17 +913,30 @@
 #error You need to compile against SDL >= 3.0.0 headers.
 #endif
 
-#include "SDL_syswm.h"    /* includes windows.h for _WIN32, os2.h for __OS2__ */
+#include "SDL_syswm.h"
 #include "SDL_vulkan.h"
 
 /* Missing SDL_thread.h stuff (see above): */
 #if defined(_WIN32)
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN 1
+#endif
+#include <windows.h>
 typedef struct SDL_Thread SDL_Thread;
+typedef unsigned long SDL_threadID;
+typedef enum {
+    SDL_THREAD_PRIORITY_LOW,
+    SDL_THREAD_PRIORITY_NORMAL,
+    SDL_THREAD_PRIORITY_HIGH,
+    SDL_THREAD_PRIORITY_TIME_CRITICAL
+} SDL_ThreadPriority;
+typedef unsigned int SDL_TLSID;
 typedef int (SDLCALL *SDL_ThreadFunction) (void*);
 typedef UINT_PTR (__cdecl *pfnSDL_CurrentBeginThread)
                    (void*, unsigned, unsigned (__stdcall *func)(void*), void*, unsigned, unsigned*);
 typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 /* the following macros from Win32 SDK headers are harmful here: */
+#undef CreateWindow
 #undef CreateThread
 #undef CreateSemaphore
 #undef CreateMutex
