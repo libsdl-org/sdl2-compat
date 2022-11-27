@@ -1,0 +1,13 @@
+# For format see editorconfig.org
+# Copyright 2022 Collabora Ltd.
+# SPDX-License-Identifier: Zlib
+
+root = true
+
+[*.{c,cg,cpp,gradle,h,java,m,metal,pl,py,S,sh,txt}]
+indent_size = 4
+indent_style = space
+
+[{CMakeLists.txt,*.cmake.in,*.cmake}]
+indent_size = 2
+indent_style = space
