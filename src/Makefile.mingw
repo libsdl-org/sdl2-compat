@@ -1,7 +1,7 @@
-# GNU Makefile for Windows to build SDL12-compat.
+# GNU Makefile for Windows to build SDL2-compat.
 #
 
-# change INCLUDES so it points to SDL2 headers directory:
+# change INCLUDES so it points to SDL3 headers directory:
 INCLUDES = -Iinclude
 
 ifeq ($(CROSS),)
@@ -20,7 +20,7 @@ CFLAGS  = -O3 -Wall
 LDFLAGS = -nostdlib -shared -Wl,--no-undefined -Wl,--enable-auto-image-base -Wl,--out-implib,$(LIB)
 LDLIBS  = -lkernel32 -luser32
 # libgcc is needed for 32 bit (x86) builds:
-LDLIBS += -static-libgcc -lgcc
+#LDLIBS += -static-libgcc -lgcc
 
 LIB = libSDL2.dll.a
 DLL = SDL2.dll

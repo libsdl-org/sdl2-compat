@@ -1,7 +1,7 @@
-# GNU Makefile for Mac OS X to build SDL12-compat.
+# GNU Makefile for Mac OS X to build SDL2-compat.
 #
 
-# change INCLUDES so it points to SDL2 headers directory:
+# change INCLUDES so it points to SDL3 headers directory:
 INCLUDES = -Iinclude
 
 ifeq ($(CROSS),)
@@ -14,14 +14,12 @@ LD = $(CC)
 CPPFLAGS = -DNDEBUG -D_THREAD_SAFE
 CPPFLAGS+= -DSDL_DISABLE_IMMINTRIN_H
 
-CFLAGS  = -mmacosx-version-min=10.6 -fPIC -O3 -Wall
-LDFLAGS = -mmacosx-version-min=10.6 -dynamiclib -Wl,-undefined,error -Wl,-single_module
+CFLAGS  = -mmacosx-version-min=10.7 -fPIC -O3 -Wall
+LDFLAGS = -mmacosx-version-min=10.7 -dynamiclib -Wl,-undefined,error -Wl,-single_module
 #LDFLAGS+= -Wl,-headerpad_max_install_names
 LDFLAGS+= -Wl,-install_name,"/usr/local/lib/$(DYLIB)"
-LDFLAGS+= -Wl,-compatibility_version,1.0 -Wl,-current_version,12.61
+LDFLAGS+= -Wl,-compatibility_version,2601.0 -Wl,-current_version,2900.0
 LDLIBS  = -Wl,-framework,AppKit
-# this is needed for x86_64 - cross-gcc might not add it.
-#LDLIBS += -Wl,-lbundle1.o
 
 DYLIB = libSDL2-2.0.0.dylib
 
@@ -34,7 +32,7 @@ all: $(DYLIB)
 
 $(DYLIB): $(OBJ)
 	$(LD) -o $@ $(LDFLAGS) $(OBJ) $(LDLIBS)
-	ln -sf $(DYLIB) libSDL.dylib
+	ln -sf $(DYLIB) libSDL2.dylib
 
 .c.o:
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) -o $@ -c $<
