@@ -26,11 +26,14 @@ include(GNUInstallDirs)
 
 set(CMAKE_SKIP_RPATH TRUE)
 
-find_package(SDL3)
+find_package(SDL3 QUIET)
 if(NOT SDL3_INCLUDE_DIRS)
   find_path(SDL3_INCLUDE_DIRS
     NAMES "SDL3/SDL.h"
   )
+endif()
+if(NOT SDL3_INCLUDE_DIRS)
+  message(FATAL_ERROR "Cannot find SDL3 headers: configure with -DCMAKE_PREFIX_PATH=\"/root/to/SDL3\" or -DSDL3_INCLUDE_DIRS=\"/root/to/SDL3/include\"")
 endif()
 
 find_package(Git)
