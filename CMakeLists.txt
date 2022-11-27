@@ -27,9 +27,8 @@ include(GNUInstallDirs)
 set(CMAKE_SKIP_RPATH TRUE)
 
 if(APPLE)
-# !!! FIXME: assuming we don't need this; if so, remove this.
-  #set(OSX_SRCS "src/sdl2_compat_objc.m")
-  #set_source_files_properties(${OSX_SRCS} PROPERTIES LANGUAGE C)
+  set(OSX_SRCS "src/sdl2_compat_objc.m")
+  set_source_files_properties(${OSX_SRCS} PROPERTIES LANGUAGE C)
 
 #  # !!! FIXME: what does SDL2 expect here?
 #  # compatibility version set to match SDL-1.2 autotools build
