@@ -4,6 +4,9 @@
 # change INCLUDES so it points to SDL3 headers directory:
 INCLUDES = -Iinclude
 
+# to specify a minimum macOS target:
+TARGET = 10.9
+
 ifeq ($(CROSS),)
 CC = gcc
 else
@@ -14,12 +17,16 @@ LD = $(CC)
 CPPFLAGS = -DNDEBUG -D_THREAD_SAFE
 CPPFLAGS+= -DSDL_DISABLE_IMMINTRIN_H
 
-CFLAGS  = -mmacosx-version-min=10.7 -fPIC -O3 -Wall
-LDFLAGS = -mmacosx-version-min=10.7 -dynamiclib -Wl,-undefined,error -Wl,-single_module
+CFLAGS  = -fPIC -O3 -Wall
+LDFLAGS = -dynamiclib -Wl,-undefined,error -Wl,-single_module
 #LDFLAGS+= -Wl,-headerpad_max_install_names
 LDFLAGS+= -Wl,-install_name,"/usr/local/lib/$(DYLIB)"
 LDFLAGS+= -Wl,-compatibility_version,2601.0 -Wl,-current_version,2900.0
 LDLIBS  = -Wl,-framework,AppKit
+ifneq ($(TARGET),)
+CFLAGS += -mmacosx-version-min=$(TARGET)
+LDFLAGS+= -mmacosx-version-min=$(TARGET)
+endif
 
 DYLIB = libSDL2-2.0.0.dylib
 
