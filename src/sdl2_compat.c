@@ -111,7 +111,8 @@ static SDL_bool WantDebugLogging = SDL_FALSE;
 static Uint32 LinkedSDL3VersionInt = 0;
 
 
-/* Obviously we can't use SDL_LoadObject() to load SDL2.  :)  */
+/* Obviously we can't use SDL_LoadObject() to load SDL3.  :)  */
+/* FIXME: Updated library names after https://github.com/libsdl-org/SDL/issues/5626 solidifies.  */
 static char loaderror[256];
 #if defined(_WIN32)
     #define DIRSEP "\\"
@@ -126,9 +127,9 @@ static char loaderror[256];
     #include <dlfcn.h>
     #include <pwd.h>
     #include <unistd.h>
-    #define SDL3_LIBNAME "libSDL3-3.0.0.dylib"
-    /* SDL2 cmake'ry is (was?) messy: */
-    #define SDL3_LIBNAME2 "libSDL3-3.0.dylib"
+    #define SDL3_LIBNAME "libSDL3.0.dylib"
+    /* SDL3 cmake'ry is (was?) messy: */
+    #define SDL3_LIBNAME2 "libSDL3.dylib"
     #define SDL3_FRAMEWORK "SDL3.framework/Versions/A/SDL3"
     #define strcpy_fn  strcpy
     #define sprintf_fn sprintf
@@ -138,11 +139,11 @@ static char loaderror[256];
     static SDL_bool LoadSDL3Library(void) {
         /* I don't know if this is the _right_ order to try, but this seems reasonable */
         static const char * const dylib_locations[] = {
-            "@loader_path/" SDL3_LIBNAME, /* MyApp.app/Contents/MacOS/libSDL2-2.0.0.dylib */
-            "@loader_path/" SDL3_LIBNAME2, /* MyApp.app/Contents/MacOS/libSDL2-2.0.dylib */
+            "@loader_path/" SDL3_LIBNAME, /* MyApp.app/Contents/MacOS/libSDL3.0.dylib */
+            "@loader_path/" SDL3_LIBNAME2, /* MyApp.app/Contents/MacOS/libSDL3.dylib  */
             "@loader_path/../Frameworks/" SDL3_FRAMEWORK, /* MyApp.app/Contents/Frameworks/SDL2.framework */
-            "@executable_path/" SDL3_LIBNAME, /* MyApp.app/Contents/MacOS/libSDL2-2.0.0.dylib */
-            "@executable_path/" SDL3_LIBNAME2, /* MyApp.app/Contents/MacOS/libSDL2-2.0.dylib */
+            "@executable_path/" SDL3_LIBNAME, /* MyApp.app/Contents/MacOS/libSDL3.0.dylib */
+            "@executable_path/" SDL3_LIBNAME2, /* MyApp.app/Contents/MacOS/libSDL3.dylib  */
             "@executable_path/../Frameworks/" SDL3_FRAMEWORK, /* MyApp.app/Contents/Frameworks/SDL2.framework */
             NULL,  /* /Users/username/Library/Frameworks/SDL2.framework */
             "/Library/Frameworks" SDL3_FRAMEWORK, /* /Library/Frameworks/SDL2.framework */
@@ -182,7 +183,7 @@ static char loaderror[256];
     }
 #elif defined(__unix__)
     #include <dlfcn.h>
-    #define SDL3_LIBNAME "libSDL2-2.0.so.0"
+    #define SDL3_LIBNAME "libSDL3.so.0"
     static void *Loaded_SDL3 = NULL;
     #define LoadSDL3Library() ((Loaded_SDL3 = dlopen(SDL3_LIBNAME, RTLD_LOCAL|RTLD_NOW)) != NULL)
     #define LookupSDL3Sym(sym) dlsym(Loaded_SDL3, sym)
