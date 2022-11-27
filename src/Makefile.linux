@@ -1,0 +1,40 @@
+# GNU Makefile for Linux (Unix) to build SDL12-compat.
+#
+
+# change INCLUDES so it points to SDL2 headers directory:
+INCLUDES = -Iinclude
+
+CC = gcc
+LD = $(CC)
+
+CPPFLAGS = -DNDEBUG -D_THREAD_SAFE -D_REENTRANT
+CPPFLAGS+= -DSDL_DISABLE_IMMINTRIN_H
+
+CFLAGS  = -fPIC -O3 -Wall
+LDFLAGS = -shared -Wl,-soname,libSDL2-2.0.so.0
+# make sure this is supported:
+LDFLAGS+= -Wl,--no-undefined
+LDLIBS  = -ldl
+
+SHLIB = libSDL2-2.0.so.0.0.0
+
+OBJ = sdl2_compat.o
+
+.SUFFIXES:
+.SUFFIXES: .o .c
+
+all: $(SHLIB)
+
+$(SHLIB): $(OBJ)
+	$(LD) -o $@ $(LDFLAGS) $(OBJ) $(LDLIBS)
+	ln -sf $(SHLIB) libSDL2-2.0.so
+	ln -sf $(SHLIB) libSDL2-2.0.so.0
+	ln -sf $(SHLIB) libSDL2.so
+
+.c.o:
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) -o $@ -c $<
+
+distclean: clean
+	$(RM) *.so*
+clean:
+	$(RM) *.o

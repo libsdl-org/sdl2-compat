@@ -1,0 +1,42 @@
+# Makefile for Win32 using MSVC:
+#	nmake /f Makefile.vc
+#
+# If you specifically want to build for x86:
+#	nmake /f Makefile.vc CPU=x86
+
+# change INCLUDES so it points to SDL2 headers directory:
+INCLUDES = -Iinclude
+
+CPPFLAGS = -DNDEBUG -DDLL_EXPORT
+CPPFLAGS = $(CPPFLAGS) -DSDL_DISABLE_IMMINTRIN_H
+
+CC = cl
+LD = link
+RC = rc
+
+CFLAGS = /nologo /O2 /MD /W3 /GS-
+LDFLAGS = /nologo /DLL /NODEFAULTLIB /RELEASE
+LDLIBS = kernel32.lib user32.lib
+
+!if "$(CPU)" == "x86"
+CFLAGS = $(CFLAGS) /arch:SSE
+!endif
+
+DLLNAME = SDL2.dll
+IMPNAME = SDL2.lib
+
+OBJ = sdl2_compat.obj version.res
+
+all: $(DLLNAME)
+
+$(DLLNAME): $(OBJ)
+	$(LD) /OUT:$@ $(LDFLAGS) $(OBJ) $(LDLIBS)
+
+.c.obj:
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) /Fo$@ -c $<
+.rc.res:
+	$(RC) /r /Fo$@ $<
+
+distclean: clean
+clean:
+	-del *.obj *.res *.exp *.manifest $(DLLNAME) $(IMPNAME)
