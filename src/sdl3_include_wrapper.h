@@ -900,24 +900,24 @@
 
 /* *** HACK HACK HACK:
  * *** Avoid including SDL_thread.h: it defines SDL_CreateThread() as a macro */
-#if defined(_WIN32)
+#ifdef _WIN32
 #define _SDL_thread_h
 #define SDL_thread_h_
 #define SDL_PASSED_BEGINTHREAD_ENDTHREAD
 #endif
 
 #define __BUILDING_SDL2_COMPAT__ 1
-#include "SDL.h"
+#include <SDL3/SDL.h>
 
 #if !SDL_VERSION_ATLEAST(3,0,0)
 #error You need to compile against SDL >= 3.0.0 headers.
 #endif
 
-#include "SDL_syswm.h"
-#include "SDL_vulkan.h"
+#include <SDL3/SDL_syswm.h>
+#include <SDL3/SDL_vulkan.h>
 
-/* Missing SDL_thread.h stuff (see above): */
-#if defined(_WIN32)
+/* Missing SDL_thread.h stuff (see above) */
+#ifdef _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
 #endif
@@ -935,7 +935,7 @@ typedef int (SDLCALL *SDL_ThreadFunction) (void*);
 typedef UINT_PTR (__cdecl *pfnSDL_CurrentBeginThread)
                    (void*, unsigned, unsigned (__stdcall *func)(void*), void*, unsigned, unsigned*);
 typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
-/* the following macros from Win32 SDK headers are harmful here: */
+/* the following macros from Win32 SDK headers are harmful here. */
 #undef CreateWindow
 #undef CreateThread
 #undef CreateSemaphore
@@ -4421,4 +4421,3 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #endif
 
 /* vi: set ts=4 sw=4 expandtab: */
-
