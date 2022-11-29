@@ -44,4 +44,4 @@ $(DLL): $(OBJ)
 distclean: clean
 	$(RM) $(DLL) $(LIB)
 clean:
-	$(RM) *.o
+	$(RM) *.o dynapi/*.o

@@ -9,7 +9,7 @@ LD = $(CC)
 CPPFLAGS = -DNDEBUG -D_THREAD_SAFE -D_REENTRANT
 CPPFLAGS+= -DSDL_DISABLE_IMMINTRIN_H
 
-CFLAGS  = -fPIC -O3 -Wall
+CFLAGS  = -fPIC -fvisibility=hidden -O3 -Wall
 LDFLAGS = -shared -Wl,-soname,libSDL2-2.0.so.0
 # make sure this is supported:
 LDFLAGS+= -Wl,--no-undefined
@@ -36,4 +36,4 @@ $(SHLIB): $(OBJ)
 distclean: clean
 	$(RM) *.so*
 clean:
-	$(RM) *.o
+	$(RM) *.o dynapi/*.o
