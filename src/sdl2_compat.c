@@ -116,7 +116,6 @@ extern "C" {
 #define SDL3_InvalidParamError(param) SDL3_SetError("Parameter '%s' is invalid", (param))
 #define SDL3_zero(x) SDL3_memset(&(x), 0, sizeof((x)))
 #define SDL3_zerop(x) SDL3_memset((x), 0, sizeof(*(x)))
-#define SDL_ReportAssertion SDL3_ReportAssertion
 
 
 static SDL_bool WantDebugLogging = SDL_FALSE;
