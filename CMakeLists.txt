@@ -24,7 +24,9 @@ include(CheckCCompilerFlag)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/sdlchecks.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/sdlplatform.cmake")
 
+SDL_DetectCMakePlatform()
 CheckOpenGLES()
 
 set(CMAKE_SKIP_RPATH TRUE)
