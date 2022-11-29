@@ -199,17 +199,16 @@ else()
 endif()
 
 if(MINGW)
-  set_target_properties(SDL2 PROPERTIES LINK_FLAGS "-nostdlib")
+  target_link_libraries(SDL2 PRIVATE -nostdlib)
   target_link_libraries(SDL2 PRIVATE -static-libgcc -lgcc) # libgcc is needed for 32 bit (x86) builds
 endif()
 if(MSVC)
   # Don't try to link with the default set of libraries.
-  set(MSVC_FLAGS "/GS-")
+  target_compile_options(SDL2 PRIVATE /GS-)
   if(SDL_CPU_X86)  # don't emit SSE2 in x86 builds
-    set(MSVC_FLAGS "${MSVC_FLAGS} /arch:SSE")
+    target_compile_options(SDL2 PRIVATE /arch:SSE)
   endif()
-  set_target_properties(SDL2 PROPERTIES COMPILE_FLAGS ${MSVC_FLAGS})
-  set_target_properties(SDL2 PROPERTIES LINK_FLAGS "/NODEFAULTLIB")
+  target_link_libraries(SDL2 PRIVATE /NODEFAULTLIB)
   # Make sure /RTC1 is disabled: (from SDL2 CMake)
   foreach(flag_var
     CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
