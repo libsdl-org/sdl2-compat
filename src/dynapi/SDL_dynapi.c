@@ -340,6 +340,7 @@ static SDL_INLINE void *get_sdlapi_entry(const char *fname, const char *sym)
 }
 
 #elif defined(unix) || defined(__unix__) || defined(__APPLE__) || defined(__HAIKU__) || defined(__QNX__)
+#include <stdio.h>
 #include <stdlib.h>
 #include <dlfcn.h>
 static SDL_INLINE void *get_sdlapi_entry(const char *fname, const char *sym)

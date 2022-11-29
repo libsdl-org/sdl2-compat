@@ -87,7 +87,6 @@
 #define SDL_MapRGBA IGNORE_THIS_VERSION_OF_SDL_MapRGBA
 #define SDL_GetRGB IGNORE_THIS_VERSION_OF_SDL_GetRGB
 #define SDL_GetRGBA IGNORE_THIS_VERSION_OF_SDL_GetRGBA
-#define SDL_CalculateGammaRamp IGNORE_THIS_VERSION_OF_SDL_CalculateGammaRamp
 #define SDL_GetNumAudioDrivers IGNORE_THIS_VERSION_OF_SDL_GetNumAudioDrivers
 #define SDL_GetAudioDriver IGNORE_THIS_VERSION_OF_SDL_GetAudioDriver
 #define SDL_AudioInit IGNORE_THIS_VERSION_OF_SDL_AudioInit
@@ -597,14 +596,10 @@
 #define SDL_GetGrabbedWindow IGNORE_THIS_VERSION_OF_SDL_GetGrabbedWindow
 #define SDL_SetWindowMouseRect IGNORE_THIS_VERSION_OF_SDL_SetWindowMouseRect
 #define SDL_GetWindowMouseRect IGNORE_THIS_VERSION_OF_SDL_GetWindowMouseRect
-#define SDL_SetWindowBrightness IGNORE_THIS_VERSION_OF_SDL_SetWindowBrightness
-#define SDL_GetWindowBrightness IGNORE_THIS_VERSION_OF_SDL_GetWindowBrightness
 #define SDL_SetWindowOpacity IGNORE_THIS_VERSION_OF_SDL_SetWindowOpacity
 #define SDL_GetWindowOpacity IGNORE_THIS_VERSION_OF_SDL_GetWindowOpacity
 #define SDL_SetWindowModalFor IGNORE_THIS_VERSION_OF_SDL_SetWindowModalFor
 #define SDL_SetWindowInputFocus IGNORE_THIS_VERSION_OF_SDL_SetWindowInputFocus
-#define SDL_SetWindowGammaRamp IGNORE_THIS_VERSION_OF_SDL_SetWindowGammaRamp
-#define SDL_GetWindowGammaRamp IGNORE_THIS_VERSION_OF_SDL_GetWindowGammaRamp
 #define SDL_SetWindowHitTest IGNORE_THIS_VERSION_OF_SDL_SetWindowHitTest
 #define SDL_FlashWindow IGNORE_THIS_VERSION_OF_SDL_FlashWindow
 #define SDL_DestroyWindow IGNORE_THIS_VERSION_OF_SDL_DestroyWindow
@@ -1176,10 +1171,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetRGBA
 #undef SDL_GetRGBA
-#endif
-
-#ifdef SDL_CalculateGammaRamp
-#undef SDL_CalculateGammaRamp
 #endif
 
 #ifdef SDL_GetNumAudioDrivers
@@ -3218,14 +3209,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetWindowMouseRect
 #endif
 
-#ifdef SDL_SetWindowBrightness
-#undef SDL_SetWindowBrightness
-#endif
-
-#ifdef SDL_GetWindowBrightness
-#undef SDL_GetWindowBrightness
-#endif
-
 #ifdef SDL_SetWindowOpacity
 #undef SDL_SetWindowOpacity
 #endif
@@ -3240,14 +3223,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_SetWindowInputFocus
 #undef SDL_SetWindowInputFocus
-#endif
-
-#ifdef SDL_SetWindowGammaRamp
-#undef SDL_SetWindowGammaRamp
-#endif
-
-#ifdef SDL_GetWindowGammaRamp
-#undef SDL_GetWindowGammaRamp
 #endif
 
 #ifdef SDL_SetWindowHitTest
