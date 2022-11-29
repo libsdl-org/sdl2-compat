@@ -138,7 +138,7 @@ static char loaderror[256];
     #include <dlfcn.h>
     #include <pwd.h>
     #include <unistd.h>
-    #define SDL3_LIBNAME "libSDL3.0.dylib"
+    #define SDL3_LIBNAME "libSDL3.dylib"
     #define SDL3_FRAMEWORK "SDL3.framework/Versions/A/SDL3"
     #define strcpy_fn  strcpy
     #define sprintf_fn sprintf
@@ -148,13 +148,13 @@ static char loaderror[256];
     static SDL_bool LoadSDL3Library(void) {
         /* I don't know if this is the _right_ order to try, but this seems reasonable */
         static const char * const dylib_locations[] = {
-            "@loader_path/" SDL3_LIBNAME, /* MyApp.app/Contents/MacOS/libSDL3.0.dylib */
+            "@loader_path/" SDL3_LIBNAME, /* MyApp.app/Contents/MacOS/libSDL3.dylib */
             "@loader_path/../Frameworks/" SDL3_FRAMEWORK, /* MyApp.app/Contents/Frameworks/SDL2.framework */
-            "@executable_path/" SDL3_LIBNAME, /* MyApp.app/Contents/MacOS/libSDL3.0.dylib */
+            "@executable_path/" SDL3_LIBNAME, /* MyApp.app/Contents/MacOS/libSDL3.dylib */
             "@executable_path/../Frameworks/" SDL3_FRAMEWORK, /* MyApp.app/Contents/Frameworks/SDL2.framework */
             NULL,  /* /Users/username/Library/Frameworks/SDL2.framework */
             "/Library/Frameworks" SDL3_FRAMEWORK, /* /Library/Frameworks/SDL2.framework */
-            SDL3_LIBNAME  /* oh well, anywhere the system can see the .dylib (/usr/local/lib or whatever) */
+            SDL3_LIBNAME /* oh well, anywhere the system can see the .dylib (/usr/local/lib or whatever) */
         };
 
         int i;
