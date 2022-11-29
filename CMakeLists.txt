@@ -209,7 +209,7 @@ endif()
 #else()
     add_library(SDL2main STATIC src/SDLmain/dummy/SDL_dummy_main.c)
 #endif()
-#add_library(SDL2::SDL2ain ALIAS SDL2main)
+add_library(SDL2::SDL2main ALIAS SDL2main)
 target_include_directories(SDL2main PRIVATE "include/SDL2")
 
 # SDLtest library...
