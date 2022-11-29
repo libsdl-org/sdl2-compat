@@ -157,7 +157,7 @@ elseif(WIN32)
     VERSION "${PROJECT_VERSION}"
     SOVERSION "0"
     OUTPUT_NAME "SDL2"
-    SHARED_LIBRARY_PREFIX ""
+    PREFIX ""
   )
 elseif(OS2)
   set_target_properties(SDL2 PROPERTIES
