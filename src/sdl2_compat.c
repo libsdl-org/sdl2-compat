@@ -409,6 +409,10 @@ LoadSDL3(void)
     return okay;
 }
 
+#if defined(_MSC_VER) && defined(_M_IX86)
+#include "x86_msvc.h"
+#endif
+
 #if defined(_WIN32)
 static void error_dialog(const char *errorMsg)
 {
