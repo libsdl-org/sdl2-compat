@@ -217,11 +217,6 @@ elseif(WIN32)
     OUTPUT_NAME "SDL2"
     PREFIX ""
   )
-elseif(OS2)
-  set_target_properties(SDL2 PROPERTIES
-    OUTPUT_NAME "SDL2"
-    VERSION "${SDL_VERSION}"
-  )
 else()
   set_target_properties(SDL2 PROPERTIES
     VERSION "${PROJECT_VERSION}"
