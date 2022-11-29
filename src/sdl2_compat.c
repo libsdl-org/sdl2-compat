@@ -496,6 +496,15 @@ SDL_GetVersion(SDL_version * ver)
     }
 }
 
+DECLSPEC int SDLCALL
+SDL_GetRevisionNumber(void)
+{
+    /* After the move to GitHub, this always returned zero, since this was a
+       Mercurial thing. We removed it outright in SDL3. */
+    return 0;
+}
+
+
 DECLSPEC void SDLCALL
 SDL_SetError(const char *fmt, ...)
 {
