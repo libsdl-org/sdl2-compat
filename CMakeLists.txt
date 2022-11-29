@@ -24,11 +24,14 @@ include(CheckCCompilerFlag)
 include(CMakePackageConfigHelpers)
 include(CMakePushCheckState)
 include(GNUInstallDirs)
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/CheckCPUArchitecture.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/sdlchecks.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/sdlplatform.cmake")
 
 SDL_DetectCMakePlatform()
 CheckOpenGLES()
+
+check_cpu_architecture(x86 SDL_CPU_X86)
 
 if(NOT MSVC AND NOT APPLE AND NOT OPENBSD)
   cmake_push_check_state()
@@ -202,12 +205,7 @@ endif()
 if(MSVC)
   # Don't try to link with the default set of libraries.
   set(MSVC_FLAGS "/GS-")
-  check_c_source_compiles("int main(void) {
-#ifndef _M_IX86
-#error not x86
-#endif
-return 0; }" IS_X86)
-  if(IS_X86)  # don't emit SSE2 in x86 builds
+  if(SDL_CPU_X86)  # don't emit SSE2 in x86 builds
     set(MSVC_FLAGS "${MSVC_FLAGS} /arch:SSE")
   endif()
   set_target_properties(SDL2 PROPERTIES COMPILE_FLAGS ${MSVC_FLAGS})
