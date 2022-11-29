@@ -730,6 +730,88 @@ SDL_RWFromFP(FILE *fp, SDL_bool autoclose)
 }
 #endif
 
+
+/* All gamma stuff was removed from SDL3 because it affects the whole system
+   in intrusive ways, and often didn't work on various platforms. These all
+   just return failure now. */
+
+DECLSPEC int SDLCALL
+SDL_SetWindowBrightness(SDL_Window *window, float brightness)
+{
+    return SDL3_Unsupported();
+}
+
+DECLSPEC float SDLCALL
+SDL_GetWindowBrightness(SDL_Window *window)
+{
+    return 1.0f;
+}
+
+DECLSPEC int SDLCALL
+SDL_SetWindowGammaRamp(SDL_Window *window, const Uint16 *r, const Uint16 *g, const Uint16 *b)
+{
+    return SDL3_Unsupported();
+}
+
+DECLSPEC void SDLCALL
+SDL_CalculateGammaRamp(float gamma, Uint16 *ramp)
+{
+    int i;
+
+    /* Input validation */
+    if (gamma < 0.0f) {
+      SDL_InvalidParamError("gamma");
+      return;
+    }
+    if (ramp == NULL) {
+      SDL_InvalidParamError("ramp");
+      return;
+    }
+
+    /* 0.0 gamma is all black */
+    if (gamma == 0.0f) {
+        SDL_memset(ramp, 0, 256 * sizeof(Uint16));
+        return;
+    } else if (gamma == 1.0f) {
+        /* 1.0 gamma is identity */
+        for (i = 0; i < 256; ++i) {
+            ramp[i] = (i << 8) | i;
+        }
+        return;
+    } else {
+        /* Calculate a real gamma ramp */
+        int value;
+        gamma = 1.0f / gamma;
+        for (i = 0; i < 256; ++i) {
+            value =
+                (int) (SDL_pow((double) i / 256.0, gamma) * 65535.0 + 0.5);
+            if (value > 65535) {
+                value = 65535;
+            }
+            ramp[i] = (Uint16) value;
+        }
+    }
+}
+
+DECLSPEC int SDLCALL
+SDL_GetWindowGammaRamp(SDL_Window *window, Uint16 *red, Uint16 *blue, Uint16 *green)
+{
+    Uint16 *buf = red ? red : (green ? green : blue);
+    if (buf) {
+        SDL_CalculateGammaRamp(1.0f, buf);
+        if (red && (red != buf)) {
+            SDL_memcpy(red, buf, 256 * sizeof (Uint16));
+        }
+        if (green && (green != buf)) {
+            SDL_memcpy(green, buf, 256 * sizeof (Uint16));
+        }
+        if (blue && (blue != buf)) {
+            SDL_memcpy(blue, buf, 256 * sizeof (Uint16));
+        }
+    }
+    return 0;
+}
+
 #ifdef __cplusplus
 }
 #endif
