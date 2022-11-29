@@ -1,6 +1,6 @@
 # NOTE:  If you installed SDL3 at an unusual place and SDL3Config fails,
 #        you can define SDL3_INCLUDE_DIRS on the cmdline.  For example:
-#        cmake -DSDL3_INCLUDE_DIRS="/opt/SDL3/include;/opt/SDL3/include/SDL3"
+#        cmake -DSDL3_INCLUDE_DIRS=/opt/SDL3/include [other stuff ....]
 
 cmake_minimum_required(VERSION 3.0.0)
 project(sdl2_compat
