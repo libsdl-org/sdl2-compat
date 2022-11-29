@@ -215,7 +215,7 @@ LoadSDL3Symbol(const char *fn, int *okay)
     if (*okay) { /* only bother trying if we haven't previously failed. */
         retval = LookupSDL3Sym(fn);
         if (retval == NULL) {
-            sprintf_fn(loaderror, "%s missing in SDL2 library.", fn);
+            sprintf_fn(loaderror, "%s missing in SDL3 library.", fn);
             *okay = 0;
         }
     }
@@ -390,7 +390,7 @@ LoadSDL3(void)
                 if (!okay) {
                     sprintf_fn(loaderror, "SDL3 %d.%d.%d library is too old.", v.major, v.minor, v.patch);
                 } else {
-                    WantDebugLogging = SDL2Compat_GetHintBoolean("SDL12COMPAT_DEBUG_LOGGING", SDL_FALSE);
+                    WantDebugLogging = SDL2Compat_GetHintBoolean("SDL2COMPAT_DEBUG_LOGGING", SDL_FALSE);
                     if (WantDebugLogging) {
                         #if defined(__DATE__) && defined(__TIME__)
                         SDL3_Log("sdl2-compat 2.%d.%d, built on " __DATE__ " at " __TIME__ ", talking to SDL3 %d.%d.%d", SDL2_COMPAT_VERSION_MINOR, SDL2_COMPAT_VERSION_PATCH, v.major, v.minor, v.patch);
