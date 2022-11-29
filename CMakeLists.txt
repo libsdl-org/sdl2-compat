@@ -104,6 +104,7 @@ endif()
 
 set(SDL2COMPAT_SRCS
   src/sdl2_compat.c
+  src/dynapi/SDL_dynapi.c
   ${OSX_SRCS}
   ${WIN32_SRCS}
 )

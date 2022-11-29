@@ -23,6 +23,18 @@
 
 #include "sdl3_include_wrapper.h"
 
+#include "dynapi/SDL_dynapi.h"
+
+#if SDL_DYNAMIC_API
+#include "dynapi/SDL_dynapi_overrides.h"
+/* force DECLSPEC off...it's all internal symbols now.
+   These will have actual #defines during SDL_dynapi.c only */
+#ifdef DECLSPEC
+#undef DECLSPEC
+#endif
+#define DECLSPEC
+#endif
+
 /*
  * We report the library version as
  * 2.$(SDL2_COMPAT_VERSION_MINOR).$(SDL2_COMPAT_VERSION_PATCH). This number

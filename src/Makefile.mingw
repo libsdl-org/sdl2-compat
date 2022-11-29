@@ -25,7 +25,7 @@ LDLIBS  = -lkernel32 -luser32
 LIB = libSDL2.dll.a
 DLL = SDL2.dll
 
-OBJ = sdl2_compat.o version.o
+OBJ = sdl2_compat.o dynapi/SDL_dynapi.o version.o
 
 .SUFFIXES:
 .SUFFIXES: .o .c .rc

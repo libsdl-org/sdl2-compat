@@ -25,7 +25,7 @@ CFLAGS = $(CFLAGS) /arch:SSE
 DLLNAME = SDL2.dll
 IMPNAME = SDL2.lib
 
-OBJ = sdl2_compat.obj version.res
+OBJ = sdl2_compat.obj dynapi/SDL_dynapi.obj version.res
 
 all: $(DLLNAME)
 

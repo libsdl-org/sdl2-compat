@@ -30,7 +30,7 @@ endif
 
 DYLIB = libSDL2-2.0.0.dylib
 
-OBJ = sdl2_compat.o sdl2_compat_objc.o
+OBJ = sdl2_compat.o sdl2_compat_objc.o dynapi/SDL_dynapi.o
 
 .SUFFIXES:
 .SUFFIXES: .o .c .m
