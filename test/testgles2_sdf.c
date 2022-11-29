@@ -19,6 +19,7 @@
 #endif
 
 #include "SDL_test_common.h"
+#include "testutils.h"
 
 #if defined(__IPHONEOS__) || defined(__ANDROID__) || defined(__EMSCRIPTEN__) || defined(__NACL__) \
     || defined(__WINDOWS__) || defined(__LINUX__)
