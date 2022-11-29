@@ -11,4 +11,4 @@ Version: @PROJECT_VERSION@
 Provides: sdl = @PROJECT_VERSION@
 Libs: -L${libdir} @SDL_RLD_FLAGS@ @SDL_LIBS@
 @ENABLE_STATIC_TRUE@Libs.private: -L${libdir} @SDL_LIBS@ @SDL_STATIC_LIBS@
-Cflags: -I${includedir}/SDL @SDL_CFLAGS@
+Cflags: -I${includedir}/SDL2 @SDL_CFLAGS@
