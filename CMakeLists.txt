@@ -3,9 +3,42 @@
 #        cmake -DSDL3_INCLUDE_DIRS=/opt/SDL3/include [other stuff ....]
 
 cmake_minimum_required(VERSION 3.0.0)
-project(sdl2_compat
-        VERSION 2.90.0
-        LANGUAGES C)
+project(sdl2_compat VERSION 2.90.0 LANGUAGES C)
+
+set(SDL_MAJOR_VERSION ${sdl2_compat_VERSION_MAJOR})
+set(SDL_MINOR_VERSION ${sdl2_compat_VERSION_MINOR})
+set(SDL_MICRO_VERSION ${sdl2_compat_VERSION_PATCH})
+set(SDL_VERSION "${SDL_MAJOR_VERSION}.${SDL_MINOR_VERSION}.${SDL_MICRO_VERSION}")
+
+# Calculate libtool-compatible SO version
+set(SDL_SO_VERSION_MAJOR "0")
+if(SDL_MINOR_VERSION MATCHES "[02468]$")
+  # Stable branch, 2.24.1 -> libSDL2-2.0.so.0.2400.1
+  math(EXPR SDL_SO_VERSION_MINOR "${SDL_MINOR_VERSION} * 100")
+  set(SDL_SO_VERSION_MICRO ${SDL_MICRO_VERSION})
+else()
+  # Development branch, 2.23.1 -> libSDL2-2.0.so.0.2301.0
+  math(EXPR SDL_SO_VERSION_MINOR "${SDL_MINOR_VERSION} * 100 + ${SDL_MICRO_VERSION}")
+  set(SDL_SO_VERSION_MICRO 0)
+endif()
+set(SDL_SO_VERSION "${SDL_SO_VERSION_MAJOR}.${SDL_SO_VERSION_MINOR}.${SDL_SO_VERSION_MICRO}")
+
+if(SDL_MINOR_VERSION MATCHES "[02468]$")
+  math(EXPR SDL_DYLIB_COMPAT_VERSION_MAJOR "100 * ${SDL_MINOR_VERSION} + 1")
+  set(SDL_DYLIB_COMPAT_VERSION_MINOR "0")
+  math(EXPR SDL_DYLIB_CURRENT_VERSION_MAJOR "${SDL_DYLIB_COMPAT_VERSION_MAJOR}")
+  set(SDL_DYLIB_CURRENT_VERSION_MINOR "${SDL_MICRO_VERSION}")
+else()
+  math(EXPR SDL_DYLIB_COMPAT_VERSION_MAJOR "100 * ${SDL_MINOR_VERSION} + ${SDL_MICRO_VERSION} + 1")
+  set(SDL_DYLIB_COMPAT_VERSION_MINOR "0")
+  math(EXPR SDL_DYLIB_CURRENT_VERSION_MAJOR "${SDL_DYLIB_COMPAT_VERSION_MAJOR}")
+  set(SDL_DYLIB_CURRENT_VERSION_MINOR "0")
+endif()
+set(SDL_DYLIB_COMPAT_VERSION_MICRO "0")
+set(SDL_DYLIB_CURRENT_VERSION_MICRO "0")
+
+set(SDL_DYLIB_CURRENT_VERSION "${SDL_DYLIB_CURRENT_VERSION_MAJOR}.${SDL_DYLIB_CURRENT_VERSION_MINOR}.${SDL_DYLIB_CURRENT_VERSION_MICRO}")
+set(SDL_DYLIB_COMPAT_VERSION "${SDL_DYLIB_COMPAT_VERSION_MAJOR}.${SDL_DYLIB_COMPAT_VERSION_MINOR}.${SDL_DYLIB_COMPAT_VERSION_MICRO}")
 
 option(SDL2COMPAT_TESTS "Enable to build SDL2 test programs" ON)
 option(SDL2COMPAT_DEVEL "Enable installing SDL2 development headers" ON)
@@ -72,13 +105,13 @@ endif()
 if(GIT_REVISION_STATUS EQUAL 0)
   if(GIT_REVISION MATCHES "^[0-9a-f]+$")
     # Just a truncated sha1, so prefix it with the version number
-    set(SDL_REVISION "SDL-${sdl2_compat_VERSION}-g${GIT_REVISION}")
+    set(SDL_REVISION "SDL-${SDL_VERSION}-g${GIT_REVISION}")
   else()
     # e.g. release-2.24.0-542-g96361fc47
     set(SDL_REVISION "SDL-${GIT_REVISION}")
   endif()
 else()
-  set(SDL_REVISION "SDL-${sdl2_compat_VERSION}-no-vcs")
+  set(SDL_REVISION "SDL-${SDL_VERSION}-no-vcs")
 endif()
 
 configure_file(include/SDL2/SDL_revision.h.cmake include/SDL2/SDL_revision.h @ONLY)
@@ -161,34 +194,32 @@ if(APPLE)
   # !!! FIXME: check OUTPUT_NAME value.
   set_target_properties(SDL2 PROPERTIES COMPILE_DEFINITIONS "_THREAD_SAFE")
   target_link_libraries(SDL2 PRIVATE
-    "-Wl,-compatibility_version,${DYLIB_COMPAT_VERSION}"
-    "-Wl,-current_version,${DYLIB_CURRENT_VERSION}"
+    "-Wl,-compatibility_version,${SDL_DYLIB_COMPAT_VERSION_MICRO}"
+    "-Wl,-current_version,${SDL_DYLIB_CURRENT_VERSION_MICRO}"
     "-Wl,-framework,AppKit"
   )
   set_target_properties(SDL2 PROPERTIES
-      OUTPUT_NAME "SDL2-2.0.0"
+      OUTPUT_NAME "SDL2-2.0"
+      SOVERSION "0"
   )
 elseif(UNIX AND NOT ANDROID)
   # !!! FIXME: check OUTPUT_NAME value
   set_target_properties(SDL2 PROPERTIES
-    VERSION "${PROJECT_VERSION}"
-    SOVERSION "0"
     OUTPUT_NAME "SDL2-2.0"
+    VERSION "${SDL_SO_VERSION}"
+    SOVERSION "${SDL_SO_VERSION_MAJOR}"
   )
 elseif(WIN32)
   set_target_properties(SDL2 PROPERTIES DEFINE_SYMBOL "DLL_EXPORT")
   # avoid DLL having 'lib' prefix with MinGW
   set_target_properties(SDL2 PROPERTIES
-    VERSION "${PROJECT_VERSION}"
-    SOVERSION "0"
     OUTPUT_NAME "SDL2"
     PREFIX ""
   )
 elseif(OS2)
   set_target_properties(SDL2 PROPERTIES
-    VERSION "${PROJECT_VERSION}"
-    SOVERSION "0"
     OUTPUT_NAME "SDL2"
+    VERSION "${SDL_VERSION}"
   )
 else()
   set_target_properties(SDL2 PROPERTIES
@@ -493,7 +524,7 @@ if(SDL2COMPAT_DEVEL)
     INSTALL_DESTINATION "${SDL23COMPAT_INSTALL_CMAKEDIR}"
   )
   write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/SDL2ConfigVersion.cmake"
-    VERSION ${sdl2_compat_VERSION}
+    VERSION ${SDL_VERSION}
     COMPATIBILITY AnyNewerVersion
   )
   install(
