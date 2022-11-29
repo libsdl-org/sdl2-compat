@@ -150,18 +150,17 @@ endif()
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_CFLAGS}")
 string(STRIP "${CMAKE_C_FLAGS}" CMAKE_C_FLAGS)
 
-set_target_properties(SDL2 PROPERTIES DEFINE_SYMBOL "DLL_EXPORT")
 if(UNIX AND NOT APPLE)
   target_compile_definitions(SDL2 PRIVATE "_REENTRANT")
   target_link_libraries(SDL2 PRIVATE ${CMAKE_DL_LIBS})
 endif()
 if(APPLE)
-  # !!! FIXME: check OUTPUT_NAME value, and do we need AppKit now? I assume that was for SDL_main code in 1.2.
+  # !!! FIXME: check OUTPUT_NAME value.
   set_target_properties(SDL2 PROPERTIES COMPILE_DEFINITIONS "_THREAD_SAFE")
   target_link_libraries(SDL2 PRIVATE
     "-Wl,-compatibility_version,${DYLIB_COMPAT_VERSION}"
     "-Wl,-current_version,${DYLIB_CURRENT_VERSION}"
-    # "-Wl,-framework,AppKit"
+    "-Wl,-framework,AppKit"
   )
   set_target_properties(SDL2 PROPERTIES
       OUTPUT_NAME "SDL2-2.0.0"
@@ -174,6 +173,7 @@ elseif(UNIX AND NOT ANDROID)
     OUTPUT_NAME "SDL2-2.0"
   )
 elseif(WIN32)
+  set_target_properties(SDL2 PROPERTIES DEFINE_SYMBOL "DLL_EXPORT")
   # avoid DLL having 'lib' prefix with MinGW
   set_target_properties(SDL2 PROPERTIES
     VERSION "${PROJECT_VERSION}"
