@@ -213,7 +213,7 @@ endif()
 target_include_directories(SDL2main PRIVATE "include/SDL2")
 
 # SDLtest library...
-add_library(SDL2test STATIC
+add_library(SDL2_test STATIC
   src/test/SDL_test_assert.c
   src/test/SDL_test_common.c
   src/test/SDL_test_compare.c
@@ -231,10 +231,9 @@ add_library(SDL2test STATIC
   src/test/SDL_test_memory.c
   src/test/SDL_test_random.c
 )
-add_library(SDL2::SDL2test ALIAS SDL2test)
-target_include_directories(SDL2test PRIVATE "include/SDL2")
-target_include_directories(SDL2test
-  INTERFACE
+add_library(SDL2::SDL2test ALIAS SDL2_test)
+target_include_directories(SDL2_test
+  PUBLIC
     "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
     "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/SDL2>"
     "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>"
@@ -264,9 +263,9 @@ if(SDL2COMPAT_TESTS)
     add_executable(${_NAME} ${_SRCS})
     target_include_directories(${_NAME} PRIVATE "include/SDL2")
     if(MINGW)
-      target_link_libraries(${_NAME} PRIVATE mingw32 SDL2main SDL2test SDL2)
+      target_link_libraries(${_NAME} PRIVATE mingw32 SDL2main SDL2_test SDL2)
     else()
-      target_link_libraries(${_NAME} PRIVATE SDL2main SDL2test SDL2)
+      target_link_libraries(${_NAME} PRIVATE SDL2main SDL2_test SDL2)
     endif()
     # Turn off MSVC's aggressive C runtime warnings for the old test programs.
     if(MSVC)
@@ -441,7 +440,7 @@ if(SDL2COMPAT_DEVEL)
   endif()
   set(SDL23COMPAT_INSTALL_CMAKEDIR "${SDL23COMPAT_INSTALL_CMAKEDIR_DEFAULT}" CACHE STRING "Location where to install SDL2Config.cmake")
 
-  list(APPEND installed_targets SDL2main SDL2test)
+  list(APPEND installed_targets SDL2main SDL2_test)
   foreach(target ${installed_targets})
     install(TARGETS ${target} EXPORT ${target}Targets
       ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
