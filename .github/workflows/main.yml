@@ -27,6 +27,6 @@ jobs:
         ref: main
         path: SDL3
     - name: Configure CMake
-      run: cmake -DSDL3_INCLUDE_DIR="${{ github.workspace }}/SDL3/include" -B build ${{ matrix.platform.flags }}
+      run: cmake -DSDL3_INCLUDE_DIRS="${{ github.workspace }}/SDL3/include" -B build ${{ matrix.platform.flags }}
     - name: Build
       run: cmake --build build/
