@@ -4,7 +4,7 @@
 # change INCLUDES so it points to SDL3 headers directory:
 INCLUDES = -Iinclude
 
-# to specify a minimum macOS target:
+# minimum Mac OS X target
 DEPLOYMENT_TARGET = 10.9
 
 ifeq ($(CROSS),)
@@ -21,8 +21,10 @@ CFLAGS  = -fPIC -fvisibility=hidden -O3 -Wall
 LDFLAGS = -dynamiclib -Wl,-undefined,error -Wl,-single_module
 #LDFLAGS+= -Wl,-headerpad_max_install_names
 LDFLAGS+= -Wl,-install_name,"/usr/local/lib/$(DYLIB)"
-LDFLAGS+= -Wl,-compatibility_version,9000.0 -Wl,-current_version,9001.0
+LDFLAGS+= -Wl,-compatibility_version,9001.0 -Wl,-current_version,9001.0
 LDLIBS  = -Wl,-framework,AppKit
+# this is needed for x86_64 - cross-gcc might not add it.
+#LDLIBS += -Wl,-lbundle1.o
 ifneq ($(DEPLOYMENT_TARGET),)
 CFLAGS += -mmacosx-version-min=$(DEPLOYMENT_TARGET)
 LDFLAGS+= -mmacosx-version-min=$(DEPLOYMENT_TARGET)
@@ -30,7 +32,7 @@ endif
 
 DYLIB = libSDL2-2.0.0.dylib
 
-OBJ = sdl2_compat.o sdl2_compat_objc.o dynapi/SDL_dynapi.o
+OBJ = sdl2_compat.o dynapi/SDL_dynapi.o sdl2_compat_objc.o
 
 .SUFFIXES:
 .SUFFIXES: .o .c .m
