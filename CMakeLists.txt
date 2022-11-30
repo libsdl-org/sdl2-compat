@@ -229,7 +229,7 @@ if(MSVC)
   if(SDL_CPU_X86)  # don't emit SSE2 in x86 builds
     target_compile_options(SDL2 PRIVATE /arch:SSE)
   endif()
-  target_link_libraries(SDL2 PRIVATE /NODEFAULTLIB)
+  set_target_properties(SDL2 PROPERTIES LINK_FLAGS "/NODEFAULTLIB")
   # Make sure /RTC1 is disabled: (from SDL2 CMake)
   foreach(flag_var
     CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
