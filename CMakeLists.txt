@@ -120,12 +120,6 @@ if(APPLE)
   set(OSX_SRCS "src/sdl2_compat_objc.m")
   set_source_files_properties(${OSX_SRCS} PROPERTIES LANGUAGE C)
 
-#  # !!! FIXME: what does SDL2 expect here?
-#  # compatibility version set to match SDL-1.2 autotools build
-#  # Xcode project file uses 1.0.0, but it's more compatible to use the
-#  # higher version.
-#  set(DYLIB_COMPAT_VERSION 12.0.0 CACHE STRING "library compatibility version")
-#  set(DYLIB_CURRENT_VERSION 12.61.0 CACHE STRING "library current version")
   find_package(X11)
   if(X11_FOUND)
     include_directories("${X11_INCLUDE_DIR}")
@@ -195,8 +189,8 @@ if(APPLE)
   # !!! FIXME: check OUTPUT_NAME value.
   set_target_properties(SDL2 PROPERTIES COMPILE_DEFINITIONS "_THREAD_SAFE")
   target_link_libraries(SDL2 PRIVATE
-    "-Wl,-compatibility_version,${SDL_DYLIB_COMPAT_VERSION_MICRO}"
-    "-Wl,-current_version,${SDL_DYLIB_CURRENT_VERSION_MICRO}"
+    "-Wl,-compatibility_version,${SDL_DYLIB_COMPAT_VERSION}"
+    "-Wl,-current_version,${SDL_DYLIB_CURRENT_VERSION}"
     "-Wl,-framework,AppKit"
   )
   set_target_properties(SDL2 PROPERTIES
