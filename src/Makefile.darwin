@@ -21,7 +21,7 @@ CFLAGS  = -fPIC -fvisibility=hidden -O3 -Wall
 LDFLAGS = -dynamiclib -Wl,-undefined,error -Wl,-single_module
 #LDFLAGS+= -Wl,-headerpad_max_install_names
 LDFLAGS+= -Wl,-install_name,"/usr/local/lib/$(DYLIB)"
-LDFLAGS+= -Wl,-compatibility_version,2601.0 -Wl,-current_version,2900.0
+LDFLAGS+= -Wl,-compatibility_version,9000.0 -Wl,-current_version,9001.0
 LDLIBS  = -Wl,-framework,AppKit
 ifneq ($(DEPLOYMENT_TARGET),)
 CFLAGS += -mmacosx-version-min=$(DEPLOYMENT_TARGET)
