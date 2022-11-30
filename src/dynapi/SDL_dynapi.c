@@ -46,6 +46,10 @@
    sparingly. */
 #define SDL_DYNAPI_VERSION 1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 static void SDL_InitDynamicAPI(void);
 
 /* BE CAREFUL CALLING ANY SDL CODE IN HERE, IT WILL BLOW UP.
@@ -317,6 +321,10 @@ SDL_DYNAPI_entry(Uint32 apiver, void *table, Uint32 tablesize)
 {
     return initialize_jumptable(apiver, table, tablesize);
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 
 /* Obviously we can't use SDL_LoadObject() to load SDL.  :)  */
