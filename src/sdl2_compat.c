@@ -644,6 +644,7 @@ stdio_size(SDL_RWops * context)
 static Sint64 SDLCALL
 stdio_seek(SDL_RWops * context, Sint64 offset, int whence)
 {
+    FILE *fp = (FILE *) context->hidden.stdio.fp;
     int stdiowhence;
 
     switch (whence) {
@@ -666,8 +667,8 @@ stdio_seek(SDL_RWops * context, Sint64 offset, int whence)
     }
 #endif
 
-    if (fseek(context->hidden.stdio.fp, (long)offset, stdiowhence) == 0) {
-        Sint64 pos = ftell(context->hidden.stdio.fp);
+    if (fseek(fp, (long)offset, stdiowhence) == 0) {
+        Sint64 pos = ftell(fp);
         if (pos < 0) {
             return SDL3_SetError("Couldn't get stream offset");
         }
@@ -679,10 +680,11 @@ stdio_seek(SDL_RWops * context, Sint64 offset, int whence)
 static size_t SDLCALL
 stdio_read(SDL_RWops * context, void *ptr, size_t size, size_t maxnum)
 {
+    FILE *fp = (FILE *) context->hidden.stdio.fp;
     size_t nread;
 
-    nread = fread(ptr, size, maxnum, context->hidden.stdio.fp);
-    if (nread == 0 && ferror(context->hidden.stdio.fp)) {
+    nread = fread(ptr, size, maxnum, fp);
+    if (nread == 0 && ferror(fp)) {
         SDL3_Error(SDL_EFREAD);
     }
     return nread;
@@ -691,10 +693,11 @@ stdio_read(SDL_RWops * context, void *ptr, size_t size, size_t maxnum)
 static size_t SDLCALL
 stdio_write(SDL_RWops * context, const void *ptr, size_t size, size_t num)
 {
+    FILE *fp = (FILE *) context->hidden.stdio.fp;
     size_t nwrote;
 
-    nwrote = fwrite(ptr, size, num, context->hidden.stdio.fp);
-    if (nwrote == 0 && ferror(context->hidden.stdio.fp)) {
+    nwrote = fwrite(ptr, size, num, fp);
+    if (nwrote == 0 && ferror(fp)) {
         SDL3_Error(SDL_EFWRITE);
     }
     return nwrote;
@@ -706,8 +709,7 @@ stdio_close(SDL_RWops * context)
     int status = 0;
     if (context) {
         if (context->hidden.stdio.autoclose) {
-            /* WARNING:  Check the return value here! */
-            if (fclose(context->hidden.stdio.fp) != 0) {
+            if (fclose((FILE *)context->hidden.stdio.fp) != 0) {
                 status = SDL3_Error(SDL_EFWRITE);
             }
         }
