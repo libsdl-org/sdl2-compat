@@ -5,6 +5,23 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(sdl2_compat VERSION 2.90.0 LANGUAGES C)
 
+if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
+  set(SDL2COMPAT_SUBPROJECT OFF)
+else()
+  set(SDL2COMPAT_SUBPROJECT ON)
+endif()
+
+if(CMAKE_VERSION VERSION_LESS 3.16.0 OR SDL2COMPAT_SUBPROJECT)
+  # - CMake versions <3.16 do not support the OBJC language
+  # - When SDL is built as a subproject and when the main project does not enable OBJC,
+  #   CMake fails due to missing internal CMake variables (CMAKE_OBJC_COMPILE_OBJECT)
+  #   (reproduced with CMake 3.24.2)
+else()
+  if(APPLE)
+    enable_language(OBJC)
+  endif()
+endif()
+
 set(SDL_MAJOR_VERSION ${sdl2_compat_VERSION_MAJOR})
 set(SDL_MINOR_VERSION ${sdl2_compat_VERSION_MINOR})
 set(SDL_MICRO_VERSION ${sdl2_compat_VERSION_PATCH})
@@ -116,9 +133,15 @@ endif()
 
 configure_file(include/SDL2/SDL_revision.h.cmake include/SDL2/SDL_revision.h @ONLY)
 
+set(SDL2COMPAT_SRCS
+  src/sdl2_compat.c
+  src/dynapi/SDL_dynapi.c
+)
+
 if(APPLE)
-  set(OSX_SRCS "src/sdl2_compat_objc.m")
-  set_source_files_properties(${OSX_SRCS} PROPERTIES LANGUAGE C)
+  list(APPEND SDL2COMPAT_SRCS
+    "src/sdl2_compat_objc.m"
+  )
 
   find_package(X11)
   if(X11_FOUND)
@@ -130,15 +153,20 @@ if(APPLE)
 endif()
 
 if(WIN32)
-  set(WIN32_SRCS "src/version.rc")
+  list(APPEND SDL2COMPAT_SRCS
+    "src/version.rc"
+  )
 endif()
 
-set(SDL2COMPAT_SRCS
-  src/sdl2_compat.c
-  src/dynapi/SDL_dynapi.c
-  ${OSX_SRCS}
-  ${WIN32_SRCS}
-)
+if(APPLE)
+  foreach(SOURCE_FILE ${SDL2COMPAT_SRCS})
+    get_filename_component(FILE_EXTENSION ${SOURCE_FILE} EXT)
+    if(FILE_EXTENSION STREQUAL "m")
+      set_property(SOURCE ${SOURCE_FILE} APPEND_STRING PROPERTY COMPILE_FLAGS " -x objective-c")
+    endif()
+  endforeach()
+endif()
+
 add_library(SDL2 SHARED ${SDL2COMPAT_SRCS})
 add_library(SDL2::SDL2 ALIAS SDL2)
 target_include_directories(SDL2
