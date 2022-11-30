@@ -596,19 +596,19 @@ SDL_LogMessage(int category, SDL_LogPriority priority, SDL_PRINTF_FORMAT_STRING 
     va_end(ap);
 }
 
-#define SDL3_LOG_IMPL(name, prio) \
+#define SDL_LOG_IMPL(name, prio) \
     DECLSPEC void SDLCALL SDL_Log##name(int category, SDL_PRINTF_FORMAT_STRING const char *fmt, ...) { \
         va_list ap; va_start(ap, fmt); \
         SDL3_LogMessageV(category, SDL_LOG_PRIORITY_##prio, fmt, ap); \
         va_end(ap); \
     }
-SDL3_LOG_IMPL(Verbose, VERBOSE)
-SDL3_LOG_IMPL(Debug, DEBUG)
-SDL3_LOG_IMPL(Info, INFO)
-SDL3_LOG_IMPL(Warn, WARN)
-SDL3_LOG_IMPL(Error, ERROR)
-SDL3_LOG_IMPL(Critical, CRITICAL)
-#undef SDL3_LOG_IMPL
+SDL_LOG_IMPL(Verbose, VERBOSE)
+SDL_LOG_IMPL(Debug, DEBUG)
+SDL_LOG_IMPL(Info, INFO)
+SDL_LOG_IMPL(Warn, WARN)
+SDL_LOG_IMPL(Error, ERROR)
+SDL_LOG_IMPL(Critical, CRITICAL)
+#undef SDL_LOG_IMPL
 
 
 #if !HAVE_STDIO_H
