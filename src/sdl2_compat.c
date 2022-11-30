@@ -816,6 +816,42 @@ SDL_GetWindowGammaRamp(SDL_Window *window, Uint16 *red, Uint16 *blue, Uint16 *gr
     return 0;
 }
 
+DECLSPEC SDL_Surface * SDLCALL
+SDL_ConvertSurface(SDL_Surface *src, const SDL_PixelFormat *fmt, Uint32 flags)
+{
+    (void) flags; /* SDL3 removed the (unused) `flags` argument */
+    return SDL3_ConvertSurface(src, fmt);
+}
+
+DECLSPEC SDL_Surface * SDLCALL
+SDL_ConvertSurfaceFormat(SDL_Surface * src, Uint32 pixel_format, Uint32 flags)
+{
+    (void) flags; /* SDL3 removed the (unused) `flags` argument */
+    return SDL3_ConvertSurfaceFormat(src, pixel_format);
+}
+
+DECLSPEC SDL_Surface * SDLCALL
+SDL_CreateRGBSurface(Uint32 flags, int width, int height, int depth, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
+{
+    (void) flags; /* SDL3 removed the (unused) `flags` argument */
+    return SDL3_CreateRGBSurface(width, height, depth, Rmask, Gmask, Bmask, Amask);
+}
+
+DECLSPEC SDL_Surface * SDLCALL
+SDL_CreateRGBSurfaceWithFormat(Uint32 flags, int width, int height, int depth, Uint32 format)
+{
+    (void) flags; /* SDL3 removed the (unused) `flags` argument */
+    (void) depth; /* SDL3 removed the (unused) `depth` argument */
+    return SDL3_CreateRGBSurfaceWithFormat(width, height, format);
+}
+
+DECLSPEC SDL_Surface * SDLCALL
+SDL_CreateRGBSurfaceWithFormatFrom(void *pixels, int width, int height, int depth, int pitch, Uint32 format)
+{
+    (void) depth; /* SDL3 removed the (unused) `depth` argument */
+    return SDL3_CreateRGBSurfaceWithFormatFrom(pixels, width, height, pitch, format);
+}
+
 #ifdef __cplusplus
 }
 #endif
