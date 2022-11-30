@@ -1,0 +1,32 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  Build:
+    name: ${{ matrix.platform.name }}
+    runs-on: ${{ matrix.platform.os }}
+    strategy:
+      matrix:
+        platform:
+        - { name: Windows, os: windows-latest }
+        - { name: Linux,   os: ubuntu-20.04, flags: -GNinja }
+        - { name: MacOS,   os: macos-latest }
+    steps:
+    - name: Setup Linux dependencies
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install cmake ninja-build libgl1-mesa-dev libglu1-mesa-dev
+    - name: Get sdl2-compat sources
+      uses: actions/checkout@v2
+    - name: Get SDL3 headers
+      uses: actions/checkout@v2
+      with:
+        repository: libsdl-org/SDL
+        ref: main
+        path: SDL3
+    - name: Configure CMake
+      run: cmake -DSDL3_INCLUDE_DIR="${{ github.workspace }}/SDL3/include" -B build ${{ matrix.platform.flags }}
+    - name: Build
+      run: cmake --build build/
