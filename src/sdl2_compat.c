@@ -835,23 +835,27 @@ SDL_ConvertSurfaceFormat(SDL_Surface * src, Uint32 pixel_format, Uint32 flags)
 DECLSPEC SDL_Surface * SDLCALL
 SDL_CreateRGBSurface(Uint32 flags, int width, int height, int depth, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
 {
-    (void) flags; /* SDL3 removed the (unused) `flags` argument */
-    return SDL3_CreateRGBSurface(width, height, depth, Rmask, Gmask, Bmask, Amask);
+    return SDL3_CreateSurface(width, height,
+            SDL3_MasksToPixelFormatEnum(depth, Rmask, Gmask, Bmask, Amask));
 }
 
 DECLSPEC SDL_Surface * SDLCALL
 SDL_CreateRGBSurfaceWithFormat(Uint32 flags, int width, int height, int depth, Uint32 format)
 {
-    (void) flags; /* SDL3 removed the (unused) `flags` argument */
-    (void) depth; /* SDL3 removed the (unused) `depth` argument */
-    return SDL3_CreateRGBSurfaceWithFormat(width, height, format);
+    return SDL3_CreateSurface(width, height, format);
+}
+
+DECLSPEC SDL_Surface * SDLCALL
+SDL_CreateRGBSurfaceFrom(void *pixels, int width, int height, int depth, int pitch, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
+{
+    return SDL3_CreateSurfaceFrom(pixels, width, height, pitch,
+            SDL3_MasksToPixelFormatEnum(depth, Rmask, Gmask, Bmask, Amask));
 }
 
 DECLSPEC SDL_Surface * SDLCALL
 SDL_CreateRGBSurfaceWithFormatFrom(void *pixels, int width, int height, int depth, int pitch, Uint32 format)
 {
-    (void) depth; /* SDL3 removed the (unused) `depth` argument */
-    return SDL3_CreateRGBSurfaceWithFormatFrom(pixels, width, height, pitch, format);
+    return SDL3_CreateSurfaceFrom(pixels, width, height, pitch, format);
 }
 
 #ifdef __cplusplus
