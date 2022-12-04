@@ -200,8 +200,9 @@ if(CMAKE_C_COMPILER_ID MATCHES "Clang|GNU")
   endif()
 endif()
 
-# !!! FIXME: is this still necessary with SDL2?
-# just in case:
+# This isn't needed for compat libSDL2 who use SDL3 headers.
+# SDL2_test and SDL2_main (and the tes programs) still need
+# this, because they use SDL2 headers.
 check_include_file("immintrin.h" HAVE_IMMINTRIN_H)
 if(NOT HAVE_IMMINTRIN_H)
   set(EXTRA_CFLAGS "${EXTRA_CFLAGS} -DSDL_DISABLE_IMMINTRIN_H")

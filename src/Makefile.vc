@@ -8,7 +8,6 @@
 INCLUDES = -Iinclude
 
 CPPFLAGS = -DNDEBUG -DDLL_EXPORT
-CPPFLAGS = $(CPPFLAGS) -DSDL_DISABLE_IMMINTRIN_H
 
 CC = cl
 LD = link
@@ -38,5 +37,6 @@ $(DLLNAME): $(OBJ)
 	$(RC) /r /Fo$@ $<
 
 distclean: clean
+	-del $(DLLNAME) $(IMPNAME)
 clean:
-	-del dynapi\*.obj *.obj *.res *.exp *.manifest $(DLLNAME) $(IMPNAME)
+	-del dynapi\*.obj *.obj *.res *.exp *.manifest

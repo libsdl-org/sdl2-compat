@@ -15,7 +15,6 @@ endif
 LD = $(CC)
 
 CPPFLAGS = -DNDEBUG -D_THREAD_SAFE
-CPPFLAGS+= -DSDL_DISABLE_IMMINTRIN_H
 
 CFLAGS  = -fPIC -fvisibility=hidden -O3 -Wall
 LDFLAGS = -dynamiclib -Wl,-undefined,error -Wl,-single_module

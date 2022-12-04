@@ -7,7 +7,6 @@ CC = gcc
 LD = $(CC)
 
 CPPFLAGS = -DNDEBUG -D_THREAD_SAFE -D_REENTRANT
-CPPFLAGS+= -DSDL_DISABLE_IMMINTRIN_H
 
 CFLAGS  = -fPIC -fvisibility=hidden -O3 -Wall
 LDFLAGS = -shared -Wl,-soname,libSDL2-2.0.so.0
