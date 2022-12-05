@@ -611,6 +611,51 @@ SDL_LOG_IMPL(Critical, CRITICAL)
 #undef SDL_LOG_IMPL
 
 
+/* this enum changed in SDL3. */
+typedef enum
+{
+    SDL2_SYSWM_UNKNOWN,
+    SDL2_SYSWM_WINDOWS,
+    SDL2_SYSWM_X11,
+    SDL2_SYSWM_DIRECTFB,
+    SDL2_SYSWM_COCOA,
+    SDL2_SYSWM_UIKIT,
+    SDL2_SYSWM_WAYLAND,
+    SDL2_SYSWM_MIR,
+    SDL2_SYSWM_WINRT,
+    SDL2_SYSWM_ANDROID,
+    SDL2_SYSWM_VIVANTE,
+    SDL2_SYSWM_OS2,
+    SDL2_SYSWM_HAIKU,
+    SDL2_SYSWM_KMSDRM,
+    SDL2_SYSWM_RISCOS
+} SDL2_SYSWM_TYPE;
+
+#if 0
+static SDL2_SYSWM_TYPE
+SysWmType3to2(const SDL_SYSWM_TYPE typ3)
+{
+    switch (typ3) {
+        case SDL_SYSWM_UNKNOWN: return SDL2_SYSWM_UNKNOWN;
+        case SDL_SYSWM_ANDROID: return SDL2_SYSWM_ANDROID;
+        case SDL_SYSWM_COCOA: return SDL2_SYSWM_COCOA;
+        case SDL_SYSWM_HAIKU: return SDL2_SYSWM_HAIKU;
+        case SDL_SYSWM_KMSDRM: return SDL2_SYSWM_KMSDRM;
+        case SDL_SYSWM_RISCOS: return SDL2_SYSWM_RISCOS;
+        case SDL_SYSWM_UIKIT: return SDL2_SYSWM_UIKIT;
+        case SDL_SYSWM_VIVANTE: return SDL2_SYSWM_VIVANTE;
+        case SDL_SYSWM_WAYLAND: return SDL2_SYSWM_WAYLAND;
+        case SDL_SYSWM_WINDOWS: return SDL2_SYSWM_WINDOWS;
+        case SDL_SYSWM_WINRT: return SDL2_SYSWM_WINRT;
+        case SDL_SYSWM_X11: return SDL2_SYSWM_X11;
+        default: break;
+    }
+    return SDL2_SYSWM_UNKNOWN;
+}
+#endif
+
+
+/* stdio SDL_RWops was removed from SDL3, to prevent incompatible C runtime issues */
 #if !HAVE_STDIO_H
 DECLSPEC SDL_RWops * SDLCALL
 SDL_RWFromFP(void *fp, SDL_bool autoclose)
@@ -869,6 +914,14 @@ SDLCALL SDL_GetTicks64(void)
 {
     return SDL3_GetTicks();
 }
+
+DECLSPEC SDL_bool
+SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWMinfo *wminfo)
+{
+    SDL3_Unsupported();  /* !!! FIXME: write me. */
+    return SDL_FALSE;
+}
+
 
 #ifdef __cplusplus
 }

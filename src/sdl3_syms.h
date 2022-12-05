@@ -490,7 +490,7 @@ SDL3_SYM_PASSTHROUGH(int,LowerBlit,(SDL_Surface *a, SDL_Rect *b, SDL_Surface *c,
 SDL3_SYM_PASSTHROUGH(int,SoftStretch,(SDL_Surface *a, const SDL_Rect *b, SDL_Surface *c, const SDL_Rect *d),(a,b,c,d),return)
 SDL3_SYM_PASSTHROUGH(int,UpperBlitScaled,(SDL_Surface *a, const SDL_Rect *b, SDL_Surface *c, SDL_Rect *d),(a,b,c,d),return)
 SDL3_SYM_PASSTHROUGH(int,LowerBlitScaled,(SDL_Surface *a, SDL_Rect *b, SDL_Surface *c, SDL_Rect *d),(a,b,c,d),return)
-SDL3_SYM_PASSTHROUGH(SDL_bool,GetWindowWMInfo,(SDL_Window *a, SDL_SysWMinfo *b),(a,b),return)
+SDL3_SYM(SDL_bool,GetWindowWMInfo,(SDL_Window *a, SDL_SysWMinfo *b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(const char*,GetThreadName,(SDL_Thread *a),(a),return)
 SDL3_SYM_PASSTHROUGH(SDL_threadID,ThreadID,(void),(),return)
 SDL3_SYM_PASSTHROUGH(SDL_threadID,GetThreadID,(SDL_Thread *a),(a),return)
