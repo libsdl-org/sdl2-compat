@@ -623,8 +623,6 @@ SDL3_SYM_PASSTHROUGH(int,RenderSetIntegerScale,(SDL_Renderer *a, SDL_bool b),(a,
 SDL3_SYM_PASSTHROUGH(SDL_bool,RenderGetIntegerScale,(SDL_Renderer *a),(a),return)
 SDL3_SYM_PASSTHROUGH(Uint32,DequeueAudio,(SDL_AudioDeviceID a, void *b, Uint32 c),(a,b,c),return)
 SDL3_SYM_PASSTHROUGH(void,SetWindowResizable,(SDL_Window *a, SDL_bool b),(a,b),)
-SDL3_SYM(SDL_Surface*,CreateRGBSurfaceWithFormat,(int a, int b, Uint32 c),(a,b,c),return)
-SDL3_SYM(SDL_Surface*,CreateRGBSurfaceWithFormatFrom,(void *a, int b, int c, int d, Uint32 e),(a,b,c,d,e),return)
 SDL3_SYM_PASSTHROUGH(SDL_bool,GetHintBoolean,(const char *a, SDL_bool b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(Uint16,JoystickGetDeviceVendor,(int a),(a),return)
 SDL3_SYM_PASSTHROUGH(Uint16,JoystickGetDeviceProduct,(int a),(a),return)
