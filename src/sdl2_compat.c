@@ -858,6 +858,18 @@ SDL_CreateRGBSurfaceWithFormatFrom(void *pixels, int width, int height, int dept
     return SDL3_CreateSurfaceFrom(pixels, width, height, pitch, format);
 }
 
+DECLSPEC Uint32
+SDLCALL SDL_GetTicks(void)
+{
+    return (Uint32) SDL3_GetTicks();
+}
+
+DECLSPEC Uint64
+SDLCALL SDL_GetTicks64(void)
+{
+    return SDL_NS_TO_MS(SDL3_GetTicksNS());
+}
+
 #ifdef __cplusplus
 }
 #endif

@@ -500,7 +500,8 @@ SDL3_SYM_PASSTHROUGH(void,DetachThread,(SDL_Thread *a),(a),)
 SDL3_SYM_PASSTHROUGH(SDL_TLSID,TLSCreate,(void),(),return)
 SDL3_SYM_PASSTHROUGH(void*,TLSGet,(SDL_TLSID a),(a),return)
 SDL3_SYM_PASSTHROUGH(int,TLSSet,(SDL_TLSID a, const void *b, void (SDLCALL *c)(void*)),(a,b,c),return)
-SDL3_SYM_PASSTHROUGH(Uint32,GetTicks,(void),(),return)
+SDL3_SYM(Uint64,GetTicks,(void),(),return)
+SDL3_SYM(Uint64,GetTicksNS,(void),(),return)
 SDL3_SYM_PASSTHROUGH(Uint64,GetPerformanceCounter,(void),(),return)
 SDL3_SYM_PASSTHROUGH(Uint64,GetPerformanceFrequency,(void),(),return)
 SDL3_SYM_PASSTHROUGH(void,Delay,(Uint32 a),(a),)
@@ -866,7 +867,6 @@ SDL3_SYM_PASSTHROUGH(int,RenderSetVSync,(SDL_Renderer *a, int b),(a,b),return)
 SDL3_SYM_VARARGS(int,asprintf,(char **a, SDL_PRINTF_FORMAT_STRING const char *b, ...))
 SDL3_SYM_PASSTHROUGH(int,vasprintf,(char **a, const char *b, va_list c),(a,b,c),return)
 SDL3_SYM_PASSTHROUGH(void*,GetWindowICCProfile,(SDL_Window *a, size_t *b),(a,b),return)
-SDL3_SYM_PASSTHROUGH(Uint64,GetTicks64,(void),(),return)
 #ifdef __LINUX__
 SDL3_SYM_PASSTHROUGH(int,LinuxSetThreadPriorityAndPolicy,(Sint64 a, int b, int c),(a,b,c),return)
 #endif
@@ -945,10 +945,11 @@ SDL3_SYM_PASSTHROUGH(void,GetJoystickGUIDInfo,(SDL_JoystickGUID a, Uint16 *b, Ui
 SDL3_SYM_PASSTHROUGH(int,SetPrimarySelectionText,(const char *a),(a),return)
 SDL3_SYM_PASSTHROUGH(char*,GetPrimarySelectionText,(void),(),return)
 SDL3_SYM_PASSTHROUGH(SDL_bool,HasPrimarySelectionText,(void),(),return)
-SDL3_SYM_PASSTHROUGH(int,GameControllerGetSensorDataWithTimestamp,(SDL_GameController *a, SDL_SensorType b, Uint64 *c, float *d, int e),(a,b,c,d,e),return)
-SDL3_SYM_PASSTHROUGH(int,SensorGetDataWithTimestamp,(SDL_Sensor *a, Uint64 *b, float *c, int d),(a,b,c,d),return)
 SDL3_SYM_PASSTHROUGH(void,ResetHints,(void),(),)
 SDL3_SYM_PASSTHROUGH(char*,strcasestr,(const char *a, const char *b),(a,b),return)
+/* FIXME: IMPLEMENT AND THESE TWO: */
+SDL3_SYM_PASSTHROUGH(int,GameControllerGetSensorDataWithTimestamp,(SDL_GameController *a, SDL_SensorType b, Uint64 *c, float *d, int e),(a,b,c,d,e),return)
+SDL3_SYM_PASSTHROUGH(int,SensorGetDataWithTimestamp,(SDL_Sensor *a, Uint64 *b, float *c, int d),(a,b,c,d),return)
 
 #undef SDL3_SYM
 #undef SDL3_SYM_PASSTHROUGH
