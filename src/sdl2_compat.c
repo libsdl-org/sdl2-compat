@@ -981,18 +981,6 @@ SDL_SetError(const char *fmt, ...)
     }
 }
 
-DECLSPEC const char * SDLCALL
-SDL_GetError(void)
-{
-    /* !!! FIXME: can this actually happen? or did we always terminate the process in this case? */
-    if (SDL3_GetError == NULL) {
-        static const char noload_errstr[] = "SDL3 library isn't loaded.";
-        return noload_errstr;
-    }
-    return SDL3_GetError();
-}
-
-
 DECLSPEC int SDLCALL
 SDL_sscanf(const char *text, const char *fmt, ...)
 {
