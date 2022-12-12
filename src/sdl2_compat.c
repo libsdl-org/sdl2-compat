@@ -1528,12 +1528,14 @@ SDL_CreateRGBSurfaceWithFormatFrom(void *pixels, int width, int height, int dept
     return SDL3_CreateSurfaceFrom(pixels, width, height, pitch, format);
 }
 
+/* SDL_GetTicks is 64-bit in SDL3. Clamp it for SDL2. */
 DECLSPEC Uint32
 SDLCALL SDL_GetTicks(void)
 {
     return (Uint32)SDL3_GetTicks();
 }
 
+/* SDL_GetTicks64 is gone in SDL3 because SDL_GetTicks is 64-bit. */
 DECLSPEC Uint64
 SDLCALL SDL_GetTicks64(void)
 {
