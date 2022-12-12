@@ -942,6 +942,21 @@ SDL_JoystickGetBall(SDL_Joystick *joystick, int ball, int *dx, int *dy)
     return SDL3_SetError("Joystick only has 0 balls");
 }
 
+
+/* this API was removed in SDL3; use sensor event timestamps instead! */
+DECLSPEC int SDLCALL
+SDL_GameControllerGetSensorDataWithTimestamp(SDL_GameController *gamecontroller, SDL_SensorType type, Uint64 *timestamp, float *data, int num_values)
+{
+    return SDL3_Unsupported();  /* !!! FIXME: maybe try to track this from SDL3 events if something needs this? I can't imagine this was widely used. */
+}
+
+/* this API was removed in SDL3; use sensor event timestamps instead! */
+DECLSPEC int SDLCALL
+SDL_SensorGetDataWithTimestamp(SDL_Sensor *sensor, Uint64 *timestamp, float *data, int num_values)
+{
+    return SDL3_Unsupported();  /* !!! FIXME: maybe try to track this from SDL3 events if something needs this? I can't imagine this was widely used. */
+}
+
 #ifdef __cplusplus
 }
 #endif

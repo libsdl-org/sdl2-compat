@@ -944,9 +944,6 @@ SDL3_SYM_PASSTHROUGH(char*,GetPrimarySelectionText,(void),(),return)
 SDL3_SYM_PASSTHROUGH(SDL_bool,HasPrimarySelectionText,(void),(),return)
 SDL3_SYM_PASSTHROUGH(void,ResetHints,(void),(),)
 SDL3_SYM_PASSTHROUGH(char*,strcasestr,(const char *a, const char *b),(a,b),return)
-/* FIXME: IMPLEMENT AND THESE TWO: */
-SDL3_SYM_PASSTHROUGH(int,GameControllerGetSensorDataWithTimestamp,(SDL_GameController *a, SDL_SensorType b, Uint64 *c, float *d, int e),(a,b,c,d,e),return)
-SDL3_SYM_PASSTHROUGH(int,SensorGetDataWithTimestamp,(SDL_Sensor *a, Uint64 *b, float *c, int d),(a,b,c,d),return)
 
 #undef SDL3_SYM
 #undef SDL3_SYM_PASSTHROUGH
