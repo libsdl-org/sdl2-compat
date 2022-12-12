@@ -208,6 +208,10 @@ static char loaderror[256];
 #define DIRSEP "/"
 #endif
 
+/* init stuff we want to do after SDL3 is loaded but before the app has access to it. */
+static int SDL2Compat_InitOnStartup(void);
+
+
 static void *
 LoadSDL3Symbol(const char *fn, int *okay)
 {
@@ -401,6 +405,9 @@ LoadSDL3(void)
                     SDL2Compat_ApplyQuirks(force_x11);  /* Apply and maybe print a list of any enabled quirks. */
                 }
             }
+            if (okay) {
+                okay = SDL2Compat_InitOnStartup();
+            }
             if (!okay) {
                 UnloadSDL3();
             }
@@ -483,6 +490,447 @@ BOOL WINAPI _DllMainCRTStartup(HANDLE dllhandle, DWORD reason, LPVOID reserved)
 #else
     #error Please define an init procedure for your platform.
 #endif
+
+
+/* this enum changed in SDL3. */
+typedef enum
+{
+    SDL2_SYSWM_UNKNOWN,
+    SDL2_SYSWM_WINDOWS,
+    SDL2_SYSWM_X11,
+    SDL2_SYSWM_DIRECTFB,
+    SDL2_SYSWM_COCOA,
+    SDL2_SYSWM_UIKIT,
+    SDL2_SYSWM_WAYLAND,
+    SDL2_SYSWM_MIR,
+    SDL2_SYSWM_WINRT,
+    SDL2_SYSWM_ANDROID,
+    SDL2_SYSWM_VIVANTE,
+    SDL2_SYSWM_OS2,
+    SDL2_SYSWM_HAIKU,
+    SDL2_SYSWM_KMSDRM,
+    SDL2_SYSWM_RISCOS
+} SDL2_SYSWM_TYPE;
+
+/* Events changed in SDL3; notably, the `timestamp` field moved from
+   32 bit milliseconds to 64-bit nanoseconds, and the padding of the union
+   changed, so all the SDL2 structs have to be reproduced here. */
+
+/* Note that SDL_EventType _currently_ lines up (although some types have
+   come and gone in SDL3, so we don't manage an SDL2 copy here atm. */
+
+typedef struct SDL2_CommonEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+} SDL2_CommonEvent;
+
+/**
+ *  \brief Display state change event data (event.display.*)
+ */
+typedef struct SDL2_DisplayEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    Uint32 display;
+    Uint8 event;
+    Uint8 padding1;
+    Uint8 padding2;
+    Uint8 padding3;
+    Sint32 data1;
+} SDL2_DisplayEvent;
+
+typedef struct SDL2_WindowEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    Uint32 windowID;
+    Uint8 event;
+    Uint8 padding1;
+    Uint8 padding2;
+    Uint8 padding3;
+    Sint32 data1;
+    Sint32 data2;
+} SDL2_WindowEvent;
+
+typedef struct SDL2_KeyboardEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    Uint32 windowID;
+    Uint8 state;
+    Uint8 repeat;
+    Uint8 padding2;
+    Uint8 padding3;
+    SDL_Keysym keysym;
+} SDL2_KeyboardEvent;
+
+#define SDL2_TEXTEDITINGEVENT_TEXT_SIZE (32)
+typedef struct SDL2_TextEditingEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    Uint32 windowID;
+    char text[SDL2_TEXTEDITINGEVENT_TEXT_SIZE];
+    Sint32 start;
+    Sint32 length;
+} SDL2_TextEditingEvent;
+
+typedef struct SDL2_TextEditingExtEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    Uint32 windowID;
+    char* text;
+    Sint32 start;
+    Sint32 length;
+} SDL2_TextEditingExtEvent;
+
+#define SDL2_TEXTINPUTEVENT_TEXT_SIZE (32)
+typedef struct SDL2_TextInputEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    Uint32 windowID;
+    char text[SDL2_TEXTINPUTEVENT_TEXT_SIZE];
+} SDL2_TextInputEvent;
+
+typedef struct SDL2_MouseMotionEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    Uint32 windowID;
+    Uint32 which;
+    Uint32 state;
+    Sint32 x;
+    Sint32 y;
+    Sint32 xrel;
+    Sint32 yrel;
+} SDL2_MouseMotionEvent;
+
+typedef struct SDL2_MouseButtonEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    Uint32 windowID;
+    Uint32 which;
+    Uint8 button;
+    Uint8 state;
+    Uint8 clicks;
+    Uint8 padding1;
+    Sint32 x;
+    Sint32 y;
+} SDL2_MouseButtonEvent;
+
+typedef struct SDL2_MouseWheelEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    Uint32 windowID;
+    Uint32 which;
+    Sint32 x;
+    Sint32 y;
+    Uint32 direction;
+    float preciseX;
+    float preciseY;
+    Sint32 mouseX;
+    Sint32 mouseY;
+} SDL2_MouseWheelEvent;
+
+typedef struct SDL2_JoyAxisEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    SDL_JoystickID which;
+    Uint8 axis;
+    Uint8 padding1;
+    Uint8 padding2;
+    Uint8 padding3;
+    Sint16 value;
+    Uint16 padding4;
+} SDL2_JoyAxisEvent;
+
+typedef struct SDL2_JoyBallEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    SDL_JoystickID which;
+    Uint8 ball;
+    Uint8 padding1;
+    Uint8 padding2;
+    Uint8 padding3;
+    Sint16 xrel;
+    Sint16 yrel;
+} SDL2_JoyBallEvent;
+
+typedef struct SDL2_JoyHatEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    SDL_JoystickID which;
+    Uint8 hat;
+    Uint8 value;
+    Uint8 padding1;
+    Uint8 padding2;
+} SDL2_JoyHatEvent;
+
+typedef struct SDL2_JoyButtonEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    SDL_JoystickID which;
+    Uint8 button;
+    Uint8 state;
+    Uint8 padding1;
+    Uint8 padding2;
+} SDL2_JoyButtonEvent;
+
+typedef struct SDL2_JoyDeviceEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    Sint32 which;
+} SDL2_JoyDeviceEvent;
+
+typedef struct SDL2_JoyBatteryEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    SDL_JoystickID which;
+    SDL_JoystickPowerLevel level;
+} SDL2_JoyBatteryEvent;
+
+typedef struct SDL2_ControllerAxisEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    SDL_JoystickID which;
+    Uint8 axis;
+    Uint8 padding1;
+    Uint8 padding2;
+    Uint8 padding3;
+    Sint16 value;
+    Uint16 padding4;
+} SDL2_ControllerAxisEvent;
+
+typedef struct SDL2_ControllerButtonEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    SDL_JoystickID which;
+    Uint8 button;
+    Uint8 state;
+    Uint8 padding1;
+    Uint8 padding2;
+} SDL2_ControllerButtonEvent;
+
+typedef struct SDL2_ControllerDeviceEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    Sint32 which;
+} SDL2_ControllerDeviceEvent;
+
+typedef struct SDL2_ControllerTouchpadEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    SDL_JoystickID which;
+    Sint32 touchpad;
+    Sint32 finger;
+    float x;
+    float y;
+    float pressure;
+} SDL2_ControllerTouchpadEvent;
+
+typedef struct SDL2_ControllerSensorEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    SDL_JoystickID which;
+    Sint32 sensor;
+    float data[3];
+    Uint64 timestamp_us;
+} SDL2_ControllerSensorEvent;
+
+typedef struct SDL2_AudioDeviceEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    Uint32 which;
+    Uint8 iscapture;
+    Uint8 padding1;
+    Uint8 padding2;
+    Uint8 padding3;
+} SDL2_AudioDeviceEvent;
+
+typedef struct SDL2_TouchFingerEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    SDL_TouchID touchId;
+    SDL_FingerID fingerId;
+    float x;
+    float y;
+    float dx;
+    float dy;
+    float pressure;
+    Uint32 windowID;
+} SDL2_TouchFingerEvent;
+
+typedef struct SDL2_MultiGestureEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    SDL_TouchID touchId;
+    float dTheta;
+    float dDist;
+    float x;
+    float y;
+    Uint16 numFingers;
+    Uint16 padding;
+} SDL2_MultiGestureEvent;
+
+typedef struct SDL2_DollarGestureEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    SDL_TouchID touchId;
+    SDL_GestureID gestureId;
+    Uint32 numFingers;
+    float error;
+    float x;
+    float y;
+} SDL2_DollarGestureEvent;
+
+typedef struct SDL2_DropEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    char *file;
+    Uint32 windowID;
+} SDL2_DropEvent;
+
+typedef struct SDL2_SensorEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    Sint32 which;
+    float data[6];
+    Uint64 timestamp_us;
+} SDL2_SensorEvent;
+
+typedef struct SDL2_QuitEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+} SDL2_QuitEvent;
+
+typedef struct SDL2_OSEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+} SDL2_OSEvent;
+
+typedef struct SDL2_UserEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    Uint32 windowID;
+    Sint32 code;
+    void *data1;
+    void *data2;
+} SDL2_UserEvent;
+
+struct SDL2_SysWMmsg;
+typedef struct SDL2_SysWMmsg SDL2_SysWMmsg;
+
+typedef struct SDL2_SysWMEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    SDL2_SysWMmsg *msg;
+} SDL2_SysWMEvent;
+
+typedef union SDL2_Event
+{
+    Uint32 type;
+    SDL2_CommonEvent common;
+    SDL2_DisplayEvent display;
+    SDL2_WindowEvent window;
+    SDL2_KeyboardEvent key;
+    SDL2_TextEditingEvent edit;
+    SDL2_TextEditingExtEvent editExt;
+    SDL2_TextInputEvent text;
+    SDL2_MouseMotionEvent motion;
+    SDL2_MouseButtonEvent button;
+    SDL2_MouseWheelEvent wheel;
+    SDL2_JoyAxisEvent jaxis;
+    SDL2_JoyBallEvent jball;
+    SDL2_JoyHatEvent jhat;
+    SDL2_JoyButtonEvent jbutton;
+    SDL2_JoyDeviceEvent jdevice;
+    SDL2_JoyBatteryEvent jbattery;
+    SDL2_ControllerAxisEvent caxis;
+    SDL2_ControllerButtonEvent cbutton;
+    SDL2_ControllerDeviceEvent cdevice;
+    SDL2_ControllerTouchpadEvent ctouchpad;
+    SDL2_ControllerSensorEvent csensor;
+    SDL2_AudioDeviceEvent adevice;
+    SDL2_SensorEvent sensor;
+    SDL2_QuitEvent quit;
+    SDL2_UserEvent user;
+    SDL2_SysWMEvent syswm;
+    SDL2_TouchFingerEvent tfinger;
+    SDL2_MultiGestureEvent mgesture;
+    SDL2_DollarGestureEvent dgesture;
+    SDL2_DropEvent drop;
+    Uint8 padding[sizeof(void *) <= 8 ? 56 : sizeof(void *) == 16 ? 64 : 3 * sizeof(void *)];
+} SDL2_Event;
+
+/* Make sure we haven't broken binary compatibility */
+SDL_COMPILE_TIME_ASSERT(SDL2_Event, sizeof(SDL2_Event) == sizeof(((SDL2_Event *)NULL)->padding));
+
+typedef int (SDLCALL *SDL2_EventFilter) (void *userdata, SDL2_Event * event);
+
+typedef struct EventFilterWrapperData
+{
+    SDL2_EventFilter filter2;
+    void *userdata;
+    struct EventFilterWrapperData *next;
+} EventFilterWrapperData;
+
+
+/* Some SDL2 state we need to keep... */
+
+static SDL2_EventFilter EventFilter2 = NULL;
+static void *EventFilterUserData2 = NULL;
+static SDL_mutex *EventWatchListMutex = NULL;
+static EventFilterWrapperData *EventWatchers2 = NULL;
+
+
+/* Functions! */
+
+static int SDLCALL EventFilter3to2(void *userdata, SDL_Event *event3);
+
+/* this stuff _might_ move to SDL_Init later */
+static int
+SDL2Compat_InitOnStartup(void)
+{
+    int okay = 1;
+    EventWatchListMutex = SDL3_CreateMutex();
+    if (!EventWatchListMutex) {
+        okay = 0;
+    } else {
+        SDL3_SetEventFilter(EventFilter3to2, NULL);
+    }
+
+    if (!okay) {
+        strcpy_fn(loaderror, "Failed to initialize sdl2-compat library.");
+    }
+    return okay;
+}
+
 
 /* obviously we have to override this so we don't report ourselves as SDL3. */
 DECLSPEC void SDLCALL
@@ -611,26 +1059,6 @@ SDL_LOG_IMPL(Critical, CRITICAL)
 #undef SDL_LOG_IMPL
 
 
-/* this enum changed in SDL3. */
-typedef enum
-{
-    SDL2_SYSWM_UNKNOWN,
-    SDL2_SYSWM_WINDOWS,
-    SDL2_SYSWM_X11,
-    SDL2_SYSWM_DIRECTFB,
-    SDL2_SYSWM_COCOA,
-    SDL2_SYSWM_UIKIT,
-    SDL2_SYSWM_WAYLAND,
-    SDL2_SYSWM_MIR,
-    SDL2_SYSWM_WINRT,
-    SDL2_SYSWM_ANDROID,
-    SDL2_SYSWM_VIVANTE,
-    SDL2_SYSWM_OS2,
-    SDL2_SYSWM_HAIKU,
-    SDL2_SYSWM_KMSDRM,
-    SDL2_SYSWM_RISCOS
-} SDL2_SYSWM_TYPE;
-
 #if 0
 static SDL2_SYSWM_TYPE
 SysWmType3to2(const SDL_SYSWM_TYPE typ3)
@@ -653,6 +1081,215 @@ SysWmType3to2(const SDL_SYSWM_TYPE typ3)
     return SDL2_SYSWM_UNKNOWN;
 }
 #endif
+
+
+/* (current) strategy for SDL_Events:
+   in sdl12-compat, we built our own event queue, so when the SDL2 queue is pumped, we
+   took the events we cared about and added them to the sdl12-compat queue, and otherwise
+   just cleared the real SDL2 queue when we were able.
+   for sdl2-compat, we're going to try to use the SDL3 queue directly, and simply convert
+   individual event structs when the SDL2-based app wants to consume or produce events.
+   The queue has gotten to be significantly more complex in the SDL2 era, so rather than
+   try to reproduce this (or outright copy this) and work in parallel with SDL3, we'll just
+   try to work _with_ it. */
+
+/* Note: as events change type (like the SDL2 window event is broken up into several events), we'll need to
+   convert and push the SDL2 equivalent into the queue, but we don't care about new SDL3 event types, as
+   any app could get an unknown event type anyhow, as SDL development progressed or a library registered
+   a user event, etc, so we don't bother filtering new SDL3 types out. */
+
+static SDL2_Event *
+Event3to2(const SDL_Event *event3, SDL2_Event *event2)
+{
+#if 0
+    if (event3->type == SDL_SYSWMEVENT) {
+        return SDL_FALSE;  /* !!! FIXME: figure out what to do with this. */
+    }
+#endif
+
+    /* currently everything _mostly_ matches up between SDL2 and SDL3, but this might
+       drift more as SDL3 development continues. */
+
+    /* for now, the timestamp field has grown in size (and precision), everything after it is currently the same, minus padding at the end, so bump the fields down. */
+    event2->common.type = event3->type;
+    event2->common.timestamp = (Uint32) SDL_NS_TO_MS(event3->common.timestamp);
+    SDL3_memcpy((&event2->common) + 1, (&event3->common) + 1, sizeof (SDL2_Event) - sizeof (SDL2_CommonEvent));
+    return event2;
+}
+
+static SDL_Event *
+Event2to3(const SDL2_Event *event2, SDL_Event *event3)
+{
+#if 0
+    if (event2->type == SDL_SYSWMEVENT) {
+        return SDL_FALSE;  /* !!! FIXME: figure out what to do with this. */
+    }
+#endif
+
+    /* currently everything _mostly_ matches up between SDL2 and SDL3, but this might
+       drift more as SDL3 development continues. */
+
+    /* for now, the timestamp field has grown in size (and precision), everything after it is currently the same, minus padding at the end, so bump the fields down. */
+    event3->common.type = event2->type;
+    event3->common.timestamp = (Uint64) SDL_MS_TO_NS(event2->common.timestamp);
+    SDL3_memcpy((&event3->common) + 1, (&event2->common) + 1, sizeof (SDL_Event) - sizeof (SDL_CommonEvent));
+    return event3;
+}
+
+static int SDLCALL
+EventFilter3to2(void *userdata, SDL_Event *event3)
+{
+    SDL2_Event event2;  /* note that event filters do not receive events as const! So we have to convert or copy it for each one! */
+    if (EventFilter2) {
+        return EventFilter2(EventFilterUserData2, Event3to2(event3, &event2));
+    }
+
+    /* !!! FIXME: eventually, push new events when we need to convert something, like toplevel SDL3 events generating the SDL2 SDL_WINDOWEVENT. */
+
+    if (EventWatchers2 != NULL) {
+        EventFilterWrapperData *i;
+        SDL3_LockMutex(EventWatchListMutex);
+        for (i = EventWatchers2; i != NULL; i = i->next) {
+            i->filter2(i->userdata, Event3to2(event3, &event2));
+        }
+        SDL3_UnlockMutex(EventWatchListMutex);
+    }
+    return 1;
+}
+
+
+DECLSPEC void SDLCALL
+SDL_SetEventFilter(SDL2_EventFilter filter2, void *userdata)
+{
+    EventFilter2 = filter2;
+    EventFilterUserData2 = userdata;
+}
+
+DECLSPEC SDL_bool SDLCALL
+SDL_GetEventFilter(SDL2_EventFilter *filter2, void **userdata)
+{
+    if (!EventFilter2) {
+        return SDL_FALSE;
+    }
+
+    if (filter2) {
+        *filter2 = EventFilter2;
+    }
+
+    if (userdata) {
+        *userdata = EventFilterUserData2;
+    }
+
+    return SDL_TRUE;
+}
+
+DECLSPEC int SDLCALL
+SDL_PeepEvents(SDL2_Event *events2, int numevents, SDL_eventaction action, Uint32 minType, Uint32 maxType)
+{
+    SDL_Event *events3 = (SDL_Event *) SDL3_malloc(numevents * sizeof (SDL_Event));
+    int retval = 0;
+    int i;
+
+    if (!events3) {
+        return SDL_OutOfMemory();
+    } else if (action == SDL_ADDEVENT) {
+        for (i = 0; i < numevents; i++) {
+            Event2to3(&events2[i], &events3[i]);
+        }
+        retval = SDL3_PeepEvents(events3, numevents, action, minType, maxType);
+    } else {  /* SDL2 assumes it's SDL_PEEKEVENT if it isn't SDL_ADDEVENT or SDL_GETEVENT. */
+        retval = SDL3_PeepEvents(events3, numevents, action, minType, maxType);
+        for (i = 0; i < retval; i++) {
+            Event3to2(&events3[i], &events2[i]);
+        }
+    }
+
+    SDL_free(events3);
+    return retval;
+}
+
+DECLSPEC int SDLCALL
+SDL_WaitEventTimeout(SDL2_Event *event2, int timeout)
+{
+    SDL_Event event3;
+    const int retval = SDL3_WaitEventTimeout(&event3, timeout);
+    if (retval == 1) {
+        Event3to2(&event3, event2);
+    }
+    return retval;
+}
+
+DECLSPEC int SDLCALL
+SDL_PollEvent(SDL2_Event *event2)
+{
+    return SDL_WaitEventTimeout(event2, 0);
+}
+
+DECLSPEC int SDLCALL
+SDL_WaitEvent(SDL2_Event *event2)
+{
+    return SDL_WaitEventTimeout(event2, -1);
+}
+
+DECLSPEC int SDLCALL
+SDL_PushEvent(SDL2_Event *event2)
+{
+    SDL_Event event3;
+    return SDL3_PushEvent(Event2to3(event2, &event3));
+}
+
+DECLSPEC void SDLCALL
+SDL_AddEventWatch(SDL2_EventFilter filter2, void *userdata)
+{
+    /* we set up an SDL3 event filter to manage things already; we will also use it to call all added SDL2 event watchers. Put this new one in that list. */
+    EventFilterWrapperData *wrapperdata = (EventFilterWrapperData *) SDL_malloc(sizeof (EventFilterWrapperData));
+    if (!wrapperdata) {
+        return;  /* oh well. */
+    }
+    wrapperdata->filter2 = filter2;
+    wrapperdata->userdata = userdata;
+    SDL3_LockMutex(EventWatchListMutex);
+    wrapperdata->next = EventWatchers2;
+    EventWatchers2 = wrapperdata;
+    SDL3_UnlockMutex(EventWatchListMutex);
+}
+
+DECLSPEC void SDLCALL
+SDL_DelEventWatch(SDL2_EventFilter filter2, void *userdata)
+{
+    EventFilterWrapperData *i;
+    EventFilterWrapperData *prev = NULL;
+    SDL3_LockMutex(EventWatchListMutex);
+    for (i = EventWatchers2; i != NULL; i = i->next) {
+        if ((i->filter2 == filter2) && (i->userdata == userdata)) {
+            if (prev) {
+                SDL_assert(i != EventWatchers2);
+                prev->next = i->next;
+            } else {
+                SDL_assert(i == EventWatchers2);
+                EventWatchers2 = i->next;
+            }
+            SDL3_free(i);
+            break;
+        }
+    }
+    SDL3_UnlockMutex(EventWatchListMutex);
+}
+
+static int SDLCALL
+EventFilterWrapper3to2(void *userdata, SDL_Event *event)
+{
+    const EventFilterWrapperData *wrapperdata = (const EventFilterWrapperData *) userdata;
+    SDL2_Event event2;
+    return wrapperdata->filter2(wrapperdata->userdata, Event3to2(event, &event2));
+}
+
+DECLSPEC void SDLCALL
+SDL_FilterEvents(SDL2_EventFilter filter2, void *userdata)
+{
+    EventFilterWrapperData wrapperdata = { filter2, userdata, NULL };
+    SDL3_FilterEvents(EventFilterWrapper3to2, &wrapperdata);
+}
 
 
 /* stdio SDL_RWops was removed from SDL3, to prevent incompatible C runtime issues */
