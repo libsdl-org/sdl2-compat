@@ -922,6 +922,25 @@ SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWMinfo *wminfo)
     return SDL_FALSE;
 }
 
+/* this API was removed from SDL3 since nothing supported it. Just report 0. */
+DECLSPEC int SDLCALL
+SDL_JoystickNumBalls(SDL_Joystick *joystick)
+{
+    if (SDL3_JoystickNumAxes(joystick) == -1) {
+        return -1;  /* just to call JOYSTICK_CHECK_MAGIC on `joystick`. */
+    }
+    return 0;
+}
+
+/* this API was removed from SDL3 since nothing supported it. Just report failure. */
+DECLSPEC int SDLCALL
+SDL_JoystickGetBall(SDL_Joystick *joystick, int ball, int *dx, int *dy)
+{
+    if (SDL3_JoystickNumAxes(joystick) == -1) {
+        return -1;  /* just to call JOYSTICK_CHECK_MAGIC on `joystick`. */
+    }
+    return SDL3_SetError("Joystick only has 0 balls");
+}
 
 #ifdef __cplusplus
 }
