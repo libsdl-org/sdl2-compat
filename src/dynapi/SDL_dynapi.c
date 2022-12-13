@@ -27,6 +27,10 @@
 
 #define SDL_DYNAMIC_API_ENVVAR "SDL_DYNAMIC_API"
 
+/* sdl2-compat: this type was removed from SDL3, but we need it for SDL2 APIs exported here. */
+typedef Sint64 SDL_GestureID;
+
+
 #if defined(__OS2__)
 #define INCL_DOS
 #define INCL_DOSERRORS

@@ -175,10 +175,6 @@ SDL3_SYM_PASSTHROUGH(const char*,GameControllerGetStringForButton,(SDL_GameContr
 SDL3_SYM_PASSTHROUGH(SDL_GameControllerButtonBind,GameControllerGetBindForButton,(SDL_GameController *a, SDL_GameControllerButton b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(Uint8,GameControllerGetButton,(SDL_GameController *a, SDL_GameControllerButton b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(void,GameControllerClose,(SDL_GameController *a),(a),)
-SDL3_SYM_PASSTHROUGH(int,RecordGesture,(SDL_TouchID a),(a),return)
-SDL3_SYM_PASSTHROUGH(int,SaveAllDollarTemplates,(SDL_RWops *a),(a),return)
-SDL3_SYM_PASSTHROUGH(int,SaveDollarTemplate,(SDL_GestureID a, SDL_RWops *b),(a,b),return)
-SDL3_SYM_PASSTHROUGH(int,LoadDollarTemplates,(SDL_TouchID a, SDL_RWops *b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(int,NumHaptics,(void),(),return)
 SDL3_SYM_PASSTHROUGH(const char*,HapticName,(int a),(a),return)
 SDL3_SYM_PASSTHROUGH(SDL_Haptic*,HapticOpen,(int a),(a),return)
@@ -944,6 +940,7 @@ SDL3_SYM_PASSTHROUGH(char*,GetPrimarySelectionText,(void),(),return)
 SDL3_SYM_PASSTHROUGH(SDL_bool,HasPrimarySelectionText,(void),(),return)
 SDL3_SYM_PASSTHROUGH(void,ResetHints,(void),(),)
 SDL3_SYM_PASSTHROUGH(char*,strcasestr,(const char *a, const char *b),(a,b),return)
+SDL3_SYM_PASSTHROUGH(Uint8,GetEventState,(Uint32 a),(a),return)
 
 #undef SDL3_SYM
 #undef SDL3_SYM_PASSTHROUGH
