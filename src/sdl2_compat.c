@@ -2267,6 +2267,87 @@ static void GestureProcessEvent(const SDL_Event *event3)
     }
 }
 
+
+DECLSPEC int SDLCALL
+SDL_GetRenderDriverInfo(int index, SDL_RendererInfo * info)
+{
+    const char *name = SDL3_GetRenderDriver(index);
+    if (!name) {
+        return -1;  /* assume SDL3_GetRenderDriver set the SDL error. */
+    }
+
+    SDL_zerop(info);
+    info->name = name;
+
+    /* these are the values that SDL2 returns. */
+    if ((SDL3_strcmp(name, "opengl") == 0) || (SDL3_strcmp(name, "opengles2") == 0)) {
+        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE;
+        info->num_texture_formats = 4;
+        info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
+        info->texture_formats[1] = SDL_PIXELFORMAT_ABGR8888;
+        info->texture_formats[2] = SDL_PIXELFORMAT_RGB888;
+        info->texture_formats[3] = SDL_PIXELFORMAT_BGR888;
+    } else if (SDL3_strcmp(name, "opengles") == 0) {
+        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
+        info->num_texture_formats = 1;
+        info->texture_formats[0] = SDL_PIXELFORMAT_ABGR8888;
+    } else if (SDL3_strcmp(name, "direct3d") == 0) {
+        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE;
+        info->num_texture_formats = 1;
+        info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
+    } else if (SDL3_strcmp(name, "direct3d11") == 0) {
+        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE;
+        info->num_texture_formats = 6;
+        info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
+        info->texture_formats[1] = SDL_PIXELFORMAT_RGB888;
+        info->texture_formats[2] = SDL_PIXELFORMAT_YV12;
+        info->texture_formats[3] = SDL_PIXELFORMAT_IYUV;
+        info->texture_formats[4] = SDL_PIXELFORMAT_NV12;
+        info->texture_formats[5] = SDL_PIXELFORMAT_NV21;
+    } else if (SDL3_strcmp(name, "direct3d12") == 0) {
+        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE;
+        info->num_texture_formats = 6;
+        info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
+        info->texture_formats[1] = SDL_PIXELFORMAT_RGB888;
+        info->texture_formats[2] = SDL_PIXELFORMAT_YV12;
+        info->texture_formats[3] = SDL_PIXELFORMAT_IYUV;
+        info->texture_formats[4] = SDL_PIXELFORMAT_NV12;
+        info->texture_formats[5] = SDL_PIXELFORMAT_NV21;
+        info->max_texture_width = 16384;
+        info->max_texture_height = 16384;
+    } else if (SDL3_strcmp(name, "metal") == 0) {
+        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE;
+        info->num_texture_formats = 6;
+        info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
+        info->texture_formats[1] = SDL_PIXELFORMAT_ABGR8888;
+        info->texture_formats[2] = SDL_PIXELFORMAT_YV12;
+        info->texture_formats[3] = SDL_PIXELFORMAT_IYUV;
+        info->texture_formats[4] = SDL_PIXELFORMAT_NV12;
+        info->texture_formats[5] = SDL_PIXELFORMAT_NV21;
+    } else if (SDL3_strcmp(name, "software") == 0) {
+        info->flags = SDL_RENDERER_SOFTWARE | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE;
+    } else {  /* this seems reasonable if something currently-unknown shows up in SDL3. */
+        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE;
+        info->num_texture_formats = 1;
+        info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
+    }
+    return 0;
+}
+
+/* Second parameter changed from an index to a string in SDL3. */
+DECLSPEC SDL_Renderer *SDLCALL
+SDL_CreateRenderer(SDL_Window *window, int index, Uint32 flags)
+{
+    const char *name = NULL;
+    if (index != -1) {
+        name = SDL3_GetRenderDriver(index);
+        if (!name) {
+            return NULL;  /* assume SDL3_GetRenderDriver set the SDL error. */
+        }
+    }
+    return SDL3_CreateRenderer(window, name, flags);
+}
+
 #ifdef __cplusplus
 }
 #endif

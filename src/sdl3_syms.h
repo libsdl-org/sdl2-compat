@@ -312,9 +312,9 @@ SDL3_SYM_PASSTHROUGH(void,UnionRect,(const SDL_Rect *a, const SDL_Rect *b, SDL_R
 SDL3_SYM_PASSTHROUGH(SDL_bool,EnclosePoints,(const SDL_Point *a, int b, const SDL_Rect *c, SDL_Rect *d),(a,b,c,d),return)
 SDL3_SYM_PASSTHROUGH(SDL_bool,IntersectRectAndLine,(const SDL_Rect *a, int *b, int *c, int *d, int *e),(a,b,c,d,e),return)
 SDL3_SYM_PASSTHROUGH(int,GetNumRenderDrivers,(void),(),return)
-SDL3_SYM_PASSTHROUGH(int,GetRenderDriverInfo,(int a, SDL_RendererInfo *b),(a,b),return)
+SDL3_SYM(const char *,GetRenderDriver,(int a),(a),return);
 SDL3_SYM_PASSTHROUGH(int,CreateWindowAndRenderer,(int a, int b, Uint32 c, SDL_Window **d, SDL_Renderer **e),(a,b,c,d,e),return)
-SDL3_SYM_PASSTHROUGH(SDL_Renderer*,CreateRenderer,(SDL_Window *a, int b, Uint32 c),(a,b,c),return)
+SDL3_SYM(SDL_Renderer*,CreateRenderer,(SDL_Window *a, const char *b, Uint32 c),(a,b,c),return)
 SDL3_SYM_PASSTHROUGH(SDL_Renderer*,CreateSoftwareRenderer,(SDL_Surface *a),(a),return)
 SDL3_SYM_PASSTHROUGH(SDL_Renderer*,GetRenderer,(SDL_Window *a),(a),return)
 SDL3_SYM_PASSTHROUGH(int,GetRendererInfo,(SDL_Renderer *a, SDL_RendererInfo *b),(a,b),return)
