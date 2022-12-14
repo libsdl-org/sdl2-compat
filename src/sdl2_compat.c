@@ -497,6 +497,39 @@ BOOL WINAPI _DllMainCRTStartup(HANDLE dllhandle, DWORD reason, LPVOID reserved)
 #endif
 
 
+typedef struct SDL2_RWops
+{
+    Sint64 (SDLCALL * size) (struct SDL2_RWops * context);
+    Sint64 (SDLCALL * seek) (struct SDL2_RWops * context, Sint64 offset, int whence);
+    size_t (SDLCALL * read) (struct SDL2_RWops * context, void *ptr, size_t size, size_t maxnum);
+    size_t (SDLCALL * write) (struct SDL2_RWops * context, const void *ptr, size_t size, size_t num);
+    int (SDLCALL * close) (struct SDL2_RWops * context);
+    Uint32 type;
+    union
+    {
+        struct
+        {
+            SDL_bool autoclose;
+            void *fp;
+        } stdio;
+        struct
+        {
+            void *data1;
+            void *data2;
+        } unknown;
+        struct
+        {
+            SDL_RWops *rwops;
+        } sdl3;
+        struct
+        {
+            void *ptrs[3];  /* just so this matches SDL2's struct size. */
+        } match_sdl2;
+    } hidden;
+} SDL2_RWops;
+
+
+
 /* this enum changed in SDL3. */
 typedef enum
 {
@@ -1295,9 +1328,140 @@ SDL_FilterEvents(SDL2_EventFilter filter2, void *userdata)
 }
 
 
+/* The SDL3 version of SDL_RWops changed, so we need to convert when necessary. */
+
+DECLSPEC SDL2_RWops *SDLCALL
+SDL_AllocRW(void)
+{
+    SDL2_RWops *area2 = (SDL2_RWops *)SDL3_malloc(sizeof *area2);
+    if (area2 == NULL) {
+        SDL_OutOfMemory();
+    } else {
+        area2->type = SDL_RWOPS_UNKNOWN;
+    }
+    return area2;
+}
+
+DECLSPEC void SDLCALL
+SDL_FreeRW(SDL2_RWops *area2)
+{
+    SDL3_free(area2);
+}
+
+static Sint64 SDLCALL RWops3to2_size(struct SDL2_RWops *rwops2) { return SDL3_RWsize(rwops2->hidden.sdl3.rwops); }
+static Sint64 SDLCALL RWops3to2_seek(struct SDL2_RWops *rwops2, Sint64 offset, int whence) { return SDL3_RWseek(rwops2->hidden.sdl3.rwops, offset, whence); }
+
+static size_t SDLCALL RWops3to2_read(struct SDL2_RWops *rwops2, void *ptr, size_t size, size_t maxnum)
+{
+    const Sint64 br = SDL3_RWread(rwops2->hidden.sdl3.rwops, ptr, ((Sint64) size) * ((Sint64) maxnum));
+    return (br <= 0) ? 0 : (size_t) br;
+}
+
+static size_t SDLCALL RWops3to2_write(struct SDL2_RWops *rwops2, const void *ptr, size_t size, size_t maxnum)
+{
+    const Sint64 bw = SDL3_RWwrite(rwops2->hidden.sdl3.rwops, ptr, ((Sint64) size) * ((Sint64) maxnum));
+    return (bw <= 0) ? 0 : (size_t) bw;
+}
+
+static int SDLCALL RWops3to2_close(struct SDL2_RWops *rwops2)
+{
+    const int retval = SDL3_RWclose(rwops2->hidden.sdl3.rwops);
+    SDL_FreeRW(rwops2);  /* !!! FIXME: _should_ we free this if SDL3_RWclose failed? */
+    return retval;
+}
+
+static SDL2_RWops *RWops3to2(SDL_RWops *rwops3)
+{
+    SDL2_RWops *rwops2 = NULL;
+    if (rwops3) {
+        rwops2 = SDL_AllocRW();
+        if (!rwops2) {
+            SDL3_RWclose(rwops3);
+            return NULL;
+        }
+
+        SDL_zerop(rwops2);
+        rwops2->size = RWops3to2_size;
+        rwops2->seek = RWops3to2_seek;
+        rwops2->read = RWops3to2_read;
+        rwops2->write = RWops3to2_write;
+        rwops2->close = RWops3to2_close;
+        rwops2->type = rwops3->type;  /* these match up for now. */
+        rwops2->hidden.sdl3.rwops = rwops3;
+    }
+    return rwops2;
+}
+
+DECLSPEC SDL2_RWops *SDLCALL
+SDL_RWFromFile(const char *file, const char *mode)
+{
+    return RWops3to2(SDL3_RWFromFile(file, mode));
+}
+
+DECLSPEC SDL2_RWops *SDLCALL
+SDL_RWFromMem(void *mem, int size)
+{
+    return RWops3to2(SDL3_RWFromMem(mem, size));
+}
+
+DECLSPEC SDL2_RWops *SDLCALL
+SDL_RWFromConstMem(const void *mem, int size)
+{
+    return RWops3to2(SDL3_RWFromConstMem(mem, size));
+}
+
+DECLSPEC Sint64 SDLCALL SDL_RWsize(SDL2_RWops *rwops2)
+{
+    return rwops2->size(rwops2);
+}
+
+DECLSPEC Sint64 SDLCALL
+SDL_RWseek(SDL2_RWops *rwops2, Sint64 offset, int whence)
+{
+    return rwops2->seek(rwops2, offset, whence);
+}
+
+DECLSPEC Sint64 SDLCALL
+SDL_RWtell(SDL2_RWops *rwops2)
+{
+    return rwops2->seek(rwops2, 0, RW_SEEK_CUR);
+}
+
+DECLSPEC size_t SDLCALL
+SDL_RWread(SDL2_RWops *rwops2, void *ptr, size_t size, size_t maxnum)
+{
+    return rwops2->read(rwops2, ptr, size, maxnum);
+}
+
+DECLSPEC size_t SDLCALL
+SDL_RWwrite(SDL2_RWops *rwops2, const void *ptr, size_t size, size_t num)
+{
+    return rwops2->write(rwops2, ptr, size, num);
+}
+
+DECLSPEC int SDLCALL
+SDL_RWclose(SDL2_RWops *rwops2)
+{
+    return rwops2->close(rwops2);
+}
+
+DECLSPEC Uint8 SDLCALL SDL_ReadU8(SDL2_RWops *rwops2) { Uint8 x = 0; SDL_RWread(rwops2, &x, sizeof (x), 1); return x; }
+DECLSPEC size_t SDLCALL SDL_WriteU8(SDL2_RWops *rwops2, Uint8 x) { return SDL_RWwrite(rwops2, &x, sizeof(x), 1); }
+
+#define DORWOPSENDIAN(order, bits) \
+    DECLSPEC Uint##bits SDLCALL SDL_Read##order##bits(SDL2_RWops *rwops2) { Uint##bits x = 0; SDL_RWread(rwops2, &x, sizeof (x), 1); return SDL_Swap##order##bits(x); } \
+    DECLSPEC size_t SDL_Write##order##bits(SDL2_RWops *rwops2, Uint##bits x) { x = SDL_Swap##order##bits(x); return SDL_RWwrite(rwops2, &x, sizeof(x), 1); }
+DORWOPSENDIAN(LE, 16)
+DORWOPSENDIAN(BE, 16)
+DORWOPSENDIAN(LE, 32)
+DORWOPSENDIAN(BE, 32)
+DORWOPSENDIAN(LE, 64)
+DORWOPSENDIAN(BE, 64)
+#undef DORWOPSENDIAN
+
 /* stdio SDL_RWops was removed from SDL3, to prevent incompatible C runtime issues */
 #if !HAVE_STDIO_H
-DECLSPEC SDL_RWops * SDLCALL
+DECLSPEC SDL2_RWops * SDLCALL
 SDL_RWFromFP(void *fp, SDL_bool autoclose)
 {
     SDL3_SetError("SDL not compiled with stdio support");
@@ -1312,24 +1476,24 @@ problem.  --ryan. */
 /* Functions to read/write stdio file pointers */
 
 static Sint64 SDLCALL
-stdio_size(SDL_RWops * context)
+stdio_size(SDL2_RWops *rwops2)
 {
     Sint64 pos, size;
 
-    pos = SDL3_RWseek(context, 0, RW_SEEK_CUR);
+    pos = SDL_RWseek(rwops2, 0, RW_SEEK_CUR);
     if (pos < 0) {
         return -1;
     }
-    size = SDL3_RWseek(context, 0, RW_SEEK_END);
+    size = SDL_RWseek(rwops2, 0, RW_SEEK_END);
 
-    SDL3_RWseek(context, pos, RW_SEEK_SET);
+    SDL_RWseek(rwops2, pos, RW_SEEK_SET);
     return size;
 }
 
 static Sint64 SDLCALL
-stdio_seek(SDL_RWops * context, Sint64 offset, int whence)
+stdio_seek(SDL2_RWops *rwops2, Sint64 offset, int whence)
 {
-    FILE *fp = (FILE *) context->hidden.stdio.fp;
+    FILE *fp = (FILE *) rwops2->hidden.stdio.fp;
     int stdiowhence;
 
     switch (whence) {
@@ -1363,9 +1527,9 @@ stdio_seek(SDL_RWops * context, Sint64 offset, int whence)
 }
 
 static size_t SDLCALL
-stdio_read(SDL_RWops * context, void *ptr, size_t size, size_t maxnum)
+stdio_read(SDL2_RWops *rwops2, void *ptr, size_t size, size_t maxnum)
 {
-    FILE *fp = (FILE *) context->hidden.stdio.fp;
+    FILE *fp = (FILE *) rwops2->hidden.stdio.fp;
     size_t nread;
 
     nread = fread(ptr, size, maxnum, fp);
@@ -1376,9 +1540,9 @@ stdio_read(SDL_RWops * context, void *ptr, size_t size, size_t maxnum)
 }
 
 static size_t SDLCALL
-stdio_write(SDL_RWops * context, const void *ptr, size_t size, size_t num)
+stdio_write(SDL2_RWops *rwops2, const void *ptr, size_t size, size_t num)
 {
-    FILE *fp = (FILE *) context->hidden.stdio.fp;
+    FILE *fp = (FILE *) rwops2->hidden.stdio.fp;
     size_t nwrote;
 
     nwrote = fwrite(ptr, size, num, fp);
@@ -1389,24 +1553,24 @@ stdio_write(SDL_RWops * context, const void *ptr, size_t size, size_t num)
 }
 
 static int SDLCALL
-stdio_close(SDL_RWops * context)
+stdio_close(SDL2_RWops *rwops2)
 {
     int status = 0;
-    if (context) {
-        if (context->hidden.stdio.autoclose) {
-            if (fclose((FILE *)context->hidden.stdio.fp) != 0) {
+    if (rwops2) {
+        if (rwops2->hidden.stdio.autoclose) {
+            if (fclose((FILE *)rwops2->hidden.stdio.fp) != 0) {
                 status = SDL3_Error(SDL_EFWRITE);
             }
         }
-        SDL3_FreeRW(context);
+        SDL_FreeRW(rwops2);
     }
     return status;
 }
 
-DECLSPEC SDL_RWops * SDLCALL
+DECLSPEC SDL2_RWops * SDLCALL
 SDL_RWFromFP(FILE *fp, SDL_bool autoclose)
 {
-    SDL_RWops *rwops = SDL3_AllocRW();
+    SDL2_RWops *rwops = SDL_AllocRW();
     if (rwops != NULL) {
         rwops->size = stdio_size;
         rwops->seek = stdio_seek;
@@ -1420,6 +1584,142 @@ SDL_RWFromFP(FILE *fp, SDL_bool autoclose)
     return rwops;
 }
 #endif
+
+
+static Sint64 SDLCALL RWops2to3_size(struct SDL_RWops *rwops3) { return SDL_RWsize((SDL2_RWops *) rwops3->hidden.unknown.data1); }
+static Sint64 SDLCALL RWops2to3_seek(struct SDL_RWops *rwops3, Sint64 offset, int whence) { return SDL_RWseek((SDL2_RWops *) rwops3->hidden.unknown.data1, offset, whence); }
+
+static Sint64 SDLCALL RWops2to3_read(struct SDL_RWops *rwops3, void *ptr, Sint64 size)
+{
+    const size_t br = SDL_RWread((SDL2_RWops *) rwops3->hidden.unknown.data1, ptr, 1, (size_t) size);
+    return (Sint64) br;
+}
+
+static Sint64 SDLCALL RWops2to3_write(struct SDL_RWops *rwops3, const void *ptr, Sint64 size)
+{
+    const size_t bw = SDL_RWwrite((SDL2_RWops *) rwops3->hidden.unknown.data1, ptr, 1, (size_t) size);
+    return (bw == 0) ? -1 : (Sint64) bw;
+}
+
+static int SDLCALL RWops2to3_close(struct SDL_RWops *rwops3)
+{
+    const int retval = SDL_RWclose((SDL2_RWops *) rwops3->hidden.unknown.data1);
+    SDL3_FreeRW(rwops3);  /* !!! FIXME: _should_ we free this if SDL_RWclose failed? */
+    return retval;
+}
+
+static SDL_RWops *RWops2to3(SDL2_RWops *rwops2)
+{
+    SDL_RWops *rwops3 = NULL;
+    if (rwops2) {
+        rwops3 = SDL3_AllocRW();
+        if (!rwops3) {
+            SDL_RWclose(rwops2);
+            return NULL;
+        }
+
+        SDL_zerop(rwops3);
+        rwops3->size = RWops2to3_size;
+        rwops3->seek = RWops2to3_seek;
+        rwops3->read = RWops2to3_read;
+        rwops3->write = RWops2to3_write;
+        rwops3->close = RWops2to3_close;
+        rwops3->type = rwops3->type;  /* these match up for now. */
+        rwops3->hidden.unknown.data1 = rwops2;
+    }
+    return rwops3;
+}
+
+
+DECLSPEC void *SDLCALL
+SDL_LoadFile_RW(SDL2_RWops *rwops2, size_t *datasize, int freesrc)
+{
+    void *retval = NULL;
+    SDL_RWops *rwops3 = RWops2to3(rwops2);
+    if (rwops3) {
+        retval = SDL3_LoadFile_RW(rwops3, datasize, freesrc);
+        if (!freesrc) {
+            SDL3_FreeRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
+        }
+    } else {
+        if (freesrc) {
+            SDL_RWclose(rwops2);
+        }
+    }
+    return retval;
+}
+
+DECLSPEC SDL_AudioSpec *SDLCALL
+SDL_LoadWAV_RW(SDL2_RWops *rwops2, int freesrc, SDL_AudioSpec *spec, Uint8 **audio_buf, Uint32 *audio_len)
+{
+    SDL_AudioSpec *retval = NULL;
+    SDL_RWops *rwops3 = RWops2to3(rwops2);
+    if (rwops3) {
+        retval = SDL3_LoadWAV_RW(rwops3, freesrc, spec, audio_buf, audio_len);
+        if (!freesrc) {
+            SDL3_FreeRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
+        }
+    } else {
+        if (freesrc) {
+            SDL_RWclose(rwops2);
+        }
+    }
+    return retval;
+}
+
+DECLSPEC SDL_Surface *SDLCALL
+SDL_LoadBMP_RW(SDL2_RWops *rwops2, int freesrc)
+{
+    SDL_Surface *retval = NULL;
+    SDL_RWops *rwops3 = RWops2to3(rwops2);
+    if (rwops3) {
+        retval = SDL3_LoadBMP_RW(rwops3, freesrc);
+        if (!freesrc) {
+            SDL3_FreeRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
+        }
+    } else {
+        if (freesrc) {
+            SDL_RWclose(rwops2);
+        }
+    }
+    return retval;
+}
+
+DECLSPEC int SDLCALL
+SDL_SaveBMP_RW(SDL_Surface *surface, SDL2_RWops *rwops2, int freedst)
+{
+    int retval = -1;
+    SDL_RWops *rwops3 = RWops2to3(rwops2);
+    if (rwops3) {
+        retval = SDL3_SaveBMP_RW(surface, rwops3, freedst);
+        if (!freedst) {
+            SDL3_FreeRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
+        }
+    } else {
+        if (freedst) {
+            SDL_RWclose(rwops2);
+        }
+    }
+    return retval;
+}
+
+DECLSPEC int SDLCALL
+SDL_GameControllerAddMappingsFromRW(SDL2_RWops *rwops2, int freerw)
+{
+    int retval = -1;
+    SDL_RWops *rwops3 = RWops2to3(rwops2);
+    if (rwops3) {
+        retval = SDL3_GameControllerAddMappingsFromRW(rwops3, freerw);
+        if (!freerw) {
+            SDL3_FreeRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
+        }
+    } else {
+        if (freerw) {
+            SDL_RWclose(rwops2);
+        }
+    }
+    return retval;
+}
 
 
 /* All gamma stuff was removed from SDL3 because it affects the whole system
@@ -1735,17 +2035,17 @@ static unsigned long GestureHashDollar(SDL_FPoint *points)
     return hash;
 }
 
-static int GestureSaveTemplate(GestureDollarTemplate *templ, SDL_RWops *dst)
+static int GestureSaveTemplate(GestureDollarTemplate *templ, SDL2_RWops *dst)
 {
     if (dst == NULL) {
         return 0;
     }
 
     /* No Longer storing the Hash, rehash on load */
-    /* if (SDL_RWops.write(dst, &(templ->hash), sizeof(templ->hash), 1) != 1) return 0; */
+    /* if (SDL2_RWops.write(dst, &(templ->hash), sizeof(templ->hash), 1) != 1) return 0; */
 
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
-    if (SDL3_RWwrite(dst, templ->path, sizeof(templ->path[0]), GESTURE_DOLLARNPOINTS) != GESTURE_DOLLARNPOINTS) {
+    if (SDL_RWwrite(dst, templ->path, sizeof(templ->path[0]), GESTURE_DOLLARNPOINTS) != GESTURE_DOLLARNPOINTS) {
         return 0;
     }
 #else
@@ -1758,7 +2058,7 @@ static int GestureSaveTemplate(GestureDollarTemplate *templ, SDL_RWops *dst)
             p->y = SDL_SwapFloatLE(p->y);
         }
 
-        if (SDL3_RWwrite(dst, copy.path, sizeof(copy.path[0]), GESTURE_DOLLARNPOINTS) != GESTURE_DOLLARNPOINTS) {
+        if (SDL_RWwrite(dst, copy.path, sizeof(copy.path[0]), GESTURE_DOLLARNPOINTS) != GESTURE_DOLLARNPOINTS) {
             return 0;
         }
     }
@@ -1768,7 +2068,7 @@ static int GestureSaveTemplate(GestureDollarTemplate *templ, SDL_RWops *dst)
 }
 
 DECLSPEC int SDLCALL
-SDL_SaveAllDollarTemplates(SDL_RWops *dst)
+SDL_SaveAllDollarTemplates(SDL2_RWops *dst)
 {
     int i, j, rtrn = 0;
     for (i = 0; i < GestureNumTouches; i++) {
@@ -1781,7 +2081,7 @@ SDL_SaveAllDollarTemplates(SDL_RWops *dst)
 }
 
 DECLSPEC int SDLCALL
-SDL_SaveDollarTemplate(SDL_GestureID gestureId, SDL_RWops *dst)
+SDL_SaveDollarTemplate(SDL_GestureID gestureId, SDL2_RWops *dst)
 {
     int i, j;
     for (i = 0; i < GestureNumTouches; i++) {
@@ -1840,7 +2140,7 @@ static int GestureAddDollar(GestureTouch *inTouch, SDL_FPoint *path)
 }
 
 DECLSPEC int SDLCALL
-SDL_LoadDollarTemplates(SDL_TouchID touchId, SDL_RWops *src)
+SDL_LoadDollarTemplates(SDL_TouchID touchId, SDL2_RWops *src)
 {
     int i, loaded = 0;
     GestureTouch *touch = NULL;
@@ -1861,7 +2161,7 @@ SDL_LoadDollarTemplates(SDL_TouchID touchId, SDL_RWops *src)
     while (1) {
         GestureDollarTemplate templ;
 
-        if (SDL3_RWread(src, templ.path, sizeof(templ.path[0]), GESTURE_DOLLARNPOINTS) < GESTURE_DOLLARNPOINTS) {
+        if (SDL_RWread(src, templ.path, sizeof(templ.path[0]), GESTURE_DOLLARNPOINTS) < GESTURE_DOLLARNPOINTS) {
             if (loaded == 0) {
                 return SDL3_SetError("could not read any dollar gesture from rwops");
             }
