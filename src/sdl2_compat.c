@@ -1424,7 +1424,7 @@ SDL_RWseek(SDL2_RWops *rwops2, Sint64 offset, int whence)
 DECLSPEC Sint64 SDLCALL
 SDL_RWtell(SDL2_RWops *rwops2)
 {
-    return rwops2->seek(rwops2, 0, RW_SEEK_CUR);
+    return rwops2->seek(rwops2, 0, SDL_RW_SEEK_CUR);
 }
 
 DECLSPEC size_t SDLCALL
@@ -1480,13 +1480,13 @@ stdio_size(SDL2_RWops *rwops2)
 {
     Sint64 pos, size;
 
-    pos = SDL_RWseek(rwops2, 0, RW_SEEK_CUR);
+    pos = SDL_RWseek(rwops2, 0, SDL_RW_SEEK_CUR);
     if (pos < 0) {
         return -1;
     }
-    size = SDL_RWseek(rwops2, 0, RW_SEEK_END);
+    size = SDL_RWseek(rwops2, 0, SDL_RW_SEEK_END);
 
-    SDL_RWseek(rwops2, pos, RW_SEEK_SET);
+    SDL_RWseek(rwops2, pos, SDL_RW_SEEK_SET);
     return size;
 }
 
@@ -1497,13 +1497,13 @@ stdio_seek(SDL2_RWops *rwops2, Sint64 offset, int whence)
     int stdiowhence;
 
     switch (whence) {
-    case RW_SEEK_SET:
+    case SDL_RW_SEEK_SET:
         stdiowhence = SEEK_SET;
         break;
-    case RW_SEEK_CUR:
+    case SDL_RW_SEEK_CUR:
         stdiowhence = SEEK_CUR;
         break;
-    case RW_SEEK_END:
+    case SDL_RW_SEEK_END:
         stdiowhence = SEEK_END;
         break;
     default:
