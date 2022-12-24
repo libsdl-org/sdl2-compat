@@ -558,6 +558,11 @@ typedef enum
 /* Note that SDL_EventType _currently_ lines up; although some types have
    come and gone in SDL3, so we don't manage an SDL2 copy here atm. */
 
+/* these were replaced in SDL3; all their subevents became top-level events. */
+/* These values are reserved in SDL3's SDL_EventType enum to help sdl2-compat. */
+#define SDL2_DISPLAYEVENT 0x150
+#define SDL2_WINDOWEVENT 0x200
+
 typedef struct SDL2_CommonEvent
 {
     Uint32 type;
@@ -1169,6 +1174,13 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
 
 static void GestureProcessEvent(const SDL_Event *event3);
 
+DECLSPEC int SDLCALL
+SDL_PushEvent(SDL2_Event *event2)
+{
+    SDL_Event event3;
+    return SDL3_PushEvent(Event2to3(event2, &event3));
+}
+
 static int SDLCALL
 EventFilter3to2(void *userdata, SDL_Event *event3)
 {
@@ -1177,10 +1189,9 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
     GestureProcessEvent(event3);  /* this might need to generate new gesture events from touch input. */
 
     if (EventFilter2) {
+        /* !!! FIXME: this needs to not return if the filter gives its blessing, as we still have more to do. */
         return EventFilter2(EventFilterUserData2, Event3to2(event3, &event2));
     }
-
-    /* !!! FIXME: eventually, push new events when we need to convert something, like toplevel SDL3 events generating the SDL2 SDL_WINDOWEVENT. */
 
     if (EventWatchers2 != NULL) {
         EventFilterWrapperData *i;
@@ -1190,6 +1201,63 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
         }
         SDL3_UnlockMutex(EventWatchListMutex);
     }
+
+    /* push new events when we need to convert something, like toplevel SDL3 events generating the SDL2 SDL_WINDOWEVENT. */
+    
+    switch (event3->type) {
+        /* display events moved to the top level in SDL3. */
+        case SDL_DISPLAYEVENT_ORIENTATION:
+        case SDL_DISPLAYEVENT_CONNECTED:
+        case SDL_DISPLAYEVENT_DISCONNECTED:
+            if (SDL3_GetEventState(SDL2_DISPLAYEVENT) == SDL_ENABLE) {
+                event2.display.type = SDL2_DISPLAYEVENT;
+                event2.display.timestamp = (Uint32) SDL_NS_TO_MS(event3->display.timestamp);
+                event2.display.display = event3->display.display;
+                event2.display.event = (Uint8) ((event3->type - ((Uint32) SDL_DISPLAYEVENT_ORIENTATION)) + 1);
+                event2.display.padding1 = 0;
+                event2.display.padding2 = 0;
+                event2.display.padding3 = 0;
+                event2.display.data1 = event3->display.data1;
+                SDL_PushEvent(&event2);
+            }
+            break;
+
+        /* window events moved to the top level in SDL3. */
+        case SDL_WINDOWEVENT_SHOWN:
+        case SDL_WINDOWEVENT_HIDDEN:
+        case SDL_WINDOWEVENT_EXPOSED:
+        case SDL_WINDOWEVENT_MOVED:
+        case SDL_WINDOWEVENT_RESIZED:
+        case SDL_WINDOWEVENT_SIZE_CHANGED:
+        case SDL_WINDOWEVENT_MINIMIZED:
+        case SDL_WINDOWEVENT_MAXIMIZED:
+        case SDL_WINDOWEVENT_RESTORED:
+        case SDL_WINDOWEVENT_ENTER:
+        case SDL_WINDOWEVENT_LEAVE:
+        case SDL_WINDOWEVENT_FOCUS_GAINED:
+        case SDL_WINDOWEVENT_FOCUS_LOST:
+        case SDL_WINDOWEVENT_CLOSE:
+        case SDL_WINDOWEVENT_TAKE_FOCUS:
+        case SDL_WINDOWEVENT_HIT_TEST:
+        case SDL_WINDOWEVENT_ICCPROF_CHANGED:
+        case SDL_WINDOWEVENT_DISPLAY_CHANGED:
+            if (SDL3_GetEventState(SDL2_WINDOWEVENT) == SDL_ENABLE) {
+                event2.window.type = SDL2_WINDOWEVENT;
+                event2.window.timestamp = (Uint32) SDL_NS_TO_MS(event3->window.timestamp);
+                event2.window.windowID = event3->window.windowID;
+                event2.window.event = (Uint8) ((event3->type - ((Uint32) SDL_WINDOWEVENT_SHOWN)) + 1);
+                event2.window.padding1 = 0;
+                event2.window.padding2 = 0;
+                event2.window.padding3 = 0;
+                event2.window.data1 = event3->window.data1;
+                event2.window.data2 = event3->window.data2;
+                SDL_PushEvent(&event2);
+            }
+            break;
+
+        default: break;
+    }
+
     return 1;
 }
 
@@ -1265,13 +1333,6 @@ DECLSPEC int SDLCALL
 SDL_WaitEvent(SDL2_Event *event2)
 {
     return SDL_WaitEventTimeout(event2, -1);
-}
-
-DECLSPEC int SDLCALL
-SDL_PushEvent(SDL2_Event *event2)
-{
-    SDL_Event event3;
-    return SDL3_PushEvent(Event2to3(event2, &event3));
 }
 
 DECLSPEC void SDLCALL
