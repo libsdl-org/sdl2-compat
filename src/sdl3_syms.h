@@ -61,7 +61,7 @@ SDL3_SYM_PASSTHROUGH(int,Direct3D9GetAdapterIndex,(int a),(a),return)
 SDL3_SYM_PASSTHROUGH(IDirect3DDevice9*,RenderGetD3D9Device,(SDL_Renderer *a),(a),return)
 #endif
 
-#ifdef __IPHONEOS__
+#ifdef __IOS__
 SDL3_SYM_PASSTHROUGH(int,iPhoneSetAnimationCallback,(SDL_Window *a, int b, void (SDLCALL *c)(void *), void *d),(a,b,c,d),return)
 SDL3_SYM_PASSTHROUGH(void,iPhoneSetEventPump,(SDL_bool a),(a),)
 #endif
@@ -738,7 +738,7 @@ SDL3_SYM_PASSTHROUGH(int,RenderFillRectsF,(SDL_Renderer *a, const SDL_FRect *b, 
 SDL3_SYM_PASSTHROUGH(int,RenderCopyF,(SDL_Renderer *a, SDL_Texture *b, const SDL_Rect *c, const SDL_FRect *d),(a,b,c,d),return)
 SDL3_SYM_PASSTHROUGH(int,RenderCopyExF,(SDL_Renderer *a, SDL_Texture *b, const SDL_Rect *c, const SDL_FRect *d, const double e, const SDL_FPoint *f, const SDL_RendererFlip g),(a,b,c,d,e,f,g),return)
 SDL3_SYM_PASSTHROUGH(SDL_TouchDeviceType,GetTouchDeviceType,(SDL_TouchID a),(a),return)
-#ifdef __IPHONEOS__
+#ifdef __IOS__
 SDL3_SYM_PASSTHROUGH(int,UIKitRunApp,(int a, char *b, SDL_main_func c),(a,b,c),return)
 #endif
 SDL3_SYM_PASSTHROUGH(size_t,SIMDGetAlignment,(void),(),return)
@@ -772,7 +772,7 @@ SDL3_SYM_PASSTHROUGH(void,OnApplicationWillResignActive,(void),(),)
 SDL3_SYM_PASSTHROUGH(void,OnApplicationDidEnterBackground,(void),(),)
 SDL3_SYM_PASSTHROUGH(void,OnApplicationWillEnterForeground,(void),(),)
 SDL3_SYM_PASSTHROUGH(void,OnApplicationDidBecomeActive,(void),(),)
-#ifdef __IPHONEOS__
+#ifdef __IOS__
 SDL3_SYM_PASSTHROUGH(void,OnApplicationDidChangeStatusBarOrientation,(void),(),)
 #endif
 #ifdef __ANDROID__
