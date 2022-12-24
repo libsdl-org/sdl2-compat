@@ -2764,12 +2764,12 @@ SDL_Has3DNow(void)
     if (SDL3_HasMMX()) {
         int a, b, c, d;
         cpuid(0x80000000, a, b, c, d);
-        if (a >= 0x80000001) {
+        if ((unsigned int)a >= 0x80000001) {
             cpuid(0x80000001, a, b, c, d);
-            return d & 0x80000000;
+            return (d & 0x80000000) ? SDL_TRUE : SDL_FALSE;
         }
     }
-    return 0;
+    return SDL_FALSE;
 }
 
 #ifdef __cplusplus
