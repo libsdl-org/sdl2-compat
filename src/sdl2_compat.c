@@ -2648,6 +2648,69 @@ SDL_CreateRenderer(SDL_Window *window, int index, Uint32 flags)
     return SDL3_CreateRenderer(window, name, flags);
 }
 
+
+/* SDL3 doesn't have 3dNow. */
+#if defined(__GNUC__) && defined(__i386__)
+#define cpuid(func, a, b, c, d) \
+    __asm__ __volatile__ ( \
+"        pushl %%ebx        \n" \
+"        xorl %%ecx,%%ecx   \n" \
+"        cpuid              \n" \
+"        movl %%ebx, %%esi  \n" \
+"        popl %%ebx         \n" : \
+            "=a" (a), "=S" (b), "=c" (c), "=d" (d) : "a" (func))
+#elif defined(__GNUC__) && defined(__x86_64__)
+#define cpuid(func, a, b, c, d) \
+    __asm__ __volatile__ ( \
+"        pushq %%rbx        \n" \
+"        xorq %%rcx,%%rcx   \n" \
+"        cpuid              \n" \
+"        movq %%rbx, %%rsi  \n" \
+"        popq %%rbx         \n" : \
+            "=a" (a), "=S" (b), "=c" (c), "=d" (d) : "a" (func))
+#elif (defined(_MSC_VER) && defined(_M_IX86)) || defined(__WATCOMC__)
+#define cpuid(func, a, b, c, d) \
+    __asm { \
+        __asm mov eax, func \
+        __asm xor ecx, ecx \
+        __asm cpuid \
+        __asm mov a, eax \
+        __asm mov b, ebx \
+        __asm mov c, ecx \
+        __asm mov d, edx \
+}
+#elif defined(_MSC_VER) && defined(_M_X64)
+#include <intrin.h>
+#define cpuid(func, a, b, c, d) \
+{ \
+    int CPUInfo[4]; \
+    __cpuid(CPUInfo, func); \
+    a = CPUInfo[0]; \
+    b = CPUInfo[1]; \
+    c = CPUInfo[2]; \
+    d = CPUInfo[3]; \
+}
+#else
+#define cpuid(func, a, b, c, d) \
+    do { a = b = c = d = 0; (void) a; (void) b; (void) c; (void) d; } while (0)
+#endif
+
+DECLSPEC SDL_bool SDLCALL
+SDL_Has3DNow(void)
+{
+    /* if there's no MMX, presumably there's no 3DNow. */
+    /* This lets SDL3 deal with the check for CPUID support _at all_ and eliminates non-AMD CPUs. */
+    if (SDL3_HasMMX()) {
+        int a, b, c, d;
+        cpuid(0x80000000, a, b, c, d);
+        if (a >= 0x80000001) {
+            cpuid(0x80000001, a, b, c, d);
+            return d & 0x80000000;
+        }
+    }
+    return 0;
+}
+
 #ifdef __cplusplus
 }
 #endif
