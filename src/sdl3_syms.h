@@ -107,7 +107,6 @@ SDL3_SYM_PASSTHROUGH(SDL_AudioStatus,GetAudioDeviceStatus,(SDL_AudioDeviceID a),
 SDL3_SYM_PASSTHROUGH(void,PauseAudio,(int a),(a),)
 SDL3_SYM_PASSTHROUGH(void,PauseAudioDevice,(SDL_AudioDeviceID a, int b),(a,b),)
 SDL3_SYM(SDL_AudioSpec*,LoadWAV_RW,(SDL_RWops *a, int b, SDL_AudioSpec *c, Uint8 **d, Uint32 *e),(a,b,c,d,e),return)
-SDL3_SYM_PASSTHROUGH(void,FreeWAV,(Uint8 *a),(a),)
 SDL3_SYM_PASSTHROUGH(int,BuildAudioCVT,(SDL_AudioCVT *a, SDL_AudioFormat b, Uint8 c, int d, SDL_AudioFormat e, Uint8 f, int g),(a,b,c,d,e,f,g),return)
 SDL3_SYM_PASSTHROUGH(int,ConvertAudio,(SDL_AudioCVT *a),(a),return)
 SDL3_SYM_PASSTHROUGH(void,MixAudio,(Uint8 *a, const Uint8 *b, Uint32 c, int d),(a,b,c,d),)
