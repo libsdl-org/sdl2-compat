@@ -1203,7 +1203,7 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
     }
 
     /* push new events when we need to convert something, like toplevel SDL3 events generating the SDL2 SDL_WINDOWEVENT. */
-    
+
     switch (event3->type) {
         /* display events moved to the top level in SDL3. */
         case SDL_DISPLAYEVENT_ORIENTATION:
@@ -2709,6 +2709,35 @@ SDL_CreateRenderer(SDL_Window *window, int index, Uint32 flags)
     return SDL3_CreateRenderer(window, name, flags);
 }
 
+DECLSPEC int SDLCALL
+SDL_AudioInit(const char *driver_name)
+{
+    if (driver_name) {
+        SDL_SetHint("SDL_AUDIODRIVER", driver_name);
+    }
+    SDL_InitSubSystem(SDL_INIT_AUDIO);
+}
+
+DECLSPEC void SDLCALL
+SDL_AudioQuit(void)
+{
+    SDL_QuitSubSystem(SDL_INIT_AUDIO);
+}
+
+DECLSPEC int SDLCALL
+SDL_VideoInit(const char *driver_name)
+{
+    if (driver_name) {
+        SDL_SetHint("SDL_VIDEODRIVER", driver_name);
+    }
+    SDL_InitSubSystem(SDL_INIT_VIDEO);
+}
+
+DECLSPEC void SDLCALL
+SDL_VideoQuit(void)
+{
+    SDL_QuitSubSystem(SDL_INIT_VIDEO);
+}
 
 /* SDL3 doesn't have 3dNow. */
 #if defined(__GNUC__) && defined(__i386__)
