@@ -103,7 +103,6 @@
 #define SDL_PauseAudio IGNORE_THIS_VERSION_OF_SDL_PauseAudio
 #define SDL_PauseAudioDevice IGNORE_THIS_VERSION_OF_SDL_PauseAudioDevice
 #define SDL_LoadWAV_RW IGNORE_THIS_VERSION_OF_SDL_LoadWAV_RW
-#define SDL_FreeWAV IGNORE_THIS_VERSION_OF_SDL_FreeWAV
 #define SDL_BuildAudioCVT IGNORE_THIS_VERSION_OF_SDL_BuildAudioCVT
 #define SDL_ConvertAudio IGNORE_THIS_VERSION_OF_SDL_ConvertAudio
 #define SDL_NewAudioStream IGNORE_THIS_VERSION_OF_SDL_NewAudioStream
@@ -1231,10 +1230,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_LoadWAV_RW
 #undef SDL_LoadWAV_RW
-#endif
-
-#ifdef SDL_FreeWAV
-#undef SDL_FreeWAV
 #endif
 
 #ifdef SDL_BuildAudioCVT
