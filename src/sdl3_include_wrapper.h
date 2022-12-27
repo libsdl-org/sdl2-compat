@@ -25,8 +25,8 @@
  *  the SDL2 signatures. Ugly business.
  */
 
-#ifndef _INCL_SDL3_INCLUDE_WRAPPER_H_
-#define _INCL_SDL3_INCLUDE_WRAPPER_H_
+#ifndef INCL_SDL3_INCLUDE_WRAPPER_H
+#define INCL_SDL3_INCLUDE_WRAPPER_H
 
 #define SDL_GetVersion IGNORE_THIS_VERSION_OF_SDL_GetVersion
 #define SDL_GetRevision IGNORE_THIS_VERSION_OF_SDL_GetRevision
@@ -475,10 +475,6 @@
 #define SDL_Metal_DestroyView IGNORE_THIS_VERSION_OF_SDL_Metal_DestroyView
 #define SDL_Metal_GetLayer IGNORE_THIS_VERSION_OF_SDL_Metal_GetLayer
 #define SDL_Metal_GetDrawableSize IGNORE_THIS_VERSION_OF_SDL_Metal_GetDrawableSize
-#define SDL_CreateThread IGNORE_THIS_VERSION_OF_SDL_CreateThread
-#define SDL_CreateThreadWithStackSize IGNORE_THIS_VERSION_OF_SDL_CreateThreadWithStackSize
-#define SDL_CreateThread IGNORE_THIS_VERSION_OF_SDL_CreateThread
-#define SDL_CreateThreadWithStackSize IGNORE_THIS_VERSION_OF_SDL_CreateThreadWithStackSize
 #define SDL_CreateThread IGNORE_THIS_VERSION_OF_SDL_CreateThread
 #define SDL_CreateThreadWithStackSize IGNORE_THIS_VERSION_OF_SDL_CreateThreadWithStackSize
 #define SDL_GetThreadName IGNORE_THIS_VERSION_OF_SDL_GetThreadName
@@ -2723,22 +2719,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_Metal_GetDrawableSize
 #undef SDL_Metal_GetDrawableSize
-#endif
-
-#ifdef SDL_CreateThread
-#undef SDL_CreateThread
-#endif
-
-#ifdef SDL_CreateThreadWithStackSize
-#undef SDL_CreateThreadWithStackSize
-#endif
-
-#ifdef SDL_CreateThread
-#undef SDL_CreateThread
-#endif
-
-#ifdef SDL_CreateThreadWithStackSize
-#undef SDL_CreateThreadWithStackSize
 #endif
 
 #ifdef SDL_CreateThread
