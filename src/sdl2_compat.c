@@ -316,6 +316,62 @@ SDL2Compat_GetHintBoolean(const char *name, SDL_bool default_value)
     return (SDL3_atoi(val) != 0) ? SDL_TRUE : SDL_FALSE;
 }
 
+
+/* if you change this, update also SDL2Compat_ApplyQuirks() */
+static const char *SDL2_to_SDL3_hint(const char *name)
+{
+    if (SDL_strcmp(name, "SDL_VIDEODRIVER") == 0) {
+        return "SDL_VIDEO_DRIVER";
+    }
+    if (SDL_strcmp(name, "SDL_AUDIODRIVER") == 0) {
+        return "SDL_AUDIO_DRIVER";
+    }
+    return name;
+}
+
+DECLSPEC SDL_bool SDLCALL
+SDL_SetHintWithPriority(const char *name, const char *value, SDL_HintPriority priority)
+{
+    return SDL3_SetHintWithPriority(SDL2_to_SDL3_hint(name), value, priority);
+}
+
+DECLSPEC SDL_bool SDLCALL
+SDL_SetHint(const char *name, const char *value)
+{
+    return SDL3_SetHint(SDL2_to_SDL3_hint(name), value);
+}
+
+DECLSPEC const char * SDLCALL
+SDL_GetHint(const char *name)
+{
+    return SDL3_GetHint(SDL2_to_SDL3_hint(name));
+}
+
+DECLSPEC SDL_bool SDLCALL
+SDL_ResetHint(const char *name)
+{
+    return SDL3_ResetHint(SDL2_to_SDL3_hint(name));
+}
+
+DECLSPEC SDL_bool SDLCALL
+SDL_GetHintBoolean(const char *name, SDL_bool default_value)
+{
+    return SDL3_GetHintBoolean(SDL2_to_SDL3_hint(name), default_value);
+}
+
+/* FIXME: callbacks may need to tweaking ... */
+DECLSPEC void SDLCALL
+SDL_AddHintCallback(const char *name, SDL_HintCallback callback, void *userdata)
+{
+    return SDL3_AddHintCallback(SDL2_to_SDL3_hint(name), callback, userdata);
+}
+
+DECLSPEC void SDLCALL
+SDL_DelHintCallback(const char *name, SDL_HintCallback callback, void *userdata)
+{
+    return SDL3_DelHintCallback(SDL2_to_SDL3_hint(name), callback, userdata);
+}
+
 static void
 SDL2Compat_ApplyQuirks(SDL_bool force_x11)
 {
@@ -324,6 +380,22 @@ SDL2Compat_ApplyQuirks(SDL_bool force_x11)
 
     if (WantDebugLogging) {
         SDL3_Log("This app appears to be named '%s'", exe_name);
+    }
+
+    {
+        /* if you change this, update also SDL2_to_SDL3_hint() */
+        /* hint/env names updated.
+         * SDL_VIDEO_DRIVER (SDL2) to SDL_VIDEO_DRIVER (SDL3)
+         * SDL_AUDIO_DRIVER (SDL2) to SDL_AUDIO_DRIVER (SDL3)
+         */
+        const char *videodriver_env = SDL3_getenv("SDL_VIDEODRIVER");
+        const char *audiodriver_env = SDL3_getenv("SDL_AUDIODRIVER");
+        if (videodriver_env) {
+            SDL3_setenv("SDL_VIDEO_DRIVER", videodriver_env, 1);
+        }
+        if (audiodriver_env) {
+            SDL3_setenv("SDL_AUDIO_DRIVER", audiodriver_env, 1);
+        }
     }
 
     #ifdef __linux__
@@ -337,7 +409,7 @@ SDL2Compat_ApplyQuirks(SDL_bool force_x11)
             if (WantDebugLogging) {
                 SDL3_Log("sdl12-compat: We are forcing this app to use X11, because it probably talks to an X server directly, outside of SDL. If possible, this app should be fixed, to be compatible with Wayland, etc.");
             }
-            SDL3_setenv("SDL_VIDEODRIVER", "x11", 1);
+            SDL3_setenv("SDL_VIDEO_DRIVER", "x11", 1);
         }
     }
     #endif
@@ -988,7 +1060,7 @@ SDL_GetVersion(SDL_version * ver)
         ver->major = 2;
         ver->minor = SDL2_COMPAT_VERSION_MINOR;
         ver->patch = SDL2_COMPAT_VERSION_PATCH;
-        if (SDL_GetHintBoolean("SDL_LEGACY_VERSION", SDL_FALSE)) {
+        if (SDL3_GetHintBoolean("SDL_LEGACY_VERSION", SDL_FALSE)) {
             /* Prior to SDL 2.24.0, the patch version was incremented with every release */
             ver->patch = ver->minor;
             ver->minor = 0;
@@ -2799,6 +2871,12 @@ SDL_Has3DNow(void)
         }
     }
     return SDL_FALSE;
+}
+
+DECLSPEC void SDLCALL
+SDL_FreeWAV(Uint8 * audio_buf)
+{
+    SDL_free(audio_buf);
 }
 
 #ifdef __cplusplus
