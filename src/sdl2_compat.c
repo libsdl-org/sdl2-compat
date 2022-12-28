@@ -359,6 +359,7 @@ SDL_GetHintBoolean(const char *name, SDL_bool default_value)
     return SDL3_GetHintBoolean(SDL2_to_SDL3_hint(name), default_value);
 }
 
+/* FIXME: callbacks may need to tweaking ... */
 DECLSPEC void SDLCALL
 SDL_AddHintCallback(const char *name, SDL_HintCallback callback, void *userdata)
 {
