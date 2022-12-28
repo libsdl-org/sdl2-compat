@@ -2775,7 +2775,7 @@ SDL_Has3DNow(void)
 DECLSPEC void SDLCALL
 SDL_FreeWAV(Uint8 * audio_buf)
 {
-    return SDL_free(audio_buf);
+    SDL_free(audio_buf);
 }
 
 #ifdef __cplusplus
