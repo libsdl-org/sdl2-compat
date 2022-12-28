@@ -89,6 +89,8 @@
 #define SDL_GetRGBA IGNORE_THIS_VERSION_OF_SDL_GetRGBA
 #define SDL_GetNumAudioDrivers IGNORE_THIS_VERSION_OF_SDL_GetNumAudioDrivers
 #define SDL_GetAudioDriver IGNORE_THIS_VERSION_OF_SDL_GetAudioDriver
+#define SDL_AudioInit IGNORE_THIS_VERSION_OF_SDL_AudioInit
+#define SDL_AudioQuit IGNORE_THIS_VERSION_OF_SDL_AudioQuit
 #define SDL_GetCurrentAudioDriver IGNORE_THIS_VERSION_OF_SDL_GetCurrentAudioDriver
 #define SDL_OpenAudio IGNORE_THIS_VERSION_OF_SDL_OpenAudio
 #define SDL_GetNumAudioDevices IGNORE_THIS_VERSION_OF_SDL_GetNumAudioDevices
@@ -527,6 +529,8 @@
 #define SDL_GDKRunApp IGNORE_THIS_VERSION_OF_SDL_GDKRunApp
 #define SDL_GetNumVideoDrivers IGNORE_THIS_VERSION_OF_SDL_GetNumVideoDrivers
 #define SDL_GetVideoDriver IGNORE_THIS_VERSION_OF_SDL_GetVideoDriver
+#define SDL_VideoInit IGNORE_THIS_VERSION_OF_SDL_VideoInit
+#define SDL_VideoQuit IGNORE_THIS_VERSION_OF_SDL_VideoQuit
 #define SDL_GetCurrentVideoDriver IGNORE_THIS_VERSION_OF_SDL_GetCurrentVideoDriver
 #define SDL_GetNumVideoDisplays IGNORE_THIS_VERSION_OF_SDL_GetNumVideoDisplays
 #define SDL_GetDisplayName IGNORE_THIS_VERSION_OF_SDL_GetDisplayName
@@ -1171,6 +1175,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetAudioDriver
 #undef SDL_GetAudioDriver
+#endif
+
+#ifdef SDL_AudioInit
+#undef SDL_AudioInit
+#endif
+
+#ifdef SDL_AudioQuit
+#undef SDL_AudioQuit
 #endif
 
 #ifdef SDL_GetCurrentAudioDriver
@@ -2923,6 +2935,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetVideoDriver
 #undef SDL_GetVideoDriver
+#endif
+
+#ifdef SDL_VideoInit
+#undef SDL_VideoInit
+#endif
+
+#ifdef SDL_VideoQuit
+#undef SDL_VideoQuit
 #endif
 
 #ifdef SDL_GetCurrentVideoDriver
