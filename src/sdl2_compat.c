@@ -614,6 +614,11 @@ typedef struct SDL2_RWops
 /* removed in SDL3 (which only uses SDL_WINDOW_HIDDEN now). */
 #define SDL2_WINDOW_SHOWN 0x000000004
 
+/* removed in SDL3 (APIs like this were split into getter/setter functions). */
+#define SDL2_QUERY   -1
+#define SDL2_DISABLE  0
+#define SDL2_ENABLE   1
+
 /* this enum changed in SDL3. */
 typedef enum
 {
@@ -1293,7 +1298,7 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
         case SDL_DISPLAYEVENT_ORIENTATION:
         case SDL_DISPLAYEVENT_CONNECTED:
         case SDL_DISPLAYEVENT_DISCONNECTED:
-            if (SDL3_GetEventState(SDL2_DISPLAYEVENT) == SDL_ENABLE) {
+            if (SDL3_EventEnabled(SDL2_DISPLAYEVENT)) {
                 event2.display.type = SDL2_DISPLAYEVENT;
                 event2.display.timestamp = (Uint32) SDL_NS_TO_MS(event3->display.timestamp);
                 event2.display.display = event3->display.display;
@@ -1325,7 +1330,7 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
         case SDL_WINDOWEVENT_HIT_TEST:
         case SDL_WINDOWEVENT_ICCPROF_CHANGED:
         case SDL_WINDOWEVENT_DISPLAY_CHANGED:
-            if (SDL3_GetEventState(SDL2_WINDOWEVENT) == SDL_ENABLE) {
+            if (SDL3_EventEnabled(SDL2_WINDOWEVENT)) {
                 event2.window.type = SDL2_WINDOWEVENT;
                 event2.window.timestamp = (Uint32) SDL_NS_TO_MS(event3->window.timestamp);
                 event2.window.windowID = event3->window.windowID;
@@ -2513,7 +2518,7 @@ static float GestureDollarRecognize(const GestureDollarPath *path, int *bestTemp
 
 static void GestureSendMulti(GestureTouch *touch, float dTheta, float dDist)
 {
-    if (SDL3_GetEventState(SDL_MULTIGESTURE) == SDL_ENABLE) {
+    if (SDL3_EventEnabled(SDL_MULTIGESTURE)) {
         SDL2_Event event;
         event.type = SDL_MULTIGESTURE;
         event.common.timestamp = 0;
@@ -2529,7 +2534,7 @@ static void GestureSendMulti(GestureTouch *touch, float dTheta, float dDist)
 
 static void GestureSendDollar(GestureTouch *touch, SDL_GestureID gestureId, float error)
 {
-    if (SDL3_GetEventState(SDL_DOLLARGESTURE) == SDL_ENABLE) {
+    if (SDL3_EventEnabled(SDL_DOLLARGESTURE)) {
         SDL2_Event event;
         event.type = SDL_DOLLARGESTURE;
         event.common.timestamp = 0;
@@ -2546,7 +2551,7 @@ static void GestureSendDollar(GestureTouch *touch, SDL_GestureID gestureId, floa
 
 static void GestureSendDollarRecord(GestureTouch *touch, SDL_GestureID gestureId)
 {
-    if (SDL3_GetEventState(SDL_DOLLARRECORD) == SDL_ENABLE) {
+    if (SDL3_EventEnabled(SDL_DOLLARRECORD)) {
         SDL2_Event event;
         event.type = SDL_DOLLARRECORD;
         event.common.timestamp = 0;
@@ -2906,6 +2911,62 @@ DECLSPEC void SDLCALL
 SDL_GL_SwapWindow(SDL_Window *window)
 {
     (void) SDL3_GL_SwapWindow(window);
+}
+
+/* SDL3 split this into getter/setter functions. */
+DECLSPEC Uint8 SDLCALL
+SDL_EventState(Uint32 type, int state)
+{
+    const int retval = SDL3_EventEnabled(type) ? SDL2_ENABLE : SDL2_DISABLE;
+    if (state == SDL2_ENABLE) {
+        SDL3_SetEventEnabled(type, SDL_TRUE);
+    } else if (state == SDL2_DISABLE) {
+        SDL3_SetEventEnabled(type, SDL_FALSE);
+    }
+    return retval;
+}
+
+/* SDL3 split this into getter/setter functions. */
+DECLSPEC int SDLCALL
+SDL_ShowCursor(int state)
+{
+    int retval = SDL3_CursorVisible() ? SDL2_ENABLE : SDL2_DISABLE;
+    if ((state == SDL2_ENABLE) && (SDL3_ShowCursor() < 0)) {
+        retval = -1;
+    } else if ((state == SDL2_DISABLE) && (SDL3_HideCursor() < 0)) {
+        retval = -1;
+    }
+    return retval;
+}
+
+/* SDL3 split this into getter/setter functions. */
+DECLSPEC int SDLCALL
+SDL_GameControllerEventState(int state)
+{
+    int retval = state;
+    if (state == SDL2_ENABLE) {
+        SDL3_SetGamepadEventsEnabled(SDL_TRUE);
+    } else if (state == SDL2_DISABLE) {
+        SDL3_SetGamepadEventsEnabled(SDL_FALSE);
+    } else {
+        retval = SDL3_GamepadEventsEnabled() ? SDL2_ENABLE : SDL2_DISABLE;
+    }
+    return retval;
+}
+
+/* SDL3 split this into getter/setter functions. */
+DECLSPEC int SDLCALL
+SDL_JoystickEventState(int state)
+{
+    int retval = state;
+    if (state == SDL2_ENABLE) {
+        SDL3_SetJoystickEventsEnabled(SDL_TRUE);
+    } else if (state == SDL2_DISABLE) {
+        SDL3_SetJoystickEventsEnabled(SDL_FALSE);
+    } else {
+        retval = SDL3_JoystickEventsEnabled() ? SDL2_ENABLE : SDL2_DISABLE;
+    }
+    return retval;
 }
 
 #ifdef __cplusplus
