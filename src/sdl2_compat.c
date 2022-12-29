@@ -374,13 +374,13 @@ SDL_GetHintBoolean(const char *name, SDL_bool default_value)
 DECLSPEC void SDLCALL
 SDL_AddHintCallback(const char *name, SDL_HintCallback callback, void *userdata)
 {
-    return SDL3_AddHintCallback(SDL2_to_SDL3_hint(name), callback, userdata);
+    SDL3_AddHintCallback(SDL2_to_SDL3_hint(name), callback, userdata);
 }
 
 DECLSPEC void SDLCALL
 SDL_DelHintCallback(const char *name, SDL_HintCallback callback, void *userdata)
 {
-    return SDL3_DelHintCallback(SDL2_to_SDL3_hint(name), callback, userdata);
+    SDL3_DelHintCallback(SDL2_to_SDL3_hint(name), callback, userdata);
 }
 
 static void
