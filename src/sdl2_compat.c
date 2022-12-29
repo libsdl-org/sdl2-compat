@@ -2901,6 +2901,13 @@ SDL_GetWindowFlags(SDL_Window *window)
     return flags;
 }
 
+/* SDL3 added a return value. We just throw it away for SDL2. */
+DECLSPEC void SDLCALL
+SDL_GL_SwapWindow(SDL_Window *window)
+{
+    (void) SDL3_GL_SwapWindow(window);
+}
+
 #ifdef __cplusplus
 }
 #endif
