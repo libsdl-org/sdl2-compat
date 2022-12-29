@@ -2009,7 +2009,7 @@ SDLCALL SDL_GetTicks64(void)
 }
 
 DECLSPEC SDL_bool
-SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWMinfo *wminfo)
+SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWMinfo *wminfo)
 {
     SDL3_Unsupported();  /* !!! FIXME: write me. */
     return SDL_FALSE;
