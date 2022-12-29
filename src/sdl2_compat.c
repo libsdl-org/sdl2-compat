@@ -1473,7 +1473,10 @@ EventFilterWrapper3to2(void *userdata, SDL_Event *event)
 DECLSPEC void SDLCALL
 SDL_FilterEvents(SDL2_EventFilter filter2, void *userdata)
 {
-    EventFilterWrapperData wrapperdata = { filter2, userdata, NULL };
+    EventFilterWrapperData wrapperdata;
+    wrapperdata.filter2 = filter2;
+    wrapperdata.userdata = userdata;
+    wrapperdata.next = NULL;
     SDL3_FilterEvents(EventFilterWrapper3to2, &wrapperdata);
 }
 
