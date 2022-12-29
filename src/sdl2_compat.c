@@ -2787,7 +2787,7 @@ SDL_AudioInit(const char *driver_name)
     if (driver_name) {
         SDL3_SetHint("SDL_AUDIO_DRIVER", driver_name);
     }
-    SDL_InitSubSystem(SDL_INIT_AUDIO);
+    return SDL_InitSubSystem(SDL_INIT_AUDIO);
 }
 
 DECLSPEC void SDLCALL
@@ -2802,7 +2802,7 @@ SDL_VideoInit(const char *driver_name)
     if (driver_name) {
         SDL3_SetHint("SDL_VIDEO_DRIVER", driver_name);
     }
-    SDL_InitSubSystem(SDL_INIT_VIDEO);
+    return SDL_InitSubSystem(SDL_INIT_VIDEO);
 }
 
 DECLSPEC void SDLCALL
