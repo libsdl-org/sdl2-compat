@@ -62,7 +62,7 @@ SDL3_SYM_PASSTHROUGH(void,UnregisterApp,(void),(),)
 
 #if defined(__WIN32__) || defined(__WINGDK__)
 SDL3_SYM_PASSTHROUGH(int,Direct3D9GetAdapterIndex,(int a),(a),return)
-SDL3_SYM_PASSTHROUGH(IDirect3DDevice9*,RenderGetD3D9Device,(SDL_Renderer *a),(a),return)
+SDL3_SYM_RENAMED(IDirect3DDevice9*,RenderGetD3D9Device,GetRenderD3D9Device,(SDL_Renderer *a),(a),return)
 #endif
 
 #ifdef __IOS__
@@ -825,7 +825,7 @@ SDL3_SYM_PASSTHROUGH(long,lround,(double a),(a),return)
 SDL3_SYM_PASSTHROUGH(long,lroundf,(float a),(a),return)
 SDL3_SYM_PASSTHROUGH(int,SoftStretchLinear,(SDL_Surface *a, const SDL_Rect *b, SDL_Surface *c, const SDL_Rect *d),(a,b,c,d),return)
 #if defined(__WIN32__) || defined(__WINGDK__)
-SDL3_SYM_PASSTHROUGH(ID3D11Device*,RenderGetD3D11Device,(SDL_Renderer *a),(a),return)
+SDL3_SYM_RENAMED(ID3D11Device*,RenderGetD3D11Device,GetRenderD3D11Device,(SDL_Renderer *a),(a),return)
 #endif
 SDL3_SYM_PASSTHROUGH(int,UpdateNVTexture,(SDL_Texture *a, const SDL_Rect *b, const Uint8 *c, int d, const Uint8 *e, int f),(a,b,c,d,e,f),return)
 SDL3_SYM_PASSTHROUGH(void,SetWindowKeyboardGrab,(SDL_Window *a, SDL_bool b),(a,b),)
