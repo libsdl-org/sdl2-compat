@@ -93,13 +93,11 @@
 #define SDL_GetTouchDeviceType IGNORE_THIS_VERSION_OF_SDL_GetTouchDeviceType
 #define SDL_GetNumTouchFingers IGNORE_THIS_VERSION_OF_SDL_GetNumTouchFingers
 #define SDL_GetTouchFinger IGNORE_THIS_VERSION_OF_SDL_GetTouchFinger
-#define SDL_LockSensors IGNORE_THIS_VERSION_OF_SDL_LockSensors
-#define SDL_UnlockSensors IGNORE_THIS_VERSION_OF_SDL_UnlockSensors
-#define SDL_GetNumSensors IGNORE_THIS_VERSION_OF_SDL_GetNumSensors
-#define SDL_GetSensorDeviceName IGNORE_THIS_VERSION_OF_SDL_GetSensorDeviceName
-#define SDL_GetSensorDeviceType IGNORE_THIS_VERSION_OF_SDL_GetSensorDeviceType
-#define SDL_GetSensorDeviceNonPortableType IGNORE_THIS_VERSION_OF_SDL_GetSensorDeviceNonPortableType
-#define SDL_GetSensorDeviceInstanceID IGNORE_THIS_VERSION_OF_SDL_GetSensorDeviceInstanceID
+#define SDL_HasSensors IGNORE_THIS_VERSION_OF_SDL_HasSensors
+#define SDL_GetSensors IGNORE_THIS_VERSION_OF_SDL_GetSensors
+#define SDL_GetSensorInstanceName IGNORE_THIS_VERSION_OF_SDL_GetSensorInstanceName
+#define SDL_GetSensorInstanceType IGNORE_THIS_VERSION_OF_SDL_GetSensorInstanceType
+#define SDL_GetSensorInstanceNonPortableType IGNORE_THIS_VERSION_OF_SDL_GetSensorInstanceNonPortableType
 #define SDL_OpenSensor IGNORE_THIS_VERSION_OF_SDL_OpenSensor
 #define SDL_GetSensorFromInstanceID IGNORE_THIS_VERSION_OF_SDL_GetSensorFromInstanceID
 #define SDL_GetSensorName IGNORE_THIS_VERSION_OF_SDL_GetSensorName
@@ -115,11 +113,18 @@
 #define SDL_GetGamepadMappingForIndex IGNORE_THIS_VERSION_OF_SDL_GetGamepadMappingForIndex
 #define SDL_GetGamepadMappingForGUID IGNORE_THIS_VERSION_OF_SDL_GetGamepadMappingForGUID
 #define SDL_GetGamepadMapping IGNORE_THIS_VERSION_OF_SDL_GetGamepadMapping
+#define SDL_HasGamepads IGNORE_THIS_VERSION_OF_SDL_HasGamepads
+#define SDL_GetGamepads IGNORE_THIS_VERSION_OF_SDL_GetGamepads
 #define SDL_IsGamepad IGNORE_THIS_VERSION_OF_SDL_IsGamepad
-#define SDL_GetGamepadNameForIndex IGNORE_THIS_VERSION_OF_SDL_GetGamepadNameForIndex
-#define SDL_GetGamepadPathForIndex IGNORE_THIS_VERSION_OF_SDL_GetGamepadPathForIndex
-#define SDL_GetGamepadTypeForIndex IGNORE_THIS_VERSION_OF_SDL_GetGamepadTypeForIndex
-#define SDL_GetGamepadMappingForDeviceIndex IGNORE_THIS_VERSION_OF_SDL_GetGamepadMappingForDeviceIndex
+#define SDL_GetGamepadInstanceName IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstanceName
+#define SDL_GetGamepadInstancePath IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstancePath
+#define SDL_GetGamepadInstancePlayerIndex IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstancePlayerIndex
+#define SDL_GetGamepadInstanceGUID IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstanceGUID
+#define SDL_GetGamepadInstanceVendor IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstanceVendor
+#define SDL_GetGamepadInstanceProduct IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstanceProduct
+#define SDL_GetGamepadInstanceProductVersion IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstanceProductVersion
+#define SDL_GetGamepadInstanceType IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstanceType
+#define SDL_GetGamepadInstanceMapping IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstanceMapping
 #define SDL_OpenGamepad IGNORE_THIS_VERSION_OF_SDL_OpenGamepad
 #define SDL_GetGamepadFromInstanceID IGNORE_THIS_VERSION_OF_SDL_GetGamepadFromInstanceID
 #define SDL_GetGamepadFromPlayerIndex IGNORE_THIS_VERSION_OF_SDL_GetGamepadFromPlayerIndex
@@ -133,9 +138,10 @@
 #define SDL_GetGamepadProductVersion IGNORE_THIS_VERSION_OF_SDL_GetGamepadProductVersion
 #define SDL_GetGamepadFirmwareVersion IGNORE_THIS_VERSION_OF_SDL_GetGamepadFirmwareVersion
 #define SDL_GetGamepadSerial IGNORE_THIS_VERSION_OF_SDL_GetGamepadSerial
-#define SDL_IsGamepadConnected IGNORE_THIS_VERSION_OF_SDL_IsGamepadConnected
+#define SDL_GamepadConnected IGNORE_THIS_VERSION_OF_SDL_GamepadConnected
 #define SDL_GetGamepadJoystick IGNORE_THIS_VERSION_OF_SDL_GetGamepadJoystick
-#define SDL_GetGamepadEventState IGNORE_THIS_VERSION_OF_SDL_GetGamepadEventState
+#define SDL_SetGamepadEventsEnabled IGNORE_THIS_VERSION_OF_SDL_SetGamepadEventsEnabled
+#define SDL_GamepadEventsEnabled IGNORE_THIS_VERSION_OF_SDL_GamepadEventsEnabled
 #define SDL_UpdateGamepads IGNORE_THIS_VERSION_OF_SDL_UpdateGamepads
 #define SDL_GetGamepadAxisFromString IGNORE_THIS_VERSION_OF_SDL_GetGamepadAxisFromString
 #define SDL_GetGamepadStringForAxis IGNORE_THIS_VERSION_OF_SDL_GetGamepadStringForAxis
@@ -152,7 +158,7 @@
 #define SDL_GetGamepadTouchpadFinger IGNORE_THIS_VERSION_OF_SDL_GetGamepadTouchpadFinger
 #define SDL_GamepadHasSensor IGNORE_THIS_VERSION_OF_SDL_GamepadHasSensor
 #define SDL_SetGamepadSensorEnabled IGNORE_THIS_VERSION_OF_SDL_SetGamepadSensorEnabled
-#define SDL_IsGamepadSensorEnabled IGNORE_THIS_VERSION_OF_SDL_IsGamepadSensorEnabled
+#define SDL_GamepadSensorEnabled IGNORE_THIS_VERSION_OF_SDL_GamepadSensorEnabled
 #define SDL_GetGamepadSensorDataRate IGNORE_THIS_VERSION_OF_SDL_GetGamepadSensorDataRate
 #define SDL_GetGamepadSensorData IGNORE_THIS_VERSION_OF_SDL_GetGamepadSensorData
 #define SDL_RumbleGamepad IGNORE_THIS_VERSION_OF_SDL_RumbleGamepad
@@ -210,15 +216,15 @@
 #define SDL_AddEventWatch IGNORE_THIS_VERSION_OF_SDL_AddEventWatch
 #define SDL_DelEventWatch IGNORE_THIS_VERSION_OF_SDL_DelEventWatch
 #define SDL_FilterEvents IGNORE_THIS_VERSION_OF_SDL_FilterEvents
-#define SDL_EventState IGNORE_THIS_VERSION_OF_SDL_EventState
-#define SDL_GetEventState IGNORE_THIS_VERSION_OF_SDL_GetEventState
+#define SDL_SetEventEnabled IGNORE_THIS_VERSION_OF_SDL_SetEventEnabled
+#define SDL_EventEnabled IGNORE_THIS_VERSION_OF_SDL_EventEnabled
 #define SDL_RegisterEvents IGNORE_THIS_VERSION_OF_SDL_RegisterEvents
 #define SDL_ShowMessageBox IGNORE_THIS_VERSION_OF_SDL_ShowMessageBox
 #define SDL_ShowSimpleMessageBox IGNORE_THIS_VERSION_OF_SDL_ShowSimpleMessageBox
 #define SDL_SetWindowsMessageHook IGNORE_THIS_VERSION_OF_SDL_SetWindowsMessageHook
 #define SDL_Direct3D9GetAdapterIndex IGNORE_THIS_VERSION_OF_SDL_Direct3D9GetAdapterIndex
-#define SDL_RenderGetD3D9Device IGNORE_THIS_VERSION_OF_SDL_RenderGetD3D9Device
-#define SDL_RenderGetD3D11Device IGNORE_THIS_VERSION_OF_SDL_RenderGetD3D11Device
+#define SDL_GetRenderD3D9Device IGNORE_THIS_VERSION_OF_SDL_GetRenderD3D9Device
+#define SDL_GetRenderD3D11Device IGNORE_THIS_VERSION_OF_SDL_GetRenderD3D11Device
 #define SDL_RenderGetD3D12Device IGNORE_THIS_VERSION_OF_SDL_RenderGetD3D12Device
 #define SDL_DXGIGetOutputInfo IGNORE_THIS_VERSION_OF_SDL_DXGIGetOutputInfo
 #define SDL_LinuxSetThreadPriority IGNORE_THIS_VERSION_OF_SDL_LinuxSetThreadPriority
@@ -390,7 +396,7 @@
 #define SDL_LockTexture IGNORE_THIS_VERSION_OF_SDL_LockTexture
 #define SDL_LockTextureToSurface IGNORE_THIS_VERSION_OF_SDL_LockTextureToSurface
 #define SDL_UnlockTexture IGNORE_THIS_VERSION_OF_SDL_UnlockTexture
-#define SDL_IsRenderTargetSupported IGNORE_THIS_VERSION_OF_SDL_IsRenderTargetSupported
+#define SDL_RenderTargetSupported IGNORE_THIS_VERSION_OF_SDL_RenderTargetSupported
 #define SDL_SetRenderTarget IGNORE_THIS_VERSION_OF_SDL_SetRenderTarget
 #define SDL_GetRenderTarget IGNORE_THIS_VERSION_OF_SDL_GetRenderTarget
 #define SDL_SetRenderLogicalSize IGNORE_THIS_VERSION_OF_SDL_SetRenderLogicalSize
@@ -401,7 +407,7 @@
 #define SDL_GetRenderViewport IGNORE_THIS_VERSION_OF_SDL_GetRenderViewport
 #define SDL_SetRenderClipRect IGNORE_THIS_VERSION_OF_SDL_SetRenderClipRect
 #define SDL_GetRenderClipRect IGNORE_THIS_VERSION_OF_SDL_GetRenderClipRect
-#define SDL_IsRenderClipEnabled IGNORE_THIS_VERSION_OF_SDL_IsRenderClipEnabled
+#define SDL_RenderClipEnabled IGNORE_THIS_VERSION_OF_SDL_RenderClipEnabled
 #define SDL_SetRenderScale IGNORE_THIS_VERSION_OF_SDL_SetRenderScale
 #define SDL_GetRenderScale IGNORE_THIS_VERSION_OF_SDL_GetRenderScale
 #define SDL_RenderWindowToLogical IGNORE_THIS_VERSION_OF_SDL_RenderWindowToLogical
@@ -513,7 +519,7 @@
 #define SDL_SetWindowHitTest IGNORE_THIS_VERSION_OF_SDL_SetWindowHitTest
 #define SDL_FlashWindow IGNORE_THIS_VERSION_OF_SDL_FlashWindow
 #define SDL_DestroyWindow IGNORE_THIS_VERSION_OF_SDL_DestroyWindow
-#define SDL_IsScreenSaverEnabled IGNORE_THIS_VERSION_OF_SDL_IsScreenSaverEnabled
+#define SDL_ScreenSaverEnabled IGNORE_THIS_VERSION_OF_SDL_ScreenSaverEnabled
 #define SDL_EnableScreenSaver IGNORE_THIS_VERSION_OF_SDL_EnableScreenSaver
 #define SDL_DisableScreenSaver IGNORE_THIS_VERSION_OF_SDL_DisableScreenSaver
 #define SDL_GL_LoadLibrary IGNORE_THIS_VERSION_OF_SDL_GL_LoadLibrary
@@ -608,16 +614,16 @@
 #define SDL_RemoveTimer IGNORE_THIS_VERSION_OF_SDL_RemoveTimer
 #define SDL_LockJoysticks IGNORE_THIS_VERSION_OF_SDL_LockJoysticks
 #define SDL_UnlockJoysticks IGNORE_THIS_VERSION_OF_SDL_UnlockJoysticks
-#define SDL_GetNumJoysticks IGNORE_THIS_VERSION_OF_SDL_GetNumJoysticks
-#define SDL_GetJoystickNameForIndex IGNORE_THIS_VERSION_OF_SDL_GetJoystickNameForIndex
-#define SDL_GetJoystickPathForIndex IGNORE_THIS_VERSION_OF_SDL_GetJoystickPathForIndex
-#define SDL_GetJoystickDevicePlayerIndex IGNORE_THIS_VERSION_OF_SDL_GetJoystickDevicePlayerIndex
-#define SDL_GetJoystickDeviceGUID IGNORE_THIS_VERSION_OF_SDL_GetJoystickDeviceGUID
-#define SDL_GetJoystickDeviceVendor IGNORE_THIS_VERSION_OF_SDL_GetJoystickDeviceVendor
-#define SDL_GetJoystickDeviceProduct IGNORE_THIS_VERSION_OF_SDL_GetJoystickDeviceProduct
-#define SDL_GetJoystickDeviceProductVersion IGNORE_THIS_VERSION_OF_SDL_GetJoystickDeviceProductVersion
-#define SDL_GetJoystickDeviceType IGNORE_THIS_VERSION_OF_SDL_GetJoystickDeviceType
-#define SDL_GetJoystickDeviceInstanceID IGNORE_THIS_VERSION_OF_SDL_GetJoystickDeviceInstanceID
+#define SDL_HasJoysticks IGNORE_THIS_VERSION_OF_SDL_HasJoysticks
+#define SDL_GetJoysticks IGNORE_THIS_VERSION_OF_SDL_GetJoysticks
+#define SDL_GetJoystickInstanceName IGNORE_THIS_VERSION_OF_SDL_GetJoystickInstanceName
+#define SDL_GetJoystickInstancePath IGNORE_THIS_VERSION_OF_SDL_GetJoystickInstancePath
+#define SDL_GetJoystickInstancePlayerIndex IGNORE_THIS_VERSION_OF_SDL_GetJoystickInstancePlayerIndex
+#define SDL_GetJoystickInstanceGUID IGNORE_THIS_VERSION_OF_SDL_GetJoystickInstanceGUID
+#define SDL_GetJoystickInstanceVendor IGNORE_THIS_VERSION_OF_SDL_GetJoystickInstanceVendor
+#define SDL_GetJoystickInstanceProduct IGNORE_THIS_VERSION_OF_SDL_GetJoystickInstanceProduct
+#define SDL_GetJoystickInstanceProductVersion IGNORE_THIS_VERSION_OF_SDL_GetJoystickInstanceProductVersion
+#define SDL_GetJoystickInstanceType IGNORE_THIS_VERSION_OF_SDL_GetJoystickInstanceType
 #define SDL_OpenJoystick IGNORE_THIS_VERSION_OF_SDL_OpenJoystick
 #define SDL_GetJoystickFromInstanceID IGNORE_THIS_VERSION_OF_SDL_GetJoystickFromInstanceID
 #define SDL_GetJoystickFromPlayerIndex IGNORE_THIS_VERSION_OF_SDL_GetJoystickFromPlayerIndex
@@ -642,13 +648,14 @@
 #define SDL_GetJoystickGUIDString IGNORE_THIS_VERSION_OF_SDL_GetJoystickGUIDString
 #define SDL_GetJoystickGUIDFromString IGNORE_THIS_VERSION_OF_SDL_GetJoystickGUIDFromString
 #define SDL_GetJoystickGUIDInfo IGNORE_THIS_VERSION_OF_SDL_GetJoystickGUIDInfo
-#define SDL_IsJoystickConnected IGNORE_THIS_VERSION_OF_SDL_IsJoystickConnected
+#define SDL_JoystickConnected IGNORE_THIS_VERSION_OF_SDL_JoystickConnected
 #define SDL_GetJoystickInstanceID IGNORE_THIS_VERSION_OF_SDL_GetJoystickInstanceID
 #define SDL_GetNumJoystickAxes IGNORE_THIS_VERSION_OF_SDL_GetNumJoystickAxes
 #define SDL_GetNumJoystickHats IGNORE_THIS_VERSION_OF_SDL_GetNumJoystickHats
 #define SDL_GetNumJoystickButtons IGNORE_THIS_VERSION_OF_SDL_GetNumJoystickButtons
+#define SDL_SetJoystickEventsEnabled IGNORE_THIS_VERSION_OF_SDL_SetJoystickEventsEnabled
+#define SDL_JoystickEventsEnabled IGNORE_THIS_VERSION_OF_SDL_JoystickEventsEnabled
 #define SDL_UpdateJoysticks IGNORE_THIS_VERSION_OF_SDL_UpdateJoysticks
-#define SDL_GetJoystickEventState IGNORE_THIS_VERSION_OF_SDL_GetJoystickEventState
 #define SDL_GetJoystickAxis IGNORE_THIS_VERSION_OF_SDL_GetJoystickAxis
 #define SDL_GetJoystickAxisInitialState IGNORE_THIS_VERSION_OF_SDL_GetJoystickAxisInitialState
 #define SDL_GetJoystickHat IGNORE_THIS_VERSION_OF_SDL_GetJoystickHat
@@ -679,6 +686,8 @@
 #define SDL_GetDefaultCursor IGNORE_THIS_VERSION_OF_SDL_GetDefaultCursor
 #define SDL_FreeCursor IGNORE_THIS_VERSION_OF_SDL_FreeCursor
 #define SDL_ShowCursor IGNORE_THIS_VERSION_OF_SDL_ShowCursor
+#define SDL_HideCursor IGNORE_THIS_VERSION_OF_SDL_HideCursor
+#define SDL_CursorVisible IGNORE_THIS_VERSION_OF_SDL_CursorVisible
 #define SDL_malloc IGNORE_THIS_VERSION_OF_SDL_malloc
 #define SDL_calloc IGNORE_THIS_VERSION_OF_SDL_calloc
 #define SDL_realloc IGNORE_THIS_VERSION_OF_SDL_realloc
@@ -838,13 +847,13 @@
 #define SDL_GetKeyName IGNORE_THIS_VERSION_OF_SDL_GetKeyName
 #define SDL_GetKeyFromName IGNORE_THIS_VERSION_OF_SDL_GetKeyFromName
 #define SDL_StartTextInput IGNORE_THIS_VERSION_OF_SDL_StartTextInput
-#define SDL_IsTextInputActive IGNORE_THIS_VERSION_OF_SDL_IsTextInputActive
+#define SDL_TextInputActive IGNORE_THIS_VERSION_OF_SDL_TextInputActive
 #define SDL_StopTextInput IGNORE_THIS_VERSION_OF_SDL_StopTextInput
 #define SDL_ClearComposition IGNORE_THIS_VERSION_OF_SDL_ClearComposition
-#define SDL_IsTextInputShown IGNORE_THIS_VERSION_OF_SDL_IsTextInputShown
+#define SDL_TextInputShown IGNORE_THIS_VERSION_OF_SDL_TextInputShown
 #define SDL_SetTextInputRect IGNORE_THIS_VERSION_OF_SDL_SetTextInputRect
 #define SDL_HasScreenKeyboardSupport IGNORE_THIS_VERSION_OF_SDL_HasScreenKeyboardSupport
-#define SDL_IsScreenKeyboardShown IGNORE_THIS_VERSION_OF_SDL_IsScreenKeyboardShown
+#define SDL_ScreenKeyboardShown IGNORE_THIS_VERSION_OF_SDL_ScreenKeyboardShown
 #define SDL_LoadObject IGNORE_THIS_VERSION_OF_SDL_LoadObject
 #define SDL_LoadFunction IGNORE_THIS_VERSION_OF_SDL_LoadFunction
 #define SDL_UnloadObject IGNORE_THIS_VERSION_OF_SDL_UnloadObject
@@ -1186,32 +1195,24 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetTouchFinger
 #endif
 
-#ifdef SDL_LockSensors
-#undef SDL_LockSensors
+#ifdef SDL_HasSensors
+#undef SDL_HasSensors
 #endif
 
-#ifdef SDL_UnlockSensors
-#undef SDL_UnlockSensors
+#ifdef SDL_GetSensors
+#undef SDL_GetSensors
 #endif
 
-#ifdef SDL_GetNumSensors
-#undef SDL_GetNumSensors
+#ifdef SDL_GetSensorInstanceName
+#undef SDL_GetSensorInstanceName
 #endif
 
-#ifdef SDL_GetSensorDeviceName
-#undef SDL_GetSensorDeviceName
+#ifdef SDL_GetSensorInstanceType
+#undef SDL_GetSensorInstanceType
 #endif
 
-#ifdef SDL_GetSensorDeviceType
-#undef SDL_GetSensorDeviceType
-#endif
-
-#ifdef SDL_GetSensorDeviceNonPortableType
-#undef SDL_GetSensorDeviceNonPortableType
-#endif
-
-#ifdef SDL_GetSensorDeviceInstanceID
-#undef SDL_GetSensorDeviceInstanceID
+#ifdef SDL_GetSensorInstanceNonPortableType
+#undef SDL_GetSensorInstanceNonPortableType
 #endif
 
 #ifdef SDL_OpenSensor
@@ -1274,24 +1275,52 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetGamepadMapping
 #endif
 
+#ifdef SDL_HasGamepads
+#undef SDL_HasGamepads
+#endif
+
+#ifdef SDL_GetGamepads
+#undef SDL_GetGamepads
+#endif
+
 #ifdef SDL_IsGamepad
 #undef SDL_IsGamepad
 #endif
 
-#ifdef SDL_GetGamepadNameForIndex
-#undef SDL_GetGamepadNameForIndex
+#ifdef SDL_GetGamepadInstanceName
+#undef SDL_GetGamepadInstanceName
 #endif
 
-#ifdef SDL_GetGamepadPathForIndex
-#undef SDL_GetGamepadPathForIndex
+#ifdef SDL_GetGamepadInstancePath
+#undef SDL_GetGamepadInstancePath
 #endif
 
-#ifdef SDL_GetGamepadTypeForIndex
-#undef SDL_GetGamepadTypeForIndex
+#ifdef SDL_GetGamepadInstancePlayerIndex
+#undef SDL_GetGamepadInstancePlayerIndex
 #endif
 
-#ifdef SDL_GetGamepadMappingForDeviceIndex
-#undef SDL_GetGamepadMappingForDeviceIndex
+#ifdef SDL_GetGamepadInstanceGUID
+#undef SDL_GetGamepadInstanceGUID
+#endif
+
+#ifdef SDL_GetGamepadInstanceVendor
+#undef SDL_GetGamepadInstanceVendor
+#endif
+
+#ifdef SDL_GetGamepadInstanceProduct
+#undef SDL_GetGamepadInstanceProduct
+#endif
+
+#ifdef SDL_GetGamepadInstanceProductVersion
+#undef SDL_GetGamepadInstanceProductVersion
+#endif
+
+#ifdef SDL_GetGamepadInstanceType
+#undef SDL_GetGamepadInstanceType
+#endif
+
+#ifdef SDL_GetGamepadInstanceMapping
+#undef SDL_GetGamepadInstanceMapping
 #endif
 
 #ifdef SDL_OpenGamepad
@@ -1346,16 +1375,20 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetGamepadSerial
 #endif
 
-#ifdef SDL_IsGamepadConnected
-#undef SDL_IsGamepadConnected
+#ifdef SDL_GamepadConnected
+#undef SDL_GamepadConnected
 #endif
 
 #ifdef SDL_GetGamepadJoystick
 #undef SDL_GetGamepadJoystick
 #endif
 
-#ifdef SDL_GetGamepadEventState
-#undef SDL_GetGamepadEventState
+#ifdef SDL_SetGamepadEventsEnabled
+#undef SDL_SetGamepadEventsEnabled
+#endif
+
+#ifdef SDL_GamepadEventsEnabled
+#undef SDL_GamepadEventsEnabled
 #endif
 
 #ifdef SDL_UpdateGamepads
@@ -1422,8 +1455,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_SetGamepadSensorEnabled
 #endif
 
-#ifdef SDL_IsGamepadSensorEnabled
-#undef SDL_IsGamepadSensorEnabled
+#ifdef SDL_GamepadSensorEnabled
+#undef SDL_GamepadSensorEnabled
 #endif
 
 #ifdef SDL_GetGamepadSensorDataRate
@@ -1654,12 +1687,12 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_FilterEvents
 #endif
 
-#ifdef SDL_EventState
-#undef SDL_EventState
+#ifdef SDL_SetEventEnabled
+#undef SDL_SetEventEnabled
 #endif
 
-#ifdef SDL_GetEventState
-#undef SDL_GetEventState
+#ifdef SDL_EventEnabled
+#undef SDL_EventEnabled
 #endif
 
 #ifdef SDL_RegisterEvents
@@ -1682,12 +1715,12 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_Direct3D9GetAdapterIndex
 #endif
 
-#ifdef SDL_RenderGetD3D9Device
-#undef SDL_RenderGetD3D9Device
+#ifdef SDL_GetRenderD3D9Device
+#undef SDL_GetRenderD3D9Device
 #endif
 
-#ifdef SDL_RenderGetD3D11Device
-#undef SDL_RenderGetD3D11Device
+#ifdef SDL_GetRenderD3D11Device
+#undef SDL_GetRenderD3D11Device
 #endif
 
 #ifdef SDL_RenderGetD3D12Device
@@ -2374,8 +2407,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_UnlockTexture
 #endif
 
-#ifdef SDL_IsRenderTargetSupported
-#undef SDL_IsRenderTargetSupported
+#ifdef SDL_RenderTargetSupported
+#undef SDL_RenderTargetSupported
 #endif
 
 #ifdef SDL_SetRenderTarget
@@ -2418,8 +2451,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetRenderClipRect
 #endif
 
-#ifdef SDL_IsRenderClipEnabled
-#undef SDL_IsRenderClipEnabled
+#ifdef SDL_RenderClipEnabled
+#undef SDL_RenderClipEnabled
 #endif
 
 #ifdef SDL_SetRenderScale
@@ -2866,8 +2899,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_DestroyWindow
 #endif
 
-#ifdef SDL_IsScreenSaverEnabled
-#undef SDL_IsScreenSaverEnabled
+#ifdef SDL_ScreenSaverEnabled
+#undef SDL_ScreenSaverEnabled
 #endif
 
 #ifdef SDL_EnableScreenSaver
@@ -3246,44 +3279,44 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_UnlockJoysticks
 #endif
 
-#ifdef SDL_GetNumJoysticks
-#undef SDL_GetNumJoysticks
+#ifdef SDL_HasJoysticks
+#undef SDL_HasJoysticks
 #endif
 
-#ifdef SDL_GetJoystickNameForIndex
-#undef SDL_GetJoystickNameForIndex
+#ifdef SDL_GetJoysticks
+#undef SDL_GetJoysticks
 #endif
 
-#ifdef SDL_GetJoystickPathForIndex
-#undef SDL_GetJoystickPathForIndex
+#ifdef SDL_GetJoystickInstanceName
+#undef SDL_GetJoystickInstanceName
 #endif
 
-#ifdef SDL_GetJoystickDevicePlayerIndex
-#undef SDL_GetJoystickDevicePlayerIndex
+#ifdef SDL_GetJoystickInstancePath
+#undef SDL_GetJoystickInstancePath
 #endif
 
-#ifdef SDL_GetJoystickDeviceGUID
-#undef SDL_GetJoystickDeviceGUID
+#ifdef SDL_GetJoystickInstancePlayerIndex
+#undef SDL_GetJoystickInstancePlayerIndex
 #endif
 
-#ifdef SDL_GetJoystickDeviceVendor
-#undef SDL_GetJoystickDeviceVendor
+#ifdef SDL_GetJoystickInstanceGUID
+#undef SDL_GetJoystickInstanceGUID
 #endif
 
-#ifdef SDL_GetJoystickDeviceProduct
-#undef SDL_GetJoystickDeviceProduct
+#ifdef SDL_GetJoystickInstanceVendor
+#undef SDL_GetJoystickInstanceVendor
 #endif
 
-#ifdef SDL_GetJoystickDeviceProductVersion
-#undef SDL_GetJoystickDeviceProductVersion
+#ifdef SDL_GetJoystickInstanceProduct
+#undef SDL_GetJoystickInstanceProduct
 #endif
 
-#ifdef SDL_GetJoystickDeviceType
-#undef SDL_GetJoystickDeviceType
+#ifdef SDL_GetJoystickInstanceProductVersion
+#undef SDL_GetJoystickInstanceProductVersion
 #endif
 
-#ifdef SDL_GetJoystickDeviceInstanceID
-#undef SDL_GetJoystickDeviceInstanceID
+#ifdef SDL_GetJoystickInstanceType
+#undef SDL_GetJoystickInstanceType
 #endif
 
 #ifdef SDL_OpenJoystick
@@ -3382,8 +3415,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetJoystickGUIDInfo
 #endif
 
-#ifdef SDL_IsJoystickConnected
-#undef SDL_IsJoystickConnected
+#ifdef SDL_JoystickConnected
+#undef SDL_JoystickConnected
 #endif
 
 #ifdef SDL_GetJoystickInstanceID
@@ -3402,12 +3435,16 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetNumJoystickButtons
 #endif
 
-#ifdef SDL_UpdateJoysticks
-#undef SDL_UpdateJoysticks
+#ifdef SDL_SetJoystickEventsEnabled
+#undef SDL_SetJoystickEventsEnabled
 #endif
 
-#ifdef SDL_GetJoystickEventState
-#undef SDL_GetJoystickEventState
+#ifdef SDL_JoystickEventsEnabled
+#undef SDL_JoystickEventsEnabled
+#endif
+
+#ifdef SDL_UpdateJoysticks
+#undef SDL_UpdateJoysticks
 #endif
 
 #ifdef SDL_GetJoystickAxis
@@ -3528,6 +3565,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_ShowCursor
 #undef SDL_ShowCursor
+#endif
+
+#ifdef SDL_HideCursor
+#undef SDL_HideCursor
+#endif
+
+#ifdef SDL_CursorVisible
+#undef SDL_CursorVisible
 #endif
 
 #ifdef SDL_malloc
@@ -4166,8 +4211,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_StartTextInput
 #endif
 
-#ifdef SDL_IsTextInputActive
-#undef SDL_IsTextInputActive
+#ifdef SDL_TextInputActive
+#undef SDL_TextInputActive
 #endif
 
 #ifdef SDL_StopTextInput
@@ -4178,8 +4223,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_ClearComposition
 #endif
 
-#ifdef SDL_IsTextInputShown
-#undef SDL_IsTextInputShown
+#ifdef SDL_TextInputShown
+#undef SDL_TextInputShown
 #endif
 
 #ifdef SDL_SetTextInputRect
@@ -4190,8 +4235,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_HasScreenKeyboardSupport
 #endif
 
-#ifdef SDL_IsScreenKeyboardShown
-#undef SDL_IsScreenKeyboardShown
+#ifdef SDL_ScreenKeyboardShown
+#undef SDL_ScreenKeyboardShown
 #endif
 
 #ifdef SDL_LoadObject
