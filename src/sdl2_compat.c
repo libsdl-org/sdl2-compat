@@ -1603,7 +1603,7 @@ DECLSPEC size_t SDLCALL SDL_WriteU8(SDL2_RWops *rwops2, Uint8 x) { return SDL_RW
 
 #define DORWOPSENDIAN(order, bits) \
     DECLSPEC Uint##bits SDLCALL SDL_Read##order##bits(SDL2_RWops *rwops2) { Uint##bits x = 0; SDL_RWread(rwops2, &x, sizeof (x), 1); return SDL_Swap##order##bits(x); } \
-    DECLSPEC size_t SDL_Write##order##bits(SDL2_RWops *rwops2, Uint##bits x) { x = SDL_Swap##order##bits(x); return SDL_RWwrite(rwops2, &x, sizeof(x), 1); }
+    DECLSPEC size_t SDLCALL SDL_Write##order##bits(SDL2_RWops *rwops2, Uint##bits x) { x = SDL_Swap##order##bits(x); return SDL_RWwrite(rwops2, &x, sizeof(x), 1); }
 DORWOPSENDIAN(LE, 16)
 DORWOPSENDIAN(BE, 16)
 DORWOPSENDIAN(LE, 32)
