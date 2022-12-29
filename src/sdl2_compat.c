@@ -99,6 +99,12 @@
 extern "C" {
 #endif
 
+typedef SDL_Gamepad SDL_GameController;  /* since they're opaque types, for simplicity we just typedef it here and use the old types in sdl3_syms.h */
+typedef SDL_GamepadAxis SDL_GameControllerAxis;
+typedef SDL_GamepadBinding SDL_GameControllerButtonBind;
+typedef SDL_GamepadButton SDL_GameControllerButton;
+typedef SDL_GamepadType SDL_GameControllerType;
+
 typedef Sint64 SDL_GestureID;
 
 #define SDL3_SYM(rc,fn,params,args,ret) \
@@ -109,6 +115,11 @@ typedef Sint64 SDL_GestureID;
 /* Things that _should_ be binary compatible pass right through... */
 #define SDL3_SYM_PASSTHROUGH(rc,fn,params,args,ret) \
     DECLSPEC rc SDLCALL SDL_##fn params { ret SDL3_##fn args; }
+#include "sdl3_syms.h"
+
+/* Things that were renamed and _should_ be binary compatible pass right through with the correct names... */
+#define SDL3_SYM_RENAMED(rc,oldfn,newfn,params,args,ret) \
+    DECLSPEC rc SDLCALL SDL_##oldfn params { ret SDL3_##newfn args; }
 #include "sdl3_syms.h"
 
 
@@ -1842,7 +1853,7 @@ SDL_GameControllerAddMappingsFromRW(SDL2_RWops *rwops2, int freerw)
     int retval = -1;
     SDL_RWops *rwops3 = RWops2to3(rwops2);
     if (rwops3) {
-        retval = SDL3_GameControllerAddMappingsFromRW(rwops3, freerw);
+        retval = SDL3_AddGamepadMappingsFromRW(rwops3, freerw);
         if (!freerw) {
             SDL3_FreeRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }
@@ -1953,8 +1964,7 @@ SDL_ConvertSurfaceFormat(SDL_Surface * src, Uint32 pixel_format, Uint32 flags)
 DECLSPEC SDL_Surface * SDLCALL
 SDL_CreateRGBSurface(Uint32 flags, int width, int height, int depth, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
 {
-    return SDL3_CreateSurface(width, height,
-            SDL3_MasksToPixelFormatEnum(depth, Rmask, Gmask, Bmask, Amask));
+    return SDL3_CreateSurface(width, height, SDL3_GetPixelFormatEnumForMasks(depth, Rmask, Gmask, Bmask, Amask));
 }
 
 DECLSPEC SDL_Surface * SDLCALL
@@ -1966,8 +1976,7 @@ SDL_CreateRGBSurfaceWithFormat(Uint32 flags, int width, int height, int depth, U
 DECLSPEC SDL_Surface * SDLCALL
 SDL_CreateRGBSurfaceFrom(void *pixels, int width, int height, int depth, int pitch, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
 {
-    return SDL3_CreateSurfaceFrom(pixels, width, height, pitch,
-            SDL3_MasksToPixelFormatEnum(depth, Rmask, Gmask, Bmask, Amask));
+    return SDL3_CreateSurfaceFrom(pixels, width, height, pitch, SDL3_GetPixelFormatEnumForMasks(depth, Rmask, Gmask, Bmask, Amask));
 }
 
 DECLSPEC SDL_Surface * SDLCALL
@@ -2001,7 +2010,7 @@ SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWMinfo *wminfo)
 DECLSPEC int SDLCALL
 SDL_JoystickNumBalls(SDL_Joystick *joystick)
 {
-    if (SDL3_JoystickNumAxes(joystick) == -1) {
+    if (SDL3_GetNumJoystickAxes(joystick) == -1) {
         return -1;  /* just to call JOYSTICK_CHECK_MAGIC on `joystick`. */
     }
     return 0;
@@ -2011,7 +2020,7 @@ SDL_JoystickNumBalls(SDL_Joystick *joystick)
 DECLSPEC int SDLCALL
 SDL_JoystickGetBall(SDL_Joystick *joystick, int ball, int *dx, int *dy)
 {
-    if (SDL3_JoystickNumAxes(joystick) == -1) {
+    if (SDL3_GetNumJoystickAxes(joystick) == -1) {
         return -1;  /* just to call JOYSTICK_CHECK_MAGIC on `joystick`. */
     }
     return SDL3_SetError("Joystick only has 0 balls");
@@ -2873,10 +2882,11 @@ SDL_Has3DNow(void)
     return SDL_FALSE;
 }
 
+/* This was always a basic wrapper over SDL_free; SDL3 removed it and says use SDL_free directly. */
 DECLSPEC void SDLCALL
-SDL_FreeWAV(Uint8 * audio_buf)
+SDL_FreeWAV(Uint8 *audio_buf)
 {
-    SDL_free(audio_buf);
+    SDL3_free(audio_buf);
 }
 
 #ifdef __cplusplus
