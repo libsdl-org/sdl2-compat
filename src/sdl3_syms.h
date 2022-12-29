@@ -238,7 +238,7 @@ SDL3_SYM_PASSTHROUGH(SDL_Scancode,GetScancodeFromName,(const char *a),(a),return
 SDL3_SYM_PASSTHROUGH(const char*,GetKeyName,(SDL_Keycode a),(a),return)
 SDL3_SYM_PASSTHROUGH(SDL_Keycode,GetKeyFromName,(const char *a),(a),return)
 SDL3_SYM_PASSTHROUGH(void,StartTextInput,(void),(),)
-SDL3_SYM_PASSTHROUGH(SDL_bool,TextInputActive,(void),(),return)
+SDL3_SYM_RENAMED(SDL_bool,IsTextInputActive,TextInputActive,(void),(),return)
 SDL3_SYM_PASSTHROUGH(void,StopTextInput,(void),(),)
 SDL3_SYM_PASSTHROUGH(void,SetTextInputRect,(const SDL_Rect *a),(a),)
 SDL3_SYM_PASSTHROUGH(SDL_bool,HasScreenKeyboardSupport,(void),(),return)
