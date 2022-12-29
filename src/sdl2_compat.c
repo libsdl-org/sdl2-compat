@@ -611,7 +611,8 @@ typedef struct SDL2_RWops
     } hidden;
 } SDL2_RWops;
 
-
+/* removed in SDL3 (which only uses SDL_WINDOW_HIDDEN now). */
+#define SDL2_WINDOW_SHOWN 0x000000004
 
 /* this enum changed in SDL3. */
 typedef enum
@@ -2887,6 +2888,17 @@ DECLSPEC void SDLCALL
 SDL_FreeWAV(Uint8 *audio_buf)
 {
     SDL3_free(audio_buf);
+}
+
+/* SDL3 removed SDL_WINDOW_SHOWN as redundant to SDL_WINDOW_HIDDEN. */
+DECLSPEC Uint32 SDLCALL
+SDL_GetWindowFlags(SDL_Window *window)
+{
+    Uint32 flags = SDL3_GetWindowFlags(window);
+    if ((flags & SDL_WINDOW_HIDDEN) == 0) {
+        flags |= SDL2_WINDOW_SHOWN;
+    }
+    return flags;
 }
 
 #ifdef __cplusplus

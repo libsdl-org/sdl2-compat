@@ -525,7 +525,7 @@ SDL3_SYM_PASSTHROUGH(SDL_Window*,CreateWindow,(const char *a, int b, int c, int 
 SDL3_SYM_PASSTHROUGH(SDL_Window*,CreateWindowFrom,(const void *a),(a),return)
 SDL3_SYM_PASSTHROUGH(Uint32,GetWindowID,(SDL_Window *a),(a),return)
 SDL3_SYM_PASSTHROUGH(SDL_Window*,GetWindowFromID,(Uint32 a),(a),return)
-SDL3_SYM_PASSTHROUGH(Uint32,GetWindowFlags,(SDL_Window *a),(a),return)
+SDL3_SYM(Uint32,GetWindowFlags,(SDL_Window *a),(a),return)
 SDL3_SYM_PASSTHROUGH(void,SetWindowTitle,(SDL_Window *a, const char *b),(a,b),)
 SDL3_SYM_PASSTHROUGH(const char*,GetWindowTitle,(SDL_Window *a),(a),return)
 SDL3_SYM_PASSTHROUGH(void,SetWindowIcon,(SDL_Window *a, SDL_Surface *b),(a,b),)
