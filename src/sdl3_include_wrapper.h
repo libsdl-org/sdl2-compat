@@ -28,6 +28,11 @@
 #ifndef INCL_SDL3_INCLUDE_WRAPPER_H
 #define INCL_SDL3_INCLUDE_WRAPPER_H
 
+#undef SDL_ENABLE_OLD_NAMES
+#ifndef SDL_DISABLE_OLD_NAMES
+#define SDL_DISABLE_OLD_NAMES
+#endif
+
 #define SDL_GetVersion IGNORE_THIS_VERSION_OF_SDL_GetVersion
 #define SDL_GetRevision IGNORE_THIS_VERSION_OF_SDL_GetRevision
 #define SDL_GetRevisionNumber IGNORE_THIS_VERSION_OF_SDL_GetRevisionNumber
