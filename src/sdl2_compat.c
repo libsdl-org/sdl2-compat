@@ -105,7 +105,8 @@ typedef SDL_GamepadBinding SDL_GameControllerButtonBind;
 typedef SDL_GamepadButton SDL_GameControllerButton;
 typedef SDL_GamepadType SDL_GameControllerType;
 
-typedef Sint64 SDL_GestureID;
+
+typedef Sint64 SDL2_GestureID;
 
 #define SDL3_SYM(rc,fn,params,args,ret) \
     typedef rc (SDLCALL *SDL3_##fn##_t) params; \
@@ -933,7 +934,7 @@ typedef struct SDL2_DollarGestureEvent
     Uint32 type;
     Uint32 timestamp;
     SDL_TouchID touchId;
-    SDL_GestureID gestureId;
+    SDL2_GestureID gestureId;
     Uint32 numFingers;
     float error;
     float x;
@@ -2232,7 +2233,7 @@ SDL_SaveAllDollarTemplates(SDL2_RWops *dst)
 }
 
 DECLSPEC int SDLCALL
-SDL_SaveDollarTemplate(SDL_GestureID gestureId, SDL2_RWops *dst)
+SDL_SaveDollarTemplate(SDL2_GestureID gestureId, SDL2_RWops *dst)
 {
     int i, j;
     for (i = 0; i < GestureNumTouches; i++) {
@@ -2535,7 +2536,7 @@ static void GestureSendMulti(GestureTouch *touch, float dTheta, float dDist)
     }
 }
 
-static void GestureSendDollar(GestureTouch *touch, SDL_GestureID gestureId, float error)
+static void GestureSendDollar(GestureTouch *touch, SDL2_GestureID gestureId, float error)
 {
     if (SDL3_EventEnabled(SDL_DOLLARGESTURE)) {
         SDL2_Event event;
@@ -2552,7 +2553,7 @@ static void GestureSendDollar(GestureTouch *touch, SDL_GestureID gestureId, floa
     }
 }
 
-static void GestureSendDollarRecord(GestureTouch *touch, SDL_GestureID gestureId)
+static void GestureSendDollarRecord(GestureTouch *touch, SDL2_GestureID gestureId)
 {
     if (SDL3_EventEnabled(SDL_DOLLARRECORD)) {
         SDL2_Event event;
