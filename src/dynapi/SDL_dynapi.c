@@ -27,7 +27,7 @@
 
 #define SDL_DYNAMIC_API_ENVVAR "SDL_DYNAMIC_API"
 
-/* sdl2-compat: this types were removed from SDL3, but we need them for SDL2 APIs exported here. */
+/* sdl2-compat: these types were removed from SDL3, but we need them for SDL2 APIs exported here. */
 typedef Sint64 SDL_GestureID;
 typedef SDL_Gamepad SDL_GameController;  /* since they're opaque types, for simplicity we just typedef it here and use the old types in sdl3_syms.h */
 typedef SDL_GamepadAxis SDL_GameControllerAxis;
@@ -345,7 +345,7 @@ SDL_DYNAPI_entry(Uint32 apiver, void *table, Uint32 tablesize)
 #include <windows.h>
 static SDL_INLINE void *get_sdlapi_entry(const char *fname, const char *sym)
 {
-    HANDLE lib = LoadLibraryA(fname);
+    HMODULE lib = LoadLibraryA(fname);
     void *retval = NULL;
     if (lib) {
         retval = GetProcAddress(lib, sym);
