@@ -1,0 +1,90 @@
+#  OpenWatcom makefile to build SDL2 for Win32
+#
+!ifndef %WATCOM
+!error Environment variable WATCOM is not specified!
+!endif
+
+DLLNAME = SDL2
+VERSION = 2.90.0
+
+# change SDL2INC to point to the SDL2 headers
+SDL2INC = include
+INCPATH = -I"$(%WATCOM)/h/nt" -I"$(%WATCOM)/h"
+LIBNAME = $(DLLNAME)
+
+DLLFILE = $(LIBNAME).dll
+LIBFILE = $(LIBNAME).lib
+LNKFILE = $(LIBNAME).lnk
+
+CFLAGS =-bt=nt -d0 -zq -bm -5s -fp5 -fpi87 -sg -oeatxhn -ei
+# max warnings:
+CFLAGS+= -wx
+# avoid bogus W200 from cpuid code
+CFLAGS+= -wcd=200
+# newer OpenWatcom versions enable W303 by default
+CFLAGS+= -wcd=303
+# the include paths :
+CFLAGS+= $(INCPATH)
+# misc
+CFLAGS+= -DNDEBUG
+
+CFLAGS_DLL = $(CFLAGS)
+# building dll:
+CFLAGS_DLL+= -bd
+# the include paths :
+CFLAGS_DLL+= -I"$(SDL2INC)"
+# we override the DECLSPEC define in begin_code.h, because we are using
+# an exports file to remove the _cdecl '_' prefix from the symbol names
+CFLAGS_DLL+= -DDECLSPEC=
+
+object_files= sdl2_compat.obj SDL_dynapi.obj
+resource_obj= version.res
+
+.extensions:
+.extensions: .lib .dll .obj .c .asm .res .rc
+
+.c: ./dynapi
+.c.obj:
+	wcc386 $(CFLAGS_DLL) -fo=$^@ $<
+.rc.res:
+	wrc -q -r -bt=nt -I"$(%WATCOM)/h/nt" -fo=$^@ $<
+
+all: $(DLLFILE) $(LIBFILE) .symbolic
+
+$(DLLFILE): compiling_info $(object_files) $(resource_obj) $(LNKFILE)
+	@echo * Linking: $@
+	@wlink @$(LNKFILE)
+
+$(LIBFILE): $(DLLFILE)
+	@echo * Creating LIB file: $@
+	wlib -q -b -n -c -pa -s -t -zld -ii -io $* @SDL2.lbc
+
+compiling_info : .symbolic
+	@echo * Compiling...
+
+$(LNKFILE):
+	@echo * Creating linker file: $@
+	@%create $@
+	@%append $@ SYSTEM nt_dll INITINSTANCE TERMINSTANCE
+	@%append $@ NAME $(DLLFILE)
+	@for %i in ($(object_files)) do @%append $@ FILE %i
+	@%append $@ EXPORT=SDL2.exports
+	@%append $@ OPTION IMPF=SDL2.lbc
+	@%append $@ OPTION RESOURCE=$(resource_obj)
+	@%append $@ OPTION QUIET
+	@%append $@ OPTION MAP=$^&.map
+	@%append $@ OPTION ELIMINATE
+	@%append $@ OPTION SHOWDEAD
+
+clean: .SYMBOLIC
+	@echo * Clean: $(LIBNAME) $(VERSION)
+	@if exist *.obj rm *.obj
+	@if exist *.res rm *.res
+	@if exist *.lbc rm *.lbc
+	@if exist *.map rm *.map
+	@if exist $(LNKFILE) rm $(LNKFILE)
+
+distclean: clean .SYMBOLIC
+	@if exist *.err rm *.err
+	@if exist $(DLLFILE) rm $(DLLFILE)
+	@if exist $(LIBFILE) rm $(LIBFILE)
