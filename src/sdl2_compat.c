@@ -1766,7 +1766,7 @@ static Sint64 SDLCALL RWops2to3_write(struct SDL_RWops *rwops3, const void *ptr,
 static int SDLCALL RWops2to3_close(struct SDL_RWops *rwops3)
 {
     const int retval = SDL_RWclose((SDL2_RWops *) rwops3->hidden.unknown.data1);
-    SDL3_FreeRW(rwops3);  /* !!! FIXME: _should_ we free this if SDL_RWclose failed? */
+    SDL3_DestroyRW(rwops3);  /* !!! FIXME: _should_ we free this if SDL_RWclose failed? */
     return retval;
 }
 
@@ -1774,7 +1774,7 @@ static SDL_RWops *RWops2to3(SDL2_RWops *rwops2)
 {
     SDL_RWops *rwops3 = NULL;
     if (rwops2) {
-        rwops3 = SDL3_AllocRW();
+        rwops3 = SDL3_CreateRW();
         if (!rwops3) {
             SDL_RWclose(rwops2);
             return NULL;
@@ -1801,7 +1801,7 @@ SDL_LoadFile_RW(SDL2_RWops *rwops2, size_t *datasize, int freesrc)
     if (rwops3) {
         retval = SDL3_LoadFile_RW(rwops3, datasize, freesrc);
         if (!freesrc) {
-            SDL3_FreeRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
+            SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }
     } else {
         if (freesrc) {
@@ -1819,7 +1819,7 @@ SDL_LoadWAV_RW(SDL2_RWops *rwops2, int freesrc, SDL_AudioSpec *spec, Uint8 **aud
     if (rwops3) {
         retval = SDL3_LoadWAV_RW(rwops3, freesrc, spec, audio_buf, audio_len);
         if (!freesrc) {
-            SDL3_FreeRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
+            SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }
     } else {
         if (freesrc) {
@@ -1837,7 +1837,7 @@ SDL_LoadBMP_RW(SDL2_RWops *rwops2, int freesrc)
     if (rwops3) {
         retval = SDL3_LoadBMP_RW(rwops3, freesrc);
         if (!freesrc) {
-            SDL3_FreeRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
+            SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }
     } else {
         if (freesrc) {
@@ -1855,7 +1855,7 @@ SDL_SaveBMP_RW(SDL_Surface *surface, SDL2_RWops *rwops2, int freedst)
     if (rwops3) {
         retval = SDL3_SaveBMP_RW(surface, rwops3, freedst);
         if (!freedst) {
-            SDL3_FreeRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
+            SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }
     } else {
         if (freedst) {
@@ -1873,7 +1873,7 @@ SDL_GameControllerAddMappingsFromRW(SDL2_RWops *rwops2, int freerw)
     if (rwops3) {
         retval = SDL3_AddGamepadMappingsFromRW(rwops3, freerw);
         if (!freerw) {
-            SDL3_FreeRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
+            SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }
     } else {
         if (freerw) {
