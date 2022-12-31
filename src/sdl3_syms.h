@@ -942,6 +942,8 @@ SDL3_SYM(const char *,GetSensorInstanceName,(SDL_SensorID a),(a),return)
 SDL3_SYM(SDL_SensorType,GetSensorInstanceType,(SDL_SensorID a),(a),return)
 SDL3_SYM(int,GetSensorInstanceNonPortableType,(SDL_SensorID a),(a),return)
 SDL3_SYM(SDL_Sensor *,OpenSensor,(SDL_SensorID a),(a),return)
+SDL3_SYM(double,modf,(double a, double *b),(a,b),return)
+SDL3_SYM(float,modff,(float a, float *b),(a,b),return)
 
 #undef SDL3_SYM
 #undef SDL3_SYM_PASSTHROUGH
