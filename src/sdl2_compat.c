@@ -105,6 +105,8 @@ typedef SDL_GamepadBinding SDL_GameControllerButtonBind;
 typedef SDL_GamepadButton SDL_GameControllerButton;
 typedef SDL_GamepadType SDL_GameControllerType;
 
+typedef Sint32 SDL2_JoystickID;  /* this became unsigned in SDL3, but we'll just hope we don't overflow. */
+typedef Sint32 SDL2_SensorID;  /* this became unsigned in SDL3, but we'll just hope we don't overflow. */
 
 typedef Sint64 SDL2_GestureID;
 
@@ -775,7 +777,7 @@ typedef struct SDL2_JoyAxisEvent
 {
     Uint32 type;
     Uint32 timestamp;
-    SDL_JoystickID which;
+    SDL2_JoystickID which;
     Uint8 axis;
     Uint8 padding1;
     Uint8 padding2;
@@ -788,7 +790,7 @@ typedef struct SDL2_JoyBallEvent
 {
     Uint32 type;
     Uint32 timestamp;
-    SDL_JoystickID which;
+    SDL2_JoystickID which;
     Uint8 ball;
     Uint8 padding1;
     Uint8 padding2;
@@ -801,7 +803,7 @@ typedef struct SDL2_JoyHatEvent
 {
     Uint32 type;
     Uint32 timestamp;
-    SDL_JoystickID which;
+    SDL2_JoystickID which;
     Uint8 hat;
     Uint8 value;
     Uint8 padding1;
@@ -812,7 +814,7 @@ typedef struct SDL2_JoyButtonEvent
 {
     Uint32 type;
     Uint32 timestamp;
-    SDL_JoystickID which;
+    SDL2_JoystickID which;
     Uint8 button;
     Uint8 state;
     Uint8 padding1;
@@ -830,7 +832,7 @@ typedef struct SDL2_JoyBatteryEvent
 {
     Uint32 type;
     Uint32 timestamp;
-    SDL_JoystickID which;
+    SDL2_JoystickID which;
     SDL_JoystickPowerLevel level;
 } SDL2_JoyBatteryEvent;
 
@@ -838,7 +840,7 @@ typedef struct SDL2_ControllerAxisEvent
 {
     Uint32 type;
     Uint32 timestamp;
-    SDL_JoystickID which;
+    SDL2_JoystickID which;
     Uint8 axis;
     Uint8 padding1;
     Uint8 padding2;
@@ -851,7 +853,7 @@ typedef struct SDL2_ControllerButtonEvent
 {
     Uint32 type;
     Uint32 timestamp;
-    SDL_JoystickID which;
+    SDL2_JoystickID which;
     Uint8 button;
     Uint8 state;
     Uint8 padding1;
@@ -869,7 +871,7 @@ typedef struct SDL2_ControllerTouchpadEvent
 {
     Uint32 type;
     Uint32 timestamp;
-    SDL_JoystickID which;
+    SDL2_JoystickID which;
     Sint32 touchpad;
     Sint32 finger;
     float x;
@@ -881,7 +883,7 @@ typedef struct SDL2_ControllerSensorEvent
 {
     Uint32 type;
     Uint32 timestamp;
-    SDL_JoystickID which;
+    SDL2_JoystickID which;
     Sint32 sensor;
     float data[3];
     Uint64 timestamp_us;
@@ -1045,7 +1047,10 @@ static SDL2_EventFilter EventFilter2 = NULL;
 static void *EventFilterUserData2 = NULL;
 static SDL_mutex *EventWatchListMutex = NULL;
 static EventFilterWrapperData *EventWatchers2 = NULL;
-
+static SDL_JoystickID *joystick_list = NULL;
+static int num_joysticks = 0;
+static SDL_SensorID *sensor_list = NULL;
+static int num_sensors = 0;
 
 /* Functions! */
 
@@ -1347,6 +1352,9 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
 
         default: break;
     }
+
+    /* !!! FIXME: Deal with device add events using instance ids instead of indices in SDL3. */
+    /* !!! FIXME: Deal with mouse coords becoming floats in SDL3. */
 
     return 1;
 }
@@ -2971,6 +2979,222 @@ SDL_JoystickEventState(int state)
         retval = SDL3_JoystickEventsEnabled() ? SDL2_ENABLE : SDL2_DISABLE;
     }
     return retval;
+}
+
+
+/* SDL3 dumped the index/instance difference for various devices. */
+
+static SDL_JoystickID GetJoystickInstanceFromIndex(int idx)
+{
+    if ((idx < 0) || (idx >= num_joysticks)) {
+        SDL3_SetError("There are %d joysticks available", num_joysticks);
+        return 0;
+    }
+    return joystick_list[idx];
+}
+
+
+/* !!! FIXME: when we override SDL_Quit(), we need to free/reset joystick_list and friends*/
+/* !!! FIXME: put a mutex on the joystick and sensor lists. Strictly speaking, this will break if you multithread it, but it doesn't have to crash. */
+/* !!! FIXME: we need to override the virtual joystick stuff, since it returns a device index */
+
+DECLSPEC int SDLCALL
+SDL_NumJoysticks(void)
+{
+    SDL3_free(joystick_list);
+    joystick_list = SDL3_GetJoysticks(&num_joysticks);
+    if (joystick_list == NULL) {
+        num_joysticks = 0;
+        return -1;
+    }
+    return num_joysticks;
+}
+
+
+DECLSPEC SDL_JoystickGUID SDLCALL
+SDL_JoystickGetDeviceGUID(int idx)
+{
+    SDL_JoystickGUID guid;
+    const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
+    if (!jid) {
+        SDL_zero(guid);
+    } else {
+        guid = SDL3_GetJoystickInstanceGUID(jid);
+    }
+    return guid;
+}
+
+DECLSPEC const char* SDLCALL
+SDL_JoystickNameForIndex(int idx)
+{
+    const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
+    return jid ? SDL3_GetJoystickInstanceName(jid) : NULL;
+}
+
+DECLSPEC SDL_Joystick* SDLCALL
+SDL_JoystickOpen(int idx)
+{
+    const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
+    return jid ? SDL3_OpenJoystick(jid) : NULL;
+}
+
+DECLSPEC Uint16 SDLCALL
+SDL_JoystickGetDeviceVendor(int idx)
+{
+    const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
+    return jid ? SDL3_GetJoystickInstanceVendor(jid) : 0;
+}
+
+DECLSPEC Uint16 SDLCALL
+SDL_JoystickGetDeviceProduct(int idx)
+{
+    const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
+    return jid ? SDL3_GetJoystickInstanceProduct(jid) : 0;
+}
+
+DECLSPEC Uint16 SDLCALL
+SDL_JoystickGetDeviceProductVersion(int idx)
+{
+    const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
+    return jid ? SDL3_GetJoystickInstanceProductVersion(jid) : 0;
+}
+
+DECLSPEC SDL_JoystickType SDLCALL
+SDL_JoystickGetDeviceType(int idx)
+{
+    const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
+    return jid ? SDL3_GetJoystickInstanceType(jid) : SDL_JOYSTICK_TYPE_UNKNOWN;
+}
+
+DECLSPEC SDL2_JoystickID SDLCALL
+SDL_JoystickGetDeviceInstanceID(int idx)
+{
+    /* this counts on a Uint32 not overflowing an Sint32. */
+    const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
+    return (SDL2_JoystickID) (jid ? jid : -1);
+}
+
+DECLSPEC int SDLCALL
+SDL_JoystickGetDevicePlayerIndex(int idx)
+{
+    const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
+    return jid ? SDL3_GetJoystickInstancePlayerIndex(jid) : -1;
+}
+
+DECLSPEC SDL_bool SDLCALL
+SDL_JoystickIsVirtual(int idx)
+{
+    const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
+    return jid ? SDL3_IsJoystickVirtual(jid) : SDL_FALSE;
+}
+
+DECLSPEC const char* SDLCALL
+SDL_JoystickPathForIndex(int idx)
+{
+    const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
+    return jid ? SDL3_GetJoystickInstancePath(jid) : NULL;
+}
+
+DECLSPEC char* SDLCALL
+SDL_GameControllerMappingForDeviceIndex(int idx)
+{
+    const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
+    return jid ? SDL3_GetGamepadInstanceMapping(jid) : NULL;
+}
+
+DECLSPEC SDL_bool SDLCALL
+SDL_IsGameController(int idx)
+{
+    const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
+    return jid ? SDL3_IsGamepad(jid) : SDL_FALSE;
+}
+
+DECLSPEC const char* SDLCALL
+SDL_GameControllerNameForIndex(int idx)
+{
+    const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
+    return jid ? SDL3_GetGamepadInstanceName(jid) : NULL;
+}
+
+DECLSPEC SDL_GameController* SDLCALL
+SDL_GameControllerOpen(int idx)
+{
+    const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
+    return jid ? SDL3_OpenGamepad(jid) : NULL;
+}
+
+DECLSPEC SDL_GameControllerType SDLCALL
+SDL_GameControllerTypeForIndex(int idx)
+{
+    const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
+    return jid ? SDL3_GetGamepadInstanceType(jid) : SDL_GAMEPAD_TYPE_UNKNOWN;
+}
+
+DECLSPEC const char* SDLCALL
+SDL_GameControllerPathForIndex(int idx)
+{
+    const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
+    return jid ? SDL3_GetGamepadInstancePath(jid) : NULL;
+}
+
+
+/* !!! FIXME: when we override SDL_Quit(), we need to free/reset sensor_list */
+
+static SDL_SensorID GetSensorInstanceFromIndex(int idx)
+{
+    if ((idx < 0) || (idx >= num_sensors)) {
+        SDL3_SetError("There are %d sensors available", num_sensors);
+        return 0;
+    }
+    return sensor_list[idx];
+}
+
+DECLSPEC int SDLCALL
+SDL_NumSensors(void)
+{
+    SDL3_free(sensor_list);
+    sensor_list = SDL3_GetSensors(&num_sensors);
+    if (sensor_list == NULL) {
+        num_sensors = 0;
+        return -1;
+    }
+    return num_sensors;
+}
+
+DECLSPEC const char* SDLCALL
+SDL_SensorGetDeviceName(int idx)
+{
+    const SDL_SensorID sid = GetSensorInstanceFromIndex(idx);
+    return sid ? SDL3_GetSensorInstanceName(sid) : NULL;
+}
+
+DECLSPEC SDL_SensorType SDLCALL
+SDL_SensorGetDeviceType(int idx)
+{
+    const SDL_SensorID sid = GetSensorInstanceFromIndex(idx);
+    return sid ? SDL3_GetSensorInstanceType(sid) : SDL_SENSOR_INVALID;
+}
+
+DECLSPEC int SDLCALL
+SDL_SensorGetDeviceNonPortableType(int idx)
+{
+    const SDL_SensorID sid = GetSensorInstanceFromIndex(idx);
+    return sid ? SDL3_GetSensorInstanceNonPortableType(sid) : -1;
+}
+
+DECLSPEC SDL2_SensorID SDLCALL
+SDL_SensorGetDeviceInstanceID(int idx)
+{
+    /* this counts on a Uint32 not overflowing an Sint32. */
+    const SDL_SensorID sid = GetSensorInstanceFromIndex(idx);
+    return (SDL2_SensorID) (sid ? sid : -1);
+}
+
+DECLSPEC SDL_Sensor* SDLCALL
+SDL_SensorOpen(int idx)
+{
+    const SDL_SensorID sid = GetSensorInstanceFromIndex(idx);
+    return sid ? SDL3_OpenSensor(sid) : NULL;
 }
 
 #ifdef __cplusplus
