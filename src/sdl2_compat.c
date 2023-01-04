@@ -2838,6 +2838,254 @@ SDL_VideoQuit(void)
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
+DECLSPEC void SDLCALL 
+SDL_LockJoysticks(void)
+{
+    // FIXME    
+}
+
+DECLSPEC void SDLCALL
+SDL_UnlockJoysticks(void)
+{
+    // FIXME    
+}
+
+DECLSPEC void SDLCALL 
+SDL_LockSensors(void)
+{
+    // FIXME    
+}
+
+DECLSPEC void SDLCALL
+SDL_UnlockSensors(void)
+{
+    // FIXME    
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderDrawPoint(SDL_Renderer *renderer, int x, int y)
+{
+    SDL_FPoint fpoint;
+    fpoint.x = (float)x;
+    fpoint.y = (float)y;
+    return SDL3_RenderPoints(renderer, &fpoint, 1);
+}
+
+int SDL_RenderDrawPoints(SDL_Renderer *renderer,
+                         const SDL_Point *points, int count)
+{
+    SDL_FPoint *fpoints;
+    int i;
+    int retval;
+
+    if (points == NULL) {
+        SDL_InvalidParamError("SDL_RenderPoints(): points");
+        return -1;
+    }
+
+    fpoints = SDL_malloc(sizeof (SDL_FPoint) * count);
+    if (fpoints == NULL) {
+        return SDL_OutOfMemory();
+    }
+
+    for (i = 0; i < count; ++i) {
+        fpoints[i].x = (float)points[i].x;
+        fpoints[i].y = (float)points[i].y;
+    }
+
+    retval = SDL3_RenderPoints(renderer, fpoints, count);
+
+    SDL_free(fpoints);
+
+    return retval;
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderLine(SDL_Renderer *renderer, float x1, float y1, float x2, float y2)
+{
+    SDL_FPoint points[2];
+    points[0].x = (float)x1;
+    points[0].y = (float)y1;
+    points[1].x = (float)x2;
+    points[1].y = (float)y2;
+    return SDL3_RenderLines(renderer, points, 2);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderDrawLine(SDL_Renderer *renderer, int x1, int y1, int x2, int y2)
+{
+    SDL_FPoint points[2];
+    points[0].x = (float)x1;
+    points[0].y = (float)y1;
+    points[1].x = (float)x2;
+    points[1].y = (float)y2;
+    return SDL3_RenderLines(renderer, points, 2);
+}
+
+
+DECLSPEC int SDLCALL
+SDL_RenderDrawLines(SDL_Renderer *renderer, const SDL_Point *points, int count)
+{
+    SDL_FPoint *fpoints;
+    int i;
+    int retval;
+
+    if (points == NULL) {
+        SDL_InvalidParamError("SDL_RenderLines(): points");
+        return -1;
+    }
+
+    if (count < 2) {
+        return 0;
+    }
+
+    fpoints = SDL_malloc(sizeof (SDL_FPoint) * count);
+    if (fpoints == NULL) {
+        return SDL_OutOfMemory();
+    }
+
+    for (i = 0; i < count; ++i) {
+        fpoints[i].x = (float)points[i].x;
+        fpoints[i].y = (float)points[i].y;
+    }
+
+    retval = SDL3_RenderLines(renderer, fpoints, count);
+
+    SDL_free(fpoints);
+
+    return retval;
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderDrawRect(SDL_Renderer *renderer, const SDL_Rect *rect)
+{
+    SDL_FRect frect;
+    SDL_FRect *prect = NULL;
+
+    if (rect) {
+        frect.x = (float)rect->x;
+        frect.y = (float)rect->y;
+        frect.w = (float)rect->w;
+        frect.h = (float)rect->h;
+        prect = &frect;
+    }
+
+    return SDL3_RenderRect(renderer, prect);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderDrawRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
+{
+    int i;
+
+    if (rects == NULL) {
+        SDL_InvalidParamError("SDL_RenderRectsFloat(): rects");
+        return -1;
+    }
+    if (count < 1) {
+        return 0;
+    }
+
+    for (i = 0; i < count; ++i) {
+        if (SDL_RenderDrawRect(renderer, &rects[i]) < 0) {
+            return -1;
+        }
+    }
+    return 0;
+}
+
+
+DECLSPEC int SDLCALL
+SDL_RenderFillRect(SDL_Renderer *renderer, const SDL_Rect *rect)
+{
+    SDL_FRect frect;
+    if (rect) {
+        frect.x = (float)rect->x;
+        frect.y = (float)rect->y;
+        frect.w = (float)rect->w;
+        frect.h = (float)rect->h;
+        return SDL3_RenderFillRect(renderer, &frect);
+    } else {
+        return SDL3_RenderFillRect(renderer, NULL);
+    }
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderFillRects(SDL_Renderer *renderer, const SDL_FRect *rects, int count)
+{
+    SDL_FRect *frects;
+    int i;
+    int retval;
+
+    if (rects == NULL) {
+        SDL_InvalidParamError("SDL_RenderFillRectsFloat(): rects");
+        return -1;
+    }
+    if (count < 1) {
+        return 0;
+    }
+
+    frects = SDL_malloc(sizeof (SDL_FRect) * count);
+    if (frects == NULL) {
+        return SDL_OutOfMemory();
+    }
+    for (i = 0; i < count; ++i) {
+        frects[i].x = rects[i].x;
+        frects[i].y = rects[i].y;
+        frects[i].w = rects[i].w;
+        frects[i].h = rects[i].h;
+    }
+
+    retval = SDL3_RenderFillRects(renderer, frects, count);
+
+    SDL_free(frects);
+
+    return retval;
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderCopy(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect *srcrect, const SDL_Rect *dstrect)
+{
+    SDL_FRect dstfrect;
+    SDL_FRect *pdstfrect = NULL;
+    if (dstrect) {
+        dstfrect.x = (float)dstrect->x;
+        dstfrect.y = (float)dstrect->y;
+        dstfrect.w = (float)dstrect->w;
+        dstfrect.h = (float)dstrect->h;
+        pdstfrect = &dstfrect;
+    }
+    return SDL3_RenderTexture(renderer, texture, srcrect, pdstfrect);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderCopyEx(SDL_Renderer *renderer, SDL_Texture *texture,
+                     const SDL_Rect *srcrect, const SDL_Rect *dstrect,
+                     const double angle, const SDL_Point *center, const SDL_RendererFlip flip)
+{
+    SDL_FRect dstfrect;
+    SDL_FRect *pdstfrect = NULL;
+    SDL_FPoint fcenter;
+    SDL_FPoint *pfcenter = NULL;
+
+    if (dstrect) {
+        dstfrect.x = (float)dstrect->x;
+        dstfrect.y = (float)dstrect->y;
+        dstfrect.w = (float)dstrect->w;
+        dstfrect.h = (float)dstrect->h;
+        pdstfrect = &dstfrect;
+    }
+
+    if (center) {
+        fcenter.x = (float)center->x;
+        fcenter.y = (float)center->y;
+        pfcenter = &fcenter;
+    }
+
+    return SDL3_RenderTextureRotated(renderer, texture, srcrect, pdstfrect, angle, pfcenter, flip);
+}
+
+
 /* SDL3 doesn't have 3dNow. */
 #if defined(__GNUC__) && defined(__i386__)
 #define cpuid(func, a, b, c, d) \
