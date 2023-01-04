@@ -2884,7 +2884,7 @@ SDL_RenderDrawPoints(SDL_Renderer *renderer,
         return -1;
     }
 
-    fpoints = SDL_malloc(sizeof (SDL_FPoint) * count);
+    fpoints = (SDL_FPoint *) SDL_malloc(sizeof (SDL_FPoint) * count);
     if (fpoints == NULL) {
         return SDL_OutOfMemory();
     }
@@ -2940,7 +2940,7 @@ SDL_RenderDrawLines(SDL_Renderer *renderer, const SDL_Point *points, int count)
         return 0;
     }
 
-    fpoints = SDL_malloc(sizeof (SDL_FPoint) * count);
+    fpoints = (SDL_FPoint *) SDL_malloc(sizeof (SDL_FPoint) * count);
     if (fpoints == NULL) {
         return SDL_OutOfMemory();
     }
@@ -3026,7 +3026,7 @@ SDL_RenderFillRects(SDL_Renderer *renderer, const SDL_FRect *rects, int count)
         return 0;
     }
 
-    frects = SDL_malloc(sizeof (SDL_FRect) * count);
+    frects = (SDL_FRect *) SDL_malloc(sizeof (SDL_FRect) * count);
     if (frects == NULL) {
         return SDL_OutOfMemory();
     }
