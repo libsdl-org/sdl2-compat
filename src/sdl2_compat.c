@@ -2841,6 +2841,13 @@ SDL_VideoQuit(void)
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
+DECLSPEC int SDLCALL SDL_GL_GetSwapInterval(void)
+{
+    int val = 0;
+    SDL3_GL_GetSwapInterval(&val);
+    return val;
+}
+
 DECLSPEC void SDLCALL 
 SDL_LockJoysticks(void)
 {
