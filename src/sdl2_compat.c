@@ -1053,6 +1053,9 @@ static int num_joysticks = 0;
 static SDL_SensorID *sensor_list = NULL;
 static int num_sensors = 0;
 
+static SDL_mutex *joystick_lock = NULL;
+static SDL_mutex *sensor_lock = NULL;
+
 /* Functions! */
 
 static int SDLCALL EventFilter3to2(void *userdata, SDL_Event *event3);
@@ -1069,9 +1072,20 @@ SDL2Compat_InitOnStartup(void)
         SDL3_SetEventFilter(EventFilter3to2, NULL);
     }
 
+    sensor_lock = SDL3_CreateMutex();
+    if (sensor_lock == NULL) {
+        okay = 0;
+    }
+
+    joystick_lock = SDL3_CreateMutex();
+    if (sensor_lock == NULL) {
+        okay = 0;
+    }
+
     if (!okay) {
         strcpy_fn(loaderror, "Failed to initialize sdl2-compat library.");
     }
+
     return okay;
 }
 
@@ -2846,28 +2860,28 @@ DECLSPEC int SDLCALL SDL_GL_GetSwapInterval(void)
     return val;
 }
 
-DECLSPEC void SDLCALL 
+DECLSPEC void SDLCALL
 SDL_LockJoysticks(void)
 {
-    // FIXME    
+    SDL3_LockMutex(joystick_lock);
 }
 
 DECLSPEC void SDLCALL
 SDL_UnlockJoysticks(void)
 {
-    // FIXME    
+    SDL3_UnlockMutex(joystick_lock);
 }
 
-DECLSPEC void SDLCALL 
+DECLSPEC void SDLCALL
 SDL_LockSensors(void)
 {
-    // FIXME    
+    SDL3_LockMutex(sensor_lock);
 }
 
 DECLSPEC void SDLCALL
 SDL_UnlockSensors(void)
 {
-    // FIXME    
+    SDL3_UnlockMutex(sensor_lock);
 }
 
 typedef struct
