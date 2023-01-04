@@ -1877,10 +1877,8 @@ SDL_GameControllerAddMappingsFromRW(SDL2_RWops *rwops2, int freerw)
         if (!freerw) {
             SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }
-    } else {
-        if (freerw) {
-            SDL_RWclose(rwops2);
-        }
+    } else if (freerw && rwops2) {
+        SDL_RWclose(rwops2);
     }
     return retval;
 }
