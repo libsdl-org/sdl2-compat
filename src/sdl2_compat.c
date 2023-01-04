@@ -2871,8 +2871,9 @@ SDL_RenderDrawPoint(SDL_Renderer *renderer, int x, int y)
     return SDL3_RenderPoints(renderer, &fpoint, 1);
 }
 
-int SDL_RenderDrawPoints(SDL_Renderer *renderer,
-                         const SDL_Point *points, int count)
+DECLSPEC int SDLCALL
+SDL_RenderDrawPoints(SDL_Renderer *renderer,
+                     const SDL_Point *points, int count)
 {
     SDL_FPoint *fpoints;
     int i;
