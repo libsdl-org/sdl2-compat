@@ -1078,7 +1078,7 @@ SDL2Compat_InitOnStartup(void)
     }
 
     joystick_lock = SDL3_CreateMutex();
-    if (sensor_lock == NULL) {
+    if (joystick_lock == NULL) {
         okay = 0;
     }
 
