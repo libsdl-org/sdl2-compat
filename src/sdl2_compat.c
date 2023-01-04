@@ -132,9 +132,10 @@ typedef Sint64 SDL2_GestureID;
 #define SDL3_InvalidParamError(param) SDL3_SetError("Parameter '%s' is invalid", (param))
 #define SDL3_zero(x) SDL3_memset(&(x), 0, sizeof((x)))
 #define SDL3_zerop(x) SDL3_memset((x), 0, sizeof(*(x)))
-#define SDL3_copyp(dst, src)                                                                 \
-    { SDL_COMPILE_TIME_ASSERT(SDL3_copyp, sizeof (*(dst)) == sizeof (*(src))); }             \
-    SDL3_memcpy((dst), (src), sizeof (*(src)))
+#define SDL3_zeroa(x) SDL3_memset((x), 0, sizeof((x)))
+#define SDL3_copyp(dst, src)                                                    \
+    { SDL_COMPILE_TIME_ASSERT(SDL3_copyp, sizeof(*(dst)) == sizeof(*(src))); }  \
+    SDL3_memcpy((dst), (src), sizeof(*(src)))
 
 
 static SDL_bool WantDebugLogging = SDL_FALSE;
@@ -1393,7 +1394,7 @@ SDL_PeepEvents(SDL2_Event *events2, int numevents, SDL_eventaction action, Uint3
     int i;
 
     if (!events3) {
-        return SDL_OutOfMemory();
+        return SDL3_OutOfMemory();
     }
     if (action == SDL_ADDEVENT) {
         for (i = 0; i < numevents; i++) {
@@ -1498,7 +1499,7 @@ SDL_AllocRW(void)
 {
     SDL2_RWops *area2 = (SDL2_RWops *)SDL3_malloc(sizeof *area2);
     if (area2 == NULL) {
-        SDL_OutOfMemory();
+        SDL3_OutOfMemory();
     } else {
         area2->type = SDL_RWOPS_UNKNOWN;
     }
@@ -1543,7 +1544,7 @@ static SDL2_RWops *RWops3to2(SDL_RWops *rwops3)
             return NULL;
         }
 
-        SDL_zerop(rwops2);
+        SDL3_zerop(rwops2);
         rwops2->size = RWops3to2_size;
         rwops2->seek = RWops3to2_seek;
         rwops2->read = RWops3to2_read;
@@ -1781,7 +1782,7 @@ static SDL_RWops *RWops2to3(SDL2_RWops *rwops2)
             return NULL;
         }
 
-        SDL_zerop(rwops3);
+        SDL3_zerop(rwops3);
         rwops3->size = RWops2to3_size;
         rwops3->seek = RWops2to3_seek;
         rwops3->read = RWops2to3_read;
@@ -1926,7 +1927,8 @@ SDL_CalculateGammaRamp(float gamma, Uint16 *ramp)
     if (gamma == 0.0f) {
         SDL_memset(ramp, 0, 256 * sizeof(Uint16));
         return;
-    } else if (gamma == 1.0f) {
+    }
+    if (gamma == 1.0f) {
         /* 1.0 gamma is identity */
         for (i = 0; i < 256; ++i) {
             ramp[i] = (i << 8) | i;
@@ -2737,7 +2739,7 @@ SDL_GetRenderDriverInfo(int index, SDL_RendererInfo * info)
         return -1;  /* assume SDL3_GetRenderDriver set the SDL error. */
     }
 
-    SDL_zerop(info);
+    SDL3_zerop(info);
     info->name = name;
 
     /* these are the values that SDL2 returns. */
@@ -3261,7 +3263,7 @@ SDL_JoystickGetDeviceGUID(int idx)
     SDL_JoystickGUID guid;
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
     if (!jid) {
-        SDL_zero(guid);
+        SDL3_zero(guid);
     } else {
         guid = SDL3_GetJoystickInstanceGUID(jid);
     }
