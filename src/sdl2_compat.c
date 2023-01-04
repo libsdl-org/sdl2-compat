@@ -1394,7 +1394,8 @@ SDL_PeepEvents(SDL2_Event *events2, int numevents, SDL_eventaction action, Uint3
 
     if (!events3) {
         return SDL_OutOfMemory();
-    } else if (action == SDL_ADDEVENT) {
+    }
+    if (action == SDL_ADDEVENT) {
         for (i = 0; i < numevents; i++) {
             Event2to3(&events2[i], &events3[i]);
         }
@@ -1913,11 +1914,11 @@ SDL_CalculateGammaRamp(float gamma, Uint16 *ramp)
 
     /* Input validation */
     if (gamma < 0.0f) {
-      SDL_InvalidParamError("gamma");
+      SDL3_InvalidParamError("gamma");
       return;
     }
     if (ramp == NULL) {
-      SDL_InvalidParamError("ramp");
+      SDL3_InvalidParamError("ramp");
       return;
     }
 
@@ -2880,13 +2881,12 @@ SDL_RenderDrawPoints(SDL_Renderer *renderer,
     int retval;
 
     if (points == NULL) {
-        SDL_InvalidParamError("SDL_RenderPoints(): points");
-        return -1;
+        return SDL3_InvalidParamError("SDL_RenderPoints(): points");
     }
 
     fpoints = (SDL_FPoint *) SDL_malloc(sizeof (SDL_FPoint) * count);
     if (fpoints == NULL) {
-        return SDL_OutOfMemory();
+        return SDL3_OutOfMemory();
     }
 
     for (i = 0; i < count; ++i) {
@@ -2932,17 +2932,15 @@ SDL_RenderDrawLines(SDL_Renderer *renderer, const SDL_Point *points, int count)
     int retval;
 
     if (points == NULL) {
-        SDL_InvalidParamError("SDL_RenderLines(): points");
-        return -1;
+        return SDL3_InvalidParamError("SDL_RenderLines(): points");
     }
-
     if (count < 2) {
         return 0;
     }
 
     fpoints = (SDL_FPoint *) SDL_malloc(sizeof (SDL_FPoint) * count);
     if (fpoints == NULL) {
-        return SDL_OutOfMemory();
+        return SDL3_OutOfMemory();
     }
 
     for (i = 0; i < count; ++i) {
@@ -2980,8 +2978,7 @@ SDL_RenderDrawRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
     int i;
 
     if (rects == NULL) {
-        SDL_InvalidParamError("SDL_RenderRectsFloat(): rects");
-        return -1;
+        return SDL3_InvalidParamError("SDL_RenderRectsFloat(): rects");
     }
     if (count < 1) {
         return 0;
@@ -3006,9 +3003,8 @@ SDL_RenderFillRect(SDL_Renderer *renderer, const SDL_Rect *rect)
         frect.w = (float)rect->w;
         frect.h = (float)rect->h;
         return SDL3_RenderFillRect(renderer, &frect);
-    } else {
-        return SDL3_RenderFillRect(renderer, NULL);
     }
+    return SDL3_RenderFillRect(renderer, NULL);
 }
 
 DECLSPEC int SDLCALL
@@ -3019,8 +3015,7 @@ SDL_RenderFillRects(SDL_Renderer *renderer, const SDL_FRect *rects, int count)
     int retval;
 
     if (rects == NULL) {
-        SDL_InvalidParamError("SDL_RenderFillRectsFloat(): rects");
-        return -1;
+        return SDL3_InvalidParamError("SDL_RenderFillRectsFloat(): rects");
     }
     if (count < 1) {
         return 0;
@@ -3028,7 +3023,7 @@ SDL_RenderFillRects(SDL_Renderer *renderer, const SDL_FRect *rects, int count)
 
     frects = (SDL_FRect *) SDL_malloc(sizeof (SDL_FRect) * count);
     if (frects == NULL) {
-        return SDL_OutOfMemory();
+        return SDL3_OutOfMemory();
     }
     for (i = 0; i < count; ++i) {
         frects[i].x = rects[i].x;
