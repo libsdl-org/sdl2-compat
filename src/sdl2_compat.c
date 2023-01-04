@@ -2870,6 +2870,92 @@ SDL_UnlockSensors(void)
     // FIXME    
 }
 
+typedef struct
+{
+    Uint32 format;              /**< pixel format */
+    int w;                      /**< width, in screen coordinates */
+    int h;                      /**< height, in screen coordinates */
+    int refresh_rate;           /**< refresh rate (or zero for unspecified) */
+    void *driverdata;           /**< driver-specific data, initialize to 0 */
+} SDL2_DisplayMode;
+
+static void DisplayMode_2to3(const SDL2_DisplayMode *in, SDL_DisplayMode *out) {
+    if (in && out) {
+        out->format = in->format;
+        out->w = in->w;
+        out->h = in->h;
+        out->refresh_rate = (float) in->refresh_rate;
+        out->driverdata = in->driverdata;
+    }
+}
+
+static void DisplayMode_3to2(const SDL_DisplayMode *in, SDL2_DisplayMode *out) {
+    if (in && out) {
+        out->format = in->format;
+        out->w = in->w;
+        out->h = in->h;
+        out->refresh_rate = (int) SDL_ceil(in->refresh_rate);
+        out->driverdata = in->driverdata;
+    }
+}
+
+DECLSPEC int SDLCALL
+SDL_GetDisplayMode(int displayIndex, int modeIndex, SDL2_DisplayMode *mode)
+{
+    SDL_DisplayMode dp;
+    int ret = SDL3_GetDisplayMode(displayIndex, modeIndex, mode ? &dp : NULL);
+    DisplayMode_3to2(&dp, mode);
+    return ret;
+}
+
+DECLSPEC int SDLCALL
+SDL_GetCurrentDisplayMode(int displayIndex, SDL2_DisplayMode *mode)
+{
+    SDL_DisplayMode dp;
+    int ret = SDL3_GetCurrentDisplayMode(displayIndex, mode ? &dp : NULL);
+    DisplayMode_3to2(&dp, mode);
+    return ret;
+}
+
+DECLSPEC int SDLCALL
+SDL_GetDesktopDisplayMode(int displayIndex, SDL2_DisplayMode *mode)
+{
+    SDL_DisplayMode dp;
+    int ret = SDL3_GetDesktopDisplayMode(displayIndex, mode ? &dp : NULL);
+    DisplayMode_3to2(&dp, mode);
+    return ret;
+}
+
+DECLSPEC int SDLCALL
+SDL_GetWindowDisplayMode(SDL_Window * window, SDL2_DisplayMode * mode)
+{
+    SDL_DisplayMode dp;
+    int ret = SDL3_GetWindowDisplayMode(window, mode ? &dp : NULL);
+    DisplayMode_3to2(&dp, mode);
+    return ret;
+}
+
+DECLSPEC SDL2_DisplayMode * SDLCALL
+SDL_GetClosestDisplayMode(int displayIndex, const SDL2_DisplayMode * mode, SDL2_DisplayMode * closest)
+{
+    SDL_DisplayMode dp;
+    SDL_DisplayMode closest3;
+    SDL_DisplayMode *ret;
+    static SDL2_DisplayMode ret2; // FIXME alloc ??
+    DisplayMode_2to3(closest, &closest3);
+    ret = SDL3_GetClosestDisplayMode(displayIndex, mode ? &dp : NULL, closest ? &closest3 : NULL);
+    DisplayMode_3to2(ret, &ret2);
+    return &ret2;
+}
+
+DECLSPEC int SDLCALL
+SDL_SetWindowDisplayMode(SDL_Window * window, const SDL2_DisplayMode * mode)
+{
+    SDL_DisplayMode dp;
+    DisplayMode_2to3(mode, &dp);
+    return SDL3_SetWindowDisplayMode(window, mode ? &dp : NULL);
+}
+
 DECLSPEC int SDLCALL
 SDL_RenderDrawPoint(SDL_Renderer *renderer, int x, int y)
 {
