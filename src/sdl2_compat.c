@@ -2860,6 +2860,161 @@ DECLSPEC int SDLCALL SDL_GL_GetSwapInterval(void)
     return val;
 }
 
+static SDL_AudioDeviceID g_audio_id = 0;
+static SDL_AudioSpec g_audio_spec;
+
+DECLSPEC int SDLCALL
+SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained)
+{
+    SDL_AudioDeviceID id = 0;
+
+    /* Start up the audio driver, if necessary. This is legacy behaviour! */
+    if (!SDL_WasInit(SDL_INIT_AUDIO)) {
+        if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0) {
+            return -1;
+        }
+    }
+
+    if (g_audio_id > 0) {
+        SDL_SetError("Audio device is already opened");
+        return -1;
+    }
+
+    if (obtained) {
+        id = SDL_OpenAudioDevice(NULL, 0, desired, obtained, SDL_AUDIO_ALLOW_ANY_CHANGE);
+
+        g_audio_spec = *obtained;
+    } else {
+        SDL_AudioSpec _obtained;
+        SDL_zero(_obtained);
+        id = SDL_OpenAudioDevice(NULL, 0, desired, &_obtained, 0);
+        /* On successful open, copy calculated values into 'desired'. */
+        if (id > 0) {
+            desired->size = _obtained.size;
+            desired->silence = _obtained.silence;
+        }
+
+        g_audio_spec = _obtained;
+    }
+
+    if (id > 0) {
+        g_audio_id = id;
+        return 0;
+    } else {
+        return -1;
+    }
+}
+
+/*
+ * Moved here from SDL_mixer.c, since it relies on internals of an opened
+ *  audio device (and is deprecated, by the way!).
+ */
+DECLSPEC void SDLCALL
+SDL_MixAudio(Uint8 *dst, const Uint8 *src, Uint32 len, int volume)
+{
+    /* Mix the user-level audio format */
+    if (g_audio_id > 0) {
+        SDL_MixAudioFormat(dst, src, g_audio_spec.format, len, volume); // FIXME: is this correct ??
+    }
+}
+
+DECLSPEC Uint32 SDLCALL
+SDL_GetQueuedAudioSize(SDL_AudioDeviceID dev)
+{
+    SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
+    return SDL3_GetQueuedAudioSize(id);
+}
+ 
+DECLSPEC int SDLCALL 
+SDL_QueueAudio(SDL_AudioDeviceID dev, const void *data, Uint32 len)
+{
+    SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
+    return SDL3_QueueAudio(id, data, len);
+}
+
+DECLSPEC Uint32 SDLCALL
+SDL_DequeueAudio(SDL_AudioDeviceID dev, void *data, Uint32 len)
+{
+    SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
+    return SDL3_DequeueAudio(id, data, len);
+}
+
+DECLSPEC void SDLCALL
+SDL_ClearQueuedAudio(SDL_AudioDeviceID dev)
+{
+    SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
+    return SDL3_ClearQueuedAudio(id);
+}
+
+DECLSPEC void SDLCALL
+SDL_PauseAudioDevice(SDL_AudioDeviceID dev, int pause_on)
+{
+    SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
+    SDL3_PauseAudioDevice(id, pause_on);
+}
+
+DECLSPEC SDL_AudioStatus SDLCALL
+SDL_GetAudioDeviceStatus(SDL_AudioDeviceID dev)
+{
+    SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
+    return SDL3_GetAudioDeviceStatus(id);
+}
+
+DECLSPEC void SDLCALL
+SDL_LockAudioDevice(SDL_AudioDeviceID dev)
+{
+    SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
+    SDL3_LockAudioDevice(id);
+}
+
+DECLSPEC void SDLCALL 
+SDL_UnlockAudioDevice(SDL_AudioDeviceID dev)
+{
+    SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
+    SDL3_UnlockAudioDevice(id);
+}
+
+DECLSPEC void SDLCALL 
+SDL_CloseAudioDevice(SDL_AudioDeviceID dev)
+{
+    SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
+    SDL3_CloseAudioDevice(id);
+}
+
+
+DECLSPEC void SDLCALL
+SDL_LockAudio(void)
+{
+    SDL_LockAudioDevice(1);
+}
+
+DECLSPEC void SDLCALL
+SDL_UnlockAudio(void)
+{
+    SDL_UnlockAudioDevice(1);
+}
+
+DECLSPEC void SDLCALL
+SDL_CloseAudio(void)
+{
+    SDL_CloseAudioDevice(1);
+    g_audio_id = 0;
+}
+
+DECLSPEC void SDLCALL
+SDL_PauseAudio(int pause_on)
+{
+    SDL_PauseAudioDevice(1, pause_on);
+}
+
+DECLSPEC SDL_AudioStatus SDLCALL
+SDL_GetAudioStatus(void)
+{
+    return SDL_GetAudioDeviceStatus(1);
+}
+
+
+
 DECLSPEC void SDLCALL
 SDL_LockJoysticks(void)
 {
@@ -2883,6 +3038,7 @@ SDL_UnlockSensors(void)
 {
     SDL3_UnlockMutex(sensor_lock);
 }
+
 
 typedef struct
 {

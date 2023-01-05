@@ -36,37 +36,29 @@
 #define SDL_GetNumAudioDrivers IGNORE_THIS_VERSION_OF_SDL_GetNumAudioDrivers
 #define SDL_GetAudioDriver IGNORE_THIS_VERSION_OF_SDL_GetAudioDriver
 #define SDL_GetCurrentAudioDriver IGNORE_THIS_VERSION_OF_SDL_GetCurrentAudioDriver
-#define SDL_OpenAudio IGNORE_THIS_VERSION_OF_SDL_OpenAudio
 #define SDL_GetNumAudioDevices IGNORE_THIS_VERSION_OF_SDL_GetNumAudioDevices
 #define SDL_GetAudioDeviceName IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceName
 #define SDL_GetAudioDeviceSpec IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceSpec
 #define SDL_GetDefaultAudioInfo IGNORE_THIS_VERSION_OF_SDL_GetDefaultAudioInfo
 #define SDL_OpenAudioDevice IGNORE_THIS_VERSION_OF_SDL_OpenAudioDevice
-#define SDL_GetAudioStatus IGNORE_THIS_VERSION_OF_SDL_GetAudioStatus
 #define SDL_GetAudioDeviceStatus IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceStatus
-#define SDL_PauseAudio IGNORE_THIS_VERSION_OF_SDL_PauseAudio
 #define SDL_PauseAudioDevice IGNORE_THIS_VERSION_OF_SDL_PauseAudioDevice
 #define SDL_LoadWAV_RW IGNORE_THIS_VERSION_OF_SDL_LoadWAV_RW
 #define SDL_BuildAudioCVT IGNORE_THIS_VERSION_OF_SDL_BuildAudioCVT
 #define SDL_ConvertAudio IGNORE_THIS_VERSION_OF_SDL_ConvertAudio
 #define SDL_CreateAudioStream IGNORE_THIS_VERSION_OF_SDL_CreateAudioStream
 #define SDL_PutAudioStreamData IGNORE_THIS_VERSION_OF_SDL_PutAudioStreamData
-#define SDL_GetAudioStreamData IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamData
 #define SDL_GetAudioStreamAvailable IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamAvailable
 #define SDL_FlushAudioStream IGNORE_THIS_VERSION_OF_SDL_FlushAudioStream
 #define SDL_ClearAudioStream IGNORE_THIS_VERSION_OF_SDL_ClearAudioStream
 #define SDL_DestroyAudioStream IGNORE_THIS_VERSION_OF_SDL_DestroyAudioStream
-#define SDL_MixAudio IGNORE_THIS_VERSION_OF_SDL_MixAudio
 #define SDL_MixAudioFormat IGNORE_THIS_VERSION_OF_SDL_MixAudioFormat
 #define SDL_QueueAudio IGNORE_THIS_VERSION_OF_SDL_QueueAudio
 #define SDL_DequeueAudio IGNORE_THIS_VERSION_OF_SDL_DequeueAudio
 #define SDL_GetQueuedAudioSize IGNORE_THIS_VERSION_OF_SDL_GetQueuedAudioSize
 #define SDL_ClearQueuedAudio IGNORE_THIS_VERSION_OF_SDL_ClearQueuedAudio
-#define SDL_LockAudio IGNORE_THIS_VERSION_OF_SDL_LockAudio
 #define SDL_LockAudioDevice IGNORE_THIS_VERSION_OF_SDL_LockAudioDevice
-#define SDL_UnlockAudio IGNORE_THIS_VERSION_OF_SDL_UnlockAudio
 #define SDL_UnlockAudioDevice IGNORE_THIS_VERSION_OF_SDL_UnlockAudioDevice
-#define SDL_CloseAudio IGNORE_THIS_VERSION_OF_SDL_CloseAudio
 #define SDL_CloseAudioDevice IGNORE_THIS_VERSION_OF_SDL_CloseAudioDevice
 #define SDL_hid_init IGNORE_THIS_VERSION_OF_SDL_hid_init
 #define SDL_hid_exit IGNORE_THIS_VERSION_OF_SDL_hid_exit
@@ -967,10 +959,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetCurrentAudioDriver
 #endif
 
-#ifdef SDL_OpenAudio
-#undef SDL_OpenAudio
-#endif
-
 #ifdef SDL_GetNumAudioDevices
 #undef SDL_GetNumAudioDevices
 #endif
@@ -991,16 +979,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_OpenAudioDevice
 #endif
 
-#ifdef SDL_GetAudioStatus
-#undef SDL_GetAudioStatus
-#endif
-
 #ifdef SDL_GetAudioDeviceStatus
 #undef SDL_GetAudioDeviceStatus
-#endif
-
-#ifdef SDL_PauseAudio
-#undef SDL_PauseAudio
 #endif
 
 #ifdef SDL_PauseAudioDevice
@@ -1047,10 +1027,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_DestroyAudioStream
 #endif
 
-#ifdef SDL_MixAudio
-#undef SDL_MixAudio
-#endif
-
 #ifdef SDL_MixAudioFormat
 #undef SDL_MixAudioFormat
 #endif
@@ -1071,24 +1047,12 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_ClearQueuedAudio
 #endif
 
-#ifdef SDL_LockAudio
-#undef SDL_LockAudio
-#endif
-
 #ifdef SDL_LockAudioDevice
 #undef SDL_LockAudioDevice
 #endif
 
-#ifdef SDL_UnlockAudio
-#undef SDL_UnlockAudio
-#endif
-
 #ifdef SDL_UnlockAudioDevice
 #undef SDL_UnlockAudioDevice
-#endif
-
-#ifdef SDL_CloseAudio
-#undef SDL_CloseAudio
 #endif
 
 #ifdef SDL_CloseAudioDevice
