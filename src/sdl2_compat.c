@@ -1554,7 +1554,7 @@ static SDL2_RWops *RWops3to2(SDL_RWops *rwops3)
     if (rwops3) {
         rwops2 = SDL_AllocRW();
         if (!rwops2) {
-            SDL3_RWclose(rwops3);
+            SDL3_RWclose(rwops3);  /* !!! FIXME: make sure this is still safe if things change. */
             return NULL;
         }
 
@@ -1792,7 +1792,6 @@ static SDL_RWops *RWops2to3(SDL2_RWops *rwops2)
     if (rwops2) {
         rwops3 = SDL3_CreateRW();
         if (!rwops3) {
-            SDL_RWclose(rwops2);
             return NULL;
         }
 
@@ -1819,7 +1818,7 @@ SDL_LoadFile_RW(SDL2_RWops *rwops2, size_t *datasize, int freesrc)
         if (!freesrc) {
             SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }
-    } else {
+    } else if (rwops2) {
         if (freesrc) {
             SDL_RWclose(rwops2);
         }
@@ -1837,7 +1836,7 @@ SDL_LoadWAV_RW(SDL2_RWops *rwops2, int freesrc, SDL_AudioSpec *spec, Uint8 **aud
         if (!freesrc) {
             SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }
-    } else {
+    } else if (rwops2) {
         if (freesrc) {
             SDL_RWclose(rwops2);
         }
@@ -1855,7 +1854,7 @@ SDL_LoadBMP_RW(SDL2_RWops *rwops2, int freesrc)
         if (!freesrc) {
             SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }
-    } else {
+    } else if (rwops2) {
         if (freesrc) {
             SDL_RWclose(rwops2);
         }
@@ -1873,7 +1872,7 @@ SDL_SaveBMP_RW(SDL_Surface *surface, SDL2_RWops *rwops2, int freedst)
         if (!freedst) {
             SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }
-    } else {
+    } else if (rwops2) {
         if (freedst) {
             SDL_RWclose(rwops2);
         }
@@ -1891,8 +1890,10 @@ SDL_GameControllerAddMappingsFromRW(SDL2_RWops *rwops2, int freerw)
         if (!freerw) {
             SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }
-    } else if (freerw && rwops2) {
-        SDL_RWclose(rwops2);
+    } else if (rwops2) {
+        if (freerw) {
+            SDL_RWclose(rwops2);
+        }
     }
     return retval;
 }
