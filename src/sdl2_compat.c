@@ -1260,6 +1260,30 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     event2->common.type = event3->type;
     event2->common.timestamp = (Uint32) SDL_NS_TO_MS(event3->common.timestamp);
     SDL3_memcpy((&event2->common) + 1, (&event3->common) + 1, sizeof (SDL2_Event) - sizeof (SDL2_CommonEvent));
+    switch (event3->type) {
+    case SDL_MOUSEMOTION:
+        event2->motion.x = (Sint32)event3->motion.x;
+        event2->motion.y = (Sint32)event3->motion.y;
+        event2->motion.xrel = (Sint32)event3->motion.xrel;
+        event2->motion.yrel = (Sint32)event3->motion.yrel;
+        break;
+    case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP:
+        event2->button.x = (Sint32)event3->button.x;
+        event2->button.y = (Sint32)event3->button.y;
+        break;
+    case SDL_MOUSEWHEEL:
+    /* !!! FIXME: The preciseX|Y members were inserted to SDL_MouseWheelEvent in SDL2-2.0.18.  */
+        event2->wheel.x = (Sint32)event3->wheel.x;
+        event2->wheel.y = (Sint32)event3->wheel.y;
+        event2->wheel.preciseX = event3->wheel.x;
+        event2->wheel.preciseY = event3->wheel.y;
+        event2->wheel.mouseX = (Sint32)event3->wheel.mouseX;
+        event2->wheel.mouseY = (Sint32)event3->wheel.mouseY;
+        break;
+    default:
+        break;
+    }
     return event2;
 }
 
@@ -1279,6 +1303,33 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
     event3->common.type = event2->type;
     event3->common.timestamp = (Uint64) SDL_MS_TO_NS(event2->common.timestamp);
     SDL3_memcpy((&event3->common) + 1, (&event2->common) + 1, sizeof (SDL_Event) - sizeof (SDL_CommonEvent));
+    switch (event2->type) {
+    case SDL_MOUSEMOTION:
+        event3->motion.x = (float)event2->motion.x;
+        event3->motion.y = (float)event2->motion.y;
+        event3->motion.xrel = (float)event2->motion.xrel;
+        event3->motion.yrel = (float)event2->motion.yrel;
+        break;
+    case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP:
+        event3->button.x = (float)event2->button.x;
+        event3->button.y = (float)event2->button.y;
+        break;
+    case SDL_MOUSEWHEEL:
+    /* !!! FIXME: Which member is safe to use here??  */
+    /* The preciseX|Y members were inserted to SDL_MouseWheelEvent in SDL2-2.0.18.  */
+        /*
+        event3->wheel.x = event2->wheel.preciseX;
+        event3->wheel.y = event2->wheel.preciseY;
+        */
+        event3->wheel.x = (float)event2->wheel.x;
+        event3->wheel.y = (float)event2->wheel.y;
+        event3->wheel.mouseX = (float)event2->wheel.mouseX;
+        event3->wheel.mouseY = (float)event2->wheel.mouseY;
+        break;
+    default:
+        break;
+    }
     return event3;
 }
 
@@ -1369,7 +1420,6 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
     }
 
     /* !!! FIXME: Deal with device add events using instance ids instead of indices in SDL3. */
-    /* !!! FIXME: Deal with mouse coords becoming floats in SDL3. */
 
     return 1;
 }
@@ -1503,6 +1553,67 @@ SDL_FilterEvents(SDL2_EventFilter filter2, void *userdata)
     wrapperdata.userdata = userdata;
     wrapperdata.next = NULL;
     SDL3_FilterEvents(EventFilterWrapper3to2, &wrapperdata);
+}
+
+DECLSPEC Uint32 SDLCALL
+SDL_GetMouseState(int *x, int *y)
+{
+    float fx, fy;
+    Uint32 ret = SDL3_GetMouseState(&fx, &fy);
+    if (x) *x = (int)fx;
+    if (y) *y = (int)fy;
+    return ret;
+}
+
+DECLSPEC Uint32 SDLCALL
+SDL_GetGlobalMouseState(int *x, int *y)
+{
+    float fx, fy;
+    Uint32 ret = SDL3_GetGlobalMouseState(&fx, &fy);
+    if (x) *x = (int)fx;
+    if (y) *y = (int)fy;
+    return ret;
+}
+
+DECLSPEC Uint32 SDLCALL
+SDL_GetRelativeMouseState(int *x, int *y)
+{
+    float fx, fy;
+    Uint32 ret = SDL3_GetRelativeMouseState(&fx, &fy);
+    if (x) *x = (int)fx;
+    if (y) *y = (int)fy;
+    return ret;
+}
+
+DECLSPEC void SDLCALL
+SDL_WarpMouseInWindow(SDL_Window *window, int x, int y)
+{
+    SDL3_WarpMouseInWindow(window, (float)x, (float)y);
+}
+
+DECLSPEC int SDLCALL
+SDL_WarpMouseGlobal(int x, int y)
+{
+    return SDL3_WarpMouseGlobal((float)x, (float)y);
+}
+
+DECLSPEC void SDLCALL
+SDL_RenderWindowToLogical(SDL_Renderer *renderer,
+                          int windowX, int windowY,
+                          float *logicalX, float *logicalY)
+{
+    SDL3_RenderWindowToLogical(renderer, (float)windowX, (float)windowY, logicalX, logicalY);
+}
+
+DECLSPEC void SDLCALL
+SDL_RenderLogicalToWindow(SDL_Renderer *renderer,
+                          float logicalX, float logicalY,
+                          int *windowX, int *windowY)
+{
+    float x, y;
+    SDL3_RenderLogicalToWindow(renderer, logicalX, logicalY, &x, &y);
+    if (windowX) *windowX = (int)x;
+    if (windowY) *windowY = (int)y;
 }
 
 
