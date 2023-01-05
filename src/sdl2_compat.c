@@ -3026,7 +3026,7 @@ SDL_MixAudio(Uint8 *dst, const Uint8 *src, Uint32 len, int volume)
 {
     /* Mix the user-level audio format */
     if (g_audio_id > 0) {
-        SDL_MixAudioFormat(dst, src, g_audio_spec.format, len, volume); // FIXME: is this correct ??
+        SDL_MixAudioFormat(dst, src, g_audio_spec.format, len, volume); /* FIXME: is this correct ?? */
     }
 }
 
@@ -3036,8 +3036,8 @@ SDL_GetQueuedAudioSize(SDL_AudioDeviceID dev)
     SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
     return SDL3_GetQueuedAudioSize(id);
 }
- 
-DECLSPEC int SDLCALL 
+
+DECLSPEC int SDLCALL
 SDL_QueueAudio(SDL_AudioDeviceID dev, const void *data, Uint32 len)
 {
     SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
@@ -3055,7 +3055,7 @@ DECLSPEC void SDLCALL
 SDL_ClearQueuedAudio(SDL_AudioDeviceID dev)
 {
     SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
-    return SDL3_ClearQueuedAudio(id);
+    SDL3_ClearQueuedAudio(id);
 }
 
 DECLSPEC void SDLCALL
@@ -3093,7 +3093,6 @@ SDL_CloseAudioDevice(SDL_AudioDeviceID dev)
     SDL3_CloseAudioDevice(id);
 }
 
-
 DECLSPEC void SDLCALL
 SDL_LockAudio(void)
 {
@@ -3124,7 +3123,6 @@ SDL_GetAudioStatus(void)
 {
     return SDL_GetAudioDeviceStatus(1);
 }
-
 
 
 DECLSPEC void SDLCALL
@@ -3223,7 +3221,7 @@ SDL_GetClosestDisplayMode(int displayIndex, const SDL2_DisplayMode * mode, SDL2_
     SDL_DisplayMode dp;
     SDL_DisplayMode closest3;
     SDL_DisplayMode *ret;
-    static SDL2_DisplayMode ret2; // FIXME alloc ??
+    static SDL2_DisplayMode ret2;  /* FIXME alloc ?? */
     DisplayMode_2to3(closest, &closest3);
     ret = SDL3_GetClosestDisplayMode(displayIndex, mode ? &dp : NULL, closest ? &closest3 : NULL);
     DisplayMode_3to2(ret, &ret2);
