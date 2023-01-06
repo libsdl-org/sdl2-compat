@@ -3072,7 +3072,11 @@ DECLSPEC void SDLCALL
 SDL_PauseAudioDevice(SDL_AudioDeviceID dev, int pause_on)
 {
     SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
-    SDL3_PauseAudioDevice(id, pause_on);
+    if (pause_on) {
+        SDL3_PauseAudioDevice(id);
+    } else {
+        SDL3_PlayAudioDevice(id);
+    }
 }
 
 DECLSPEC SDL_AudioStatus SDLCALL
