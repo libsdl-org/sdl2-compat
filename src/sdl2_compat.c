@@ -25,6 +25,16 @@
 
 #include "dynapi/SDL_dynapi.h"
 
+
+#if defined(DisableScreenSaver)
+/*
+This breaks the build when creating SDL_ ## DisableScreenSaver
+/usr/include/X11/X.h:#define DisableScreenSaver	0
+*/
+#undef DisableScreenSaver
+#endif
+
+
 #if SDL_DYNAMIC_API
 #include "dynapi/SDL_dynapi_overrides.h"
 /* force DECLSPEC off...it's all internal symbols now.
