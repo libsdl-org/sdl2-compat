@@ -71,7 +71,7 @@ This breaks the build when creating SDL_ ## DisableScreenSaver
 #define WIN32_LEAN_AND_MEAN 1
 #endif
 #include <windows.h>
-#define HAVE_STDIO_H 0  /* !!! FIXME: we _currently_ don't include stdio.h on windows. Should we? */
+#undef HAVE_STDIO_H
 #else
 #include <stdio.h> /* fprintf(), etc. */
 #include <stdlib.h>    /* for abort() */
@@ -86,8 +86,6 @@ This breaks the build when creating SDL_ ## DisableScreenSaver
 #undef snprintf
 #undef vsnprintf
 
-#define SDL_BlitSurface SDL_UpperBlit
-
 #ifdef __linux__
 #include <unistd.h> /* for readlink() */
 #endif
@@ -96,13 +94,11 @@ This breaks the build when creating SDL_ ## DisableScreenSaver
 #ifndef PATH_MAX
 #define PATH_MAX 1024
 #endif
-#define SDL12_MAXPATH PATH_MAX
+#define SDL2COMPAT_MAXPATH PATH_MAX
 #elif defined _WIN32
-#define SDL12_MAXPATH MAX_PATH
-#elif defined __OS2__
-#define SDL12_MAXPATH CCHMAXPATH
+#define SDL2COMPAT_MAXPATH MAX_PATH
 #else
-#define SDL12_MAXPATH 1024
+#define SDL2COMPAT_MAXPATH 1024
 #endif
 
 #ifdef __cplusplus
@@ -308,9 +304,9 @@ SDL2Compat_GetExeName(void)
 {
     static const char *exename = NULL;
     if (exename == NULL) {
-        static char path_buf[SDL12_MAXPATH];
+        static char path_buf[SDL2COMPAT_MAXPATH];
         static char *base_path;
-        OS_GetExeName(path_buf, SDL12_MAXPATH);
+        OS_GetExeName(path_buf, SDL2COMPAT_MAXPATH);
         base_path = SDL3_strrchr(path_buf, *DIRSEP);
         if (base_path) {
             /* We have a '\\' component. */
@@ -432,7 +428,7 @@ SDL2Compat_ApplyQuirks(SDL_bool force_x11)
             }
         } else {
             if (WantDebugLogging) {
-                SDL3_Log("sdl12-compat: We are forcing this app to use X11, because it probably talks to an X server directly, outside of SDL. If possible, this app should be fixed, to be compatible with Wayland, etc.");
+                SDL3_Log("sdl2-compat: We are forcing this app to use X11, because it probably talks to an X server directly, outside of SDL. If possible, this app should be fixed, to be compatible with Wayland, etc.");
             }
             SDL3_setenv("SDL_VIDEO_DRIVER", "x11", 1);
         }
@@ -1283,7 +1279,6 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
         event2->button.y = (Sint32)event3->button.y;
         break;
     case SDL_MOUSEWHEEL:
-    /* !!! FIXME: The preciseX|Y members were inserted to SDL_MouseWheelEvent in SDL2-2.0.18.  */
         event2->wheel.x = (Sint32)event3->wheel.x;
         event2->wheel.y = (Sint32)event3->wheel.y;
         event2->wheel.preciseX = event3->wheel.x;
@@ -1326,9 +1321,7 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
         event3->button.y = (float)event2->button.y;
         break;
     case SDL_MOUSEWHEEL:
-    /* !!! FIXME: Which member is safe to use here??  */
-    /* The preciseX|Y members were inserted to SDL_MouseWheelEvent in SDL2-2.0.18.  */
-        /*
+        /* The preciseX|Y members were added to SDL_MouseWheelEvent in SDL2-2.0.18.
         event3->wheel.x = event2->wheel.preciseX;
         event3->wheel.y = event2->wheel.preciseY;
         */
@@ -1759,7 +1752,7 @@ DORWOPSENDIAN(BE, 64)
 #undef DORWOPSENDIAN
 
 /* stdio SDL_RWops was removed from SDL3, to prevent incompatible C runtime issues */
-#if !HAVE_STDIO_H
+#ifndef HAVE_STDIO_H
 DECLSPEC SDL2_RWops * SDLCALL
 SDL_RWFromFP(void *fp, SDL_bool autoclose)
 {

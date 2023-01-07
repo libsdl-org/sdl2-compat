@@ -814,8 +814,6 @@
 #define SDL_GetWindowWMInfo IGNORE_THIS_VERSION_OF_SDL_GetWindowWMInfo
 #define SDL_CreateThread IGNORE_THIS_VERSION_OF_SDL_CreateThread
 #define SDL_CreateThreadWithStackSize IGNORE_THIS_VERSION_OF_SDL_CreateThreadWithStackSize
-#define SDL_CreateThread IGNORE_THIS_VERSION_OF_SDL_CreateThread
-#define SDL_CreateThreadWithStackSize IGNORE_THIS_VERSION_OF_SDL_CreateThreadWithStackSize
 #define SDL_GetThreadName IGNORE_THIS_VERSION_OF_SDL_GetThreadName
 #define SDL_ThreadID IGNORE_THIS_VERSION_OF_SDL_ThreadID
 #define SDL_GetThreadID IGNORE_THIS_VERSION_OF_SDL_GetThreadID
@@ -4065,14 +4063,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetWindowWMInfo
 #undef SDL_GetWindowWMInfo
-#endif
-
-#ifdef SDL_CreateThread
-#undef SDL_CreateThread
-#endif
-
-#ifdef SDL_CreateThreadWithStackSize
-#undef SDL_CreateThreadWithStackSize
 #endif
 
 #ifdef SDL_CreateThread
