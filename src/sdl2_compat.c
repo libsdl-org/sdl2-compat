@@ -3466,6 +3466,14 @@ SDL_RenderCopyEx(SDL_Renderer *renderer, SDL_Texture *texture,
     return SDL3_RenderTextureRotated(renderer, texture, srcrect, pdstfrect, angle, pfcenter, flip);
 }
 
+/* SDL3 removed window parameter from SDL_Vulkan_GetInstanceExtensions() */
+DECLSPEC SDL_bool SDLCALL
+SDL_Vulkan_GetInstanceExtensions(SDL_Window *window, unsigned int *pCount, const char **pNames)
+{
+    (void) window;
+    return SDL3_Vulkan_GetInstanceExtensions(pCount, pNames);
+}
+
 
 /* SDL3 doesn't have 3dNow. */
 #if defined(__GNUC__) && defined(__i386__)
