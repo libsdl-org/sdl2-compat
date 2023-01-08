@@ -1266,6 +1266,7 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     event2->common.type = event3->type;
     event2->common.timestamp = (Uint32) SDL_NS_TO_MS(event3->common.timestamp);
     SDL3_memcpy((&event2->common) + 1, (&event3->common) + 1, sizeof (SDL2_Event) - sizeof (SDL2_CommonEvent));
+    /* mouse coords became floats in SDL3: */
     switch (event3->type) {
     case SDL_MOUSEMOTION:
         event2->motion.x = (Sint32)event3->motion.x;
@@ -1308,6 +1309,7 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
     event3->common.type = event2->type;
     event3->common.timestamp = (Uint64) SDL_MS_TO_NS(event2->common.timestamp);
     SDL3_memcpy((&event3->common) + 1, (&event2->common) + 1, sizeof (SDL_Event) - sizeof (SDL_CommonEvent));
+    /* mouse coords became floats in SDL3: */
     switch (event2->type) {
     case SDL_MOUSEMOTION:
         event3->motion.x = (float)event2->motion.x;
@@ -1557,6 +1559,9 @@ SDL_FilterEvents(SDL2_EventFilter filter2, void *userdata)
     wrapperdata.next = NULL;
     SDL3_FilterEvents(EventFilterWrapper3to2, &wrapperdata);
 }
+
+
+/* mouse coords became floats in SDL3 */
 
 DECLSPEC Uint32 SDLCALL
 SDL_GetMouseState(int *x, int *y)
