@@ -569,9 +569,6 @@
 #define SDL_HasLASX IGNORE_THIS_VERSION_OF_SDL_HasLASX
 #define SDL_GetSystemRAM IGNORE_THIS_VERSION_OF_SDL_GetSystemRAM
 #define SDL_SIMDGetAlignment IGNORE_THIS_VERSION_OF_SDL_SIMDGetAlignment
-#define SDL_SIMDAlloc IGNORE_THIS_VERSION_OF_SDL_SIMDAlloc
-#define SDL_SIMDRealloc IGNORE_THIS_VERSION_OF_SDL_SIMDRealloc
-#define SDL_SIMDFree IGNORE_THIS_VERSION_OF_SDL_SIMDFree
 #define SDL_GetPowerInfo IGNORE_THIS_VERSION_OF_SDL_GetPowerInfo
 #define SDL_GetPixelFormatName IGNORE_THIS_VERSION_OF_SDL_GetPixelFormatName
 #define SDL_GetMasksForPixelFormatEnum IGNORE_THIS_VERSION_OF_SDL_GetMasksForPixelFormatEnum
@@ -3091,18 +3088,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_SIMDGetAlignment
 #undef SDL_SIMDGetAlignment
-#endif
-
-#ifdef SDL_SIMDAlloc
-#undef SDL_SIMDAlloc
-#endif
-
-#ifdef SDL_SIMDRealloc
-#undef SDL_SIMDRealloc
-#endif
-
-#ifdef SDL_SIMDFree
-#undef SDL_SIMDFree
 #endif
 
 #ifdef SDL_GetPowerInfo
