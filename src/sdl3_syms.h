@@ -699,8 +699,8 @@ SDL3_SYM_PASSTHROUGH(SDL_TouchDeviceType,GetTouchDeviceType,(SDL_TouchID a),(a),
 SDL3_SYM_PASSTHROUGH(int,UIKitRunApp,(int a, char *b, SDL_main_func c),(a,b,c),return)
 #endif
 SDL3_SYM_PASSTHROUGH(size_t,SIMDGetAlignment,(void),(),return)
-SDL3_SYM_PASSTHROUGH(void*,SIMDAlloc,(const size_t a),(a),return)
-SDL3_SYM_PASSTHROUGH(void,SIMDFree,(void *a),(a),)
+SDL3_SYM(void*,aligned_alloc,(size_t a, size_t b),(a,b),return)
+SDL3_SYM(void,aligned_free,(void *a),(a),)
 SDL3_SYM(Sint64,RWsize,(SDL_RWops *a),(a),return)
 SDL3_SYM(Sint64,RWseek,(SDL_RWops *a, Sint64 b, int c),(a,b,c),return)
 SDL3_SYM(Sint64,RWtell,(SDL_RWops *a),(a),return)
@@ -747,7 +747,6 @@ SDL3_SYM_PASSTHROUGH(void,Metal_GetDrawableSize,(SDL_Window *a, int *b, int *c),
 SDL3_SYM_PASSTHROUGH(double,trunc,(double a),(a),return)
 SDL3_SYM_PASSTHROUGH(float,truncf,(float a),(a),return)
 SDL3_SYM_PASSTHROUGH(SDL_Locale *,GetPreferredLocales,(void),(),return)
-SDL3_SYM_PASSTHROUGH(void*,SIMDRealloc,(void *a, const size_t b),(a, b),return)
 #ifdef __ANDROID__
 SDL3_SYM_PASSTHROUGH(SDL_bool,AndroidRequestPermission,(const char *a),(a),return)
 #endif
