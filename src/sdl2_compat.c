@@ -380,11 +380,12 @@ SDL_GetHintBoolean(const char *name, SDL_bool default_value)
     return SDL3_GetHintBoolean(SDL2_to_SDL3_hint(name), default_value);
 }
 
-/* FIXME: callbacks may need to tweaking ... */
+/* FIXME: callbacks may need tweaking ... */
 DECLSPEC void SDLCALL
 SDL_AddHintCallback(const char *name, SDL_HintCallback callback, void *userdata)
 {
-    SDL3_AddHintCallback(SDL2_to_SDL3_hint(name), callback, userdata);
+    /* this returns an int of 0 or -1 in SDL3, but SDL2 it was void (even if it failed). */
+    (void) SDL3_AddHintCallback(SDL2_to_SDL3_hint(name), callback, userdata);
 }
 
 DECLSPEC void SDLCALL
