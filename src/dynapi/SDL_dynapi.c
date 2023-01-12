@@ -20,21 +20,13 @@
 */
 
 #include "../sdl3_include_wrapper.h"
+#include "../sdl2_compat.h"
 
 #include "SDL_dynapi.h"
 
 #if SDL_DYNAMIC_API
 
 #define SDL_DYNAMIC_API_ENVVAR "SDL_DYNAMIC_API"
-
-/* sdl2-compat: these types were removed from SDL3, but we need them for SDL2 APIs exported here. */
-typedef Sint64 SDL_GestureID;
-typedef SDL_Gamepad SDL_GameController;  /* since they're opaque types, for simplicity we just typedef it here and use the old types in sdl3_syms.h */
-typedef SDL_GamepadAxis SDL_GameControllerAxis;
-typedef SDL_GamepadBinding SDL_GameControllerButtonBind;
-typedef SDL_GamepadButton SDL_GameControllerButton;
-typedef SDL_GamepadType SDL_GameControllerType;
-
 
 #if defined(__OS2__)
 #define INCL_DOS

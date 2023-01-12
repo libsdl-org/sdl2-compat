@@ -22,7 +22,7 @@
 /* This file contains functions for backwards compatibility with SDL2 */
 
 #include "sdl3_include_wrapper.h"
-
+#include "sdl2_compat.h"
 #include "dynapi/SDL_dynapi.h"
 
 
@@ -104,17 +104,6 @@ This breaks the build when creating SDL_ ## DisableScreenSaver
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef SDL_Gamepad SDL_GameController;  /* since they're opaque types, for simplicity we just typedef it here and use the old types in sdl3_syms.h */
-typedef SDL_GamepadAxis SDL_GameControllerAxis;
-typedef SDL_GamepadBinding SDL_GameControllerButtonBind;
-typedef SDL_GamepadButton SDL_GameControllerButton;
-typedef SDL_GamepadType SDL_GameControllerType;
-
-typedef Sint32 SDL2_JoystickID;  /* this became unsigned in SDL3, but we'll just hope we don't overflow. */
-typedef Sint32 SDL2_SensorID;  /* this became unsigned in SDL3, but we'll just hope we don't overflow. */
-
-typedef Sint64 SDL2_GestureID;
 
 #define SDL3_SYM(rc,fn,params,args,ret) \
     typedef rc (SDLCALL *SDL3_##fn##_t) params; \
