@@ -3698,7 +3698,20 @@ SDL_JoystickGetDeviceInstanceID(int idx)
 {
     /* this counts on a Uint32 not overflowing an Sint32. */
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return (SDL2_JoystickID) (jid ? jid : -1);
+    if (!jid) {
+        return -1;
+    }
+    return (SDL2_JoystickID)jid;
+}
+
+DECLSPEC SDL2_JoystickID SDLCALL
+SDL_JoystickInstanceID(SDL_Joystick *joystick)
+{
+    const SDL_JoystickID jid = SDL3_GetJoystickInstanceID(joystick);
+    if (!jid) {
+        return -1;
+    }
+    return (SDL2_JoystickID)jid;
 }
 
 DECLSPEC int SDLCALL
@@ -3814,7 +3827,20 @@ SDL_SensorGetDeviceInstanceID(int idx)
 {
     /* this counts on a Uint32 not overflowing an Sint32. */
     const SDL_SensorID sid = GetSensorInstanceFromIndex(idx);
-    return (SDL2_SensorID) (sid ? sid : -1);
+    if (!sid) {
+        return -1;
+    }
+    return (SDL2_SensorID)sid;
+}
+
+DECLSPEC SDL2_SensorID SDLCALL
+SDL_SensorGetInstanceID(SDL_Sensor *sensor)
+{
+    const SDL_SensorID sid = SDL3_GetSensorInstanceID(sensor);
+    if (!sid) {
+        return -1;
+    }
+    return (SDL2_SensorID)sid;
 }
 
 DECLSPEC SDL_Sensor* SDLCALL
