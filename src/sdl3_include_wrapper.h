@@ -44,8 +44,6 @@
 #define SDL_GetAudioDeviceStatus IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceStatus
 #define SDL_PauseAudioDevice IGNORE_THIS_VERSION_OF_SDL_PauseAudioDevice
 #define SDL_LoadWAV_RW IGNORE_THIS_VERSION_OF_SDL_LoadWAV_RW
-#define SDL_BuildAudioCVT IGNORE_THIS_VERSION_OF_SDL_BuildAudioCVT
-#define SDL_ConvertAudio IGNORE_THIS_VERSION_OF_SDL_ConvertAudio
 #define SDL_CreateAudioStream IGNORE_THIS_VERSION_OF_SDL_CreateAudioStream
 #define SDL_PutAudioStreamData IGNORE_THIS_VERSION_OF_SDL_PutAudioStreamData
 #define SDL_GetAudioStreamAvailable IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamAvailable
@@ -984,14 +982,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_LoadWAV_RW
 #undef SDL_LoadWAV_RW
-#endif
-
-#ifdef SDL_BuildAudioCVT
-#undef SDL_BuildAudioCVT
-#endif
-
-#ifdef SDL_ConvertAudio
-#undef SDL_ConvertAudio
 #endif
 
 #ifdef SDL_CreateAudioStream
