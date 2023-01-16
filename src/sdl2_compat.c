@@ -1111,7 +1111,7 @@ SDL_GetRevisionNumber(void)
 }
 
 
-DECLSPEC void SDLCALL
+DECLSPEC int SDLCALL
 SDL_SetError(const char *fmt, ...)
 {
     char ch;
@@ -1133,6 +1133,7 @@ SDL_SetError(const char *fmt, ...)
         SDL3_SetError("%s", str);
         SDL3_free(str);
     }
+    return -1;
 }
 
 DECLSPEC int SDLCALL
@@ -2986,8 +2987,7 @@ SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained)
     }
 
     if (g_audio_id > 0) {
-        SDL_SetError("Audio device is already opened");
-        return -1;
+        return SDL3_SetError("Audio device is already opened");
     }
 
     if (obtained) {
@@ -3081,14 +3081,14 @@ SDL_LockAudioDevice(SDL_AudioDeviceID dev)
     SDL3_LockAudioDevice(id);
 }
 
-DECLSPEC void SDLCALL 
+DECLSPEC void SDLCALL
 SDL_UnlockAudioDevice(SDL_AudioDeviceID dev)
 {
     SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
     SDL3_UnlockAudioDevice(id);
 }
 
-DECLSPEC void SDLCALL 
+DECLSPEC void SDLCALL
 SDL_CloseAudioDevice(SDL_AudioDeviceID dev)
 {
     SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
@@ -3911,6 +3911,219 @@ DECLSPEC void * SDLCALL SDL_SIMDRealloc(void *mem, const size_t len)
 DECLSPEC void SDLCALL SDL_SIMDFree(void *ptr)
 {
     SDL3_aligned_free(ptr);
+}
+
+
+
+static SDL_bool SDL_IsSupportedAudioFormat(const SDL_AudioFormat fmt)
+{
+    switch (fmt) {
+    case AUDIO_U8:
+    case AUDIO_S8:
+    case AUDIO_U16LSB:
+    case AUDIO_S16LSB:
+    case AUDIO_U16MSB:
+    case AUDIO_S16MSB:
+    case AUDIO_S32LSB:
+    case AUDIO_S32MSB:
+    case AUDIO_F32LSB:
+    case AUDIO_F32MSB:
+        return SDL_TRUE; /* supported. */
+
+    default:
+        break;
+    }
+
+    return SDL_FALSE; /* unsupported. */
+}
+
+static SDL_bool SDL_IsSupportedChannelCount(const int channels)
+{
+    return ((channels >= 1) && (channels <= 8)) ? SDL_TRUE : SDL_FALSE;
+}
+
+
+typedef struct {
+    SDL_AudioFormat src_format;
+    Uint8 src_channels;
+    int src_rate;
+    SDL_AudioFormat dst_format;
+    Uint8 dst_channels;
+    int dst_rate;
+} AudioParam;
+
+#define RESAMPLER_BITS_PER_SAMPLE           16
+#define RESAMPLER_SAMPLES_PER_ZERO_CROSSING (1 << ((RESAMPLER_BITS_PER_SAMPLE / 2) + 1))
+
+
+DECLSPEC int SDLCALL SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
+                                       SDL_AudioFormat src_format,
+                                       Uint8 src_channels,
+                                       int src_rate,
+                                       SDL_AudioFormat dst_format,
+                                       Uint8 dst_channels,
+                                       int dst_rate)
+{
+    /* Sanity check target pointer */
+    if (cvt == NULL) {
+        return SDL_InvalidParamError("cvt");
+    }
+
+    /* Make sure we zero out the audio conversion before error checking */
+    SDL_zerop(cvt);
+
+    if (!SDL_IsSupportedAudioFormat(src_format)) {
+        return SDL_SetError("Invalid source format");
+    }
+    if (!SDL_IsSupportedAudioFormat(dst_format)) {
+        return SDL_SetError("Invalid destination format");
+    }
+    if (!SDL_IsSupportedChannelCount(src_channels)) {
+        return SDL_SetError("Invalid source channels");
+    }
+    if (!SDL_IsSupportedChannelCount(dst_channels)) {
+        return SDL_SetError("Invalid destination channels");
+    }
+    if (src_rate <= 0) {
+        return SDL_SetError("Source rate is equal to or less than zero");
+    }
+    if (dst_rate <= 0) {
+        return SDL_SetError("Destination rate is equal to or less than zero");
+    }
+    if (src_rate >= SDL_MAX_SINT32 / RESAMPLER_SAMPLES_PER_ZERO_CROSSING) {
+        return SDL_SetError("Source rate is too high");
+    }
+    if (dst_rate >= SDL_MAX_SINT32 / RESAMPLER_SAMPLES_PER_ZERO_CROSSING) {
+        return SDL_SetError("Destination rate is too high");
+    }
+
+#if DEBUG_CONVERT
+    SDL_Log("SDL_AUDIO_CONVERT: Build format %04x->%04x, channels %u->%u, rate %d->%d\n",
+            src_format, dst_format, src_channels, dst_channels, src_rate, dst_rate);
+#endif
+
+    /* Start off with no conversion necessary */
+    cvt->src_format = src_format;
+    cvt->dst_format = dst_format;
+    cvt->needed = 0;
+    cvt->filter_index = 0;
+    SDL_zeroa(cvt->filters);
+    cvt->len_mult = 1;
+    cvt->len_ratio = 1.0;
+    cvt->rate_incr = ((double)dst_rate) / ((double)src_rate);
+
+    /* Use the filters[] to store some data ... */
+    {
+        AudioParam ap;
+        ap.src_format = src_format;
+        ap.src_channels = src_channels;
+        ap.src_rate = src_rate;
+        ap.dst_format = dst_format;
+        ap.dst_channels = dst_channels;
+        ap.dst_rate = dst_rate;
+
+        /* Store at the end of filters[], aligned */
+        SDL_memcpy(
+            (Uint8 *)&cvt->filters[SDL_AUDIOCVT_MAX_FILTERS + 1] - (sizeof(AudioParam) & ~3),
+            &ap,
+            sizeof(ap));
+
+        cvt->filters[0] = NULL;
+        cvt->needed = 1;
+        if (src_format == dst_format && src_rate == dst_rate && src_channels == dst_channels) {
+            cvt->needed = 0;
+        }
+
+        if (src_rate < dst_rate) {
+            const int mult = (dst_rate / src_rate);
+            cvt->len_mult *= mult;
+            cvt->len_ratio *= mult;
+        } else {
+            const int div = (src_rate / dst_rate);
+            cvt->len_ratio /= div;
+        }
+
+        if (src_channels < dst_channels) {
+            cvt->len_mult = ((cvt->len_mult * dst_channels) + (src_channels - 1)) / src_channels;
+        }
+    }
+
+    return cvt->needed;
+}
+
+
+DECLSPEC int SDLCALL SDL_ConvertAudio(SDL_AudioCVT *cvt)
+{
+
+    SDL_AudioStream *stream;
+    SDL_AudioFormat src_format, dst_format;
+    int src_channels, src_rate;
+    int dst_channels, dst_rate;
+
+    int src_len, dst_len, real_dst_len;
+    int src_samplesize, dst_samplesize;
+
+    /* Sanity check target pointer */
+    if (cvt == NULL) {
+        return SDL_InvalidParamError("cvt");
+    }
+
+    {
+        AudioParam ap;
+
+        /* Fetch from the end of filters[], aligned */
+        SDL_memcpy(
+            &ap,
+            (Uint8 *)&cvt->filters[SDL_AUDIOCVT_MAX_FILTERS + 1] - (sizeof(AudioParam) & ~3),
+            sizeof(ap));
+
+        src_format = ap.dst_format;
+        src_channels = ap.src_channels;
+        src_rate = ap.src_rate;
+        dst_format = ap.dst_format;
+        dst_channels = ap.dst_channels;
+        dst_rate = ap.dst_rate;
+    }
+
+    stream = SDL3_CreateAudioStream(src_format, src_channels, src_rate,
+                                    dst_format, dst_channels, dst_rate);
+    if (stream == NULL) {
+        goto failure;
+    }
+
+    src_samplesize = (SDL_AUDIO_BITSIZE(src_format) / 8) * src_channels;
+    dst_samplesize = (SDL_AUDIO_BITSIZE(dst_format) / 8) * dst_channels;
+
+    src_len = cvt->len & ~(src_samplesize - 1);
+    dst_len = dst_samplesize * (src_len / src_samplesize);
+    if (src_rate < dst_rate) {
+        const double mult = ((double)dst_rate) / ((double)src_rate);
+        dst_len *= (int) SDL_ceil(mult);
+    }
+
+    /* Run the audio converter */
+    if (SDL3_PutAudioStreamData(stream, cvt->buf, src_len) < 0 ||
+        SDL3_FlushAudioStream(stream) < 0) {
+        goto failure;
+    }
+
+    dst_len = SDL_min(dst_len, cvt->len * cvt->len_mult);
+    dst_len = dst_len & ~(dst_samplesize - 1);
+
+    /* Get back in the same buffer */
+    real_dst_len = SDL3_GetAudioStreamData(stream, cvt->buf, dst_len);
+    if (real_dst_len < 0) {
+        goto failure;
+    }
+
+    cvt->len_cvt = real_dst_len;
+
+    SDL3_DestroyAudioStream(stream);
+    return 0;
+
+failure:
+    SDL3_DestroyAudioStream(stream);
+    return -1;
 }
 
 
