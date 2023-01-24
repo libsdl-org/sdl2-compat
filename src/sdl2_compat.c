@@ -1259,18 +1259,18 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     SDL3_memcpy((&event2->common) + 1, (&event3->common) + 1, sizeof (SDL2_Event) - sizeof (SDL2_CommonEvent));
     /* mouse coords became floats in SDL3: */
     switch (event3->type) {
-    case SDL_MOUSEMOTION:
+    case SDL_EVENT_MOUSE_MOTION:
         event2->motion.x = (Sint32)event3->motion.x;
         event2->motion.y = (Sint32)event3->motion.y;
         event2->motion.xrel = (Sint32)event3->motion.xrel;
         event2->motion.yrel = (Sint32)event3->motion.yrel;
         break;
-    case SDL_MOUSEBUTTONDOWN:
-    case SDL_MOUSEBUTTONUP:
+    case SDL_EVENT_MOUSE_BUTTONDOWN:
+    case SDL_EVENT_MOUSE_BUTTONUP:
         event2->button.x = (Sint32)event3->button.x;
         event2->button.y = (Sint32)event3->button.y;
         break;
-    case SDL_MOUSEWHEEL:
+    case SDL_EVENT_MOUSE_WHEEL:
         event2->wheel.x = (Sint32)event3->wheel.x;
         event2->wheel.y = (Sint32)event3->wheel.y;
         event2->wheel.preciseX = event3->wheel.x;
@@ -1302,18 +1302,18 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
     SDL3_memcpy((&event3->common) + 1, (&event2->common) + 1, sizeof (SDL_Event) - sizeof (SDL_CommonEvent));
     /* mouse coords became floats in SDL3: */
     switch (event2->type) {
-    case SDL_MOUSEMOTION:
+    case SDL_EVENT_MOUSE_MOTION:
         event3->motion.x = (float)event2->motion.x;
         event3->motion.y = (float)event2->motion.y;
         event3->motion.xrel = (float)event2->motion.xrel;
         event3->motion.yrel = (float)event2->motion.yrel;
         break;
-    case SDL_MOUSEBUTTONDOWN:
-    case SDL_MOUSEBUTTONUP:
+    case SDL_EVENT_MOUSE_BUTTONDOWN:
+    case SDL_EVENT_MOUSE_BUTTONUP:
         event3->button.x = (float)event2->button.x;
         event3->button.y = (float)event2->button.y;
         break;
-    case SDL_MOUSEWHEEL:
+    case SDL_EVENT_MOUSE_WHEEL:
         /* The preciseX|Y members were added to SDL_MouseWheelEvent in SDL2-2.0.18.
         event3->wheel.x = event2->wheel.preciseX;
         event3->wheel.y = event2->wheel.preciseY;
@@ -1363,14 +1363,14 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
 
     switch (event3->type) {
         /* display events moved to the top level in SDL3. */
-        case SDL_DISPLAYEVENT_ORIENTATION:
-        case SDL_DISPLAYEVENT_CONNECTED:
-        case SDL_DISPLAYEVENT_DISCONNECTED:
+        case SDL_EVENT_DISPLAY_ORIENTATION:
+        case SDL_EVENT_DISPLAY_CONNECTED:
+        case SDL_EVENT_DISPLAY_DISCONNECTED:
             if (SDL3_EventEnabled(SDL2_DISPLAYEVENT)) {
                 event2.display.type = SDL2_DISPLAYEVENT;
                 event2.display.timestamp = (Uint32) SDL_NS_TO_MS(event3->display.timestamp);
                 event2.display.display = event3->display.display;
-                event2.display.event = (Uint8) ((event3->type - ((Uint32) SDL_DISPLAYEVENT_ORIENTATION)) + 1);
+                event2.display.event = (Uint8) ((event3->type - ((Uint32) SDL_EVENT_DISPLAY_ORIENTATION)) + 1);
                 event2.display.padding1 = 0;
                 event2.display.padding2 = 0;
                 event2.display.padding3 = 0;
@@ -1380,29 +1380,29 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
             break;
 
         /* window events moved to the top level in SDL3. */
-        case SDL_WINDOWEVENT_SHOWN:
-        case SDL_WINDOWEVENT_HIDDEN:
-        case SDL_WINDOWEVENT_EXPOSED:
-        case SDL_WINDOWEVENT_MOVED:
-        case SDL_WINDOWEVENT_RESIZED:
-        case SDL_WINDOWEVENT_SIZE_CHANGED:
-        case SDL_WINDOWEVENT_MINIMIZED:
-        case SDL_WINDOWEVENT_MAXIMIZED:
-        case SDL_WINDOWEVENT_RESTORED:
-        case SDL_WINDOWEVENT_ENTER:
-        case SDL_WINDOWEVENT_LEAVE:
-        case SDL_WINDOWEVENT_FOCUS_GAINED:
-        case SDL_WINDOWEVENT_FOCUS_LOST:
-        case SDL_WINDOWEVENT_CLOSE:
-        case SDL_WINDOWEVENT_TAKE_FOCUS:
-        case SDL_WINDOWEVENT_HIT_TEST:
-        case SDL_WINDOWEVENT_ICCPROF_CHANGED:
-        case SDL_WINDOWEVENT_DISPLAY_CHANGED:
+        case SDL_EVENT_WINDOW_SHOWN:
+        case SDL_EVENT_WINDOW_HIDDEN:
+        case SDL_EVENT_WINDOW_EXPOSED:
+        case SDL_EVENT_WINDOW_MOVED:
+        case SDL_EVENT_WINDOW_RESIZED:
+        case SDL_EVENT_WINDOW_SIZE_CHANGED:
+        case SDL_EVENT_WINDOW_MINIMIZED:
+        case SDL_EVENT_WINDOW_MAXIMIZED:
+        case SDL_EVENT_WINDOW_RESTORED:
+        case SDL_EVENT_WINDOW_MOUSE_ENTER:
+        case SDL_EVENT_WINDOW_MOUSE_LEAVE:
+        case SDL_EVENT_WINDOW_FOCUS_GAINED:
+        case SDL_EVENT_WINDOW_FOCUS_LOST:
+        case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+        case SDL_EVENT_WINDOW_TAKE_FOCUS:
+        case SDL_EVENT_WINDOW_HIT_TEST:
+        case SDL_EVENT_WINDOW_ICCPROF_CHANGED:
+        case SDL_EVENT_WINDOW_DISPLAY_CHANGED:
             if (SDL3_EventEnabled(SDL2_WINDOWEVENT)) {
                 event2.window.type = SDL2_WINDOWEVENT;
                 event2.window.timestamp = (Uint32) SDL_NS_TO_MS(event3->window.timestamp);
                 event2.window.windowID = event3->window.windowID;
-                event2.window.event = (Uint8) ((event3->type - ((Uint32) SDL_WINDOWEVENT_SHOWN)) + 1);
+                event2.window.event = (Uint8) ((event3->type - ((Uint32) SDL_EVENT_WINDOW_SHOWN)) + 1);
                 event2.window.padding1 = 0;
                 event2.window.padding2 = 0;
                 event2.window.padding3 = 0;
@@ -2713,7 +2713,7 @@ static void GestureProcessEvent(const SDL_Event *event3)
     float dtheta;
     float dDist;
 
-    if (event3->type == SDL_FINGERMOTION || event3->type == SDL_FINGERDOWN || event3->type == SDL_FINGERUP) {
+    if (event3->type == SDL_EVENT_FINGER_MOTION || event3->type == SDL_EVENT_FINGER_DOWN || event3->type == SDL_EVENT_FINGER_UP) {
         GestureTouch *inTouch = GestureGetTouch(event3->tfinger.touchId);
 
         if (inTouch == NULL) {  /* we maybe didn't see this one before. */
@@ -2727,7 +2727,7 @@ static void GestureProcessEvent(const SDL_Event *event3)
         y = event3->tfinger.y;
 
         /* Finger Up */
-        if (event3->type == SDL_FINGERUP) {
+        if (event3->type == SDL_EVENT_FINGER_UP) {
             SDL_FPoint path[GESTURE_DOLLARNPOINTS];
             inTouch->numDownFingers--;
 
@@ -2765,7 +2765,7 @@ static void GestureProcessEvent(const SDL_Event *event3)
                 inTouch->centroid.x = (inTouch->centroid.x * (inTouch->numDownFingers + 1) - x) / inTouch->numDownFingers;
                 inTouch->centroid.y = (inTouch->centroid.y * (inTouch->numDownFingers + 1) - y) / inTouch->numDownFingers;
             }
-        } else if (event3->type == SDL_FINGERMOTION) {
+        } else if (event3->type == SDL_EVENT_FINGER_MOTION) {
             const float dx = event3->tfinger.dx;
             const float dy = event3->tfinger.dy;
             GestureDollarPath *path = &inTouch->dollarPath;
@@ -2834,7 +2834,7 @@ static void GestureProcessEvent(const SDL_Event *event3)
             inTouch->gestureLast[j].f.p.y = y;
             break;
             pressure? */
-        } else if (event3->type == SDL_FINGERDOWN) {
+        } else if (event3->type == SDL_EVENT_FINGER_DOWN) {
             inTouch->numDownFingers++;
             inTouch->centroid.x = (inTouch->centroid.x * (inTouch->numDownFingers - 1) +
                                    x) /
