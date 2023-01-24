@@ -143,8 +143,8 @@
 #define SDL_GetGamepadBindForButton IGNORE_THIS_VERSION_OF_SDL_GetGamepadBindForButton
 #define SDL_GamepadHasButton IGNORE_THIS_VERSION_OF_SDL_GamepadHasButton
 #define SDL_GetGamepadButton IGNORE_THIS_VERSION_OF_SDL_GetGamepadButton
-#define SDL_GetGamepadNumTouchpads IGNORE_THIS_VERSION_OF_SDL_GetGamepadNumTouchpads
-#define SDL_GetGamepadNumTouchpadFingers IGNORE_THIS_VERSION_OF_SDL_GetGamepadNumTouchpadFingers
+#define SDL_GetNumGamepadTouchpads IGNORE_THIS_VERSION_OF_SDL_GetNumGamepadTouchpads
+#define SDL_GetNumGamepadTouchpadFingers IGNORE_THIS_VERSION_OF_SDL_GetNumGamepadTouchpadFingers
 #define SDL_GetGamepadTouchpadFinger IGNORE_THIS_VERSION_OF_SDL_GetGamepadTouchpadFinger
 #define SDL_GamepadHasSensor IGNORE_THIS_VERSION_OF_SDL_GamepadHasSensor
 #define SDL_SetGamepadSensorEnabled IGNORE_THIS_VERSION_OF_SDL_SetGamepadSensorEnabled
@@ -1384,12 +1384,12 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetGamepadButton
 #endif
 
-#ifdef SDL_GetGamepadNumTouchpads
-#undef SDL_GetGamepadNumTouchpads
+#ifdef SDL_GetNumGamepadTouchpads
+#undef SDL_GetNumGamepadTouchpads
 #endif
 
-#ifdef SDL_GetGamepadNumTouchpadFingers
-#undef SDL_GetGamepadNumTouchpadFingers
+#ifdef SDL_GetNumGamepadTouchpadFingers
+#undef SDL_GetNumGamepadTouchpadFingers
 #endif
 
 #ifdef SDL_GetGamepadTouchpadFinger
