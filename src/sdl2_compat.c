@@ -580,7 +580,7 @@ BOOL WINAPI _DllMainCRTStartup(HANDLE dllhandle, DWORD reason, LPVOID reserved)
 #endif
 
 
-typedef struct SDL2_RWops
+struct SDL2_RWops
 {
     Sint64 (SDLCALL * size) (struct SDL2_RWops * context);
     Sint64 (SDLCALL * seek) (struct SDL2_RWops * context, Sint64 offset, int whence);
@@ -609,7 +609,7 @@ typedef struct SDL2_RWops
             void *ptrs[3];  /* just so this matches SDL2's struct size. */
         } match_sdl2;
     } hidden;
-} SDL2_RWops;
+};
 
 /* removed in SDL3 (which only uses SDL_WINDOW_HIDDEN now). */
 #define SDL2_WINDOW_SHOWN 0x000000004
@@ -2238,6 +2238,7 @@ static GestureTouch *GestureAddTouch(const SDL_TouchID touchId)
 static int GestureDelTouch(const SDL_TouchID touchId)
 {
     int i;
+
     for (i = 0; i < GestureNumTouches; i++) {
         if (GestureTouches[i].touchId == touchId) {
             break;
@@ -2525,10 +2526,10 @@ static float GestureBestDollarDifference(SDL_FPoint *points, SDL_FPoint *templ)
         }
     }
     /*
-      if (f1 <= f2)
-          printf("Min angle (x1): %f\n",x1);
-      else if (f1 >  f2)
-          printf("Min angle (x2): %f\n",x2);
+    if (f1 <= f2)
+        printf("Min angle (x1): %f\n",x1);
+    else if (f1 >  f2)
+        printf("Min angle (x2): %f\n",x2);
     */
     return SDL_min(f1, f2);
 }
@@ -3010,9 +3011,8 @@ SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained)
     if (id > 0) {
         g_audio_id = id;
         return 0;
-    } else {
-        return -1;
     }
+    return -1;
 }
 
 /*

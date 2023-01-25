@@ -35,6 +35,7 @@ typedef Sint32 SDL2_SensorID;  /* this became unsigned in SDL3, but we'll just h
 
 typedef Sint64 SDL2_GestureID;
 
+typedef struct SDL2_RWops SDL2_RWops;
 
 struct SDL_AudioCVT;
 typedef void (SDLCALL * SDL_AudioFilter) (struct SDL_AudioCVT * cvt,
