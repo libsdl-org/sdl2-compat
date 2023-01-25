@@ -446,7 +446,7 @@
 #define SDL_GetDisplayName IGNORE_THIS_VERSION_OF_SDL_GetDisplayName
 #define SDL_GetDisplayBounds IGNORE_THIS_VERSION_OF_SDL_GetDisplayBounds
 #define SDL_GetDisplayUsableBounds IGNORE_THIS_VERSION_OF_SDL_GetDisplayUsableBounds
-#define SDL_GetDisplayDPI IGNORE_THIS_VERSION_OF_SDL_GetDisplayDPI
+#define SDL_GetDisplayPhysicalDPI IGNORE_THIS_VERSION_OF_SDL_GetDisplayPhysicalDPI
 #define SDL_GetDisplayOrientation IGNORE_THIS_VERSION_OF_SDL_GetDisplayOrientation
 #define SDL_GetNumDisplayModes IGNORE_THIS_VERSION_OF_SDL_GetNumDisplayModes
 #define SDL_GetDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetDisplayMode
@@ -2596,8 +2596,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetDisplayUsableBounds
 #endif
 
-#ifdef SDL_GetDisplayDPI
-#undef SDL_GetDisplayDPI
+#ifdef SDL_GetDisplayPhysicalDPI
+#undef SDL_GetDisplayPhysicalDPI
 #endif
 
 #ifdef SDL_GetDisplayOrientation
