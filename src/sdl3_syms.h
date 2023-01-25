@@ -572,7 +572,7 @@ SDL3_SYM_PASSTHROUGH(SDL_Window*,GetGrabbedWindow,(void),(),return)
 #if defined(__WIN32__) || defined(__GDK__)
 SDL3_SYM_PASSTHROUGH(void,SetWindowsMessageHook,(SDL_WindowsMessageHook a, void *b),(a,b),)
 #endif
-SDL3_SYM_PASSTHROUGH(int,GetDisplayDPI,(int a, float *b, float *c, float *d),(a,b,c,d),return)
+SDL3_SYM_RENAMED(int,GetDisplayDPI,GetDisplayPhysicalDPI,(int a, float *b, float *c, float *d),(a,b,c,d),return)
 SDL3_SYM_RENAMED(SDL_JoystickPowerLevel,JoystickCurrentPowerLevel,GetJoystickPowerLevel,(SDL_Joystick *a),(a),return)
 SDL3_SYM_RENAMED(SDL_GameController*,GameControllerFromInstanceID,GetGamepadFromInstanceID,(SDL_JoystickID a),(a),return)
 SDL3_SYM_RENAMED(SDL_Joystick*,JoystickFromInstanceID,GetJoystickFromInstanceID,(SDL_JoystickID a),(a),return)
