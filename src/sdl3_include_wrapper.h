@@ -50,6 +50,7 @@
 #define SDL_FlushAudioStream IGNORE_THIS_VERSION_OF_SDL_FlushAudioStream
 #define SDL_ClearAudioStream IGNORE_THIS_VERSION_OF_SDL_ClearAudioStream
 #define SDL_DestroyAudioStream IGNORE_THIS_VERSION_OF_SDL_DestroyAudioStream
+#define SDL_GetAudioStreamData IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamData
 #define SDL_MixAudioFormat IGNORE_THIS_VERSION_OF_SDL_MixAudioFormat
 #define SDL_QueueAudio IGNORE_THIS_VERSION_OF_SDL_QueueAudio
 #define SDL_DequeueAudio IGNORE_THIS_VERSION_OF_SDL_DequeueAudio
@@ -58,6 +59,8 @@
 #define SDL_LockAudioDevice IGNORE_THIS_VERSION_OF_SDL_LockAudioDevice
 #define SDL_UnlockAudioDevice IGNORE_THIS_VERSION_OF_SDL_UnlockAudioDevice
 #define SDL_CloseAudioDevice IGNORE_THIS_VERSION_OF_SDL_CloseAudioDevice
+#define SDL_PlayAudioDevice IGNORE_THIS_VERSION_OF_SDL_PlayAudioDevice
+#define SDL_ConvertAudioSamples IGNORE_THIS_VERSION_OF_SDL_ConvertAudioSamples
 #define SDL_hid_init IGNORE_THIS_VERSION_OF_SDL_hid_init
 #define SDL_hid_exit IGNORE_THIS_VERSION_OF_SDL_hid_exit
 #define SDL_hid_device_change_count IGNORE_THIS_VERSION_OF_SDL_hid_device_change_count
@@ -83,7 +86,6 @@
 #define SDL_GetTouchDeviceType IGNORE_THIS_VERSION_OF_SDL_GetTouchDeviceType
 #define SDL_GetNumTouchFingers IGNORE_THIS_VERSION_OF_SDL_GetNumTouchFingers
 #define SDL_GetTouchFinger IGNORE_THIS_VERSION_OF_SDL_GetTouchFinger
-#define SDL_HasSensors IGNORE_THIS_VERSION_OF_SDL_HasSensors
 #define SDL_GetSensors IGNORE_THIS_VERSION_OF_SDL_GetSensors
 #define SDL_GetSensorInstanceName IGNORE_THIS_VERSION_OF_SDL_GetSensorInstanceName
 #define SDL_GetSensorInstanceType IGNORE_THIS_VERSION_OF_SDL_GetSensorInstanceType
@@ -103,7 +105,6 @@
 #define SDL_GetGamepadMappingForIndex IGNORE_THIS_VERSION_OF_SDL_GetGamepadMappingForIndex
 #define SDL_GetGamepadMappingForGUID IGNORE_THIS_VERSION_OF_SDL_GetGamepadMappingForGUID
 #define SDL_GetGamepadMapping IGNORE_THIS_VERSION_OF_SDL_GetGamepadMapping
-#define SDL_HasGamepads IGNORE_THIS_VERSION_OF_SDL_HasGamepads
 #define SDL_GetGamepads IGNORE_THIS_VERSION_OF_SDL_GetGamepads
 #define SDL_IsGamepad IGNORE_THIS_VERSION_OF_SDL_IsGamepad
 #define SDL_GetGamepadInstanceName IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstanceName
@@ -334,8 +335,8 @@
 #define SDL_RWFromFile IGNORE_THIS_VERSION_OF_SDL_RWFromFile
 #define SDL_RWFromMem IGNORE_THIS_VERSION_OF_SDL_RWFromMem
 #define SDL_RWFromConstMem IGNORE_THIS_VERSION_OF_SDL_RWFromConstMem
-#define SDL_AllocRW IGNORE_THIS_VERSION_OF_SDL_AllocRW
-#define SDL_FreeRW IGNORE_THIS_VERSION_OF_SDL_FreeRW
+#define SDL_CreateRW IGNORE_THIS_VERSION_OF_SDL_CreateRW
+#define SDL_DestroyRW IGNORE_THIS_VERSION_OF_SDL_DestroyRW
 #define SDL_RWsize IGNORE_THIS_VERSION_OF_SDL_RWsize
 #define SDL_RWseek IGNORE_THIS_VERSION_OF_SDL_RWseek
 #define SDL_RWtell IGNORE_THIS_VERSION_OF_SDL_RWtell
@@ -417,16 +418,6 @@
 #define SDL_RenderFillRects IGNORE_THIS_VERSION_OF_SDL_RenderFillRects
 #define SDL_RenderTexture IGNORE_THIS_VERSION_OF_SDL_RenderTexture
 #define SDL_RenderTextureRotated IGNORE_THIS_VERSION_OF_SDL_RenderTextureRotated
-#define SDL_RenderPointF IGNORE_THIS_VERSION_OF_SDL_RenderPointF
-#define SDL_RenderPointsF IGNORE_THIS_VERSION_OF_SDL_RenderPointsF
-#define SDL_RenderLineF IGNORE_THIS_VERSION_OF_SDL_RenderLineF
-#define SDL_RenderLinesF IGNORE_THIS_VERSION_OF_SDL_RenderLinesF
-#define SDL_RenderRectF IGNORE_THIS_VERSION_OF_SDL_RenderRectF
-#define SDL_RenderRectsF IGNORE_THIS_VERSION_OF_SDL_RenderRectsF
-#define SDL_RenderFillRectF IGNORE_THIS_VERSION_OF_SDL_RenderFillRectF
-#define SDL_RenderFillRectsF IGNORE_THIS_VERSION_OF_SDL_RenderFillRectsF
-#define SDL_RenderTextureF IGNORE_THIS_VERSION_OF_SDL_RenderTextureF
-#define SDL_RenderTextureRotatedF IGNORE_THIS_VERSION_OF_SDL_RenderTextureRotatedF
 #define SDL_RenderGeometry IGNORE_THIS_VERSION_OF_SDL_RenderGeometry
 #define SDL_RenderGeometryRaw IGNORE_THIS_VERSION_OF_SDL_RenderGeometryRaw
 #define SDL_RenderReadPixels IGNORE_THIS_VERSION_OF_SDL_RenderReadPixels
@@ -438,6 +429,7 @@
 #define SDL_GL_UnbindTexture IGNORE_THIS_VERSION_OF_SDL_GL_UnbindTexture
 #define SDL_GetRenderMetalLayer IGNORE_THIS_VERSION_OF_SDL_GetRenderMetalLayer
 #define SDL_GetRenderMetalCommandEncoder IGNORE_THIS_VERSION_OF_SDL_GetRenderMetalCommandEncoder
+#define SDL_GetRenderVSync IGNORE_THIS_VERSION_OF_SDL_GetRenderVSync
 #define SDL_SetRenderVSync IGNORE_THIS_VERSION_OF_SDL_SetRenderVSync
 #define SDL_GetNumVideoDrivers IGNORE_THIS_VERSION_OF_SDL_GetNumVideoDrivers
 #define SDL_GetVideoDriver IGNORE_THIS_VERSION_OF_SDL_GetVideoDriver
@@ -586,11 +578,11 @@
 #define SDL_GetRectUnion IGNORE_THIS_VERSION_OF_SDL_GetRectUnion
 #define SDL_GetRectEnclosingPoints IGNORE_THIS_VERSION_OF_SDL_GetRectEnclosingPoints
 #define SDL_GetRectAndLineIntersection IGNORE_THIS_VERSION_OF_SDL_GetRectAndLineIntersection
-#define SDL_HasRectIntersectionF IGNORE_THIS_VERSION_OF_SDL_HasRectIntersectionF
-#define SDL_GetRectIntersectionF IGNORE_THIS_VERSION_OF_SDL_GetRectIntersectionF
-#define SDL_GetRectUnionF IGNORE_THIS_VERSION_OF_SDL_GetRectUnionF
-#define SDL_GetRectEnclosingPointsF IGNORE_THIS_VERSION_OF_SDL_GetRectEnclosingPointsF
-#define SDL_GetRectAndLineIntersectionF IGNORE_THIS_VERSION_OF_SDL_GetRectAndLineIntersectionF
+#define SDL_HasRectIntersectionFloat IGNORE_THIS_VERSION_OF_SDL_HasRectIntersectionFloat
+#define SDL_GetRectIntersectionFloat IGNORE_THIS_VERSION_OF_SDL_GetRectIntersectionFloat
+#define SDL_GetRectUnionFloat IGNORE_THIS_VERSION_OF_SDL_GetRectUnionFloat
+#define SDL_GetRectEnclosingPointsFloat IGNORE_THIS_VERSION_OF_SDL_GetRectEnclosingPointsFloat
+#define SDL_GetRectAndLineIntersectionFloat IGNORE_THIS_VERSION_OF_SDL_GetRectAndLineIntersectionFloat
 #define SDL_GetTicks IGNORE_THIS_VERSION_OF_SDL_GetTicks
 #define SDL_GetTicksNS IGNORE_THIS_VERSION_OF_SDL_GetTicksNS
 #define SDL_GetPerformanceCounter IGNORE_THIS_VERSION_OF_SDL_GetPerformanceCounter
@@ -601,7 +593,6 @@
 #define SDL_RemoveTimer IGNORE_THIS_VERSION_OF_SDL_RemoveTimer
 #define SDL_LockJoysticks IGNORE_THIS_VERSION_OF_SDL_LockJoysticks
 #define SDL_UnlockJoysticks IGNORE_THIS_VERSION_OF_SDL_UnlockJoysticks
-#define SDL_HasJoysticks IGNORE_THIS_VERSION_OF_SDL_HasJoysticks
 #define SDL_GetJoysticks IGNORE_THIS_VERSION_OF_SDL_GetJoysticks
 #define SDL_GetJoystickInstanceName IGNORE_THIS_VERSION_OF_SDL_GetJoystickInstanceName
 #define SDL_GetJoystickInstancePath IGNORE_THIS_VERSION_OF_SDL_GetJoystickInstancePath
@@ -671,7 +662,7 @@
 #define SDL_SetCursor IGNORE_THIS_VERSION_OF_SDL_SetCursor
 #define SDL_GetCursor IGNORE_THIS_VERSION_OF_SDL_GetCursor
 #define SDL_GetDefaultCursor IGNORE_THIS_VERSION_OF_SDL_GetDefaultCursor
-#define SDL_FreeCursor IGNORE_THIS_VERSION_OF_SDL_FreeCursor
+#define SDL_DestroyCursor IGNORE_THIS_VERSION_OF_SDL_DestroyCursor
 #define SDL_ShowCursor IGNORE_THIS_VERSION_OF_SDL_ShowCursor
 #define SDL_HideCursor IGNORE_THIS_VERSION_OF_SDL_HideCursor
 #define SDL_CursorVisible IGNORE_THIS_VERSION_OF_SDL_CursorVisible
@@ -679,6 +670,8 @@
 #define SDL_calloc IGNORE_THIS_VERSION_OF_SDL_calloc
 #define SDL_realloc IGNORE_THIS_VERSION_OF_SDL_realloc
 #define SDL_free IGNORE_THIS_VERSION_OF_SDL_free
+#define SDL_aligned_alloc IGNORE_THIS_VERSION_OF_SDL_aligned_alloc
+#define SDL_aligned_free IGNORE_THIS_VERSION_OF_SDL_aligned_free
 #define SDL_GetOriginalMemoryFunctions IGNORE_THIS_VERSION_OF_SDL_GetOriginalMemoryFunctions
 #define SDL_GetMemoryFunctions IGNORE_THIS_VERSION_OF_SDL_GetMemoryFunctions
 #define SDL_SetMemoryFunctions IGNORE_THIS_VERSION_OF_SDL_SetMemoryFunctions
@@ -784,6 +777,8 @@
 #define SDL_logf IGNORE_THIS_VERSION_OF_SDL_logf
 #define SDL_log10 IGNORE_THIS_VERSION_OF_SDL_log10
 #define SDL_log10f IGNORE_THIS_VERSION_OF_SDL_log10f
+#define SDL_modf IGNORE_THIS_VERSION_OF_SDL_modf
+#define SDL_modff IGNORE_THIS_VERSION_OF_SDL_modff
 #define SDL_pow IGNORE_THIS_VERSION_OF_SDL_pow
 #define SDL_powf IGNORE_THIS_VERSION_OF_SDL_powf
 #define SDL_round IGNORE_THIS_VERSION_OF_SDL_round
@@ -1012,6 +1007,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_DestroyAudioStream
 #endif
 
+#ifdef SDL_GetAudioStreamData
+#undef SDL_GetAudioStreamData
+#endif
+
 #ifdef SDL_MixAudioFormat
 #undef SDL_MixAudioFormat
 #endif
@@ -1042,6 +1041,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_CloseAudioDevice
 #undef SDL_CloseAudioDevice
+#endif
+
+#ifdef SDL_PlayAudioDevice
+#undef SDL_PlayAudioDevice
+#endif
+
+#ifdef SDL_ConvertAudioSamples
+#undef SDL_ConvertAudioSamples
 #endif
 
 #ifdef SDL_hid_init
@@ -1144,10 +1151,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetTouchFinger
 #endif
 
-#ifdef SDL_HasSensors
-#undef SDL_HasSensors
-#endif
-
 #ifdef SDL_GetSensors
 #undef SDL_GetSensors
 #endif
@@ -1222,10 +1225,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetGamepadMapping
 #undef SDL_GetGamepadMapping
-#endif
-
-#ifdef SDL_HasGamepads
-#undef SDL_HasGamepads
 #endif
 
 #ifdef SDL_GetGamepads
@@ -2148,12 +2147,12 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_RWFromConstMem
 #endif
 
-#ifdef SDL_AllocRW
-#undef SDL_AllocRW
+#ifdef SDL_CreateRW
+#undef SDL_CreateRW
 #endif
 
-#ifdef SDL_FreeRW
-#undef SDL_FreeRW
+#ifdef SDL_DestroyRW
+#undef SDL_DestroyRW
 #endif
 
 #ifdef SDL_RWsize
@@ -2480,46 +2479,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_RenderTextureRotated
 #endif
 
-#ifdef SDL_RenderPointF
-#undef SDL_RenderPointF
-#endif
-
-#ifdef SDL_RenderPointsF
-#undef SDL_RenderPointsF
-#endif
-
-#ifdef SDL_RenderLineF
-#undef SDL_RenderLineF
-#endif
-
-#ifdef SDL_RenderLinesF
-#undef SDL_RenderLinesF
-#endif
-
-#ifdef SDL_RenderRectF
-#undef SDL_RenderRectF
-#endif
-
-#ifdef SDL_RenderRectsF
-#undef SDL_RenderRectsF
-#endif
-
-#ifdef SDL_RenderFillRectF
-#undef SDL_RenderFillRectF
-#endif
-
-#ifdef SDL_RenderFillRectsF
-#undef SDL_RenderFillRectsF
-#endif
-
-#ifdef SDL_RenderTextureF
-#undef SDL_RenderTextureF
-#endif
-
-#ifdef SDL_RenderTextureRotatedF
-#undef SDL_RenderTextureRotatedF
-#endif
-
 #ifdef SDL_RenderGeometry
 #undef SDL_RenderGeometry
 #endif
@@ -2562,6 +2521,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetRenderMetalCommandEncoder
 #undef SDL_GetRenderMetalCommandEncoder
+#endif
+
+#ifdef SDL_GetRenderVSync
+#undef SDL_GetRenderVSync
 #endif
 
 #ifdef SDL_SetRenderVSync
@@ -3156,24 +3119,24 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetRectAndLineIntersection
 #endif
 
-#ifdef SDL_HasRectIntersectionF
-#undef SDL_HasRectIntersectionF
+#ifdef SDL_HasRectIntersectionFloat
+#undef SDL_HasRectIntersectionFloat
 #endif
 
-#ifdef SDL_GetRectIntersectionF
-#undef SDL_GetRectIntersectionF
+#ifdef SDL_GetRectIntersectionFloat
+#undef SDL_GetRectIntersectionFloat
 #endif
 
-#ifdef SDL_GetRectUnionF
-#undef SDL_GetRectUnionF
+#ifdef SDL_GetRectUnionFloat
+#undef SDL_GetRectUnionFloat
 #endif
 
-#ifdef SDL_GetRectEnclosingPointsF
-#undef SDL_GetRectEnclosingPointsF
+#ifdef SDL_GetRectEnclosingPointsFloat
+#undef SDL_GetRectEnclosingPointsFloat
 #endif
 
-#ifdef SDL_GetRectAndLineIntersectionF
-#undef SDL_GetRectAndLineIntersectionF
+#ifdef SDL_GetRectAndLineIntersectionFloat
+#undef SDL_GetRectAndLineIntersectionFloat
 #endif
 
 #ifdef SDL_GetTicks
@@ -3214,10 +3177,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_UnlockJoysticks
 #undef SDL_UnlockJoysticks
-#endif
-
-#ifdef SDL_HasJoysticks
-#undef SDL_HasJoysticks
 #endif
 
 #ifdef SDL_GetJoysticks
@@ -3496,8 +3455,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetDefaultCursor
 #endif
 
-#ifdef SDL_FreeCursor
-#undef SDL_FreeCursor
+#ifdef SDL_DestroyCursor
+#undef SDL_DestroyCursor
 #endif
 
 #ifdef SDL_ShowCursor
@@ -3526,6 +3485,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_free
 #undef SDL_free
+#endif
+
+#ifdef SDL_aligned_alloc
+#undef SDL_aligned_alloc
+#endif
+
+#ifdef SDL_aligned_free
+#undef SDL_aligned_free
 #endif
 
 #ifdef SDL_GetOriginalMemoryFunctions
@@ -3942,6 +3909,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_log10
 #undef SDL_log10
+#endif
+
+#ifdef SDL_modf
+#undef SDL_modf
+#endif
+
+#ifdef SDL_modff
+#undef SDL_modff
 #endif
 
 #ifdef SDL_log10f
