@@ -328,7 +328,8 @@ SDL2Compat_GetHintBoolean(const char *name, SDL_bool default_value)
 
 
 /* if you change this, update also SDL2Compat_ApplyQuirks() */
-static const char *SDL2_to_SDL3_hint(const char *name)
+static const char *
+SDL2_to_SDL3_hint(const char *name)
 {
     if (SDL_strcmp(name, "SDL_VIDEODRIVER") == 0) {
         return "SDL_VIDEO_DRIVER";
@@ -579,37 +580,6 @@ BOOL WINAPI _DllMainCRTStartup(HANDLE dllhandle, DWORD reason, LPVOID reserved)
     #error Please define an init procedure for your platform.
 #endif
 
-
-struct SDL2_RWops
-{
-    Sint64 (SDLCALL * size) (struct SDL2_RWops * context);
-    Sint64 (SDLCALL * seek) (struct SDL2_RWops * context, Sint64 offset, int whence);
-    size_t (SDLCALL * read) (struct SDL2_RWops * context, void *ptr, size_t size, size_t maxnum);
-    size_t (SDLCALL * write) (struct SDL2_RWops * context, const void *ptr, size_t size, size_t num);
-    int (SDLCALL * close) (struct SDL2_RWops * context);
-    Uint32 type;
-    union
-    {
-        struct
-        {
-            SDL_bool autoclose;
-            void *fp;
-        } stdio;
-        struct
-        {
-            void *data1;
-            void *data2;
-        } unknown;
-        struct
-        {
-            SDL_RWops *rwops;
-        } sdl3;
-        struct
-        {
-            void *ptrs[3];  /* just so this matches SDL2's struct size. */
-        } match_sdl2;
-    } hidden;
-};
 
 /* removed in SDL3 (which only uses SDL_WINDOW_HIDDEN now). */
 #define SDL2_WINDOW_SHOWN 0x000000004
@@ -1187,12 +1157,13 @@ SDL_LogMessage(int category, SDL_LogPriority priority, SDL_PRINTF_FORMAT_STRING 
     va_end(ap);
 }
 
-#define SDL_LOG_IMPL(name, prio) \
-    DECLSPEC void SDLCALL SDL_Log##name(int category, SDL_PRINTF_FORMAT_STRING const char *fmt, ...) { \
-        va_list ap; va_start(ap, fmt); \
-        SDL3_LogMessageV(category, SDL_LOG_PRIORITY_##prio, fmt, ap); \
-        va_end(ap); \
-    }
+#define SDL_LOG_IMPL(name, prio)                                             \
+DECLSPEC void SDLCALL                                                        \
+SDL_Log##name(int category, SDL_PRINTF_FORMAT_STRING const char *fmt, ...) { \
+    va_list ap; va_start(ap, fmt);                                           \
+    SDL3_LogMessageV(category, SDL_LOG_PRIORITY_##prio, fmt, ap);            \
+    va_end(ap);                                                              \
+}
 SDL_LOG_IMPL(Verbose, VERBOSE)
 SDL_LOG_IMPL(Debug, DEBUG)
 SDL_LOG_IMPL(Info, INFO)
@@ -1618,6 +1589,33 @@ SDL_RenderLogicalToWindow(SDL_Renderer *renderer,
 
 /* The SDL3 version of SDL_RWops changed, so we need to convert when necessary. */
 
+struct SDL2_RWops
+{
+    Sint64 (SDLCALL * size) (struct SDL2_RWops *ctx);
+    Sint64 (SDLCALL * seek) (struct SDL2_RWops *ctx, Sint64 offset, int whence);
+    size_t (SDLCALL * read) (struct SDL2_RWops *ctx, void *ptr, size_t size, size_t maxnum);
+    size_t (SDLCALL * write) (struct SDL2_RWops *ctx, const void *ptr, size_t size, size_t num);
+    int (SDLCALL * close) (struct SDL2_RWops *ctx);
+    Uint32 type;
+    union
+    {
+        struct {
+            SDL_bool autoclose;
+            void *fp;
+        } stdio;
+        struct {
+            void *data1;
+            void *data2;
+        } unknown;
+        struct {
+            SDL_RWops *rwops;
+        } sdl3;
+        struct {
+            void *ptrs[3];  /* just so this matches SDL2's struct size. */
+        } match_sdl2;
+    } hidden;
+};
+
 DECLSPEC SDL2_RWops *SDLCALL
 SDL_AllocRW(void)
 {
@@ -1636,29 +1634,42 @@ SDL_FreeRW(SDL2_RWops *area2)
     SDL3_free(area2);
 }
 
-static Sint64 SDLCALL RWops3to2_size(struct SDL2_RWops *rwops2) { return SDL3_RWsize(rwops2->hidden.sdl3.rwops); }
-static Sint64 SDLCALL RWops3to2_seek(struct SDL2_RWops *rwops2, Sint64 offset, int whence) { return SDL3_RWseek(rwops2->hidden.sdl3.rwops, offset, whence); }
+static Sint64 SDLCALL
+RWops3to2_size(SDL2_RWops *rwops2)
+{
+    return SDL3_RWsize(rwops2->hidden.sdl3.rwops);
+}
 
-static size_t SDLCALL RWops3to2_read(struct SDL2_RWops *rwops2, void *ptr, size_t size, size_t maxnum)
+static Sint64 SDLCALL
+RWops3to2_seek(SDL2_RWops *rwops2, Sint64 offset, int whence)
+{
+    return SDL3_RWseek(rwops2->hidden.sdl3.rwops, offset, whence);
+}
+
+static size_t SDLCALL
+RWops3to2_read(SDL2_RWops *rwops2, void *ptr, size_t size, size_t maxnum)
 {
     const Sint64 br = SDL3_RWread(rwops2->hidden.sdl3.rwops, ptr, ((Sint64) size) * ((Sint64) maxnum));
     return (br <= 0) ? 0 : (size_t) br;
 }
 
-static size_t SDLCALL RWops3to2_write(struct SDL2_RWops *rwops2, const void *ptr, size_t size, size_t maxnum)
+static size_t SDLCALL
+RWops3to2_write(SDL2_RWops *rwops2, const void *ptr, size_t size, size_t maxnum)
 {
     const Sint64 bw = SDL3_RWwrite(rwops2->hidden.sdl3.rwops, ptr, ((Sint64) size) * ((Sint64) maxnum));
     return (bw <= 0) ? 0 : (size_t) bw;
 }
 
-static int SDLCALL RWops3to2_close(struct SDL2_RWops *rwops2)
+static int SDLCALL
+RWops3to2_close(SDL2_RWops *rwops2)
 {
     const int retval = SDL3_RWclose(rwops2->hidden.sdl3.rwops);
     SDL_FreeRW(rwops2);  /* !!! FIXME: _should_ we free this if SDL3_RWclose failed? */
     return retval;
 }
 
-static SDL2_RWops *RWops3to2(SDL_RWops *rwops3)
+static SDL2_RWops *
+RWops3to2(SDL_RWops *rwops3)
 {
     SDL2_RWops *rwops2 = NULL;
     if (rwops3) {
@@ -1736,9 +1747,19 @@ SDL_RWclose(SDL2_RWops *rwops2)
 DECLSPEC Uint8 SDLCALL SDL_ReadU8(SDL2_RWops *rwops2) { Uint8 x = 0; SDL_RWread(rwops2, &x, sizeof (x), 1); return x; }
 DECLSPEC size_t SDLCALL SDL_WriteU8(SDL2_RWops *rwops2, Uint8 x) { return SDL_RWwrite(rwops2, &x, sizeof(x), 1); }
 
-#define DORWOPSENDIAN(order, bits) \
-    DECLSPEC Uint##bits SDLCALL SDL_Read##order##bits(SDL2_RWops *rwops2) { Uint##bits x = 0; SDL_RWread(rwops2, &x, sizeof (x), 1); return SDL_Swap##order##bits(x); } \
-    DECLSPEC size_t SDLCALL SDL_Write##order##bits(SDL2_RWops *rwops2, Uint##bits x) { x = SDL_Swap##order##bits(x); return SDL_RWwrite(rwops2, &x, sizeof(x), 1); }
+#define DORWOPSENDIAN(order, bits)          \
+DECLSPEC Uint##bits SDLCALL                 \
+SDL_Read##order##bits(SDL2_RWops *rwops2) { \
+    Uint##bits x = 0;                       \
+    SDL_RWread(rwops2, &x, sizeof (x), 1);  \
+    return SDL_Swap##order##bits(x);        \
+} \
+                                                           \
+DECLSPEC size_t SDLCALL                                    \
+SDL_Write##order##bits(SDL2_RWops *rwops2, Uint##bits x) { \
+    x = SDL_Swap##order##bits(x);                          \
+    return SDL_RWwrite(rwops2, &x, sizeof(x), 1);          \
+}
 DORWOPSENDIAN(LE, 16)
 DORWOPSENDIAN(BE, 16)
 DORWOPSENDIAN(LE, 32)
@@ -1818,9 +1839,7 @@ static size_t SDLCALL
 stdio_read(SDL2_RWops *rwops2, void *ptr, size_t size, size_t maxnum)
 {
     FILE *fp = (FILE *) rwops2->hidden.stdio.fp;
-    size_t nread;
-
-    nread = fread(ptr, size, maxnum, fp);
+    size_t nread = fread(ptr, size, maxnum, fp);
     if (nread == 0 && ferror(fp)) {
         SDL3_Error(SDL_EFREAD);
     }
@@ -1831,9 +1850,7 @@ static size_t SDLCALL
 stdio_write(SDL2_RWops *rwops2, const void *ptr, size_t size, size_t num)
 {
     FILE *fp = (FILE *) rwops2->hidden.stdio.fp;
-    size_t nwrote;
-
-    nwrote = fwrite(ptr, size, num, fp);
+    size_t nwrote = fwrite(ptr, size, num, fp);
     if (nwrote == 0 && ferror(fp)) {
         SDL3_Error(SDL_EFWRITE);
     }
@@ -1873,30 +1890,42 @@ SDL_RWFromFP(FILE *fp, SDL_bool autoclose)
 }
 #endif
 
+static Sint64 SDLCALL
+RWops2to3_size(struct SDL_RWops *rwops3)
+{
+    return SDL_RWsize((SDL2_RWops *) rwops3->hidden.unknown.data1);
+}
 
-static Sint64 SDLCALL RWops2to3_size(struct SDL_RWops *rwops3) { return SDL_RWsize((SDL2_RWops *) rwops3->hidden.unknown.data1); }
-static Sint64 SDLCALL RWops2to3_seek(struct SDL_RWops *rwops3, Sint64 offset, int whence) { return SDL_RWseek((SDL2_RWops *) rwops3->hidden.unknown.data1, offset, whence); }
+static Sint64 SDLCALL
+RWops2to3_seek(struct SDL_RWops *rwops3, Sint64 offset, int whence)
+{
+    return SDL_RWseek((SDL2_RWops *) rwops3->hidden.unknown.data1, offset, whence);
+}
 
-static Sint64 SDLCALL RWops2to3_read(struct SDL_RWops *rwops3, void *ptr, Sint64 size)
+static Sint64 SDLCALL
+RWops2to3_read(struct SDL_RWops *rwops3, void *ptr, Sint64 size)
 {
     const size_t br = SDL_RWread((SDL2_RWops *) rwops3->hidden.unknown.data1, ptr, 1, (size_t) size);
     return (Sint64) br;
 }
 
-static Sint64 SDLCALL RWops2to3_write(struct SDL_RWops *rwops3, const void *ptr, Sint64 size)
+static Sint64 SDLCALL
+RWops2to3_write(struct SDL_RWops *rwops3, const void *ptr, Sint64 size)
 {
     const size_t bw = SDL_RWwrite((SDL2_RWops *) rwops3->hidden.unknown.data1, ptr, 1, (size_t) size);
     return (bw == 0) ? -1 : (Sint64) bw;
 }
 
-static int SDLCALL RWops2to3_close(struct SDL_RWops *rwops3)
+static int SDLCALL
+RWops2to3_close(struct SDL_RWops *rwops3)
 {
     const int retval = SDL_RWclose((SDL2_RWops *) rwops3->hidden.unknown.data1);
     SDL3_DestroyRW(rwops3);  /* !!! FIXME: _should_ we free this if SDL_RWclose failed? */
     return retval;
 }
 
-static SDL_RWops *RWops2to3(SDL2_RWops *rwops2)
+static SDL_RWops *
+RWops2to3(SDL2_RWops *rwops2)
 {
     SDL_RWops *rwops3 = NULL;
     if (rwops2) {
@@ -1916,7 +1945,6 @@ static SDL_RWops *RWops2to3(SDL2_RWops *rwops2)
     }
     return rwops3;
 }
-
 
 DECLSPEC void *SDLCALL
 SDL_LoadFile_RW(SDL2_RWops *rwops2, size_t *datasize, int freesrc)
@@ -2221,7 +2249,8 @@ static GestureTouch *GestureTouches = NULL;
 static int GestureNumTouches = 0;
 static SDL_bool GestureRecordAll = SDL_FALSE;
 
-static GestureTouch *GestureAddTouch(const SDL_TouchID touchId)
+static GestureTouch *
+GestureAddTouch(const SDL_TouchID touchId)
 {
     GestureTouch *gestureTouch = (GestureTouch *)SDL3_realloc(GestureTouches, (GestureNumTouches + 1) * sizeof(GestureTouch));
     if (gestureTouch == NULL) {
@@ -2235,7 +2264,8 @@ static GestureTouch *GestureAddTouch(const SDL_TouchID touchId)
     return &GestureTouches[GestureNumTouches++];
 }
 
-static int GestureDelTouch(const SDL_TouchID touchId)
+static int
+GestureDelTouch(const SDL_TouchID touchId)
 {
     int i;
 
@@ -2260,7 +2290,8 @@ static int GestureDelTouch(const SDL_TouchID touchId)
     return 0;
 }
 
-static GestureTouch *GestureGetTouch(const SDL_TouchID touchId)
+static GestureTouch *
+GestureGetTouch(const SDL_TouchID touchId)
 {
     int i;
     for (i = 0; i < GestureNumTouches; i++) {
@@ -2305,13 +2336,15 @@ SDL_RecordGesture(SDL_TouchID touchId)
 }
 
 /* !!! FIXME: we need to hook this up when we override SDL_Quit */
-static void GestureQuit(void)
+static void
+GestureQuit(void)
 {
     SDL3_free(GestureTouches);
     GestureTouches = NULL;
 }
 
-static unsigned long GestureHashDollar(SDL_FPoint *points)
+static unsigned long
+GestureHashDollar(SDL_FPoint *points)
 {
     unsigned long hash = 5381;
     int i;
@@ -2322,7 +2355,8 @@ static unsigned long GestureHashDollar(SDL_FPoint *points)
     return hash;
 }
 
-static int GestureSaveTemplate(GestureDollarTemplate *templ, SDL2_RWops *dst)
+static int
+GestureSaveTemplate(GestureDollarTemplate *templ, SDL2_RWops *dst)
 {
     if (dst == NULL) {
         return 0;
@@ -2384,7 +2418,8 @@ SDL_SaveDollarTemplate(SDL2_GestureID gestureId, SDL2_RWops *dst)
 
 /* path is an already sampled set of points
 Returns the index of the gesture on success, or -1 */
-static int GestureAddDollar_one(GestureTouch *inTouch, SDL_FPoint *path)
+static int
+GestureAddDollar_one(GestureTouch *inTouch, SDL_FPoint *path)
 {
     GestureDollarTemplate *dollarTemplate;
     GestureDollarTemplate *templ;
@@ -2405,7 +2440,8 @@ static int GestureAddDollar_one(GestureTouch *inTouch, SDL_FPoint *path)
     return index;
 }
 
-static int GestureAddDollar(GestureTouch *inTouch, SDL_FPoint *path)
+static int
+GestureAddDollar(GestureTouch *inTouch, SDL_FPoint *path)
 {
     int index = -1;
     int i = 0;
@@ -2483,7 +2519,8 @@ SDL_LoadDollarTemplates(SDL_TouchID touchId, SDL2_RWops *src)
     return loaded;
 }
 
-static float GestureDollarDifference(SDL_FPoint *points, SDL_FPoint *templ, float ang)
+static float
+GestureDollarDifference(SDL_FPoint *points, SDL_FPoint *templ, float ang)
 {
     /*  SDL_FPoint p[GESTURE_DOLLARNPOINTS]; */
     float dist = 0;
@@ -2497,7 +2534,8 @@ static float GestureDollarDifference(SDL_FPoint *points, SDL_FPoint *templ, floa
     return dist / GESTURE_DOLLARNPOINTS;
 }
 
-static float GestureBestDollarDifference(SDL_FPoint *points, SDL_FPoint *templ)
+static float
+GestureBestDollarDifference(SDL_FPoint *points, SDL_FPoint *templ)
 {
     /*------------BEGIN DOLLAR BLACKBOX------------------
       -TRANSLATED DIRECTLY FROM PSUDEO-CODE AVAILABLE AT-
@@ -2535,7 +2573,8 @@ static float GestureBestDollarDifference(SDL_FPoint *points, SDL_FPoint *templ)
 }
 
 /* `path` contains raw points, plus (possibly) the calculated length */
-static int GestureDollarNormalize(const GestureDollarPath *path, SDL_FPoint *points, SDL_bool is_recording)
+static int
+GestureDollarNormalize(const GestureDollarPath *path, SDL_FPoint *points, SDL_bool is_recording)
 {
     int i;
     float interval;
@@ -2633,7 +2672,8 @@ static int GestureDollarNormalize(const GestureDollarPath *path, SDL_FPoint *poi
     return numPoints;
 }
 
-static float GestureDollarRecognize(const GestureDollarPath *path, int *bestTempl, GestureTouch *touch)
+static float
+GestureDollarRecognize(const GestureDollarPath *path, int *bestTempl, GestureTouch *touch)
 {
     SDL_FPoint points[GESTURE_DOLLARNPOINTS];
     int i;
@@ -2655,7 +2695,8 @@ static float GestureDollarRecognize(const GestureDollarPath *path, int *bestTemp
     return bestDiff;
 }
 
-static void GestureSendMulti(GestureTouch *touch, float dTheta, float dDist)
+static void
+GestureSendMulti(GestureTouch *touch, float dTheta, float dDist)
 {
     if (SDL3_EventEnabled(SDL_MULTIGESTURE)) {
         SDL2_Event event;
@@ -2671,7 +2712,8 @@ static void GestureSendMulti(GestureTouch *touch, float dTheta, float dDist)
     }
 }
 
-static void GestureSendDollar(GestureTouch *touch, SDL2_GestureID gestureId, float error)
+static void
+GestureSendDollar(GestureTouch *touch, SDL2_GestureID gestureId, float error)
 {
     if (SDL3_EventEnabled(SDL_DOLLARGESTURE)) {
         SDL2_Event event;
@@ -2688,7 +2730,8 @@ static void GestureSendDollar(GestureTouch *touch, SDL2_GestureID gestureId, flo
     }
 }
 
-static void GestureSendDollarRecord(GestureTouch *touch, SDL2_GestureID gestureId)
+static void
+GestureSendDollarRecord(GestureTouch *touch, SDL2_GestureID gestureId)
 {
     if (SDL3_EventEnabled(SDL_DOLLARRECORD)) {
         SDL2_Event event;
@@ -2701,11 +2744,11 @@ static void GestureSendDollarRecord(GestureTouch *touch, SDL2_GestureID gestureI
 }
 
 /* These are SDL3 events coming in from sdl2-compat's event watcher. */
-static void GestureProcessEvent(const SDL_Event *event3)
+static void
+GestureProcessEvent(const SDL_Event *event3)
 {
     float x, y;
-    int index;
-    int i;
+    int i, index;
     float pathDx, pathDy;
     SDL_FPoint lastP;
     SDL_FPoint lastCentroid;
@@ -3161,7 +3204,8 @@ typedef struct
     void *driverdata;           /**< driver-specific data, initialize to 0 */
 } SDL2_DisplayMode;
 
-static void DisplayMode_2to3(const SDL2_DisplayMode *in, SDL_DisplayMode *out) {
+static void
+DisplayMode_2to3(const SDL2_DisplayMode *in, SDL_DisplayMode *out) {
     if (in && out) {
         out->format = in->format;
         out->w = in->w;
@@ -3171,7 +3215,8 @@ static void DisplayMode_2to3(const SDL2_DisplayMode *in, SDL_DisplayMode *out) {
     }
 }
 
-static void DisplayMode_3to2(const SDL_DisplayMode *in, SDL2_DisplayMode *out) {
+static void
+DisplayMode_3to2(const SDL_DisplayMode *in, SDL2_DisplayMode *out) {
     if (in && out) {
         out->format = in->format;
         out->w = in->w;
@@ -3366,7 +3411,6 @@ SDL_RenderDrawRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
     }
     return 0;
 }
-
 
 DECLSPEC int SDLCALL
 SDL_RenderFillRect(SDL_Renderer *renderer, const SDL_Rect *rect)
@@ -3611,7 +3655,8 @@ SDL_JoystickEventState(int state)
 
 /* SDL3 dumped the index/instance difference for various devices. */
 
-static SDL_JoystickID GetJoystickInstanceFromIndex(int idx)
+static SDL_JoystickID
+GetJoystickInstanceFromIndex(int idx)
 {
     if ((idx < 0) || (idx >= num_joysticks)) {
         SDL3_SetError("There are %d joysticks available", num_joysticks);
@@ -3619,7 +3664,6 @@ static SDL_JoystickID GetJoystickInstanceFromIndex(int idx)
     }
     return joystick_list[idx];
 }
-
 
 /* !!! FIXME: when we override SDL_Quit(), we need to free/reset joystick_list and friends*/
 /* !!! FIXME: put a mutex on the joystick and sensor lists. Strictly speaking, this will break if you multithread it, but it doesn't have to crash. */
@@ -3636,7 +3680,6 @@ SDL_NumJoysticks(void)
     }
     return num_joysticks;
 }
-
 
 DECLSPEC SDL_JoystickGUID SDLCALL
 SDL_JoystickGetDeviceGUID(int idx)
@@ -3780,7 +3823,8 @@ SDL_GameControllerPathForIndex(int idx)
 
 /* !!! FIXME: when we override SDL_Quit(), we need to free/reset sensor_list */
 
-static SDL_SensorID GetSensorInstanceFromIndex(int idx)
+static SDL_SensorID
+GetSensorInstanceFromIndex(int idx)
 {
     if ((idx < 0) || (idx >= num_sensors)) {
         SDL3_SetError("There are %d sensors available", num_sensors);
@@ -3851,12 +3895,14 @@ SDL_SensorOpen(int idx)
 }
 
 
-DECLSPEC void * SDLCALL SDL_SIMDAlloc(const size_t len)
+DECLSPEC void * SDLCALL
+SDL_SIMDAlloc(const size_t len)
 {
     return SDL3_aligned_alloc(SDL3_SIMDGetAlignment(), len);
 }
 
-DECLSPEC void * SDLCALL SDL_SIMDRealloc(void *mem, const size_t len)
+DECLSPEC void * SDLCALL
+SDL_SIMDRealloc(void *mem, const size_t len)
 {
     const size_t alignment = SDL3_SIMDGetAlignment();
     const size_t padding = (alignment - (len % alignment)) % alignment;
@@ -3908,14 +3954,15 @@ DECLSPEC void * SDLCALL SDL_SIMDRealloc(void *mem, const size_t len)
     return retval;
 }
 
-DECLSPEC void SDLCALL SDL_SIMDFree(void *ptr)
+DECLSPEC void SDLCALL
+SDL_SIMDFree(void *ptr)
 {
     SDL3_aligned_free(ptr);
 }
 
 
-
-static SDL_bool SDL_IsSupportedAudioFormat(const SDL_AudioFormat fmt)
+static SDL_bool
+SDL_IsSupportedAudioFormat(const SDL_AudioFormat fmt)
 {
     switch (fmt) {
     case AUDIO_U8:
@@ -3956,13 +4003,14 @@ typedef struct {
 #define RESAMPLER_SAMPLES_PER_ZERO_CROSSING (1 << ((RESAMPLER_BITS_PER_SAMPLE / 2) + 1))
 
 
-DECLSPEC int SDLCALL SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
-                                       SDL_AudioFormat src_format,
-                                       Uint8 src_channels,
-                                       int src_rate,
-                                       SDL_AudioFormat dst_format,
-                                       Uint8 dst_channels,
-                                       int dst_rate)
+DECLSPEC int SDLCALL
+SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
+                  SDL_AudioFormat src_format,
+                  Uint8 src_channels,
+                  int src_rate,
+                  SDL_AudioFormat dst_format,
+                  Uint8 dst_channels,
+                  int dst_rate)
 {
     /* Sanity check target pointer */
     if (cvt == NULL) {
@@ -4012,8 +4060,7 @@ DECLSPEC int SDLCALL SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
     cvt->len_ratio = 1.0;
     cvt->rate_incr = ((double)dst_rate) / ((double)src_rate);
 
-    /* Use the filters[] to store some data ... */
-    {
+    { /* Use the filters[] to store some data ... */
         AudioParam ap;
         ap.src_format = src_format;
         ap.src_channels = src_channels;
@@ -4068,10 +4115,9 @@ DECLSPEC int SDLCALL SDL_ConvertAudio(SDL_AudioCVT *cvt)
         return SDL_InvalidParamError("cvt");
     }
 
-    {
+    { /* Fetch from the end of filters[], aligned */
         AudioParam ap;
 
-        /* Fetch from the end of filters[], aligned */
         SDL_memcpy(
             &ap,
             (Uint8 *)&cvt->filters[SDL_AUDIOCVT_MAX_FILTERS + 1] - (sizeof(AudioParam) & ~3),
