@@ -331,10 +331,10 @@ SDL2Compat_GetHintBoolean(const char *name, SDL_bool default_value)
 static const char *
 SDL2_to_SDL3_hint(const char *name)
 {
-    if (SDL_strcmp(name, "SDL_VIDEODRIVER") == 0) {
+    if (SDL3_strcmp(name, "SDL_VIDEODRIVER") == 0) {
         return "SDL_VIDEO_DRIVER";
     }
-    if (SDL_strcmp(name, "SDL_AUDIODRIVER") == 0) {
+    if (SDL3_strcmp(name, "SDL_AUDIODRIVER") == 0) {
         return "SDL_AUDIO_DRIVER";
     }
     return name;
@@ -1409,7 +1409,6 @@ SDL_GetEventFilter(SDL2_EventFilter *filter2, void **userdata)
     if (filter2) {
         *filter2 = EventFilter2;
     }
-
     if (userdata) {
         *userdata = EventFilterUserData2;
     }
@@ -1439,7 +1438,7 @@ SDL_PeepEvents(SDL2_Event *events2, int numevents, SDL_eventaction action, Uint3
         }
     }
 
-    SDL_free(events3);
+    SDL3_free(events3);
     return retval;
 }
 
@@ -1470,7 +1469,7 @@ DECLSPEC void SDLCALL
 SDL_AddEventWatch(SDL2_EventFilter filter2, void *userdata)
 {
     /* we set up an SDL3 event filter to manage things already; we will also use it to call all added SDL2 event watchers. Put this new one in that list. */
-    EventFilterWrapperData *wrapperdata = (EventFilterWrapperData *) SDL_malloc(sizeof (EventFilterWrapperData));
+    EventFilterWrapperData *wrapperdata = (EventFilterWrapperData *) SDL3_malloc(sizeof (EventFilterWrapperData));
     if (!wrapperdata) {
         return;  /* oh well. */
     }
@@ -1744,8 +1743,19 @@ SDL_RWclose(SDL2_RWops *rwops2)
     return rwops2->close(rwops2);
 }
 
-DECLSPEC Uint8 SDLCALL SDL_ReadU8(SDL2_RWops *rwops2) { Uint8 x = 0; SDL_RWread(rwops2, &x, sizeof (x), 1); return x; }
-DECLSPEC size_t SDLCALL SDL_WriteU8(SDL2_RWops *rwops2, Uint8 x) { return SDL_RWwrite(rwops2, &x, sizeof(x), 1); }
+DECLSPEC Uint8 SDLCALL
+SDL_ReadU8(SDL2_RWops *rwops2)
+{
+    Uint8 x = 0;
+    SDL_RWread(rwops2, &x, sizeof (x), 1);
+    return x;
+}
+
+DECLSPEC size_t SDLCALL
+SDL_WriteU8(SDL2_RWops *rwops2, Uint8 x)
+{
+    return SDL_RWwrite(rwops2, &x, sizeof(x), 1);
+}
 
 #define DORWOPSENDIAN(order, bits)          \
 DECLSPEC Uint##bits SDLCALL                 \
@@ -2076,7 +2086,7 @@ SDL_CalculateGammaRamp(float gamma, Uint16 *ramp)
 
     /* 0.0 gamma is all black */
     if (gamma == 0.0f) {
-        SDL_memset(ramp, 0, 256 * sizeof(Uint16));
+        SDL3_memset(ramp, 0, 256 * sizeof(Uint16));
         return;
     }
     if (gamma == 1.0f) {
@@ -2091,7 +2101,7 @@ SDL_CalculateGammaRamp(float gamma, Uint16 *ramp)
         gamma = 1.0f / gamma;
         for (i = 0; i < 256; ++i) {
             value =
-                (int) (SDL_pow((double) i / 256.0, gamma) * 65535.0 + 0.5);
+                (int) (SDL3_pow((double) i / 256.0, gamma) * 65535.0 + 0.5);
             if (value > 65535) {
                 value = 65535;
             }
@@ -2107,13 +2117,13 @@ SDL_GetWindowGammaRamp(SDL_Window *window, Uint16 *red, Uint16 *blue, Uint16 *gr
     if (buf) {
         SDL_CalculateGammaRamp(1.0f, buf);
         if (red && (red != buf)) {
-            SDL_memcpy(red, buf, 256 * sizeof (Uint16));
+            SDL3_memcpy(red, buf, 256 * sizeof (Uint16));
         }
         if (green && (green != buf)) {
-            SDL_memcpy(green, buf, 256 * sizeof (Uint16));
+            SDL3_memcpy(green, buf, 256 * sizeof (Uint16));
         }
         if (blue && (blue != buf)) {
-            SDL_memcpy(blue, buf, 256 * sizeof (Uint16));
+            SDL3_memcpy(blue, buf, 256 * sizeof (Uint16));
         }
     }
     return 0;
@@ -2527,9 +2537,9 @@ GestureDollarDifference(SDL_FPoint *points, SDL_FPoint *templ, float ang)
     SDL_FPoint p;
     int i;
     for (i = 0; i < GESTURE_DOLLARNPOINTS; i++) {
-        p.x = points[i].x * SDL3_cosf(ang) - points[i].y * SDL_sinf(ang);
-        p.y = points[i].x * SDL3_sinf(ang) + points[i].y * SDL_cosf(ang);
-        dist += SDL_sqrtf((p.x - templ[i].x) * (p.x - templ[i].x) + (p.y - templ[i].y) * (p.y - templ[i].y));
+        p.x = points[i].x * SDL3_cosf(ang) - points[i].y * SDL3_sinf(ang);
+        p.y = points[i].x * SDL3_sinf(ang) + points[i].y * SDL3_cosf(ang);
+        dist += SDL3_sqrtf((p.x - templ[i].x) * (p.x - templ[i].x) + (p.y - templ[i].y) * (p.y - templ[i].y));
     }
     return dist / GESTURE_DOLLARNPOINTS;
 }
@@ -3040,7 +3050,7 @@ SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained)
         g_audio_spec = *obtained;
     } else {
         SDL_AudioSpec _obtained;
-        SDL_zero(_obtained);
+        SDL3_zero(_obtained);
         id = SDL_OpenAudioDevice(NULL, 0, desired, &_obtained, 0);
         /* On successful open, copy calculated values into 'desired'. */
         if (id > 0) {
@@ -3222,7 +3232,7 @@ DisplayMode_3to2(const SDL_DisplayMode *in, SDL2_DisplayMode *out) {
         out->format = in->format;
         out->w = SDL3_lroundf(in->w / in->display_scale);
         out->h = SDL3_lroundf(in->h / in->display_scale);
-        out->refresh_rate = (int) SDL_ceil(in->refresh_rate);
+        out->refresh_rate = (int) SDL3_ceil(in->refresh_rate);
         out->driverdata = in->driverdata;
     }
 }
@@ -3305,7 +3315,7 @@ SDL_RenderDrawPoints(SDL_Renderer *renderer,
         return SDL3_InvalidParamError("SDL_RenderPoints(): points");
     }
 
-    fpoints = (SDL_FPoint *) SDL_malloc(sizeof (SDL_FPoint) * count);
+    fpoints = (SDL_FPoint *) SDL3_malloc(sizeof (SDL_FPoint) * count);
     if (fpoints == NULL) {
         return SDL3_OutOfMemory();
     }
@@ -3317,7 +3327,7 @@ SDL_RenderDrawPoints(SDL_Renderer *renderer,
 
     retval = SDL3_RenderPoints(renderer, fpoints, count);
 
-    SDL_free(fpoints);
+    SDL3_free(fpoints);
 
     return retval;
 }
@@ -3359,7 +3369,7 @@ SDL_RenderDrawLines(SDL_Renderer *renderer, const SDL_Point *points, int count)
         return 0;
     }
 
-    fpoints = (SDL_FPoint *) SDL_malloc(sizeof (SDL_FPoint) * count);
+    fpoints = (SDL_FPoint *) SDL3_malloc(sizeof (SDL_FPoint) * count);
     if (fpoints == NULL) {
         return SDL3_OutOfMemory();
     }
@@ -3371,7 +3381,7 @@ SDL_RenderDrawLines(SDL_Renderer *renderer, const SDL_Point *points, int count)
 
     retval = SDL3_RenderLines(renderer, fpoints, count);
 
-    SDL_free(fpoints);
+    SDL3_free(fpoints);
 
     return retval;
 }
@@ -3441,7 +3451,7 @@ SDL_RenderFillRects(SDL_Renderer *renderer, const SDL_FRect *rects, int count)
         return 0;
     }
 
-    frects = (SDL_FRect *) SDL_malloc(sizeof (SDL_FRect) * count);
+    frects = (SDL_FRect *) SDL3_malloc(sizeof (SDL_FRect) * count);
     if (frects == NULL) {
         return SDL3_OutOfMemory();
     }
@@ -3454,7 +3464,7 @@ SDL_RenderFillRects(SDL_Renderer *renderer, const SDL_FRect *rects, int count)
 
     retval = SDL3_RenderFillRects(renderer, frects, count);
 
-    SDL_free(frects);
+    SDL3_free(frects);
 
     return retval;
 }
@@ -3926,7 +3936,7 @@ SDL_SIMDRealloc(void *mem, const size_t len)
         memdiff = ((size_t)oldmem) - ((size_t)mem);
     }
 
-    ptr = (Uint8 *)SDL_realloc(mem, to_allocate);
+    ptr = (Uint8 *)SDL3_realloc(mem, to_allocate);
 
     if (ptr == NULL) {
         return NULL; /* Out of memory, bail! */
@@ -3946,7 +3956,7 @@ SDL_SIMDRealloc(void *mem, const size_t len)
              * only length value we have, and it guarantees that we copy all the
              * previous memory anyhow.
              */
-            SDL_memmove(retval, oldmem, len);
+            SDL3_memmove(retval, oldmem, len);
         }
     }
 
@@ -4019,7 +4029,7 @@ SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
     }
 
     /* Make sure we zero out the audio conversion before error checking */
-    SDL_zerop(cvt);
+    SDL3_zerop(cvt);
 
     if (!SDL_IsSupportedAudioFormat(src_format)) {
         return SDL_SetError("Invalid source format");
@@ -4056,7 +4066,7 @@ SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
     cvt->dst_format = dst_format;
     cvt->needed = 0;
     cvt->filter_index = 0;
-    SDL_zeroa(cvt->filters);
+    SDL3_zeroa(cvt->filters);
     cvt->len_mult = 1;
     cvt->len_ratio = 1.0;
     cvt->rate_incr = ((double)dst_rate) / ((double)src_rate);
@@ -4071,7 +4081,7 @@ SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
         ap.dst_rate = dst_rate;
 
         /* Store at the end of filters[], aligned */
-        SDL_memcpy(
+        SDL3_memcpy(
             (Uint8 *)&cvt->filters[SDL_AUDIOCVT_MAX_FILTERS + 1] - (sizeof(AudioParam) & ~3),
             &ap,
             sizeof(ap));
@@ -4119,7 +4129,7 @@ DECLSPEC int SDLCALL SDL_ConvertAudio(SDL_AudioCVT *cvt)
     { /* Fetch from the end of filters[], aligned */
         AudioParam ap;
 
-        SDL_memcpy(
+        SDL3_memcpy(
             &ap,
             (Uint8 *)&cvt->filters[SDL_AUDIOCVT_MAX_FILTERS + 1] - (sizeof(AudioParam) & ~3),
             sizeof(ap));
@@ -4145,7 +4155,7 @@ DECLSPEC int SDLCALL SDL_ConvertAudio(SDL_AudioCVT *cvt)
     dst_len = dst_samplesize * (src_len / src_samplesize);
     if (src_rate < dst_rate) {
         const double mult = ((double)dst_rate) / ((double)src_rate);
-        dst_len *= (int) SDL_ceil(mult);
+        dst_len *= (int) SDL3_ceil(mult);
     }
 
     /* Run the audio converter */
