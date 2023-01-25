@@ -3205,14 +3205,14 @@ SDL_UnlockSensors(void)
 }
 
 
-typedef struct
+struct SDL2_DisplayMode
 {
     Uint32 format;              /**< pixel format */
     int w;                      /**< width, in screen coordinates */
     int h;                      /**< height, in screen coordinates */
     int refresh_rate;           /**< refresh rate (or zero for unspecified) */
     void *driverdata;           /**< driver-specific data, initialize to 0 */
-} SDL2_DisplayMode;
+};
 
 static void
 DisplayMode_2to3(const SDL2_DisplayMode *in, SDL_DisplayMode *out) {
