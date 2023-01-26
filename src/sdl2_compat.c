@@ -4183,6 +4183,35 @@ failure:
     return -1;
 }
 
+DECLSPEC int SDLCALL
+SDL_GetDisplayDPI(int displayIndex, float * ddpi, float * hdpi, float * vdpi)
+{
+    float h = 0.0f, v = 0.0f;
+    if (SDL3_GetDisplayPhysicalDPI(displayIndex, &h, &v) < 0) {
+        return -1;
+    }
+
+    if (hdpi) {
+        *hdpi = h;
+    }
+    if (vdpi) {
+        *vdpi = v;
+    }
+    if (ddpi) {
+        SDL2_DisplayMode mode;
+        float diagonal_dot, diagonal_inch;
+        if (SDL_GetCurrentDisplayMode(displayIndex, &mode) < 0) {
+            return -1;
+        }
+        diagonal_inch = SDL3_sqrtf(((float)mode.w / h) * ((float)mode.w / h) + ((float)mode.h / v) * ((float)mode.h / v));
+        diagonal_dot = SDL3_sqrtf(mode.w * mode.w + mode.h * mode.h);
+
+        *ddpi = diagonal_dot / diagonal_inch;
+    }
+
+    return 0;
+}
+
 
 #ifdef __cplusplus
 }
