@@ -173,7 +173,6 @@
 #define SDL_Metal_CreateView IGNORE_THIS_VERSION_OF_SDL_Metal_CreateView
 #define SDL_Metal_DestroyView IGNORE_THIS_VERSION_OF_SDL_Metal_DestroyView
 #define SDL_Metal_GetLayer IGNORE_THIS_VERSION_OF_SDL_Metal_GetLayer
-#define SDL_Metal_GetDrawableSize IGNORE_THIS_VERSION_OF_SDL_Metal_GetDrawableSize
 #define SDL_CreateMutex IGNORE_THIS_VERSION_OF_SDL_CreateMutex
 #define SDL_LockMutex IGNORE_THIS_VERSION_OF_SDL_LockMutex
 #define SDL_TryLockMutex IGNORE_THIS_VERSION_OF_SDL_TryLockMutex
@@ -520,7 +519,6 @@
 #define SDL_EGL_GetCurrentEGLConfig IGNORE_THIS_VERSION_OF_SDL_EGL_GetCurrentEGLConfig
 #define SDL_EGL_GetWindowEGLSurface IGNORE_THIS_VERSION_OF_SDL_EGL_GetWindowEGLSurface
 #define SDL_EGL_SetEGLAttributeCallbacks IGNORE_THIS_VERSION_OF_SDL_EGL_SetEGLAttributeCallbacks
-#define SDL_GL_GetDrawableSize IGNORE_THIS_VERSION_OF_SDL_GL_GetDrawableSize
 #define SDL_GL_SetSwapInterval IGNORE_THIS_VERSION_OF_SDL_GL_SetSwapInterval
 #define SDL_GL_GetSwapInterval IGNORE_THIS_VERSION_OF_SDL_GL_GetSwapInterval
 #define SDL_GL_SwapWindow IGNORE_THIS_VERSION_OF_SDL_GL_SwapWindow
@@ -853,7 +851,6 @@
 #define SDL_Vulkan_UnloadLibrary IGNORE_THIS_VERSION_OF_SDL_Vulkan_UnloadLibrary
 #define SDL_Vulkan_GetInstanceExtensions IGNORE_THIS_VERSION_OF_SDL_Vulkan_GetInstanceExtensions
 #define SDL_Vulkan_CreateSurface IGNORE_THIS_VERSION_OF_SDL_Vulkan_CreateSurface
-#define SDL_Vulkan_GetDrawableSize IGNORE_THIS_VERSION_OF_SDL_Vulkan_GetDrawableSize
 #define SDL_LogSetAllPriority IGNORE_THIS_VERSION_OF_SDL_LogSetAllPriority
 #define SDL_LogSetPriority IGNORE_THIS_VERSION_OF_SDL_LogSetPriority
 #define SDL_LogGetPriority IGNORE_THIS_VERSION_OF_SDL_LogGetPriority
@@ -1497,10 +1494,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_Metal_GetLayer
 #undef SDL_Metal_GetLayer
-#endif
-
-#ifdef SDL_Metal_GetDrawableSize
-#undef SDL_Metal_GetDrawableSize
 #endif
 
 #ifdef SDL_CreateMutex
@@ -2887,10 +2880,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_EGL_SetEGLAttributeCallbacks
 #endif
 
-#ifdef SDL_GL_GetDrawableSize
-#undef SDL_GL_GetDrawableSize
-#endif
-
 #ifdef SDL_GL_SetSwapInterval
 #undef SDL_GL_SetSwapInterval
 #endif
@@ -4217,10 +4206,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_Vulkan_CreateSurface
 #undef SDL_Vulkan_CreateSurface
-#endif
-
-#ifdef SDL_Vulkan_GetDrawableSize
-#undef SDL_Vulkan_GetDrawableSize
 #endif
 
 #ifdef SDL_LogSetAllPriority
