@@ -1064,6 +1064,9 @@ SDL2Compat_InitOnStartup(void)
         strcpy_fn(loaderror, "Failed to initialize sdl2-compat library.");
     }
 
+    SDL3_SetHint("SDL_WINDOWS_DPI_SCALING", 0);
+    SDL3_SetHint("SDL_WINDOWS_DPI_AWARENESS", "unaware");
+
     return okay;
 }
 
@@ -3352,8 +3355,8 @@ static void
 DisplayMode_3to2(const SDL_DisplayMode *in, SDL2_DisplayMode *out) {
     if (in && out) {
         out->format = in->format;
-        out->w = in->pixel_w;
-        out->h = in->pixel_h;
+        out->w = in->screen_w;
+        out->h = in->screen_h;
         out->refresh_rate = (int) SDL3_ceil(in->refresh_rate);
         out->driverdata = in->driverdata;
     }
