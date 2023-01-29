@@ -1356,7 +1356,7 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
         case SDL_EVENT_WINDOW_EXPOSED:
         case SDL_EVENT_WINDOW_MOVED:
         case SDL_EVENT_WINDOW_RESIZED:
-        case SDL_EVENT_WINDOW_SIZE_CHANGED:
+        case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
         case SDL_EVENT_WINDOW_MINIMIZED:
         case SDL_EVENT_WINDOW_MAXIMIZED:
         case SDL_EVENT_WINDOW_RESTORED:
@@ -3218,8 +3218,10 @@ static void
 DisplayMode_2to3(const SDL2_DisplayMode *in, SDL_DisplayMode *out) {
     if (in && out) {
         out->format = in->format;
-        out->w = in->w;
-        out->h = in->h;
+        out->pixel_w = in->w;
+        out->pixel_h = in->h;
+        out->screen_w = in->w;
+        out->screen_h = in->h;
         out->refresh_rate = (float) in->refresh_rate;
         out->display_scale = 1.0f;
         out->driverdata = in->driverdata;
@@ -3230,8 +3232,8 @@ static void
 DisplayMode_3to2(const SDL_DisplayMode *in, SDL2_DisplayMode *out) {
     if (in && out) {
         out->format = in->format;
-        out->w = SDL3_lroundf(in->w / in->display_scale);
-        out->h = SDL3_lroundf(in->h / in->display_scale);
+        out->w = in->pixel_w;
+        out->h = in->pixel_h;
         out->refresh_rate = (int) SDL3_ceil(in->refresh_rate);
         out->driverdata = in->driverdata;
     }
@@ -4183,6 +4185,20 @@ failure:
     return -1;
 }
 
+DECLSPEC void SDLCALL SDL_GL_GetDrawableSize(SDL_Window * window, int *w, int *h)
+{
+    SDL_GetWindowSizeInPixels(window, w, h);
+}
+
+DECLSPEC void SDLCALL SDL_Vulkan_GetDrawableSize(SDL_Window * window, int *w, int *h)
+{
+    SDL_GetWindowSizeInPixels(window, w, h);
+}
+
+DECLSPEC void SDLCALL SDL_Metal_GetDrawableSize(SDL_Window* window, int *w, int *h)
+{
+    SDL_GetWindowSizeInPixels(window, w, h);
+}
 
 #ifdef __cplusplus
 }
