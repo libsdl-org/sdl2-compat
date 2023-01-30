@@ -96,14 +96,19 @@ endif()
 
 set(CMAKE_SKIP_RPATH TRUE)
 
-find_package(SDL3 QUIET)
-if(NOT SDL3_INCLUDE_DIRS)
+if(NOT TARGET SDL3::Headers)
+  find_package(SDL3 QUIET COMPONENTS Headers)
+endif()
+
+if(NOT TARGET SDL3::Headers)
   find_path(SDL3_INCLUDE_DIRS
     NAMES "SDL3/SDL.h"
   )
-endif()
-if(NOT SDL3_INCLUDE_DIRS)
-  message(FATAL_ERROR "Cannot find SDL3 headers: configure with -DCMAKE_PREFIX_PATH=\"/root/to/SDL3\" or -DSDL3_INCLUDE_DIRS=\"/root/to/SDL3/include\"")
+  if(NOT SDL3_INCLUDE_DIRS)
+    message(FATAL_ERROR "Cannot find SDL3 headers: configure with -DCMAKE_PREFIX_PATH=\"/root/to/SDL3\" or -DSDL3_INCLUDE_DIRS=\"/root/to/SDL3/include\"")
+  endif()
+  add_library(SDL3::Headers INTERFACE IMPORTED)
+  set_property(TARGET SDL3::Headers PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${SDL3_INCLUDE_DIRS}")
 endif()
 
 find_package(Git)
@@ -169,9 +174,8 @@ endif()
 
 add_library(SDL2 SHARED ${SDL2COMPAT_SRCS})
 add_library(SDL2::SDL2 ALIAS SDL2)
+target_link_libraries(SDL2 PRIVATE $<BUILD_INTERFACE:SDL3::Headers>)
 target_include_directories(SDL2
-  PRIVATE
-    ${SDL3_INCLUDE_DIRS}
   INTERFACE
     "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
     "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/SDL2>"
@@ -489,9 +493,8 @@ set(installed_targets SDL2)
 if(SDL2COMPAT_STATICDEVEL AND SDL2COMPAT_DEVEL)
   add_library(SDL2-static STATIC ${SDL2COMPAT_SRCS})
   add_library(SDL2::SDL2-static ALIAS SDL2-static)
+  target_link_libraries(SDL2-static PRIVATE $<BUILD_INTERFACE:SDL3::Headers>)
   target_include_directories(SDL2-static
-    PRIVATE
-      ${SDL3_INCLUDE_DIRS}
     INTERFACE
       "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
       "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/SDL2>"
