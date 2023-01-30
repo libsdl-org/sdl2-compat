@@ -1236,8 +1236,8 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
         event2->motion.xrel = (Sint32)event3->motion.xrel;
         event2->motion.yrel = (Sint32)event3->motion.yrel;
         break;
-    case SDL_EVENT_MOUSE_BUTTONDOWN:
-    case SDL_EVENT_MOUSE_BUTTONUP:
+    case SDL_EVENT_MOUSE_BUTTON_DOWN:
+    case SDL_EVENT_MOUSE_BUTTON_UP:
         event2->button.x = (Sint32)event3->button.x;
         event2->button.y = (Sint32)event3->button.y;
         break;
@@ -1279,8 +1279,8 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
         event3->motion.xrel = (float)event2->motion.xrel;
         event3->motion.yrel = (float)event2->motion.yrel;
         break;
-    case SDL_EVENT_MOUSE_BUTTONDOWN:
-    case SDL_EVENT_MOUSE_BUTTONUP:
+    case SDL_EVENT_MOUSE_BUTTON_DOWN:
+    case SDL_EVENT_MOUSE_BUTTON_UP:
         event3->button.x = (float)event2->button.x;
         event3->button.y = (float)event2->button.y;
         break;
