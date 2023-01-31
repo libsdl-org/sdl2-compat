@@ -288,6 +288,9 @@ static void OS_GetExeName(char *buf, const unsigned maxpath) {
 }
 #endif
 
+
+static int Display_IDToIndex(SDL_DisplayID displayID);
+
 static const char *
 SDL2Compat_GetExeName(void)
 {
@@ -1340,7 +1343,7 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
             if (SDL3_EventEnabled(SDL2_DISPLAYEVENT)) {
                 event2.display.type = SDL2_DISPLAYEVENT;
                 event2.display.timestamp = (Uint32) SDL_NS_TO_MS(event3->display.timestamp);
-                event2.display.display = event3->display.display;
+                event2.display.display = Display_IDToIndex(event3->display.displayID);
                 event2.display.event = (Uint8) ((event3->type - ((Uint32) SDL_EVENT_DISPLAY_ORIENTATION)) + 1);
                 event2.display.padding1 = 0;
                 event2.display.padding2 = 0;
@@ -3239,11 +3242,136 @@ DisplayMode_3to2(const SDL_DisplayMode *in, SDL2_DisplayMode *out) {
     }
 }
 
+
+static SDL_DisplayID Display_IndexToID(int displayIndex)
+{
+    SDL_DisplayID displayID = 0;
+    int count = 0;
+    SDL_DisplayID *list = NULL;
+
+    list = SDL3_GetDisplays(&count);
+
+    if (list == NULL || list == 0) {
+        SDL3_SetError("no displays");
+        SDL_free(list);
+        return SDL3_GetPrimaryDisplay();
+    }
+
+    if (displayIndex < 0 || displayIndex >= count) {
+        SDL3_SetError("invalid displayIndex");
+        SDL_free(list);
+        return SDL3_GetPrimaryDisplay();
+    }
+
+    displayID = list[displayIndex];
+    SDL_free(list);
+    return displayID;
+}
+
+DECLSPEC int SDLCALL
+SDL_GetNumVideoDisplays(void)
+{
+    int count = 0;
+    SDL_DisplayID *list = NULL;
+    list = SDL3_GetDisplays(&count);
+    SDL_free(list);
+    return count;
+}
+
+DECLSPEC int SDLCALL SDL_GetWindowDisplayIndex(SDL_Window * window)
+{
+    SDL_DisplayID displayID = SDL3_GetDisplayForWindow(window);
+    return Display_IDToIndex(displayID);
+}
+
+DECLSPEC int SDLCALL SDL_GetPointDisplayIndex(const SDL_Point * point)
+{
+    SDL_DisplayID displayID = SDL3_GetDisplayForPoint(point);
+    return Display_IDToIndex(displayID);
+}
+
+DECLSPEC int SDLCALL SDL_GetRectDisplayIndex(const SDL_Rect * rect)
+{
+    SDL_DisplayID displayID = SDL3_GetDisplayForRect(rect);
+    return Display_IDToIndex(displayID);
+}
+
+static int Display_IDToIndex(SDL_DisplayID displayID)
+{
+    int displayIndex = 0;
+    int count = 0, i;
+    SDL_DisplayID *list = NULL;
+
+    if (displayID == 0) {
+        SDL3_SetError("invalid displayID");
+        return 0;
+    }
+
+    list = SDL3_GetDisplays(&count);
+
+    if (list == NULL || list == 0) {
+        SDL3_SetError("no displays");
+        SDL_free(list);
+        return 0;
+    }
+
+    for (i = 0; i < count; i++) {
+        if (list[i] == displayID) {
+            displayIndex = i;
+            break;
+        }
+    }
+    SDL_free(list);
+    return displayIndex;
+}
+
+DECLSPEC const char * SDLCALL
+SDL_GetDisplayName(int displayIndex)
+{
+    SDL_DisplayID displayID = Display_IndexToID(displayIndex);
+    return SDL3_GetDisplayName(displayID);
+}
+
+DECLSPEC int SDLCALL
+SDL_GetDisplayBounds(int displayIndex, SDL_Rect * rect)
+{
+    SDL_DisplayID displayID = Display_IndexToID(displayIndex);
+    return SDL3_GetDisplayBounds(displayID, rect);
+}
+
+DECLSPEC int SDLCALL
+SDL_GetNumDisplayModes(int displayIndex)
+{
+    SDL_DisplayID displayID = Display_IndexToID(displayIndex);
+    return SDL3_GetNumDisplayModes(displayID);
+}
+
+DECLSPEC int SDLCALL
+SDL_GetDisplayDPI(int displayIndex, float * ddpi, float * hdpi, float * vdpi)
+{
+    SDL_DisplayID displayID = Display_IndexToID(displayIndex);
+    return SDL3_GetDisplayPhysicalDPI(displayID, ddpi, hdpi, vdpi);
+}
+
+DECLSPEC int SDLCALL
+SDL_GetDisplayUsableBounds(int displayIndex, SDL_Rect * rect)
+{
+    SDL_DisplayID displayID = Display_IndexToID(displayIndex);
+    return SDL3_GetDisplayUsableBounds(displayID, rect);
+}
+
+DECLSPEC SDL_DisplayOrientation SDLCALL
+SDL_GetDisplayOrientation(int displayIndex)
+{
+    SDL_DisplayID displayID = Display_IndexToID(displayIndex);
+    return SDL3_GetDisplayOrientation(displayID);
+}
+
 DECLSPEC int SDLCALL
 SDL_GetDisplayMode(int displayIndex, int modeIndex, SDL2_DisplayMode *mode)
 {
     SDL_DisplayMode dp;
-    int ret = SDL3_GetDisplayMode(displayIndex, modeIndex, mode ? &dp : NULL);
+    int ret = SDL3_GetDisplayMode(Display_IndexToID(displayIndex), modeIndex, mode ? &dp : NULL);
     DisplayMode_3to2(&dp, mode);
     return ret;
 }
@@ -3252,7 +3380,7 @@ DECLSPEC int SDLCALL
 SDL_GetCurrentDisplayMode(int displayIndex, SDL2_DisplayMode *mode)
 {
     SDL_DisplayMode dp;
-    int ret = SDL3_GetCurrentDisplayMode(displayIndex, mode ? &dp : NULL);
+    int ret = SDL3_GetCurrentDisplayMode(Display_IndexToID(displayIndex), mode ? &dp : NULL);
     DisplayMode_3to2(&dp, mode);
     return ret;
 }
@@ -3261,7 +3389,7 @@ DECLSPEC int SDLCALL
 SDL_GetDesktopDisplayMode(int displayIndex, SDL2_DisplayMode *mode)
 {
     SDL_DisplayMode dp;
-    int ret = SDL3_GetDesktopDisplayMode(displayIndex, mode ? &dp : NULL);
+    int ret = SDL3_GetDesktopDisplayMode(Display_IndexToID(displayIndex), mode ? &dp : NULL);
     DisplayMode_3to2(&dp, mode);
     return ret;
 }
@@ -3283,7 +3411,7 @@ SDL_GetClosestDisplayMode(int displayIndex, const SDL2_DisplayMode * mode, SDL2_
     SDL_DisplayMode *ret;
     static SDL2_DisplayMode ret2;  /* FIXME alloc ?? */
     DisplayMode_2to3(closest, &closest3);
-    ret = SDL3_GetClosestDisplayMode(displayIndex, mode ? &dp : NULL, closest ? &closest3 : NULL);
+    ret = SDL3_GetClosestDisplayMode(Display_IndexToID(displayIndex), mode ? &dp : NULL, closest ? &closest3 : NULL);
     DisplayMode_3to2(ret, &ret2);
     return &ret2;
 }
