@@ -3248,16 +3248,16 @@ static SDL_DisplayID Display_IndexToID(int displayIndex)
 
     list = SDL3_GetDisplays(&count);
 
-    if (list == NULL || list == 0) {
+    if (list == NULL || count == 0) {
         SDL3_SetError("no displays");
         SDL_free(list);
-        return SDL3_GetPrimaryDisplay();
+        return 0;
     }
 
     if (displayIndex < 0 || displayIndex >= count) {
         SDL3_SetError("invalid displayIndex");
         SDL_free(list);
-        return SDL3_GetPrimaryDisplay();
+        return 0;
     }
 
     displayID = list[displayIndex];
@@ -3305,15 +3305,15 @@ Display_IDToIndex(SDL_DisplayID displayID)
 
     if (displayID == 0) {
         SDL3_SetError("invalid displayID");
-        return 0;
+        return -1;
     }
 
     list = SDL3_GetDisplays(&count);
 
-    if (list == NULL || list == 0) {
+    if (list == NULL || count == 0) {
         SDL3_SetError("no displays");
         SDL_free(list);
-        return 0;
+        return -1;
     }
 
     for (i = 0; i < count; i++) {
