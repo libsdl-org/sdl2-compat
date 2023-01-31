@@ -433,20 +433,15 @@
 #define SDL_GetNumVideoDrivers IGNORE_THIS_VERSION_OF_SDL_GetNumVideoDrivers
 #define SDL_GetVideoDriver IGNORE_THIS_VERSION_OF_SDL_GetVideoDriver
 #define SDL_GetCurrentVideoDriver IGNORE_THIS_VERSION_OF_SDL_GetCurrentVideoDriver
-#define SDL_GetNumVideoDisplays IGNORE_THIS_VERSION_OF_SDL_GetNumVideoDisplays
 #define SDL_GetDisplayName IGNORE_THIS_VERSION_OF_SDL_GetDisplayName
 #define SDL_GetDisplayBounds IGNORE_THIS_VERSION_OF_SDL_GetDisplayBounds
 #define SDL_GetDisplayUsableBounds IGNORE_THIS_VERSION_OF_SDL_GetDisplayUsableBounds
-#define SDL_GetDisplayPhysicalDPI IGNORE_THIS_VERSION_OF_SDL_GetDisplayPhysicalDPI
 #define SDL_GetDisplayOrientation IGNORE_THIS_VERSION_OF_SDL_GetDisplayOrientation
 #define SDL_GetNumDisplayModes IGNORE_THIS_VERSION_OF_SDL_GetNumDisplayModes
 #define SDL_GetDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetDisplayMode
 #define SDL_GetDesktopDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetDesktopDisplayMode
 #define SDL_GetCurrentDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetCurrentDisplayMode
 #define SDL_GetClosestDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetClosestDisplayMode
-#define SDL_GetDisplayIndexForPoint IGNORE_THIS_VERSION_OF_SDL_GetDisplayIndexForPoint
-#define SDL_GetDisplayIndexForRect IGNORE_THIS_VERSION_OF_SDL_GetDisplayIndexForRect
-#define SDL_GetWindowDisplayIndex IGNORE_THIS_VERSION_OF_SDL_GetWindowDisplayIndex
 #define SDL_SetWindowDisplayMode IGNORE_THIS_VERSION_OF_SDL_SetWindowDisplayMode
 #define SDL_GetWindowDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetWindowDisplayMode
 #define SDL_GetWindowICCProfile IGNORE_THIS_VERSION_OF_SDL_GetWindowICCProfile
@@ -2536,10 +2531,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetCurrentVideoDriver
 #endif
 
-#ifdef SDL_GetNumVideoDisplays
-#undef SDL_GetNumVideoDisplays
-#endif
-
 #ifdef SDL_GetDisplayName
 #undef SDL_GetDisplayName
 #endif
@@ -2550,10 +2541,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetDisplayUsableBounds
 #undef SDL_GetDisplayUsableBounds
-#endif
-
-#ifdef SDL_GetDisplayPhysicalDPI
-#undef SDL_GetDisplayPhysicalDPI
 #endif
 
 #ifdef SDL_GetDisplayOrientation
@@ -2578,18 +2565,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetClosestDisplayMode
 #undef SDL_GetClosestDisplayMode
-#endif
-
-#ifdef SDL_GetDisplayIndexForPoint
-#undef SDL_GetDisplayIndexForPoint
-#endif
-
-#ifdef SDL_GetDisplayIndexForRect
-#undef SDL_GetDisplayIndexForRect
-#endif
-
-#ifdef SDL_GetWindowDisplayIndex
-#undef SDL_GetWindowDisplayIndex
 #endif
 
 #ifdef SDL_SetWindowDisplayMode
