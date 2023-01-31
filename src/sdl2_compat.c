@@ -3720,6 +3720,8 @@ SDL_FreeWAV(Uint8 *audio_buf)
     SDL3_free(audio_buf);
 }
 
+/* SDL3 changed SDL_WINDOW_FULLSCREEN and SDL_WINDOW_FULLSCREEN_DESKTOP
+ * to be two distict flags. */
 /* SDL3 removed SDL_WINDOW_SHOWN as redundant to SDL_WINDOW_HIDDEN. */
 DECLSPEC Uint32 SDLCALL
 SDL_GetWindowFlags(SDL_Window *window)
@@ -3728,7 +3730,28 @@ SDL_GetWindowFlags(SDL_Window *window)
     if ((flags & SDL_WINDOW_HIDDEN) == 0) {
         flags |= SDL2_WINDOW_SHOWN;
     }
+    if ((flags & SDL_WINDOW_FULLSCREEN_DESKTOP) == 0) {
+        flags |= SDL_WINDOW_FULLSCREEN_EXCLUSIVE;
+    }
     return flags;
+}
+
+DECLSPEC SDL_Window * SDLCALL
+SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
+{
+    if (flags & SDL_WINDOW_FULLSCREEN_DESKTOP) {
+        flags &= ~SDL_WINDOW_FULLSCREEN_EXCLUSIVE;
+    }
+    return SDL3_CreateWindow(title, x, y, w, h, flags);
+}
+
+DECLSPEC int SDLCALL
+SDL_SetWindowFullscreen(SDL_Window *window, Uint32 flags)
+{
+    if (flags & SDL_WINDOW_FULLSCREEN_DESKTOP) {
+        flags &= ~SDL_WINDOW_FULLSCREEN_EXCLUSIVE;
+    }
+    return SDL3_SetWindowFullscreen(window, flags);
 }
 
 /* SDL3 added a return value. We just throw it away for SDL2. */
