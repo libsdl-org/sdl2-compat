@@ -288,9 +288,6 @@ static void OS_GetExeName(char *buf, const unsigned maxpath) {
 }
 #endif
 
-
-static int Display_IDToIndex(SDL_DisplayID displayID);
-
 static const char *
 SDL2Compat_GetExeName(void)
 {
@@ -1001,7 +998,7 @@ typedef union SDL2_Event
 /* Make sure we haven't broken binary compatibility */
 SDL_COMPILE_TIME_ASSERT(SDL2_Event, sizeof(SDL2_Event) == sizeof(((SDL2_Event *)NULL)->padding));
 
-typedef int (SDLCALL *SDL2_EventFilter) (void *userdata, SDL2_Event * event);
+typedef int (SDLCALL *SDL2_EventFilter) (void *userdata, SDL2_Event *event);
 
 typedef struct EventFilterWrapperData
 {
@@ -1061,7 +1058,7 @@ SDL2Compat_InitOnStartup(void)
 
 /* obviously we have to override this so we don't report ourselves as SDL3. */
 DECLSPEC void SDLCALL
-SDL_GetVersion(SDL_version * ver)
+SDL_GetVersion(SDL_version *ver)
 {
     if (ver) {
         ver->major = 2;
@@ -1311,6 +1308,8 @@ SDL_PushEvent(SDL2_Event *event2)
     SDL_Event event3;
     return SDL3_PushEvent(Event2to3(event2, &event3));
 }
+
+static int Display_IDToIndex(SDL_DisplayID displayID);
 
 static int SDLCALL
 EventFilter3to2(void *userdata, SDL_Event *event3)
@@ -2893,11 +2892,9 @@ GestureProcessEvent(const SDL_Event *event3)
             pressure? */
         } else if (event3->type == SDL_EVENT_FINGER_DOWN) {
             inTouch->numDownFingers++;
-            inTouch->centroid.x = (inTouch->centroid.x * (inTouch->numDownFingers - 1) +
-                                   x) /
+            inTouch->centroid.x = (inTouch->centroid.x * (inTouch->numDownFingers - 1) + x) /
                                   inTouch->numDownFingers;
-            inTouch->centroid.y = (inTouch->centroid.y * (inTouch->numDownFingers - 1) +
-                                   y) /
+            inTouch->centroid.y = (inTouch->centroid.y * (inTouch->numDownFingers - 1) + y) /
                                   inTouch->numDownFingers;
             /* printf("Finger Down: (%f,%f). Centroid: (%f,%f\n",x,y,
                  inTouch->centroid.x,inTouch->centroid.y); */
@@ -2912,7 +2909,7 @@ GestureProcessEvent(const SDL_Event *event3)
 
 
 DECLSPEC int SDLCALL
-SDL_GetRenderDriverInfo(int index, SDL_RendererInfo * info)
+SDL_GetRenderDriverInfo(int index, SDL_RendererInfo *info)
 {
     const char *name = SDL3_GetRenderDriver(index);
     if (!name) {
@@ -3278,25 +3275,29 @@ SDL_GetNumVideoDisplays(void)
     return count;
 }
 
-DECLSPEC int SDLCALL SDL_GetWindowDisplayIndex(SDL_Window * window)
+DECLSPEC int SDLCALL
+SDL_GetWindowDisplayIndex(SDL_Window *window)
 {
     SDL_DisplayID displayID = SDL3_GetDisplayForWindow(window);
     return Display_IDToIndex(displayID);
 }
 
-DECLSPEC int SDLCALL SDL_GetPointDisplayIndex(const SDL_Point * point)
+DECLSPEC int SDLCALL
+SDL_GetPointDisplayIndex(const SDL_Point *point)
 {
     SDL_DisplayID displayID = SDL3_GetDisplayForPoint(point);
     return Display_IDToIndex(displayID);
 }
 
-DECLSPEC int SDLCALL SDL_GetRectDisplayIndex(const SDL_Rect * rect)
+DECLSPEC int SDLCALL
+SDL_GetRectDisplayIndex(const SDL_Rect *rect)
 {
     SDL_DisplayID displayID = SDL3_GetDisplayForRect(rect);
     return Display_IDToIndex(displayID);
 }
 
-static int Display_IDToIndex(SDL_DisplayID displayID)
+static int
+Display_IDToIndex(SDL_DisplayID displayID)
 {
     int displayIndex = 0;
     int count = 0, i;
@@ -3333,7 +3334,7 @@ SDL_GetDisplayName(int displayIndex)
 }
 
 DECLSPEC int SDLCALL
-SDL_GetDisplayBounds(int displayIndex, SDL_Rect * rect)
+SDL_GetDisplayBounds(int displayIndex, SDL_Rect *rect)
 {
     SDL_DisplayID displayID = Display_IndexToID(displayIndex);
     return SDL3_GetDisplayBounds(displayID, rect);
@@ -3347,14 +3348,14 @@ SDL_GetNumDisplayModes(int displayIndex)
 }
 
 DECLSPEC int SDLCALL
-SDL_GetDisplayDPI(int displayIndex, float * ddpi, float * hdpi, float * vdpi)
+SDL_GetDisplayDPI(int displayIndex, float *ddpi, float *hdpi, float *vdpi)
 {
     SDL_DisplayID displayID = Display_IndexToID(displayIndex);
     return SDL3_GetDisplayPhysicalDPI(displayID, ddpi, hdpi, vdpi);
 }
 
 DECLSPEC int SDLCALL
-SDL_GetDisplayUsableBounds(int displayIndex, SDL_Rect * rect)
+SDL_GetDisplayUsableBounds(int displayIndex, SDL_Rect *rect)
 {
     SDL_DisplayID displayID = Display_IndexToID(displayIndex);
     return SDL3_GetDisplayUsableBounds(displayID, rect);
@@ -3395,7 +3396,7 @@ SDL_GetDesktopDisplayMode(int displayIndex, SDL2_DisplayMode *mode)
 }
 
 DECLSPEC int SDLCALL
-SDL_GetWindowDisplayMode(SDL_Window * window, SDL2_DisplayMode * mode)
+SDL_GetWindowDisplayMode(SDL_Window *window, SDL2_DisplayMode *mode)
 {
     SDL_DisplayMode dp;
     int ret = SDL3_GetWindowDisplayMode(window, mode ? &dp : NULL);
@@ -3404,7 +3405,7 @@ SDL_GetWindowDisplayMode(SDL_Window * window, SDL2_DisplayMode * mode)
 }
 
 DECLSPEC SDL2_DisplayMode * SDLCALL
-SDL_GetClosestDisplayMode(int displayIndex, const SDL2_DisplayMode * mode, SDL2_DisplayMode * closest)
+SDL_GetClosestDisplayMode(int displayIndex, const SDL2_DisplayMode *mode, SDL2_DisplayMode *closest)
 {
     SDL_DisplayMode dp;
     SDL_DisplayMode closest3;
@@ -3417,7 +3418,7 @@ SDL_GetClosestDisplayMode(int displayIndex, const SDL2_DisplayMode * mode, SDL2_
 }
 
 DECLSPEC int SDLCALL
-SDL_SetWindowDisplayMode(SDL_Window * window, const SDL2_DisplayMode * mode)
+SDL_SetWindowDisplayMode(SDL_Window *window, const SDL2_DisplayMode *mode)
 {
     SDL_DisplayMode dp;
     DisplayMode_2to3(mode, &dp);
@@ -4313,17 +4314,17 @@ failure:
     return -1;
 }
 
-DECLSPEC void SDLCALL SDL_GL_GetDrawableSize(SDL_Window * window, int *w, int *h)
+DECLSPEC void SDLCALL SDL_GL_GetDrawableSize(SDL_Window *window, int *w, int *h)
 {
     SDL_GetWindowSizeInPixels(window, w, h);
 }
 
-DECLSPEC void SDLCALL SDL_Vulkan_GetDrawableSize(SDL_Window * window, int *w, int *h)
+DECLSPEC void SDLCALL SDL_Vulkan_GetDrawableSize(SDL_Window *window, int *w, int *h)
 {
     SDL_GetWindowSizeInPixels(window, w, h);
 }
 
-DECLSPEC void SDLCALL SDL_Metal_GetDrawableSize(SDL_Window* window, int *w, int *h)
+DECLSPEC void SDLCALL SDL_Metal_GetDrawableSize(SDL_Window *window, int *w, int *h)
 {
     SDL_GetWindowSizeInPixels(window, w, h);
 }
