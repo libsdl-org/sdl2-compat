@@ -288,6 +288,9 @@ static void OS_GetExeName(char *buf, const unsigned maxpath) {
 }
 #endif
 
+
+static int Display_IDToIndex(SDL_DisplayID displayID);
+
 static const char *
 SDL2Compat_GetExeName(void)
 {
@@ -1236,8 +1239,8 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
         event2->motion.xrel = (Sint32)event3->motion.xrel;
         event2->motion.yrel = (Sint32)event3->motion.yrel;
         break;
-    case SDL_EVENT_MOUSE_BUTTONDOWN:
-    case SDL_EVENT_MOUSE_BUTTONUP:
+    case SDL_EVENT_MOUSE_BUTTON_DOWN:
+    case SDL_EVENT_MOUSE_BUTTON_UP:
         event2->button.x = (Sint32)event3->button.x;
         event2->button.y = (Sint32)event3->button.y;
         break;
@@ -1279,8 +1282,8 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
         event3->motion.xrel = (float)event2->motion.xrel;
         event3->motion.yrel = (float)event2->motion.yrel;
         break;
-    case SDL_EVENT_MOUSE_BUTTONDOWN:
-    case SDL_EVENT_MOUSE_BUTTONUP:
+    case SDL_EVENT_MOUSE_BUTTON_DOWN:
+    case SDL_EVENT_MOUSE_BUTTON_UP:
         event3->button.x = (float)event2->button.x;
         event3->button.y = (float)event2->button.y;
         break;
@@ -1340,7 +1343,7 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
             if (SDL3_EventEnabled(SDL2_DISPLAYEVENT)) {
                 event2.display.type = SDL2_DISPLAYEVENT;
                 event2.display.timestamp = (Uint32) SDL_NS_TO_MS(event3->display.timestamp);
-                event2.display.display = event3->display.display;
+                event2.display.display = Display_IDToIndex(event3->display.displayID);
                 event2.display.event = (Uint8) ((event3->type - ((Uint32) SDL_EVENT_DISPLAY_ORIENTATION)) + 1);
                 event2.display.padding1 = 0;
                 event2.display.padding2 = 0;
@@ -1356,7 +1359,7 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
         case SDL_EVENT_WINDOW_EXPOSED:
         case SDL_EVENT_WINDOW_MOVED:
         case SDL_EVENT_WINDOW_RESIZED:
-        case SDL_EVENT_WINDOW_SIZE_CHANGED:
+        case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
         case SDL_EVENT_WINDOW_MINIMIZED:
         case SDL_EVENT_WINDOW_MAXIMIZED:
         case SDL_EVENT_WINDOW_RESTORED:
@@ -3218,8 +3221,10 @@ static void
 DisplayMode_2to3(const SDL2_DisplayMode *in, SDL_DisplayMode *out) {
     if (in && out) {
         out->format = in->format;
-        out->w = in->w;
-        out->h = in->h;
+        out->pixel_w = in->w;
+        out->pixel_h = in->h;
+        out->screen_w = in->w;
+        out->screen_h = in->h;
         out->refresh_rate = (float) in->refresh_rate;
         out->display_scale = 1.0f;
         out->driverdata = in->driverdata;
@@ -3230,18 +3235,164 @@ static void
 DisplayMode_3to2(const SDL_DisplayMode *in, SDL2_DisplayMode *out) {
     if (in && out) {
         out->format = in->format;
-        out->w = SDL3_lroundf(in->w / in->display_scale);
-        out->h = SDL3_lroundf(in->h / in->display_scale);
+        out->w = in->pixel_w;
+        out->h = in->pixel_h;
         out->refresh_rate = (int) SDL3_ceil(in->refresh_rate);
         out->driverdata = in->driverdata;
     }
+}
+
+
+static SDL_DisplayID Display_IndexToID(int displayIndex)
+{
+    SDL_DisplayID displayID = 0;
+    int count = 0;
+    SDL_DisplayID *list = NULL;
+
+    list = SDL3_GetDisplays(&count);
+
+    if (list == NULL || list == 0) {
+        SDL3_SetError("no displays");
+        SDL_free(list);
+        return SDL3_GetPrimaryDisplay();
+    }
+
+    if (displayIndex < 0 || displayIndex >= count) {
+        SDL3_SetError("invalid displayIndex");
+        SDL_free(list);
+        return SDL3_GetPrimaryDisplay();
+    }
+
+    displayID = list[displayIndex];
+    SDL_free(list);
+    return displayID;
+}
+
+DECLSPEC int SDLCALL
+SDL_GetNumVideoDisplays(void)
+{
+    int count = 0;
+    SDL_DisplayID *list = NULL;
+    list = SDL3_GetDisplays(&count);
+    SDL_free(list);
+    return count;
+}
+
+DECLSPEC int SDLCALL SDL_GetWindowDisplayIndex(SDL_Window * window)
+{
+    SDL_DisplayID displayID = SDL3_GetDisplayForWindow(window);
+    return Display_IDToIndex(displayID);
+}
+
+DECLSPEC int SDLCALL SDL_GetPointDisplayIndex(const SDL_Point * point)
+{
+    SDL_DisplayID displayID = SDL3_GetDisplayForPoint(point);
+    return Display_IDToIndex(displayID);
+}
+
+DECLSPEC int SDLCALL SDL_GetRectDisplayIndex(const SDL_Rect * rect)
+{
+    SDL_DisplayID displayID = SDL3_GetDisplayForRect(rect);
+    return Display_IDToIndex(displayID);
+}
+
+static int Display_IDToIndex(SDL_DisplayID displayID)
+{
+    int displayIndex = 0;
+    int count = 0, i;
+    SDL_DisplayID *list = NULL;
+
+    if (displayID == 0) {
+        SDL3_SetError("invalid displayID");
+        return 0;
+    }
+
+    list = SDL3_GetDisplays(&count);
+
+    if (list == NULL || list == 0) {
+        SDL3_SetError("no displays");
+        SDL_free(list);
+        return 0;
+    }
+
+    for (i = 0; i < count; i++) {
+        if (list[i] == displayID) {
+            displayIndex = i;
+            break;
+        }
+    }
+    SDL_free(list);
+    return displayIndex;
+}
+
+DECLSPEC const char * SDLCALL
+SDL_GetDisplayName(int displayIndex)
+{
+    SDL_DisplayID displayID = Display_IndexToID(displayIndex);
+    return SDL3_GetDisplayName(displayID);
+}
+
+DECLSPEC int SDLCALL
+SDL_GetDisplayBounds(int displayIndex, SDL_Rect * rect)
+{
+    SDL_DisplayID displayID = Display_IndexToID(displayIndex);
+    return SDL3_GetDisplayBounds(displayID, rect);
+}
+
+DECLSPEC int SDLCALL
+SDL_GetNumDisplayModes(int displayIndex)
+{
+    SDL_DisplayID displayID = Display_IndexToID(displayIndex);
+    return SDL3_GetNumDisplayModes(displayID);
+}
+
+DECLSPEC int SDLCALL
+SDL_GetDisplayDPI(int displayIndex, float * ddpi, float * hdpi, float * vdpi)
+{
+    SDL_DisplayID displayID = Display_IndexToID(displayIndex);
+    if (SDL3_GetDisplayPhysicalDPI(displayID, &h, &v) < 0) {
+        return -1;
+    }
+
+    if (hdpi) {
+        *hdpi = h;
+    }
+    if (vdpi) {
+        *vdpi = v;
+    }
+    if (ddpi) {
+        SDL2_DisplayMode mode;
+        float diagonal_dot, diagonal_inch;
+        if (SDL_GetCurrentDisplayMode(displayIndex, &mode) < 0) {
+            return -1;
+        }
+        diagonal_inch = SDL3_sqrtf(((float)mode.w / h) * ((float)mode.w / h) + ((float)mode.h / v) * ((float)mode.h / v));
+        diagonal_dot = SDL3_sqrtf(mode.w * mode.w + mode.h * mode.h);
+
+        *ddpi = diagonal_dot / diagonal_inch;
+    }
+    return 0;
+}
+
+DECLSPEC int SDLCALL
+SDL_GetDisplayUsableBounds(int displayIndex, SDL_Rect * rect)
+{
+    SDL_DisplayID displayID = Display_IndexToID(displayIndex);
+    return SDL3_GetDisplayUsableBounds(displayID, rect);
+}
+
+DECLSPEC SDL_DisplayOrientation SDLCALL
+SDL_GetDisplayOrientation(int displayIndex)
+{
+    SDL_DisplayID displayID = Display_IndexToID(displayIndex);
+    return SDL3_GetDisplayOrientation(displayID);
 }
 
 DECLSPEC int SDLCALL
 SDL_GetDisplayMode(int displayIndex, int modeIndex, SDL2_DisplayMode *mode)
 {
     SDL_DisplayMode dp;
-    int ret = SDL3_GetDisplayMode(displayIndex, modeIndex, mode ? &dp : NULL);
+    int ret = SDL3_GetDisplayMode(Display_IndexToID(displayIndex), modeIndex, mode ? &dp : NULL);
     DisplayMode_3to2(&dp, mode);
     return ret;
 }
@@ -3250,7 +3401,7 @@ DECLSPEC int SDLCALL
 SDL_GetCurrentDisplayMode(int displayIndex, SDL2_DisplayMode *mode)
 {
     SDL_DisplayMode dp;
-    int ret = SDL3_GetCurrentDisplayMode(displayIndex, mode ? &dp : NULL);
+    int ret = SDL3_GetCurrentDisplayMode(Display_IndexToID(displayIndex), mode ? &dp : NULL);
     DisplayMode_3to2(&dp, mode);
     return ret;
 }
@@ -3259,7 +3410,7 @@ DECLSPEC int SDLCALL
 SDL_GetDesktopDisplayMode(int displayIndex, SDL2_DisplayMode *mode)
 {
     SDL_DisplayMode dp;
-    int ret = SDL3_GetDesktopDisplayMode(displayIndex, mode ? &dp : NULL);
+    int ret = SDL3_GetDesktopDisplayMode(Display_IndexToID(displayIndex), mode ? &dp : NULL);
     DisplayMode_3to2(&dp, mode);
     return ret;
 }
@@ -3281,7 +3432,7 @@ SDL_GetClosestDisplayMode(int displayIndex, const SDL2_DisplayMode * mode, SDL2_
     SDL_DisplayMode *ret;
     static SDL2_DisplayMode ret2;  /* FIXME alloc ?? */
     DisplayMode_2to3(closest, &closest3);
-    ret = SDL3_GetClosestDisplayMode(displayIndex, mode ? &dp : NULL, closest ? &closest3 : NULL);
+    ret = SDL3_GetClosestDisplayMode(Display_IndexToID(displayIndex), mode ? &dp : NULL, closest ? &closest3 : NULL);
     DisplayMode_3to2(ret, &ret2);
     return &ret2;
 }
@@ -4183,35 +4334,20 @@ failure:
     return -1;
 }
 
-DECLSPEC int SDLCALL
-SDL_GetDisplayDPI(int displayIndex, float * ddpi, float * hdpi, float * vdpi)
+DECLSPEC void SDLCALL SDL_GL_GetDrawableSize(SDL_Window * window, int *w, int *h)
 {
-    float h = 0.0f, v = 0.0f;
-    if (SDL3_GetDisplayPhysicalDPI(displayIndex, &h, &v) < 0) {
-        return -1;
-    }
-
-    if (hdpi) {
-        *hdpi = h;
-    }
-    if (vdpi) {
-        *vdpi = v;
-    }
-    if (ddpi) {
-        SDL2_DisplayMode mode;
-        float diagonal_dot, diagonal_inch;
-        if (SDL_GetCurrentDisplayMode(displayIndex, &mode) < 0) {
-            return -1;
-        }
-        diagonal_inch = SDL3_sqrtf(((float)mode.w / h) * ((float)mode.w / h) + ((float)mode.h / v) * ((float)mode.h / v));
-        diagonal_dot = SDL3_sqrtf(mode.w * mode.w + mode.h * mode.h);
-
-        *ddpi = diagonal_dot / diagonal_inch;
-    }
-
-    return 0;
+    SDL_GetWindowSizeInPixels(window, w, h);
 }
 
+DECLSPEC void SDLCALL SDL_Vulkan_GetDrawableSize(SDL_Window * window, int *w, int *h)
+{
+    SDL_GetWindowSizeInPixels(window, w, h);
+}
+
+DECLSPEC void SDLCALL SDL_Metal_GetDrawableSize(SDL_Window* window, int *w, int *h)
+{
+    SDL_GetWindowSizeInPixels(window, w, h);
+}
 
 #ifdef __cplusplus
 }

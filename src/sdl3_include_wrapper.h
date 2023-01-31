@@ -173,7 +173,6 @@
 #define SDL_Metal_CreateView IGNORE_THIS_VERSION_OF_SDL_Metal_CreateView
 #define SDL_Metal_DestroyView IGNORE_THIS_VERSION_OF_SDL_Metal_DestroyView
 #define SDL_Metal_GetLayer IGNORE_THIS_VERSION_OF_SDL_Metal_GetLayer
-#define SDL_Metal_GetDrawableSize IGNORE_THIS_VERSION_OF_SDL_Metal_GetDrawableSize
 #define SDL_CreateMutex IGNORE_THIS_VERSION_OF_SDL_CreateMutex
 #define SDL_LockMutex IGNORE_THIS_VERSION_OF_SDL_LockMutex
 #define SDL_TryLockMutex IGNORE_THIS_VERSION_OF_SDL_TryLockMutex
@@ -434,20 +433,15 @@
 #define SDL_GetNumVideoDrivers IGNORE_THIS_VERSION_OF_SDL_GetNumVideoDrivers
 #define SDL_GetVideoDriver IGNORE_THIS_VERSION_OF_SDL_GetVideoDriver
 #define SDL_GetCurrentVideoDriver IGNORE_THIS_VERSION_OF_SDL_GetCurrentVideoDriver
-#define SDL_GetNumVideoDisplays IGNORE_THIS_VERSION_OF_SDL_GetNumVideoDisplays
 #define SDL_GetDisplayName IGNORE_THIS_VERSION_OF_SDL_GetDisplayName
 #define SDL_GetDisplayBounds IGNORE_THIS_VERSION_OF_SDL_GetDisplayBounds
 #define SDL_GetDisplayUsableBounds IGNORE_THIS_VERSION_OF_SDL_GetDisplayUsableBounds
-#define SDL_GetDisplayPhysicalDPI IGNORE_THIS_VERSION_OF_SDL_GetDisplayPhysicalDPI
 #define SDL_GetDisplayOrientation IGNORE_THIS_VERSION_OF_SDL_GetDisplayOrientation
 #define SDL_GetNumDisplayModes IGNORE_THIS_VERSION_OF_SDL_GetNumDisplayModes
 #define SDL_GetDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetDisplayMode
 #define SDL_GetDesktopDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetDesktopDisplayMode
 #define SDL_GetCurrentDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetCurrentDisplayMode
 #define SDL_GetClosestDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetClosestDisplayMode
-#define SDL_GetDisplayIndexForPoint IGNORE_THIS_VERSION_OF_SDL_GetDisplayIndexForPoint
-#define SDL_GetDisplayIndexForRect IGNORE_THIS_VERSION_OF_SDL_GetDisplayIndexForRect
-#define SDL_GetWindowDisplayIndex IGNORE_THIS_VERSION_OF_SDL_GetWindowDisplayIndex
 #define SDL_SetWindowDisplayMode IGNORE_THIS_VERSION_OF_SDL_SetWindowDisplayMode
 #define SDL_GetWindowDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetWindowDisplayMode
 #define SDL_GetWindowICCProfile IGNORE_THIS_VERSION_OF_SDL_GetWindowICCProfile
@@ -520,7 +514,6 @@
 #define SDL_EGL_GetCurrentEGLConfig IGNORE_THIS_VERSION_OF_SDL_EGL_GetCurrentEGLConfig
 #define SDL_EGL_GetWindowEGLSurface IGNORE_THIS_VERSION_OF_SDL_EGL_GetWindowEGLSurface
 #define SDL_EGL_SetEGLAttributeCallbacks IGNORE_THIS_VERSION_OF_SDL_EGL_SetEGLAttributeCallbacks
-#define SDL_GL_GetDrawableSize IGNORE_THIS_VERSION_OF_SDL_GL_GetDrawableSize
 #define SDL_GL_SetSwapInterval IGNORE_THIS_VERSION_OF_SDL_GL_SetSwapInterval
 #define SDL_GL_GetSwapInterval IGNORE_THIS_VERSION_OF_SDL_GL_GetSwapInterval
 #define SDL_GL_SwapWindow IGNORE_THIS_VERSION_OF_SDL_GL_SwapWindow
@@ -853,7 +846,6 @@
 #define SDL_Vulkan_UnloadLibrary IGNORE_THIS_VERSION_OF_SDL_Vulkan_UnloadLibrary
 #define SDL_Vulkan_GetInstanceExtensions IGNORE_THIS_VERSION_OF_SDL_Vulkan_GetInstanceExtensions
 #define SDL_Vulkan_CreateSurface IGNORE_THIS_VERSION_OF_SDL_Vulkan_CreateSurface
-#define SDL_Vulkan_GetDrawableSize IGNORE_THIS_VERSION_OF_SDL_Vulkan_GetDrawableSize
 #define SDL_LogSetAllPriority IGNORE_THIS_VERSION_OF_SDL_LogSetAllPriority
 #define SDL_LogSetPriority IGNORE_THIS_VERSION_OF_SDL_LogSetPriority
 #define SDL_LogGetPriority IGNORE_THIS_VERSION_OF_SDL_LogGetPriority
@@ -1497,10 +1489,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_Metal_GetLayer
 #undef SDL_Metal_GetLayer
-#endif
-
-#ifdef SDL_Metal_GetDrawableSize
-#undef SDL_Metal_GetDrawableSize
 #endif
 
 #ifdef SDL_CreateMutex
@@ -2543,10 +2531,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetCurrentVideoDriver
 #endif
 
-#ifdef SDL_GetNumVideoDisplays
-#undef SDL_GetNumVideoDisplays
-#endif
-
 #ifdef SDL_GetDisplayName
 #undef SDL_GetDisplayName
 #endif
@@ -2557,10 +2541,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetDisplayUsableBounds
 #undef SDL_GetDisplayUsableBounds
-#endif
-
-#ifdef SDL_GetDisplayPhysicalDPI
-#undef SDL_GetDisplayPhysicalDPI
 #endif
 
 #ifdef SDL_GetDisplayOrientation
@@ -2585,18 +2565,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetClosestDisplayMode
 #undef SDL_GetClosestDisplayMode
-#endif
-
-#ifdef SDL_GetDisplayIndexForPoint
-#undef SDL_GetDisplayIndexForPoint
-#endif
-
-#ifdef SDL_GetDisplayIndexForRect
-#undef SDL_GetDisplayIndexForRect
-#endif
-
-#ifdef SDL_GetWindowDisplayIndex
-#undef SDL_GetWindowDisplayIndex
 #endif
 
 #ifdef SDL_SetWindowDisplayMode
@@ -2885,10 +2853,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_EGL_SetEGLAttributeCallbacks
 #undef SDL_EGL_SetEGLAttributeCallbacks
-#endif
-
-#ifdef SDL_GL_GetDrawableSize
-#undef SDL_GL_GetDrawableSize
 #endif
 
 #ifdef SDL_GL_SetSwapInterval
@@ -4217,10 +4181,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_Vulkan_CreateSurface
 #undef SDL_Vulkan_CreateSurface
-#endif
-
-#ifdef SDL_Vulkan_GetDrawableSize
-#undef SDL_Vulkan_GetDrawableSize
 #endif
 
 #ifdef SDL_LogSetAllPriority
