@@ -879,6 +879,7 @@
 #define SDL_DISABLE_OLD_NAMES 1
 #define __BUILDING_SDL2_COMPAT__ 1
 #include <SDL3/SDL.h>
+#define SDL_MAIN_HANDLED 1
 #include <SDL3/SDL_main.h>
 
 #if !SDL_VERSION_ATLEAST(3,0,0)
