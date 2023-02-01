@@ -875,6 +875,11 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
+
+#ifdef __WINRT__
+#define SDL_MAIN_HANDLED 1
+#endif
+
 #if !SDL_VERSION_ATLEAST(3,0,0)
 #error You need to compile against SDL >= 3.0.0 headers.
 #endif
