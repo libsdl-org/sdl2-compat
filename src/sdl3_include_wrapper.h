@@ -433,6 +433,11 @@
 #define SDL_GetNumVideoDrivers IGNORE_THIS_VERSION_OF_SDL_GetNumVideoDrivers
 #define SDL_GetVideoDriver IGNORE_THIS_VERSION_OF_SDL_GetVideoDriver
 #define SDL_GetCurrentVideoDriver IGNORE_THIS_VERSION_OF_SDL_GetCurrentVideoDriver
+#define SDL_GetDisplays IGNORE_THIS_VERSION_OF_SDL_GetDisplays
+#define SDL_GetPrimaryDisplay IGNORE_THIS_VERSION_OF_SDL_GetPrimaryDisplay
+#define SDL_GetDisplayForPoint IGNORE_THIS_VERSION_OF_SDL_GetDisplayForPoint
+#define SDL_GetDisplayForRect IGNORE_THIS_VERSION_OF_SDL_GetDisplayForRect
+#define SDL_GetDisplayForWindow IGNORE_THIS_VERSION_OF_SDL_GetDisplayForWindow
 #define SDL_GetDisplayName IGNORE_THIS_VERSION_OF_SDL_GetDisplayName
 #define SDL_GetDisplayBounds IGNORE_THIS_VERSION_OF_SDL_GetDisplayBounds
 #define SDL_GetDisplayUsableBounds IGNORE_THIS_VERSION_OF_SDL_GetDisplayUsableBounds
@@ -444,6 +449,7 @@
 #define SDL_GetClosestDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetClosestDisplayMode
 #define SDL_SetWindowDisplayMode IGNORE_THIS_VERSION_OF_SDL_SetWindowDisplayMode
 #define SDL_GetWindowDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetWindowDisplayMode
+#define SDL_GetDisplayPhysicalDPI IGNORE_THIS_VERSION_OF_SDL_GetDisplayPhysicalDPI
 #define SDL_GetWindowICCProfile IGNORE_THIS_VERSION_OF_SDL_GetWindowICCProfile
 #define SDL_GetWindowPixelFormat IGNORE_THIS_VERSION_OF_SDL_GetWindowPixelFormat
 #define SDL_CreateWindow IGNORE_THIS_VERSION_OF_SDL_CreateWindow
@@ -2532,6 +2538,26 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetCurrentVideoDriver
 #endif
 
+#ifdef SDL_GetDisplays
+#undef SDL_GetDisplays
+#endif
+
+#ifdef SDL_GetPrimaryDisplay
+#undef SDL_GetPrimaryDisplay
+#endif
+
+#ifdef SDL_GetDisplayForPoint
+#undef SDL_GetDisplayForPoint
+#endif
+
+#ifdef SDL_GetDisplayForRect
+#undef SDL_GetDisplayForRect
+#endif
+
+#ifdef SDL_GetDisplayForWindow
+#undef SDL_GetDisplayForWindow
+#endif
+
 #ifdef SDL_GetDisplayName
 #undef SDL_GetDisplayName
 #endif
@@ -2574,6 +2600,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetWindowDisplayMode
 #undef SDL_GetWindowDisplayMode
+#endif
+
+#ifdef SDL_GetDisplayPhysicalDPI
+#undef SDL_GetDisplayPhysicalDPI
 #endif
 
 #ifdef SDL_GetWindowICCProfile
@@ -3876,16 +3906,16 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_log10
 #endif
 
+#ifdef SDL_log10f
+#undef SDL_log10f
+#endif
+
 #ifdef SDL_modf
 #undef SDL_modf
 #endif
 
 #ifdef SDL_modff
 #undef SDL_modff
-#endif
-
-#ifdef SDL_log10f
-#undef SDL_log10f
 #endif
 
 #ifdef SDL_pow
