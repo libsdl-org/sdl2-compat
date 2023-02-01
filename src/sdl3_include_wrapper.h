@@ -2911,6 +2911,18 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_RunApp
 #endif
 
+#ifdef SDL_WinRTRunApp
+#undef SDL_WinRTRunApp
+#endif
+
+#ifdef SDL_UIKitRunApp
+#undef SDL_UIKitRunApp
+#endif
+
+#ifdef SDL_GDKRunApp
+#undef SDL_GDKRunApp
+#endif
+
 #ifdef SDL_RegisterApp
 #undef SDL_RegisterApp
 #endif
