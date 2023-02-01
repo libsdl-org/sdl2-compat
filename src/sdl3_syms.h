@@ -550,7 +550,6 @@ SDL3_SYM_PASSTHROUGH(SDL_bool,DXGIGetOutputInfo,(int a,int *b, int *c),(a,b,c),r
 #endif
 SDL3_SYM_RENAMED(SDL_bool,RenderIsClipEnabled,RenderClipEnabled,(SDL_Renderer *a),(a),return)
 #ifdef __WINRT__
-SDL3_SYM_PASSTHROUGH(int,WinRTRunApp,(int a, char **b, void *c),(a,b,c),return)
 SDL3_SYM_PASSTHROUGH(const wchar_t*,WinRTGetFSPathUNICODE,(SDL_WinRT_Path a),(a),return)
 SDL3_SYM_PASSTHROUGH(const char*,WinRTGetFSPathUTF8,(SDL_WinRT_Path a),(a),return)
 #endif
@@ -689,9 +688,6 @@ SDL3_SYM_RENAMED(int,RenderFillRectsF,RenderFillRects,(SDL_Renderer *a, const SD
 SDL3_SYM_RENAMED(int,RenderCopyF,RenderTexture,(SDL_Renderer *a, SDL_Texture *b, const SDL_Rect *c, const SDL_FRect *d),(a,b,c,d),return)
 SDL3_SYM_RENAMED(int,RenderCopyExF,RenderTextureRotated,(SDL_Renderer *a, SDL_Texture *b, const SDL_Rect *c, const SDL_FRect *d, const double e, const SDL_FPoint *f, const SDL_RendererFlip g),(a,b,c,d,e,f,g),return)
 SDL3_SYM_PASSTHROUGH(SDL_TouchDeviceType,GetTouchDeviceType,(SDL_TouchID a),(a),return)
-#ifdef __IOS__
-SDL3_SYM_PASSTHROUGH(int,UIKitRunApp,(int a, char *b, SDL_main_func c),(a,b,c),return)
-#endif
 SDL3_SYM_PASSTHROUGH(size_t,SIMDGetAlignment,(void),(),return)
 SDL3_SYM(void*,aligned_alloc,(size_t a, size_t b),(a,b),return)
 SDL3_SYM(void,aligned_free,(void *a),(a),)
@@ -866,7 +862,6 @@ SDL3_SYM_PASSTHROUGH(size_t,utf8strnlen,(const char *a, size_t b),(a,b),return)
 
 #if defined(__GDK__)
 SDL3_SYM_PASSTHROUGH(int,GDKGetTaskQueue,(XTaskQueueHandle *a),(a),return)
-SDL3_SYM_PASSTHROUGH(int,GDKRunApp,(SDL_main_func a, void *b),(a,b),return)
 #endif
 SDL3_SYM_PASSTHROUGH(void,GetOriginalMemoryFunctions,(SDL_malloc_func *a, SDL_calloc_func *b, SDL_realloc_func *c, SDL_free_func *d),(a,b,c,d),)
 SDL3_SYM_PASSTHROUGH(void,ResetKeyboard,(void),(),)
@@ -919,6 +914,7 @@ SDL3_SYM(SDL_DisplayID,GetDisplayForWindow,(SDL_Window *a),(a),return)
 SDL3_SYM(SDL_DisplayID,GetDisplayForPoint,(const SDL_Point *a),(a),return)
 SDL3_SYM(SDL_DisplayID,GetDisplayForRect,(const SDL_Rect *a),(a),return)
 SDL3_SYM(SDL_DisplayID,GetPrimaryDisplay,(),(),return)
+SDL3_SYM(int,RunApp,(int a, char *b, SDL_main_func c, void *d),(a,b,c,d),return)
 
 #undef SDL3_SYM
 #undef SDL3_SYM_PASSTHROUGH

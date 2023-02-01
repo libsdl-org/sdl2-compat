@@ -4352,6 +4352,27 @@ DECLSPEC void SDLCALL SDL_Metal_GetDrawableSize(SDL_Window *window, int *w, int 
     SDL_GetWindowSizeInPixels(window, w, h);
 }
 
+#ifdef __WINRT__
+DECLSPEC int SDLCALL SDL_WinRTRunApp(SDL_main_func mainFunction, void *reserved)
+{
+    return SDL3_RunApp(0, NULL, mainFunction, reserved);
+}
+#endif
+
+#if defined(__GDK__)
+DECLSPEC int SDLCALL SDL_GDKRunApp(SDL_main_func mainFunction, void *reserved)
+{
+    return SDL3_RunApp(0, NULL, mainFunction, reserved);
+}
+#endif
+
+#ifdef __IOS__
+DECLSPEC int SDLCALL SDL_UIKitRunApp(int argc, char *argv[], SDL_main_func mainFunction)
+{
+    return SDL3_RunApp(argc, argv, mainFunction, NULL);
+}
+#endif
+
 #ifdef __cplusplus
 }
 #endif
