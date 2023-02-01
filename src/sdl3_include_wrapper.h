@@ -876,10 +876,6 @@
 #include <SDL3/SDL_main.h>
 
 
-#ifdef __WINRT__
-#define SDL_MAIN_HANDLED 1
-#endif
-
 #if !SDL_VERSION_ATLEAST(3,0,0)
 #error You need to compile against SDL >= 3.0.0 headers.
 #endif
@@ -893,6 +889,7 @@
 #define WIN32_LEAN_AND_MEAN 1
 #endif
 #include <windows.h>
+#define SDL_MAIN_HANDLED 1
 typedef struct SDL_Thread SDL_Thread;
 typedef unsigned long SDL_threadID;
 typedef enum {
