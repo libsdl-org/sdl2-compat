@@ -1710,7 +1710,8 @@ SDL_RWFromConstMem(const void *mem, int size)
     return RWops3to2(SDL3_RWFromConstMem(mem, size));
 }
 
-DECLSPEC Sint64 SDLCALL SDL_RWsize(SDL2_RWops *rwops2)
+DECLSPEC Sint64 SDLCALL
+SDL_RWsize(SDL2_RWops *rwops2)
 {
     return rwops2->size(rwops2);
 }
@@ -2170,21 +2171,21 @@ SDL_CreateRGBSurfaceWithFormatFrom(void *pixels, int width, int height, int dept
 }
 
 /* SDL_GetTicks is 64-bit in SDL3. Clamp it for SDL2. */
-DECLSPEC Uint32
-SDLCALL SDL_GetTicks(void)
+DECLSPEC Uint32 SDLCALL
+SDL_GetTicks(void)
 {
     return (Uint32)SDL3_GetTicks();
 }
 
 /* SDL_GetTicks64 is gone in SDL3 because SDL_GetTicks is 64-bit. */
-DECLSPEC Uint64
-SDLCALL SDL_GetTicks64(void)
+DECLSPEC Uint64 SDLCALL
+SDL_GetTicks64(void)
 {
     return SDL3_GetTicks();
 }
 
-DECLSPEC SDL_bool
-SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWMinfo *wminfo)
+DECLSPEC SDL_bool SDLCALL
+SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWMinfo *wminfo)
 {
     SDL3_Unsupported();  /* !!! FIXME: write me. */
     return SDL_FALSE;
@@ -3018,7 +3019,8 @@ SDL_VideoQuit(void)
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
-DECLSPEC int SDLCALL SDL_GL_GetSwapInterval(void)
+DECLSPEC int SDLCALL
+SDL_GL_GetSwapInterval(void)
 {
     int val = 0;
     SDL3_GL_GetSwapInterval(&val);
@@ -4264,7 +4266,8 @@ SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
 }
 
 
-DECLSPEC int SDLCALL SDL_ConvertAudio(SDL_AudioCVT *cvt)
+DECLSPEC int SDLCALL
+SDL_ConvertAudio(SDL_AudioCVT *cvt)
 {
 
     SDL_AudioStream *stream;
@@ -4337,37 +4340,43 @@ failure:
     return -1;
 }
 
-DECLSPEC void SDLCALL SDL_GL_GetDrawableSize(SDL_Window *window, int *w, int *h)
+DECLSPEC void SDLCALL
+SDL_GL_GetDrawableSize(SDL_Window *window, int *w, int *h)
 {
     SDL_GetWindowSizeInPixels(window, w, h);
 }
 
-DECLSPEC void SDLCALL SDL_Vulkan_GetDrawableSize(SDL_Window *window, int *w, int *h)
+DECLSPEC void SDLCALL
+SDL_Vulkan_GetDrawableSize(SDL_Window *window, int *w, int *h)
 {
     SDL_GetWindowSizeInPixels(window, w, h);
 }
 
-DECLSPEC void SDLCALL SDL_Metal_GetDrawableSize(SDL_Window *window, int *w, int *h)
+DECLSPEC void SDLCALL
+SDL_Metal_GetDrawableSize(SDL_Window *window, int *w, int *h)
 {
     SDL_GetWindowSizeInPixels(window, w, h);
 }
 
 #ifdef __WINRT__
-DECLSPEC int SDLCALL SDL_WinRTRunApp(SDL_main_func mainFunction, void *reserved)
+DECLSPEC int SDLCALL
+SDL_WinRTRunApp(SDL_main_func mainFunction, void *reserved)
 {
     return SDL3_RunApp(0, NULL, mainFunction, reserved);
 }
 #endif
 
 #if defined(__GDK__)
-DECLSPEC int SDLCALL SDL_GDKRunApp(SDL_main_func mainFunction, void *reserved)
+DECLSPEC int SDLCALL
+SDL_GDKRunApp(SDL_main_func mainFunction, void *reserved)
 {
     return SDL3_RunApp(0, NULL, mainFunction, reserved);
 }
 #endif
 
 #ifdef __IOS__
-DECLSPEC int SDLCALL SDL_UIKitRunApp(int argc, char *argv[], SDL_main_func mainFunction)
+DECLSPEC int SDLCALL
+SDL_UIKitRunApp(int argc, char *argv[], SDL_main_func mainFunction)
 {
     return SDL3_RunApp(argc, argv, mainFunction, NULL);
 }
