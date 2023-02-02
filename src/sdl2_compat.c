@@ -583,6 +583,7 @@ BOOL WINAPI _DllMainCRTStartup(HANDLE dllhandle, DWORD reason, LPVOID reserved)
 
 /* removed in SDL3 (which only uses SDL_WINDOW_HIDDEN now). */
 #define SDL2_WINDOW_SHOWN 0x000000004
+#define SDL2_WINDOW_FULLSCREEN_DESKTOP 0x00001000
 
 /* removed in SDL3 (APIs like this were split into getter/setter functions). */
 #define SDL2_QUERY   -1
@@ -3722,8 +3723,8 @@ SDL_FreeWAV(Uint8 *audio_buf)
     SDL3_free(audio_buf);
 }
 
-/* SDL3 changed SDL_WINDOW_FULLSCREEN and SDL_WINDOW_FULLSCREEN_DESKTOP
- * to be two distict flags. */
+/* SDL_WINDOW_FULLSCREEN_DESKTOP has been removed, and you can call SDL_GetWindowFullscreenMode() to see whether an exclusive fullscreen mode will be used or the fullscreen desktop mode will be used when the window is fullscreen.
+*/
 /* SDL3 removed SDL_WINDOW_SHOWN as redundant to SDL_WINDOW_HIDDEN. */
 DECLSPEC Uint32 SDLCALL
 SDL_GetWindowFlags(SDL_Window *window)
@@ -3732,8 +3733,12 @@ SDL_GetWindowFlags(SDL_Window *window)
     if ((flags & SDL_WINDOW_HIDDEN) == 0) {
         flags |= SDL2_WINDOW_SHOWN;
     }
-    if ((flags & SDL_WINDOW_FULLSCREEN_DESKTOP) == 0) {
-        flags |= SDL_WINDOW_FULLSCREEN_EXCLUSIVE;
+    if ((flags & SDL_WINDOW_FULLSCREEN)) {
+        if (SDL3_GetWindowFullscreenMode(window)) {
+            flags |= SDL_WINDOW_FULLSCREEN;
+        } else {
+            flags |= SDL2_WINDOW_FULLSCREEN_DESKTOP;
+        }
     }
     return flags;
 }
@@ -3741,8 +3746,10 @@ SDL_GetWindowFlags(SDL_Window *window)
 DECLSPEC SDL_Window * SDLCALL
 SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
 {
-    if (flags & SDL_WINDOW_FULLSCREEN_DESKTOP) {
-        flags &= ~SDL_WINDOW_FULLSCREEN_EXCLUSIVE;
+    flags &= SDL2_WINDOW_SHOWN;
+    if (flags & SDL2_WINDOW_FULLSCREEN_DESKTOP) {
+        flags &= SDL2_WINDOW_FULLSCREEN_DESKTOP;
+        flags |= SDL_WINDOW_FULLSCREEN; /* FIXME  force fullscreen desktop ? */
     }
     return SDL3_CreateWindow(title, x, y, w, h, flags);
 }
@@ -3750,8 +3757,9 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
 DECLSPEC int SDLCALL
 SDL_SetWindowFullscreen(SDL_Window *window, Uint32 flags)
 {
-    if (flags & SDL_WINDOW_FULLSCREEN_DESKTOP) {
-        flags &= ~SDL_WINDOW_FULLSCREEN_EXCLUSIVE;
+    if (flags & SDL2_WINDOW_FULLSCREEN_DESKTOP) {
+        flags &= SDL2_WINDOW_FULLSCREEN_DESKTOP;
+        flags |= SDL_WINDOW_FULLSCREEN; /* FIXME  force fullscreen desktop ? */
     }
     return SDL3_SetWindowFullscreen(window, flags);
 }

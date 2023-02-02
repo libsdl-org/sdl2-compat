@@ -915,6 +915,7 @@ SDL3_SYM(SDL_DisplayID,GetDisplayForPoint,(const SDL_Point *a),(a),return)
 SDL3_SYM(SDL_DisplayID,GetDisplayForRect,(const SDL_Rect *a),(a),return)
 SDL3_SYM(SDL_DisplayID,GetPrimaryDisplay,(),(),return)
 SDL3_SYM(int,RunApp,(int a, char *b, SDL_main_func c, void *d),(a,b,c,d),return)
+SDL3_SYM(SDL_DisplayMode *,GetWindowFullscreenMode,(SDL_Window *a),(a),return)
 
 #undef SDL3_SYM
 #undef SDL3_SYM_PASSTHROUGH
