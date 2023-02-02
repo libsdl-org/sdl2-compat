@@ -3347,7 +3347,11 @@ DECLSPEC int SDLCALL
 SDL_GetNumDisplayModes(int displayIndex)
 {
     SDL_DisplayID displayID = Display_IndexToID(displayIndex);
-    return SDL3_GetNumDisplayModes(displayID);
+    int count = 0;
+    SDL_DisplayMode **list;
+    list = SDL3_GetFullscreenDisplayModes(displayID, &count);
+    SDL_free(list);
+    return count;
 }
 
 DECLSPEC int SDLCALL
@@ -3374,9 +3378,18 @@ SDL_GetDisplayOrientation(int displayIndex)
 DECLSPEC int SDLCALL
 SDL_GetDisplayMode(int displayIndex, int modeIndex, SDL2_DisplayMode *mode)
 {
-    SDL_DisplayMode dp;
-    int ret = SDL3_GetDisplayMode(Display_IndexToID(displayIndex), modeIndex, mode ? &dp : NULL);
-    DisplayMode_3to2(&dp, mode);
+    SDL_DisplayID displayID = Display_IndexToID(displayIndex);
+    SDL_DisplayMode **list;
+    int count = 0;
+    int ret = -1;
+    list = SDL3_GetFullscreenDisplayModes(displayID, &count);
+    if (modeIndex >= 0 && modeIndex < count) {
+        if (mode) {
+            DisplayMode_3to2(list[modeIndex], mode);
+        }
+        ret = 1;
+    }
+    SDL_free(list);
     return ret;
 }
 
@@ -3401,15 +3414,24 @@ SDL_GetDesktopDisplayMode(int displayIndex, SDL2_DisplayMode *mode)
 DECLSPEC int SDLCALL
 SDL_GetWindowDisplayMode(SDL_Window *window, SDL2_DisplayMode *mode)
 {
-    SDL_DisplayMode dp;
-    int ret = SDL3_GetWindowDisplayMode(window, mode ? &dp : NULL);
-    DisplayMode_3to2(&dp, mode);
+    int ret;
+    SDL_DisplayMode *dp;
+    dp = SDL3_GetWindowFullscreenMode(window);
+    if (dp) {
+        if (mode) {
+            DisplayMode_3to2(dp, mode);
+        }
+        ret = 0;
+    } else {
+        ret = -1;
+    }
     return ret;
 }
 
 DECLSPEC SDL2_DisplayMode * SDLCALL
 SDL_GetClosestDisplayMode(int displayIndex, const SDL2_DisplayMode *mode, SDL2_DisplayMode *closest)
 {
+#if 0
     SDL_DisplayMode dp;
     SDL_DisplayMode closest3;
     SDL_DisplayMode *ret;
@@ -3418,14 +3440,35 @@ SDL_GetClosestDisplayMode(int displayIndex, const SDL2_DisplayMode *mode, SDL2_D
     ret = SDL3_GetClosestDisplayMode(Display_IndexToID(displayIndex), mode ? &dp : NULL, closest ? &closest3 : NULL);
     DisplayMode_3to2(ret, &ret2);
     return &ret2;
+#endif
+    // FIXME
+    SDL_Log("FIXME missing SDL_GetClosestDisplayMode");
+    return NULL;
 }
 
 DECLSPEC int SDLCALL
 SDL_SetWindowDisplayMode(SDL_Window *window, const SDL2_DisplayMode *mode)
 {
+#if 0
     SDL_DisplayMode dp;
     DisplayMode_2to3(mode, &dp);
-    return SDL3_SetWindowDisplayMode(window, mode ? &dp : NULL);
+    return SDL3_SetWindowFullscreenMode(window, mode ? &dp : NULL);
+#else
+    int count = 0;
+    SDL_DisplayMode **list;
+    int ret = -1;
+    list = SDL3_GetFullscreenDisplayModes(SDL3_GetWindowID(window), &count);
+    if (list && count) {
+        ret = SDL3_SetWindowFullscreenMode(window, list[0]);
+        ret = 0;
+
+    } else {
+        SDL_Log("FIXME no FullscreenDisplayModes ?");
+        SDL_Log("list = %p count = %d window:%p %d", list, count, window, SDL3_GetWindowID(window));
+    }
+    SDL_free(list);
+    return 0;  // FIXME
+#endif
 }
 
 DECLSPEC int SDLCALL
@@ -3746,9 +3789,9 @@ SDL_GetWindowFlags(SDL_Window *window)
 DECLSPEC SDL_Window * SDLCALL
 SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
 {
-    flags &= SDL2_WINDOW_SHOWN;
+    flags &= ~SDL2_WINDOW_SHOWN;
     if (flags & SDL2_WINDOW_FULLSCREEN_DESKTOP) {
-        flags &= SDL2_WINDOW_FULLSCREEN_DESKTOP;
+        flags &= ~SDL2_WINDOW_FULLSCREEN_DESKTOP;
         flags |= SDL_WINDOW_FULLSCREEN; /* FIXME  force fullscreen desktop ? */
     }
     return SDL3_CreateWindow(title, x, y, w, h, flags);
@@ -3757,11 +3800,16 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
 DECLSPEC int SDLCALL
 SDL_SetWindowFullscreen(SDL_Window *window, Uint32 flags)
 {
+    int flags3 = SDL_FALSE;
+
     if (flags & SDL2_WINDOW_FULLSCREEN_DESKTOP) {
-        flags &= SDL2_WINDOW_FULLSCREEN_DESKTOP;
-        flags |= SDL_WINDOW_FULLSCREEN; /* FIXME  force fullscreen desktop ? */
+        flags3 = SDL_TRUE;
     }
-    return SDL3_SetWindowFullscreen(window, flags);
+    if (flags & SDL_WINDOW_FULLSCREEN) {
+        flags3 = SDL_TRUE;
+    }
+
+    return SDL3_SetWindowFullscreen(window, flags3);
 }
 
 /* SDL3 added a return value. We just throw it away for SDL2. */
