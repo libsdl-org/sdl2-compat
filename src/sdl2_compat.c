@@ -4251,10 +4251,10 @@ SDL_JoystickAttachVirtualEx(const SDL_VirtualJoystickDesc *desc)
 }
 
 DECLSPEC int SDLCALL
-SDL_JoystickDetachVirtual(SDL_JoystickID instance_id)
+SDL_JoystickDetachVirtual(int device_index)
 {
-    const SDL_JoystickID jid = GetJoystickInstanceFromIndex(instance_id);
-    return jid ? SDL3_DetachVirtualJoystick(jid) : SDL_FALSE;
+    const SDL_JoystickID jid = GetJoystickInstanceFromIndex(device_index);
+    return jid ? SDL3_DetachVirtualJoystick(jid) : -1;
 }
 
 
