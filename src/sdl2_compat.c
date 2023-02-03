@@ -105,9 +105,18 @@ This breaks the build when creating SDL_ ## DisableScreenSaver
 extern "C" {
 #endif
 
+/** Enable this to have warnings about wrong prototypes of src/sdl3_sym.h
+ *  It won't compile but it helps to make sure it's sync'ed with SDL3 headers.
+ */
+#if 0
+#define SDL3_SYM(rc,fn,params,args,ret) \
+    typedef rc (SDLCALL *SDL3_##fn##_t) params; \
+    static SDL3_##fn##_t SDL3_##fn = IGNORE_THIS_VERSION_OF_SDL_##fn;
+#else
 #define SDL3_SYM(rc,fn,params,args,ret) \
     typedef rc (SDLCALL *SDL3_##fn##_t) params; \
     static SDL3_##fn##_t SDL3_##fn = NULL;
+#endif
 #include "sdl3_syms.h"
 
 /* Things that _should_ be binary compatible pass right through... */
