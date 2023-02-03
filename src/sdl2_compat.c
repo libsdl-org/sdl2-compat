@@ -3422,18 +3422,20 @@ SDL_GetDesktopDisplayMode(int displayIndex, SDL2_DisplayMode *mode)
 DECLSPEC int SDLCALL
 SDL_GetWindowDisplayMode(SDL_Window *window, SDL2_DisplayMode *mode)
 {
-    int ret;
-    SDL_DisplayMode *dp;
-    dp = SDL3_GetWindowFullscreenMode(window);
-    if (dp) {
-        if (mode) {
-            DisplayMode_3to2(dp, mode);
+    /* returns a pointer to the fullscreen mode to use or NULL for desktop mode */
+    SDL_DisplayMode *dp = SDL3_GetWindowFullscreenMode(window);
+    if (dp == NULL) {
+        /* Desktop mode */
+        // FIXME: is this correct ?
+        dp = SDL3_GetDesktopDisplayMode(SDL3_GetPrimaryDisplay());
+        if (dp == NULL) {
+            return -1;
         }
-        ret = 0;
-    } else {
-        ret = -1;
     }
-    return ret;
+    if (mode) {
+        DisplayMode_3to2(dp, mode);
+    }
+    return 0;
 }
 
 static void SDL_FinalizeDisplayMode(SDL_DisplayMode *mode)
@@ -3621,26 +3623,23 @@ SDL_GetClosestDisplayMode(int displayIndex, const SDL2_DisplayMode *mode, SDL2_D
 DECLSPEC int SDLCALL
 SDL_SetWindowDisplayMode(SDL_Window *window, const SDL2_DisplayMode *mode)
 {
-#if 0
     SDL_DisplayMode dp;
     DisplayMode_2to3(mode, &dp);
-    return SDL3_SetWindowFullscreenMode(window, mode ? &dp : NULL);
-#else
-    int count = 0;
-    SDL_DisplayMode **list;
-    int ret = -1;
-    list = SDL3_GetFullscreenDisplayModes(SDL3_GetWindowID(window), &count);
-    if (list && count) {
-        ret = SDL3_SetWindowFullscreenMode(window, list[0]);
-        ret = 0;
-
+    if (SDL3_SetWindowFullscreenMode(window, mode ? &dp : NULL) == 0) {
+        return 0;
     } else {
-        SDL_Log("FIXME no FullscreenDisplayModes ?");
-        SDL_Log("list = %p count = %d window:%p %d", list, count, window, SDL3_GetWindowID(window));
+        int count = 0;
+        SDL_DisplayMode **list;
+        int ret = -1;
+
+        // FIXME: at least set a valid fullscreen mode
+        list = SDL3_GetFullscreenDisplayModes(SDL3_GetPrimaryDisplay(), &count);
+        if (list && count) {
+            ret = SDL3_SetWindowFullscreenMode(window, list[0]);
+        }
+        SDL_free(list);
+        return ret;
     }
-    SDL_free(list);
-    return 0;  // FIXME
-#endif
 }
 
 DECLSPEC int SDLCALL
