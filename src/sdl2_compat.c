@@ -1354,7 +1354,7 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
         case SDL_EVENT_GAMEPAD_TOUCHPAD_MOTION:
         case SDL_EVENT_GAMEPAD_TOUCHPAD_UP:
         case SDL_EVENT_GAMEPAD_SENSOR_UPDATE:
-            /* Change SD3 InstanceID to index */
+            /* Change SDL3 InstanceID to index */
             event3->jaxis.which = GetIndexFromJoystickInstance(event3->jaxis.which);
             break;
 
