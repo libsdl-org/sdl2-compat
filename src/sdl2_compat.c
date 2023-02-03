@@ -3387,7 +3387,7 @@ SDL_GetDisplayMode(int displayIndex, int modeIndex, SDL2_DisplayMode *mode)
         if (mode) {
             DisplayMode_3to2(list[modeIndex], mode);
         }
-        ret = 1;
+        ret = 0;
     }
     SDL_free(list);
     return ret;
@@ -3428,22 +3428,186 @@ SDL_GetWindowDisplayMode(SDL_Window *window, SDL2_DisplayMode *mode)
     return ret;
 }
 
+static void SDL_FinalizeDisplayMode(SDL_DisplayMode *mode)
+{
+    /* Make sure all the fields are set up correctly */
+    if (mode->display_scale <= 0.0f) {
+        if (mode->screen_w == 0 && mode->screen_h == 0) {
+            mode->screen_w = mode->pixel_w;
+            mode->screen_h = mode->pixel_h;
+        }
+        if (mode->pixel_w == 0 && mode->pixel_h == 0) {
+            mode->pixel_w = mode->screen_w;
+            mode->pixel_h = mode->screen_h;
+        }
+        if (mode->screen_w > 0) {
+            mode->display_scale = (float)mode->pixel_w / mode->screen_w;
+        }
+    } else {
+        if (mode->screen_w == 0 && mode->screen_h == 0) {
+            mode->screen_w = (int)SDL_floorf(mode->pixel_w / mode->display_scale);
+            mode->screen_h = (int)SDL_floorf(mode->pixel_h / mode->display_scale);
+        }
+        if (mode->pixel_w == 0 && mode->pixel_h == 0) {
+            mode->pixel_w = (int)SDL_ceilf(mode->screen_w * mode->display_scale);
+            mode->pixel_h = (int)SDL_ceilf(mode->screen_h * mode->display_scale);
+        }
+    }
+
+    /* Make sure the screen width, pixel width, and display scale all match */
+    if (mode->display_scale != 0.0f) {
+        SDL_assert(mode->display_scale > 0.0f);
+        SDL_assert(SDL_fabsf(mode->screen_w - (mode->pixel_w / mode->display_scale)) < 1.0f);
+        SDL_assert(SDL_fabsf(mode->screen_h - (mode->pixel_h / mode->display_scale)) < 1.0f);
+    }
+}
+
+static SDL_DisplayMode *SDL_GetClosestDisplayModeForDisplay(/* SDL_VideoDisplay *display, */
+                                                            SDL_DisplayID displayID,
+                                                            const SDL_DisplayMode *mode,
+                                                            SDL_DisplayMode *closest)
+{
+    Uint32 target_format;
+    float target_refresh_rate;
+    int i;
+    SDL_DisplayMode requested_mode;
+    SDL_DisplayMode *current, *match;
+    SDL_DisplayMode **list;
+    int count = 0;
+
+    /* Make sure all the fields are filled out in the requested mode */
+    requested_mode = *mode;
+    SDL_FinalizeDisplayMode(&requested_mode);
+    mode = &requested_mode;
+
+    /* Default to the desktop format */
+    if (mode->format) {
+        target_format = mode->format;
+    } else {
+// FIXME: Desktop mode ?
+//        target_format = display->desktop_mode.format;
+        target_format = mode->format;
+    }
+
+    /* Default to the desktop refresh rate */
+    if (mode->refresh_rate > 0.0f) {
+        target_refresh_rate = mode->refresh_rate;
+    } else {
+// FIXME: Desktop mode ?
+//        target_refresh_rate = display->desktop_mode.refresh_rate;
+        target_refresh_rate = mode->refresh_rate;
+    }
+
+    match = NULL;
+    list = SDL3_GetFullscreenDisplayModes(displayID, &count);
+    for (i = 0; i < count; ++i) {
+        current = list[i];
+
+        if (current->pixel_w && (current->pixel_w < mode->pixel_w)) {
+            /* Out of sorted modes large enough here */
+            break;
+        }
+        if (current->pixel_h && (current->pixel_h < mode->pixel_h)) {
+            if (current->pixel_w && (current->pixel_w == mode->pixel_w)) {
+                /* Out of sorted modes large enough here */
+                break;
+            }
+            /* Wider, but not tall enough, due to a different
+               aspect ratio. This mode must be skipped, but closer
+               modes may still follow. */
+            continue;
+        }
+        if (match == NULL || current->pixel_w < match->pixel_w || current->pixel_h < match->pixel_h) {
+            match = current;
+            continue;
+        }
+        if (current->format != match->format) {
+            /* Sorted highest depth to lowest */
+            if (current->format == target_format ||
+                (SDL_BITSPERPIXEL(current->format) >=
+                     SDL_BITSPERPIXEL(target_format) &&
+                 SDL_PIXELTYPE(current->format) ==
+                     SDL_PIXELTYPE(target_format))) {
+                match = current;
+            }
+            continue;
+        }
+        if (current->refresh_rate != match->refresh_rate) {
+            /* Sorted highest refresh to lowest */
+            if (current->refresh_rate >= target_refresh_rate) {
+                match = current;
+                continue;
+            }
+        }
+    }
+
+    if (match) {
+        SDL_zerop(closest);
+        if (match->format) {
+            closest->format = match->format;
+        } else {
+            closest->format = mode->format;
+        }
+        if (match->screen_w && match->screen_h) {
+            closest->screen_w = match->screen_w;
+            closest->screen_h = match->screen_h;
+        } else {
+            closest->screen_w = mode->screen_w;
+            closest->screen_h = mode->screen_h;
+        }
+        if (match->pixel_w && match->pixel_h) {
+            closest->pixel_w = match->pixel_w;
+            closest->pixel_h = match->pixel_h;
+        } else {
+            closest->pixel_w = mode->pixel_w;
+            closest->pixel_h = mode->pixel_h;
+        }
+        if (match->refresh_rate > 0.0f) {
+            closest->refresh_rate = match->refresh_rate;
+        } else {
+            closest->refresh_rate = mode->refresh_rate;
+        }
+        closest->driverdata = match->driverdata;
+
+        /* Pick some reasonable defaults if the app and driver don't care */
+        if (!closest->format) {
+            closest->format = SDL_PIXELFORMAT_RGB888;
+        }
+        if (!closest->screen_w) {
+            closest->screen_w = 640;
+        }
+        if (!closest->screen_h) {
+            closest->screen_h = 480;
+        }
+        SDL_FinalizeDisplayMode(closest);
+        SDL_free(list);
+        return closest;
+    }
+    SDL_free(list);
+    return NULL;
+}
+
 DECLSPEC SDL2_DisplayMode * SDLCALL
 SDL_GetClosestDisplayMode(int displayIndex, const SDL2_DisplayMode *mode, SDL2_DisplayMode *closest)
 {
-#if 0
-    SDL_DisplayMode dp;
+    SDL_DisplayMode mode3;
     SDL_DisplayMode closest3;
-    SDL_DisplayMode *ret;
-    static SDL2_DisplayMode ret2;  /* FIXME alloc ?? */
+    SDL_DisplayMode *ret3;
+
+    if (mode == NULL || closest == NULL) {
+        SDL_InvalidParamError("mode/closest");
+        return NULL;
+    }
+
     DisplayMode_2to3(closest, &closest3);
-    ret = SDL3_GetClosestDisplayMode(Display_IndexToID(displayIndex), mode ? &dp : NULL, closest ? &closest3 : NULL);
-    DisplayMode_3to2(ret, &ret2);
-    return &ret2;
-#endif
-    // FIXME
-    SDL_Log("FIXME missing SDL_GetClosestDisplayMode");
-    return NULL;
+    DisplayMode_2to3(mode, &mode3);
+    ret3 = SDL_GetClosestDisplayModeForDisplay(Display_IndexToID(displayIndex), &mode3, &closest3);
+    if (ret3 == NULL) {
+        return NULL;
+    } else {
+        DisplayMode_3to2(ret3, closest);
+        return closest;
+    }
 }
 
 DECLSPEC int SDLCALL
