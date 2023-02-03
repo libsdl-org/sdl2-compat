@@ -1006,10 +1006,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_DestroyAudioStream
 #endif
 
-#ifdef SDL_GetAudioStreamData
-#undef SDL_GetAudioStreamData
-#endif
-
 #ifdef SDL_MixAudioFormat
 #undef SDL_MixAudioFormat
 #endif
@@ -2594,8 +2590,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetWindowFullscreenMode
 #endif
 
-#ifdef SDL_SetWindowDisplayMode
-#undef SDL_SetWindowDisplayMode
+#ifdef SDL_SetWindowFullscreenMode
+#undef SDL_SetWindowFullscreenMode
 #endif
 
 #ifdef SDL_GetDisplayPhysicalDPI
