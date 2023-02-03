@@ -3396,19 +3396,27 @@ SDL_GetDisplayMode(int displayIndex, int modeIndex, SDL2_DisplayMode *mode)
 DECLSPEC int SDLCALL
 SDL_GetCurrentDisplayMode(int displayIndex, SDL2_DisplayMode *mode)
 {
-    SDL_DisplayMode dp;
-    int ret = SDL3_GetCurrentDisplayMode(Display_IndexToID(displayIndex), mode ? &dp : NULL);
-    DisplayMode_3to2(&dp, mode);
-    return ret;
+    SDL_DisplayMode *dp = SDL3_GetCurrentDisplayMode(Display_IndexToID(displayIndex));
+    if (dp == NULL) {
+        return -1;
+    }
+    if (mode) {
+        DisplayMode_3to2(dp, mode);
+    }
+    return 0;
 }
 
 DECLSPEC int SDLCALL
 SDL_GetDesktopDisplayMode(int displayIndex, SDL2_DisplayMode *mode)
 {
-    SDL_DisplayMode dp;
-    int ret = SDL3_GetDesktopDisplayMode(Display_IndexToID(displayIndex), mode ? &dp : NULL);
-    DisplayMode_3to2(&dp, mode);
-    return ret;
+    SDL_DisplayMode *dp = SDL3_GetDesktopDisplayMode(Display_IndexToID(displayIndex));
+    if (dp == NULL) {
+        return -1;
+    }
+    if (mode) {
+        DisplayMode_3to2(dp, mode);
+    }
+    return 0;
 }
 
 DECLSPEC int SDLCALL
