@@ -723,10 +723,9 @@ SDL3_SYM_PASSTHROUGH(int,GetAndroidSDKVersion,(void),(),return)
 SDL3_SYM_PASSTHROUGH(int,isupper,(int a),(a),return)
 SDL3_SYM_PASSTHROUGH(int,islower,(int a),(a),return)
 
-/* FIXME: the following three are wrong and can't be passthrough. */
-SDL3_SYM_RENAMED(int,JoystickAttachVirtual,AttachVirtualJoystick,(SDL_JoystickType a, int b, int c, int d),(a,b,c,d),return)
-SDL3_SYM_RENAMED(int,JoystickDetachVirtual,DetachVirtualJoystick,(int a),(a),return)
-SDL3_SYM_RENAMED(int,JoystickAttachVirtualEx,AttachVirtualJoystickEx,(const SDL_VirtualJoystickDesc *a),(a),return)
+SDL3_SYM(SDL_JoystickID,AttachVirtualJoystick,(SDL_JoystickType a, int b, int c, int d),(a,b,c,d),return)
+SDL3_SYM(int,DetachVirtualJoystick,(SDL_JoystickID a),(a),return)
+SDL3_SYM(SDL_JoystickID,AttachVirtualJoystickEx,(const SDL_VirtualJoystickDesc *a),(a),return)
 
 SDL3_SYM_RENAMED(int,JoystickSetVirtualAxis,SetJoystickVirtualAxis,(SDL_Joystick *a, int b, Sint16 c),(a,b,c),return)
 SDL3_SYM_RENAMED(int,JoystickSetVirtualButton,SetJoystickVirtualButton,(SDL_Joystick *a, int b, Uint8 c),(a,b,c),return)

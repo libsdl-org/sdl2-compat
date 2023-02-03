@@ -4068,7 +4068,6 @@ GetJoystickInstanceFromIndex(int idx)
 
 /* !!! FIXME: when we override SDL_Quit(), we need to free/reset joystick_list and friends*/
 /* !!! FIXME: put a mutex on the joystick and sensor lists. Strictly speaking, this will break if you multithread it, but it doesn't have to crash. */
-/* !!! FIXME: we need to override the virtual joystick stuff, since it returns a device index */
 
 DECLSPEC int SDLCALL
 SDL_NumJoysticks(void)
@@ -4081,6 +4080,22 @@ SDL_NumJoysticks(void)
     }
     return num_joysticks;
 }
+
+static int
+GetIndexFromJoystickInstance(SDL_JoystickID jid) {
+    int i;
+
+    /* Refresh */
+    SDL_NumJoysticks();
+
+    for (i = 0; i < num_joysticks; i++) {
+        if (joystick_list[i] == jid) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 
 DECLSPEC SDL_JoystickGUID SDLCALL
 SDL_JoystickGetDeviceGUID(int idx)
@@ -4219,6 +4234,27 @@ SDL_GameControllerPathForIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
     return jid ? SDL3_GetGamepadInstancePath(jid) : NULL;
+}
+
+DECLSPEC int SDLCALL
+SDL_JoystickAttachVirtual(SDL_JoystickType type, int naxes, int nbuttons, int nhats)
+{
+    SDL_JoystickID jid = SDL3_AttachVirtualJoystick(type, naxes, nbuttons, nhats);
+    return GetIndexFromJoystickInstance(jid);
+}
+
+DECLSPEC int SDLCALL
+SDL_JoystickAttachVirtualEx(const SDL_VirtualJoystickDesc *desc)
+{
+    SDL_JoystickID jid = SDL3_AttachVirtualJoystickEx(desc);
+    return GetIndexFromJoystickInstance(jid);
+}
+
+DECLSPEC int SDLCALL
+SDL_JoystickDetachVirtual(SDL_JoystickID instance_id)
+{
+    const SDL_JoystickID jid = GetJoystickInstanceFromIndex(instance_id);
+    return jid ? SDL3_DetachVirtualJoystick(jid) : SDL_FALSE;
 }
 
 
