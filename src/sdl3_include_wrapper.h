@@ -442,13 +442,12 @@
 #define SDL_GetDisplayBounds IGNORE_THIS_VERSION_OF_SDL_GetDisplayBounds
 #define SDL_GetDisplayUsableBounds IGNORE_THIS_VERSION_OF_SDL_GetDisplayUsableBounds
 #define SDL_GetDisplayOrientation IGNORE_THIS_VERSION_OF_SDL_GetDisplayOrientation
-#define SDL_GetNumDisplayModes IGNORE_THIS_VERSION_OF_SDL_GetNumDisplayModes
-#define SDL_GetDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetDisplayMode
 #define SDL_GetDesktopDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetDesktopDisplayMode
 #define SDL_GetCurrentDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetCurrentDisplayMode
-#define SDL_GetClosestDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetClosestDisplayMode
-#define SDL_SetWindowDisplayMode IGNORE_THIS_VERSION_OF_SDL_SetWindowDisplayMode
-#define SDL_GetWindowDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetWindowDisplayMode
+#define SDL_GetFullscreenDisplayModes IGNORE_THIS_VERSION_OF_SDL_GetFullscreenDisplayModes
+#define SDL_GetClosestFullscreenDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetClosestFullscreenDisplayMode
+#define SDL_GetWindowFullscreenMode IGNORE_THIS_VERSION_OF_SDL_GetWindowFullscreenMode
+#define SDL_SetWindowFullscreenMode IGNORE_THIS_VERSION_OF_SDL_SetWindowFullscreenMode
 #define SDL_GetDisplayPhysicalDPI IGNORE_THIS_VERSION_OF_SDL_GetDisplayPhysicalDPI
 #define SDL_GetWindowICCProfile IGNORE_THIS_VERSION_OF_SDL_GetWindowICCProfile
 #define SDL_GetWindowPixelFormat IGNORE_THIS_VERSION_OF_SDL_GetWindowPixelFormat
@@ -2575,14 +2574,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetDisplayOrientation
 #endif
 
-#ifdef SDL_GetNumDisplayModes
-#undef SDL_GetNumDisplayModes
-#endif
-
-#ifdef SDL_GetDisplayMode
-#undef SDL_GetDisplayMode
-#endif
-
 #ifdef SDL_GetDesktopDisplayMode
 #undef SDL_GetDesktopDisplayMode
 #endif
@@ -2591,16 +2582,20 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetCurrentDisplayMode
 #endif
 
-#ifdef SDL_GetClosestDisplayMode
-#undef SDL_GetClosestDisplayMode
+#ifdef SDL_GetFullscreenDisplayModes
+#undef SDL_GetFullscreenDisplayModes
+#endif
+
+#ifdef SDL_GetClosestFullscreenDisplayMode
+#undef SDL_GetClosestFullscreenDisplayMode
+#endif
+
+#ifdef SDL_GetWindowFullscreenMode
+#undef SDL_GetWindowFullscreenMode
 #endif
 
 #ifdef SDL_SetWindowDisplayMode
 #undef SDL_SetWindowDisplayMode
-#endif
-
-#ifdef SDL_GetWindowDisplayMode
-#undef SDL_GetWindowDisplayMode
 #endif
 
 #ifdef SDL_GetDisplayPhysicalDPI
