@@ -1311,6 +1311,7 @@ SDL_PushEvent(SDL2_Event *event2)
 }
 
 static int Display_IDToIndex(SDL_DisplayID displayID);
+static int GetIndexFromJoystickInstance(SDL_JoystickID jid);
 
 static int SDLCALL
 EventFilter3to2(void *userdata, SDL_Event *event3)
@@ -1336,6 +1337,27 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
     /* push new events when we need to convert something, like toplevel SDL3 events generating the SDL2 SDL_WINDOWEVENT. */
 
     switch (event3->type) {
+        case SDL_EVENT_JOYSTICK_AXIS_MOTION:
+        case SDL_EVENT_JOYSTICK_HAT_MOTION:
+        case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
+        case SDL_EVENT_JOYSTICK_BUTTON_UP:
+        case SDL_EVENT_JOYSTICK_ADDED:
+        case SDL_EVENT_JOYSTICK_REMOVED:
+        case SDL_EVENT_JOYSTICK_BATTERY_UPDATED:
+        case SDL_EVENT_GAMEPAD_AXIS_MOTION:
+        case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+        case SDL_EVENT_GAMEPAD_BUTTON_UP:
+        case SDL_EVENT_GAMEPAD_ADDED:
+        case SDL_EVENT_GAMEPAD_REMOVED:
+        case SDL_EVENT_GAMEPAD_REMAPPED:
+        case SDL_EVENT_GAMEPAD_TOUCHPAD_DOWN:
+        case SDL_EVENT_GAMEPAD_TOUCHPAD_MOTION:
+        case SDL_EVENT_GAMEPAD_TOUCHPAD_UP:
+        case SDL_EVENT_GAMEPAD_SENSOR_UPDATE:
+            /* Change SD3 InstanceID to index */
+            event3->jaxis.which = GetIndexFromJoystickInstance(event3->jaxis.which);
+            break;
+
         /* display events moved to the top level in SDL3. */
         case SDL_EVENT_DISPLAY_ORIENTATION:
         case SDL_EVENT_DISPLAY_CONNECTED:
@@ -1388,8 +1410,6 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
 
         default: break;
     }
-
-    /* !!! FIXME: Deal with device add events using instance ids instead of indices in SDL3. */
 
     return 1;
 }
