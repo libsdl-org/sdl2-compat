@@ -3609,15 +3609,19 @@ SDL_GetClosestDisplayMode(int displayIndex, const SDL2_DisplayMode *mode, SDL2_D
         return NULL;
     }
 
+    /* silence compiler */
+    SDL3_zero(mode3);
+    SDL3_zero(closest3);
+
     DisplayMode_2to3(closest, &closest3);
     DisplayMode_2to3(mode, &mode3);
     ret3 = SDL_GetClosestDisplayModeForDisplay(Display_IndexToID(displayIndex), &mode3, &closest3);
     if (ret3 == NULL) {
         return NULL;
-    } else {
-        DisplayMode_3to2(ret3, closest);
-        return closest;
     }
+
+    DisplayMode_3to2(ret3, closest);
+    return closest;
 }
 
 DECLSPEC int SDLCALL
