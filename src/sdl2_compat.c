@@ -599,6 +599,8 @@ BOOL WINAPI _DllMainCRTStartup(HANDLE dllhandle, DWORD reason, LPVOID reserved)
 #define SDL2_DISABLE  0
 #define SDL2_ENABLE   1
 
+#define SDL2_RENDERER_TARGETTEXTURE 0x00000008
+
 /* this enum changed in SDL3. */
 typedef enum
 {
@@ -1583,7 +1585,7 @@ SDL_RenderWindowToLogical(SDL_Renderer *renderer,
                           int windowX, int windowY,
                           float *logicalX, float *logicalY)
 {
-    SDL3_RenderWindowToLogical(renderer, (float)windowX, (float)windowY, logicalX, logicalY);
+    SDL3_RenderCoordinatesFromWindow(renderer, (float)windowX, (float)windowY, logicalX, logicalY);
 }
 
 DECLSPEC void SDLCALL
@@ -1592,7 +1594,7 @@ SDL_RenderLogicalToWindow(SDL_Renderer *renderer,
                           int *windowX, int *windowY)
 {
     float x, y;
-    SDL3_RenderLogicalToWindow(renderer, logicalX, logicalY, &x, &y);
+    SDL3_RenderCoordinatesToWindow(renderer, logicalX, logicalY, &x, &y);
     if (windowX) *windowX = (int)x;
     if (windowY) *windowY = (int)y;
 }
@@ -2932,7 +2934,7 @@ SDL_GetRenderDriverInfo(int index, SDL_RendererInfo *info)
 
     /* these are the values that SDL2 returns. */
     if ((SDL3_strcmp(name, "opengl") == 0) || (SDL3_strcmp(name, "opengles2") == 0)) {
-        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE;
+        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
         info->num_texture_formats = 4;
         info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
         info->texture_formats[1] = SDL_PIXELFORMAT_ABGR8888;
@@ -2943,11 +2945,11 @@ SDL_GetRenderDriverInfo(int index, SDL_RendererInfo *info)
         info->num_texture_formats = 1;
         info->texture_formats[0] = SDL_PIXELFORMAT_ABGR8888;
     } else if (SDL3_strcmp(name, "direct3d") == 0) {
-        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE;
+        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
         info->num_texture_formats = 1;
         info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
     } else if (SDL3_strcmp(name, "direct3d11") == 0) {
-        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE;
+        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
         info->num_texture_formats = 6;
         info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
         info->texture_formats[1] = SDL_PIXELFORMAT_RGB888;
@@ -2956,7 +2958,7 @@ SDL_GetRenderDriverInfo(int index, SDL_RendererInfo *info)
         info->texture_formats[4] = SDL_PIXELFORMAT_NV12;
         info->texture_formats[5] = SDL_PIXELFORMAT_NV21;
     } else if (SDL3_strcmp(name, "direct3d12") == 0) {
-        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE;
+        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
         info->num_texture_formats = 6;
         info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
         info->texture_formats[1] = SDL_PIXELFORMAT_RGB888;
@@ -2967,7 +2969,7 @@ SDL_GetRenderDriverInfo(int index, SDL_RendererInfo *info)
         info->max_texture_width = 16384;
         info->max_texture_height = 16384;
     } else if (SDL3_strcmp(name, "metal") == 0) {
-        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE;
+        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
         info->num_texture_formats = 6;
         info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
         info->texture_formats[1] = SDL_PIXELFORMAT_ABGR8888;
@@ -2976,9 +2978,9 @@ SDL_GetRenderDriverInfo(int index, SDL_RendererInfo *info)
         info->texture_formats[4] = SDL_PIXELFORMAT_NV12;
         info->texture_formats[5] = SDL_PIXELFORMAT_NV21;
     } else if (SDL3_strcmp(name, "software") == 0) {
-        info->flags = SDL_RENDERER_SOFTWARE | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE;
+        info->flags = SDL_RENDERER_SOFTWARE | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
     } else {  /* this seems reasonable if something currently-unknown shows up in SDL3. */
-        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE;
+        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
         info->num_texture_formats = 1;
         info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
     }
@@ -2997,6 +2999,73 @@ SDL_CreateRenderer(SDL_Window *window, int index, Uint32 flags)
         }
     }
     return SDL3_CreateRenderer(window, name, flags);
+}
+
+DECLSPEC SDL_bool SDLCALL 
+SDL_RenderTargetSupported(SDL_Renderer *renderer)
+{
+    int ret; 
+    SDL_RendererInfo info;
+    ret = SDL_GetRendererInfo(renderer, &info);
+    if (ret == 0) {
+        if (info.flags & SDL2_RENDERER_TARGETTEXTURE) {
+            return SDL_TRUE;
+        }
+    }
+    return SDL_FALSE;
+}
+
+DECLSPEC int SDLCALL 
+SDL_RenderSetLogicalSize(SDL_Renderer *renderer, int w, int h)
+{
+    if (w == 0 && h == 0) {
+        return SDL3_SetRenderLogicalPresentation(renderer, 0, 0, SDL_LOGICAL_PRESENTATION_DISABLED, SDL_SCALEMODE_NEAREST);
+    } else {
+        return SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_LETTERBOX, SDL_SCALEMODE_LINEAR);
+    }
+}
+
+DECLSPEC void SDLCALL SDL_RenderGetLogicalSize(SDL_Renderer *renderer, int *w, int *h)
+{
+    SDL3_GetRenderLogicalPresentation(renderer, w, h, NULL, NULL);
+}
+
+DECLSPEC int SDLCALL SDL_RenderSetIntegerScale(SDL_Renderer *renderer, SDL_bool enable)
+{
+    SDL_ScaleMode scale_mode;
+    SDL_RendererLogicalPresentation mode;
+    int w, h;
+    int ret;
+
+    ret = SDL3_GetRenderLogicalPresentation(renderer, &w, &h, &mode, &scale_mode);
+    if (ret < 0) {
+        return ret;
+    }
+    
+    if (enable && mode == SDL_LOGICAL_PRESENTATION_INTEGER_SCALE) {
+        return 0;
+    }
+
+    if (!enable && mode != SDL_LOGICAL_PRESENTATION_INTEGER_SCALE) {
+        return 0;
+    }
+
+    if (enable) {
+        return SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE, scale_mode);
+    } else {
+        return SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_DISABLED, scale_mode);
+    }
+}
+
+DECLSPEC SDL_bool SDLCALL SDL_RenderGetIntegerScale(SDL_Renderer *renderer)
+{
+    SDL_RendererLogicalPresentation mode;
+    if (SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode, NULL) == 0) {
+        if (mode == SDL_LOGICAL_PRESENTATION_INTEGER_SCALE) {
+            return SDL_TRUE;
+        }
+    }
+    return SDL_FALSE;
 }
 
 DECLSPEC int SDLCALL
