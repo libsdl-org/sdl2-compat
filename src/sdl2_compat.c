@@ -1581,6 +1581,24 @@ SDL_WarpMouseGlobal(int x, int y)
 }
 
 DECLSPEC void SDLCALL
+SDL_RenderGetViewport(SDL_Renderer *renderer, SDL_Rect *rect)
+{
+    SDL3_GetRenderViewport(renderer, rect);
+}
+
+DECLSPEC void SDLCALL
+SDL_RenderGetClipRect(SDL_Renderer *renderer, SDL_Rect *rect)
+{
+    SDL3_GetRenderClipRect(renderer, rect);
+}
+
+DECLSPEC void SDLCALL
+SDL_RenderGetScale(SDL_Renderer *renderer, float *scaleX, float *scaleY)
+{
+    SDL3_GetRenderScale(renderer, scaleX, scaleY);
+}
+
+DECLSPEC void SDLCALL
 SDL_RenderWindowToLogical(SDL_Renderer *renderer,
                           int windowX, int windowY,
                           float *logicalX, float *logicalY)
@@ -3001,10 +3019,10 @@ SDL_CreateRenderer(SDL_Window *window, int index, Uint32 flags)
     return SDL3_CreateRenderer(window, name, flags);
 }
 
-DECLSPEC SDL_bool SDLCALL 
+DECLSPEC SDL_bool SDLCALL
 SDL_RenderTargetSupported(SDL_Renderer *renderer)
 {
-    int ret; 
+    int ret;
     SDL_RendererInfo info;
     ret = SDL_GetRendererInfo(renderer, &info);
     if (ret == 0) {
@@ -3015,22 +3033,23 @@ SDL_RenderTargetSupported(SDL_Renderer *renderer)
     return SDL_FALSE;
 }
 
-DECLSPEC int SDLCALL 
+DECLSPEC int SDLCALL
 SDL_RenderSetLogicalSize(SDL_Renderer *renderer, int w, int h)
 {
     if (w == 0 && h == 0) {
         return SDL3_SetRenderLogicalPresentation(renderer, 0, 0, SDL_LOGICAL_PRESENTATION_DISABLED, SDL_SCALEMODE_NEAREST);
-    } else {
-        return SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_LETTERBOX, SDL_SCALEMODE_LINEAR);
     }
+    return SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_LETTERBOX, SDL_SCALEMODE_LINEAR);
 }
 
-DECLSPEC void SDLCALL SDL_RenderGetLogicalSize(SDL_Renderer *renderer, int *w, int *h)
+DECLSPEC void SDLCALL
+SDL_RenderGetLogicalSize(SDL_Renderer *renderer, int *w, int *h)
 {
     SDL3_GetRenderLogicalPresentation(renderer, w, h, NULL, NULL);
 }
 
-DECLSPEC int SDLCALL SDL_RenderSetIntegerScale(SDL_Renderer *renderer, SDL_bool enable)
+DECLSPEC int SDLCALL
+SDL_RenderSetIntegerScale(SDL_Renderer *renderer, SDL_bool enable)
 {
     SDL_ScaleMode scale_mode;
     SDL_RendererLogicalPresentation mode;
@@ -3041,7 +3060,7 @@ DECLSPEC int SDLCALL SDL_RenderSetIntegerScale(SDL_Renderer *renderer, SDL_bool 
     if (ret < 0) {
         return ret;
     }
-    
+
     if (enable && mode == SDL_LOGICAL_PRESENTATION_INTEGER_SCALE) {
         return 0;
     }
@@ -3052,12 +3071,12 @@ DECLSPEC int SDLCALL SDL_RenderSetIntegerScale(SDL_Renderer *renderer, SDL_bool 
 
     if (enable) {
         return SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE, scale_mode);
-    } else {
-        return SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_DISABLED, scale_mode);
     }
+    return SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_DISABLED, scale_mode);
 }
 
-DECLSPEC SDL_bool SDLCALL SDL_RenderGetIntegerScale(SDL_Renderer *renderer)
+DECLSPEC SDL_bool SDLCALL
+SDL_RenderGetIntegerScale(SDL_Renderer *renderer)
 {
     SDL_RendererLogicalPresentation mode;
     if (SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode, NULL) == 0) {

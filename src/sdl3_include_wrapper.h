@@ -366,7 +366,7 @@
 #define SDL_GetRenderer IGNORE_THIS_VERSION_OF_SDL_GetRenderer
 #define SDL_GetRenderWindow IGNORE_THIS_VERSION_OF_SDL_GetRenderWindow
 #define SDL_GetRendererInfo IGNORE_THIS_VERSION_OF_SDL_GetRendererInfo
-#define SDL_GetRendererOutputSize IGNORE_THIS_VERSION_OF_SDL_GetRendererOutputSize
+#define SDL_GetRenderOutputSize IGNORE_THIS_VERSION_OF_SDL_GetRenderOutputSize
 #define SDL_CreateTexture IGNORE_THIS_VERSION_OF_SDL_CreateTexture
 #define SDL_CreateTextureFromSurface IGNORE_THIS_VERSION_OF_SDL_CreateTextureFromSurface
 #define SDL_QueryTexture IGNORE_THIS_VERSION_OF_SDL_QueryTexture
@@ -386,13 +386,8 @@
 #define SDL_LockTexture IGNORE_THIS_VERSION_OF_SDL_LockTexture
 #define SDL_LockTextureToSurface IGNORE_THIS_VERSION_OF_SDL_LockTextureToSurface
 #define SDL_UnlockTexture IGNORE_THIS_VERSION_OF_SDL_UnlockTexture
-#define SDL_RenderTargetSupported IGNORE_THIS_VERSION_OF_SDL_RenderTargetSupported
 #define SDL_SetRenderTarget IGNORE_THIS_VERSION_OF_SDL_SetRenderTarget
 #define SDL_GetRenderTarget IGNORE_THIS_VERSION_OF_SDL_GetRenderTarget
-#define SDL_SetRenderLogicalSize IGNORE_THIS_VERSION_OF_SDL_SetRenderLogicalSize
-#define SDL_GetRenderLogicalSize IGNORE_THIS_VERSION_OF_SDL_GetRenderLogicalSize
-#define SDL_SetRenderIntegerScale IGNORE_THIS_VERSION_OF_SDL_SetRenderIntegerScale
-#define SDL_GetRenderIntegerScale IGNORE_THIS_VERSION_OF_SDL_GetRenderIntegerScale
 #define SDL_SetRenderViewport IGNORE_THIS_VERSION_OF_SDL_SetRenderViewport
 #define SDL_GetRenderViewport IGNORE_THIS_VERSION_OF_SDL_GetRenderViewport
 #define SDL_SetRenderClipRect IGNORE_THIS_VERSION_OF_SDL_SetRenderClipRect
@@ -400,8 +395,13 @@
 #define SDL_RenderClipEnabled IGNORE_THIS_VERSION_OF_SDL_RenderClipEnabled
 #define SDL_SetRenderScale IGNORE_THIS_VERSION_OF_SDL_SetRenderScale
 #define SDL_GetRenderScale IGNORE_THIS_VERSION_OF_SDL_GetRenderScale
-#define SDL_RenderWindowToLogical IGNORE_THIS_VERSION_OF_SDL_RenderWindowToLogical
-#define SDL_RenderLogicalToWindow IGNORE_THIS_VERSION_OF_SDL_RenderLogicalToWindow
+#define SDL_RenderCoordinatesFromWindow IGNORE_THIS_VERSION_OF_SDL_RenderCoordinatesFromWindow
+#define SDL_RenderCoordinatesToWindow IGNORE_THIS_VERSION_OF_SDL_RenderCoordinatesToWindow
+#define SDL_GetRenderLogicalPresentation IGNORE_THIS_VERSION_OF_SDL_GetRenderLogicalPresentation
+#define SDL_SetRenderLogicalPresentation IGNORE_THIS_VERSION_OF_SDL_SetRenderLogicalPresentation
+#define SDL_ConvertEventToRenderCoordinates IGNORE_THIS_VERSION_OF_SDL_ConvertEventToRenderCoordinates
+#define SDL_GetCurrentRenderOutputSize IGNORE_THIS_VERSION_OF_SDL_GetCurrentRenderOutputSize
+#define SDL_GetRenderWindowSize IGNORE_THIS_VERSION_OF_SDL_GetRenderWindowSize
 #define SDL_SetRenderDrawColor IGNORE_THIS_VERSION_OF_SDL_SetRenderDrawColor
 #define SDL_GetRenderDrawColor IGNORE_THIS_VERSION_OF_SDL_GetRenderDrawColor
 #define SDL_SetRenderDrawBlendMode IGNORE_THIS_VERSION_OF_SDL_SetRenderDrawBlendMode
@@ -2267,8 +2267,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetRendererInfo
 #endif
 
-#ifdef SDL_GetRendererOutputSize
-#undef SDL_GetRendererOutputSize
+#ifdef SDL_GetRenderOutputSize
+#undef SDL_GetRenderOutputSize
 #endif
 
 #ifdef SDL_CreateTexture
@@ -2347,32 +2347,12 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_UnlockTexture
 #endif
 
-#ifdef SDL_RenderTargetSupported
-#undef SDL_RenderTargetSupported
-#endif
-
 #ifdef SDL_SetRenderTarget
 #undef SDL_SetRenderTarget
 #endif
 
 #ifdef SDL_GetRenderTarget
 #undef SDL_GetRenderTarget
-#endif
-
-#ifdef SDL_SetRenderLogicalSize
-#undef SDL_SetRenderLogicalSize
-#endif
-
-#ifdef SDL_GetRenderLogicalSize
-#undef SDL_GetRenderLogicalSize
-#endif
-
-#ifdef SDL_SetRenderIntegerScale
-#undef SDL_SetRenderIntegerScale
-#endif
-
-#ifdef SDL_GetRenderIntegerScale
-#undef SDL_GetRenderIntegerScale
 #endif
 
 #ifdef SDL_SetRenderViewport
@@ -2403,12 +2383,32 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetRenderScale
 #endif
 
-#ifdef SDL_RenderWindowToLogical
-#undef SDL_RenderWindowToLogical
+#ifdef SDL_RenderCoordinatesFromWindow
+#undef SDL_RenderCoordinatesFromWindow
 #endif
 
-#ifdef SDL_RenderLogicalToWindow
-#undef SDL_RenderLogicalToWindow
+#ifdef SDL_RenderCoordinatesToWindow
+#undef SDL_RenderCoordinatesToWindow
+#endif
+
+#ifdef SDL_GetRenderLogicalPresentation
+#undef SDL_GetRenderLogicalPresentation
+#endif
+
+#ifdef SDL_SetRenderLogicalPresentation
+#undef SDL_SetRenderLogicalPresentation
+#endif
+
+#ifdef SDL_ConvertEventToRenderCoordinates
+#undef SDL_ConvertEventToRenderCoordinates
+#endif
+
+#ifdef SDL_GetCurrentRenderOutputSize
+#undef SDL_GetCurrentRenderOutputSize
+#endif
+
+#ifdef SDL_GetRenderWindowSize
+#undef SDL_GetRenderWindowSize
 #endif
 
 #ifdef SDL_SetRenderDrawColor
