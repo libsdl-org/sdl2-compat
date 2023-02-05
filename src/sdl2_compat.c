@@ -3339,8 +3339,8 @@ DisplayMode_3to2(const SDL_DisplayMode *in, SDL2_DisplayMode *out) {
     }
 }
 
-
-static SDL_DisplayID Display_IndexToID(int displayIndex)
+static SDL_DisplayID
+Display_IndexToID(int displayIndex)
 {
     SDL_DisplayID displayID = 0;
     int count = 0;
@@ -3650,7 +3650,7 @@ SDL_GetClosestDisplayModeForDisplay(SDL_DisplayID displayID,
     }
 
     if (match) {
-        SDL_zerop(closest);
+        SDL3_zerop(closest);
         if (match->format) {
             closest->format = match->format;
         } else {
