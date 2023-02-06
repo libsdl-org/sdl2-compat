@@ -868,8 +868,15 @@
 #define SDL_LogSetOutputFunction IGNORE_THIS_VERSION_OF_SDL_LogSetOutputFunction
 
 /* *** HACK HACK HACK:
- * *** Avoid including SDL_thread.h: it defines SDL_CreateThread() as a macro */
-#ifdef _WIN32
+ * *** Avoid including SDL_thread.h: it defines SDL_CreateThread() as a macro
+ * *** for Win32 Desktop and GDK, but not for WinRT. */
+#ifdef SDL_HAVE_WINAPIFAMILY_H
+#include <winapifamily.h>
+#if (!WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP) && WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP))
+#define SDL2COMPAT_WINRT
+#endif
+#endif
+#if defined(_WIN32) && !defined(SDL2COMPAT_WINRT)
 #define _SDL_thread_h
 #define SDL_thread_h_
 #define SDL_PASSED_BEGINTHREAD_ENDTHREAD
@@ -890,7 +897,7 @@
 #include <SDL3/SDL_vulkan.h>
 
 /* Missing SDL_thread.h stuff (see above) */
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(SDL2COMPAT_WINRT)
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
 #endif

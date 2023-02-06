@@ -659,7 +659,7 @@ SDL3_SYM_PASSTHROUGH(SDL_bool,IsTablet,(void),(),return)
 SDL3_SYM(SDL_DisplayOrientation,GetDisplayOrientation,(SDL_DisplayID a),(a),return)
 SDL3_SYM_RENAMED(SDL_bool,HasColorKey,SurfaceHasColorKey,(SDL_Surface *a),(a),return)
 
-#if defined(__WIN32__) || defined(__GDK__)
+#if (defined(__WIN32__) || defined(__GDK__)) && !defined(__WINRT__)
 SDL3_SYM_PASSTHROUGH(SDL_Thread*,CreateThreadWithStackSize,(SDL_ThreadFunction a, const char *b, const size_t c, void *d, pfnSDL_CurrentBeginThread e, pfnSDL_CurrentEndThread f),(a,b,c,d,e,f),return)
 #else
 SDL3_SYM_PASSTHROUGH(SDL_Thread*,CreateThreadWithStackSize,(SDL_ThreadFunction a, const char *b, const size_t c, void *d),(a,b,c,d),return)

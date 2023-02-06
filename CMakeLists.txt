@@ -204,6 +204,11 @@ if(CMAKE_C_COMPILER_ID MATCHES "Clang|GNU")
   endif()
 endif()
 
+check_include_file("winapifamily.h" HAVE_WINAPIFAMILY_H)
+if(HAVE_WINAPIFAMILY_H)
+  set(EXTRA_CFLAGS "${EXTRA_CFLAGS} -DSDL_HAVE_WINAPIFAMILY_H")
+endif()
+
 # This isn't needed for compat libSDL2 who use SDL3 headers.
 # SDL2_test and SDL2_main (and the tes programs) still need
 # this, because they use SDL2 headers.
