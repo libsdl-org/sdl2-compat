@@ -3804,7 +3804,6 @@ SDL_RenderDrawLine(SDL_Renderer *renderer, int x1, int y1, int x2, int y2)
     return SDL3_RenderLines(renderer, points, 2);
 }
 
-
 DECLSPEC int SDLCALL
 SDL_RenderDrawLines(SDL_Renderer *renderer, const SDL_Point *points, int count)
 {
@@ -4086,6 +4085,38 @@ SDL_SetWindowFullscreen(SDL_Window *window, Uint32 flags)
 
     return SDL3_SetWindowFullscreen(window, flags3);
 }
+
+
+DECLSPEC void SDLCALL
+SDL_SetWindowTitle(SDL_Window *window, const char *title)
+{
+    SDL3_SetWindowTitle(window, title);
+}
+
+DECLSPEC void SDLCALL
+SDL_SetWindowIcon(SDL_Window *window, SDL_Surface *icon)
+{
+    SDL3_SetWindowIcon(window, icon);
+}
+
+DECLSPEC void SDLCALL
+SDL_SetWindowSize(SDL_Window *window, int w, int h)
+{
+    SDL3_SetWindowSize(window, w, h);
+}
+
+DECLSPEC void SDLCALL
+SDL_SetWindowMinimumSize(SDL_Window *window, int min_w, int min_h)
+{
+    SDL3_SetWindowMinimumSize(window, min_w, min_h);
+}
+
+DECLSPEC void SDLCALL
+SDL_SetWindowMaximumSize(SDL_Window *window, int max_w, int max_h)
+{
+    SDL3_SetWindowMaximumSize(window, max_w, max_h);
+}
+
 
 /* SDL3 added a return value. We just throw it away for SDL2. */
 DECLSPEC void SDLCALL
