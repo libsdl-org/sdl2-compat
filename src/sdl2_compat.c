@@ -1356,20 +1356,25 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
         case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
         case SDL_EVENT_JOYSTICK_BUTTON_UP:
         case SDL_EVENT_JOYSTICK_ADDED:
-        case SDL_EVENT_JOYSTICK_REMOVED:
         case SDL_EVENT_JOYSTICK_BATTERY_UPDATED:
         case SDL_EVENT_GAMEPAD_AXIS_MOTION:
         case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
         case SDL_EVENT_GAMEPAD_BUTTON_UP:
         case SDL_EVENT_GAMEPAD_ADDED:
-        case SDL_EVENT_GAMEPAD_REMOVED:
         case SDL_EVENT_GAMEPAD_REMAPPED:
         case SDL_EVENT_GAMEPAD_TOUCHPAD_DOWN:
         case SDL_EVENT_GAMEPAD_TOUCHPAD_MOTION:
         case SDL_EVENT_GAMEPAD_TOUCHPAD_UP:
         case SDL_EVENT_GAMEPAD_SENSOR_UPDATE:
             /* Change SDL3 InstanceID to index */
+            SDL_NumJoysticks(); /* Refresh */
             event3->jaxis.which = GetIndexFromJoystickInstance(event3->jaxis.which);
+            break;
+
+        case SDL_EVENT_GAMEPAD_REMOVED:
+        case SDL_EVENT_JOYSTICK_REMOVED:
+            event3->jaxis.which = GetIndexFromJoystickInstance(event3->jaxis.which);
+            SDL_NumJoysticks(); /* Refresh after */
             break;
 
         /* display events moved to the top level in SDL3. */
@@ -4235,10 +4240,6 @@ SDL_NumJoysticks(void)
 static int
 GetIndexFromJoystickInstance(SDL_JoystickID jid) {
     int i;
-
-    /* Refresh */
-    SDL_NumJoysticks();
-
     for (i = 0; i < num_joysticks; i++) {
         if (joystick_list[i] == jid) {
             return i;
@@ -4391,6 +4392,7 @@ DECLSPEC int SDLCALL
 SDL_JoystickAttachVirtual(SDL_JoystickType type, int naxes, int nbuttons, int nhats)
 {
     SDL_JoystickID jid = SDL3_AttachVirtualJoystick(type, naxes, nbuttons, nhats);
+    SDL_NumJoysticks(); /* Refresh */
     return GetIndexFromJoystickInstance(jid);
 }
 
@@ -4398,6 +4400,7 @@ DECLSPEC int SDLCALL
 SDL_JoystickAttachVirtualEx(const SDL_VirtualJoystickDesc *desc)
 {
     SDL_JoystickID jid = SDL3_AttachVirtualJoystickEx(desc);
+    SDL_NumJoysticks(); /* Refresh */
     return GetIndexFromJoystickInstance(jid);
 }
 
