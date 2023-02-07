@@ -336,6 +336,10 @@ SDL2Compat_GetHintBoolean(const char *name, SDL_bool default_value)
 }
 
 
+/* Forward declarations */
+DECLSPEC int SDLCALL SDL_NumJoysticks(void);
+
+
 /* if you change this, update also SDL2Compat_ApplyQuirks() */
 static const char *
 SDL2_to_SDL3_hint(const char *name)
