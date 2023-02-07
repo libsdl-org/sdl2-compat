@@ -3366,7 +3366,7 @@ DisplayMode_3to2(const SDL_DisplayMode *in, SDL2_DisplayMode *out) {
         out->format = in->format;
         out->w = in->screen_w;
         out->h = in->screen_h;
-        out->refresh_rate = (int) SDL3_ceil(in->refresh_rate);
+        out->refresh_rate = (int) SDL3_lroundf(in->refresh_rate);
         out->driverdata = in->driverdata;
     }
 }
