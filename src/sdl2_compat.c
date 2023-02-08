@@ -146,6 +146,41 @@ static SDL_bool WantDebugLogging = SDL_FALSE;
 static Uint32 LinkedSDL3VersionInt = 0;
 
 
+static char *
+SDL2COMPAT_stpcpy(char *dst, const char *src)
+{
+    while ((*dst++ = *src++) != '\0') {
+        /**/;
+    }
+    return --dst;
+}
+
+static void
+SDL2COMPAT_itoa(char *dst, int val)
+{
+    char *ptr, temp;
+
+    if (val < 0) {
+        *dst++ = '-';
+        val = -val;
+    }
+    ptr = dst;
+
+    do {
+        *ptr++ = '0' + (val % 10);
+        val /= 10;
+    } while (val > 0);
+    *ptr-- = '\0';
+
+    /* correct the order of digits */
+    do {
+        temp = *dst;
+        *dst++ = *ptr;
+        *ptr-- = temp;
+    } while (ptr > dst);
+}
+
+
 /* Obviously we can't use SDL_LoadObject() to load SDL3.  :)  */
 /* FIXME: Updated library names after https://github.com/libsdl-org/SDL/issues/5626 solidifies.  */
 static char loaderror[256];
@@ -156,16 +191,12 @@ static char loaderror[256];
     #define LoadSDL3Library() ((Loaded_SDL3 = LoadLibraryA(SDL3_LIBNAME)) != NULL)
     #define LookupSDL3Sym(sym) (void *)GetProcAddress(Loaded_SDL3, sym)
     #define CloseSDL3Library() { if (Loaded_SDL3) { FreeLibrary(Loaded_SDL3); Loaded_SDL3 = NULL; } }
-    #define strcpy_fn  lstrcpyA
-    #define sprintf_fn wsprintfA
 #elif defined(__APPLE__)
     #include <dlfcn.h>
     #include <pwd.h>
     #include <unistd.h>
     #define SDL3_LIBNAME "libSDL3.dylib"
     #define SDL3_FRAMEWORK "SDL3.framework/Versions/A/SDL3"
-    #define strcpy_fn  strcpy
-    #define sprintf_fn sprintf
     static void *Loaded_SDL3 = NULL;
     #define LookupSDL3Sym(sym) dlsym(Loaded_SDL3, sym)
     #define CloseSDL3Library() { if (Loaded_SDL3) { dlclose(Loaded_SDL3); Loaded_SDL3 = NULL; } }
@@ -218,8 +249,6 @@ static char loaderror[256];
     #define LoadSDL3Library() ((Loaded_SDL3 = dlopen(SDL3_LIBNAME, RTLD_LOCAL|RTLD_NOW)) != NULL)
     #define LookupSDL3Sym(sym) dlsym(Loaded_SDL3, sym)
     #define CloseSDL3Library() { if (Loaded_SDL3) { dlclose(Loaded_SDL3); Loaded_SDL3 = NULL; } }
-    #define strcpy_fn  strcpy
-    #define sprintf_fn sprintf
 #else
     #error Please define your platform.
 #endif
@@ -243,7 +272,8 @@ LoadSDL3Symbol(const char *fn, int *okay)
     if (*okay) { /* only bother trying if we haven't previously failed. */
         retval = LookupSDL3Sym(fn);
         if (retval == NULL) {
-            sprintf_fn(loaderror, "%s missing in SDL3 library.", fn);
+            char *p = SDL2COMPAT_stpcpy(loaderror, fn);
+            SDL2COMPAT_stpcpy(p, " missing in SDL3 library.");
             *okay = 0;
         }
     }
@@ -484,7 +514,7 @@ LoadSDL3(void)
 
         okay = LoadSDL3Library();
         if (!okay) {
-            strcpy_fn(loaderror, "Failed loading SDL3 library.");
+            SDL2COMPAT_stpcpy(loaderror, "Failed loading SDL3 library.");
         } else {
             #define SDL3_SYM(rc,fn,params,args,ret) SDL3_##fn = (SDL3_##fn##_t) LoadSDL3Symbol("SDL_" #fn, &okay);
             #include "sdl3_syms.h"
@@ -494,7 +524,19 @@ LoadSDL3(void)
                 LinkedSDL3VersionInt = SDL_VERSIONNUM(v.major, v.minor, v.patch);
                 okay = (LinkedSDL3VersionInt >= SDL3_REQUIRED_VER);
                 if (!okay) {
-                    sprintf_fn(loaderror, "SDL3 %d.%d.%d library is too old.", v.major, v.minor, v.patch);
+                    char value[12];
+                    char *p = SDL2COMPAT_stpcpy(loaderror, "SDL3 ");
+
+                    SDL2COMPAT_itoa(value, v.major);
+                    p = SDL2COMPAT_stpcpy(p, value);
+                    *p++ = '.';
+                    SDL2COMPAT_itoa(value, v.minor);
+                    p = SDL2COMPAT_stpcpy(p, value);
+                    *p++ = '.';
+                    SDL2COMPAT_itoa(value, v.patch);
+                    p = SDL2COMPAT_stpcpy(p, value);
+
+                    SDL2COMPAT_stpcpy(p, " library is too old.");
                 } else {
                     WantDebugLogging = SDL2Compat_GetHintBoolean("SDL2COMPAT_DEBUG_LOGGING", SDL_FALSE);
                     if (WantDebugLogging) {
@@ -1070,7 +1112,7 @@ SDL2Compat_InitOnStartup(void)
     return 1;
 
 fail:
-    strcpy_fn(loaderror, "Failed to initialize sdl2-compat library.");
+    SDL2COMPAT_stpcpy(loaderror, "Failed to initialize sdl2-compat library.");
 
     if (EventWatchListMutex) {
         SDL3_DestroyMutex(EventWatchListMutex);
