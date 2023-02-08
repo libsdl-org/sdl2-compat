@@ -3210,7 +3210,7 @@ SDL_MixAudio(Uint8 *dst, const Uint8 *src, Uint32 len, int volume)
 {
     /* Mix the user-level audio format */
     if (g_audio_id > 0) {
-        SDL_MixAudioFormat(dst, src, g_audio_spec.format, len, volume); /* FIXME: is this correct ?? */
+        SDL3_MixAudioFormat(dst, src, g_audio_spec.format, len, volume); /* FIXME: is this correct ?? */
     }
 }
 
@@ -4150,7 +4150,209 @@ SDL_SetWindowMaximumSize(SDL_Window *window, int max_w, int max_h)
     SDL3_SetWindowMaximumSize(window, max_w, max_h);
 }
 
+DECLSPEC void SDLCALL
+SDL_MixAudioFormat(Uint8 *dst, const Uint8 *src, SDL_AudioFormat format, Uint32 len, int volume)
+{
+    SDL3_MixAudioFormat(dst, src, format, len, volume);
+}
 
+DECLSPEC void SDLCALL
+SDL_hid_close(SDL_hid_device * dev)
+{
+    SDL3_hid_close(dev);
+}
+
+DECLSPEC void SDLCALL
+SDL_JoystickSetPlayerIndex(SDL_Joystick *joystick, int player_index)
+{
+    SDL3_SetJoystickPlayerIndex(joystick, player_index);
+}
+
+DECLSPEC void SDLCALL
+SDL_JoystickClose(SDL_Joystick *joystick)
+{
+    SDL3_CloseJoystick(joystick);
+}
+
+DECLSPEC void SDLCALL
+SDL_SetTextInputRect(const SDL_Rect *rect)
+{
+    SDL3_SetTextInputRect(rect);
+}
+
+DECLSPEC void SDLCALL
+SDL_SetCursor(SDL_Cursor * cursor)
+{
+    SDL3_SetCursor(cursor);
+}
+
+DECLSPEC void SDLCALL
+SDL_FreeFormat(SDL_PixelFormat *format)
+{
+    SDL3_DestroyPixelFormat(format);
+}
+
+DECLSPEC void SDLCALL
+SDL_FreePalette(SDL_Palette *palette)
+{
+    SDL3_DestroyPalette(palette);
+}
+
+DECLSPEC void SDLCALL
+SDL_UnionRect(const SDL_Rect *A, const SDL_Rect *B, SDL_Rect *result)
+{
+    SDL3_GetRectUnion(A, B, result);
+}
+
+DECLSPEC void SDLCALL
+SDL_UnionFRect(const SDL_FRect *A, const SDL_FRect *B, SDL_FRect *result)
+{
+    SDL3_GetRectUnionFloat(A, B, result);
+}
+
+DECLSPEC void SDLCALL
+SDL_UnlockTexture(SDL_Texture *texture)
+{
+    SDL3_UnlockTexture(texture);
+}
+
+DECLSPEC void SDLCALL
+SDL_RenderPresent(SDL_Renderer *renderer)
+{
+    SDL3_RenderPresent(renderer);
+}
+
+DECLSPEC void SDLCALL
+SDL_DestroyTexture(SDL_Texture *texture)
+{
+    SDL3_DestroyTexture(texture);
+}
+
+DECLSPEC void SDLCALL
+SDL_DestroyRenderer(SDL_Renderer *renderer)
+{
+    SDL3_DestroyRenderer(renderer);
+}
+
+DECLSPEC void SDLCALL
+SDL_SetWindowPosition(SDL_Window *window, int x, int y)
+{
+    SDL3_SetWindowPosition(window, x, y);
+}
+
+DECLSPEC void SDLCALL
+SDL_GetWindowPosition(SDL_Window *window, int *x, int *y)
+{
+    SDL3_GetWindowPosition(window, x, y);
+}
+
+DECLSPEC void SDLCALL
+SDL_GetWindowSize(SDL_Window *window, int *w, int *h)
+{
+    SDL3_GetWindowSize(window, w, h);
+}
+
+DECLSPEC void SDLCALL
+SDL_GetWindowSizeInPixels(SDL_Window *window, int *w, int *h)
+{
+    SDL3_GetWindowSizeInPixels(window, w, h);
+}
+
+DECLSPEC void SDLCALL
+SDL_GetWindowMinimumSize(SDL_Window *window, int *w, int *h)
+{
+    SDL3_GetWindowMinimumSize(window, w, h);
+}
+
+DECLSPEC void SDLCALL
+SDL_GetWindowMaximumSize(SDL_Window *window, int *w, int *h)
+{
+    SDL3_GetWindowMaximumSize(window, w, h);
+}
+
+DECLSPEC void SDLCALL
+SDL_SetWindowBordered(SDL_Window *window, SDL_bool bordered)
+{
+    SDL3_SetWindowBordered(window, bordered);
+}
+
+DECLSPEC void SDLCALL
+SDL_SetWindowResizable(SDL_Window *window, SDL_bool resizable)
+{
+    SDL3_SetWindowResizable(window, resizable);
+}
+
+DECLSPEC void SDLCALL
+SDL_SetWindowAlwaysOnTop(SDL_Window *window, SDL_bool on_top)
+{
+    SDL3_SetWindowAlwaysOnTop(window, on_top);
+}
+
+DECLSPEC void SDLCALL
+SDL_ShowWindow(SDL_Window *window)
+{
+    SDL3_ShowWindow(window);
+}
+
+DECLSPEC void SDLCALL
+SDL_HideWindow(SDL_Window *window)
+{
+    SDL3_HideWindow(window);
+}
+
+DECLSPEC void SDLCALL
+SDL_RaiseWindow(SDL_Window *window)
+{
+    SDL3_RaiseWindow(window);
+}
+
+DECLSPEC void SDLCALL
+SDL_MaximizeWindow(SDL_Window *window)
+{
+    SDL3_MaximizeWindow(window);
+}
+
+DECLSPEC void SDLCALL
+SDL_MinimizeWindow(SDL_Window *window)
+{
+    SDL3_MinimizeWindow(window);
+}
+
+DECLSPEC void SDLCALL
+SDL_RestoreWindow(SDL_Window *window)
+{
+    SDL3_RestoreWindow(window);
+}
+
+DECLSPEC void SDLCALL
+SDL_SetWindowGrab(SDL_Window *window, SDL_bool grabbed)
+{
+    SDL3_SetWindowGrab(window, grabbed);
+}
+
+DECLSPEC void SDLCALL
+SDL_SetWindowKeyboardGrab(SDL_Window *window, SDL_bool grabbed)
+{
+    SDL3_SetWindowKeyboardGrab(window, grabbed);
+}
+
+DECLSPEC void SDLCALL
+SDL_SetWindowMouseGrab(SDL_Window *window, SDL_bool grabbed)
+{
+    SDL3_SetWindowMouseGrab(window, grabbed);
+}
+
+DECLSPEC void SDLCALL
+SDL_DestroyWindow(SDL_Window *window)
+{
+    SDL3_DestroyWindow(window);
+}
+
+DECLSPEC void SDLCALL
+SDL_GL_DeleteContext(SDL_GLContext context)
+{
+    SDL3_GL_DeleteContext(context);
+}
 /* SDL3 added a return value. We just throw it away for SDL2. */
 DECLSPEC void SDLCALL
 SDL_GL_SwapWindow(SDL_Window *window)
