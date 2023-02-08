@@ -1046,33 +1046,43 @@ static int SDLCALL EventFilter3to2(void *userdata, SDL_Event *event3);
 static int
 SDL2Compat_InitOnStartup(void)
 {
-    int okay = 1;
     EventWatchListMutex = SDL3_CreateMutex();
     if (!EventWatchListMutex) {
-        okay = 0;
-    } else {
-        SDL3_SetEventFilter(EventFilter3to2, NULL);
+        goto fail;
     }
 
     sensor_lock = SDL3_CreateMutex();
     if (sensor_lock == NULL) {
-        okay = 0;
+        goto fail;
     }
 
     joystick_lock = SDL3_CreateMutex();
     if (joystick_lock == NULL) {
-        okay = 0;
+        goto fail;
     }
 
-    if (!okay) {
-        strcpy_fn(loaderror, "Failed to initialize sdl2-compat library.");
-    }
+    SDL3_SetEventFilter(EventFilter3to2, NULL);
 
     SDL3_SetHint("SDL_WINDOWS_DPI_SCALING", 0);
     SDL3_SetHint("SDL_WINDOWS_DPI_AWARENESS", "unaware");
     SDL3_SetHint("SDL_BORDERLESS_WINDOWED_STYLE", "0");
 
-    return okay;
+    return 1;
+
+fail:
+    strcpy_fn(loaderror, "Failed to initialize sdl2-compat library.");
+
+    if (EventWatchListMutex) {
+        SDL3_DestroyMutex(EventWatchListMutex);
+    }
+    if (sensor_lock) {
+        SDL3_DestroyMutex(sensor_lock);
+    }
+    if (joystick_lock) {
+        SDL3_DestroyMutex(joystick_lock);
+    }
+
+    return 0;
 }
 
 
