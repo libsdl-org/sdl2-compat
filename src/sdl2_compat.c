@@ -4693,6 +4693,18 @@ SDL_SensorOpen(int idx)
 }
 
 
+DECLSPEC int SDLCALL
+SDL_CondWaitTimeout(SDL_cond *cond, SDL_mutex *mutex, Uint32 ms)
+{
+    return SDL3_CondWaitTimeout(cond, mutex, (Sint32)ms);
+}
+DECLSPEC int SDLCALL
+SDL_SemWaitTimeout(SDL_sem *sem, Uint32 ms)
+{
+    return SDL3_SemWaitTimeout(sem, (Sint32)ms);
+}
+
+
 DECLSPEC void * SDLCALL
 SDL_SIMDAlloc(const size_t len)
 {
