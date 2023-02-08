@@ -897,11 +897,12 @@
 #include <SDL3/SDL_vulkan.h>
 
 /* Missing SDL_thread.h stuff (see above) */
-#if defined(_WIN32) && !defined(SDL2COMPAT_WINRT)
+#ifdef _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
 #endif
 #include <windows.h>
+#ifndef SDL2COMPAT_WINRT
 typedef struct SDL_Thread SDL_Thread;
 typedef unsigned long SDL_threadID;
 typedef enum {
@@ -915,6 +916,7 @@ typedef int (SDLCALL *SDL_ThreadFunction) (void*);
 typedef UINT_PTR (__cdecl *pfnSDL_CurrentBeginThread)
                    (void*, unsigned, unsigned (__stdcall *func)(void*), void*, unsigned, unsigned*);
 typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
+#endif
 /* the following macros from Win32 SDK headers are harmful here. */
 #undef CreateWindow
 #undef CreateThread
