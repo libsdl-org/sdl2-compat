@@ -4107,7 +4107,7 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
 DECLSPEC int SDLCALL
 SDL_SetWindowFullscreen(SDL_Window *window, Uint32 flags)
 {
-    int flags3 = SDL_FALSE;
+    SDL_bool flags3 = SDL_FALSE;
 
     if (flags & SDL2_WINDOW_FULLSCREEN_DESKTOP) {
         flags3 = SDL_TRUE;
@@ -4118,7 +4118,6 @@ SDL_SetWindowFullscreen(SDL_Window *window, Uint32 flags)
 
     return SDL3_SetWindowFullscreen(window, flags3);
 }
-
 
 DECLSPEC void SDLCALL
 SDL_SetWindowTitle(SDL_Window *window, const char *title)
@@ -4353,6 +4352,7 @@ SDL_GL_DeleteContext(SDL_GLContext context)
 {
     SDL3_GL_DeleteContext(context);
 }
+
 /* SDL3 added a return value. We just throw it away for SDL2. */
 DECLSPEC void SDLCALL
 SDL_GL_SwapWindow(SDL_Window *window)
