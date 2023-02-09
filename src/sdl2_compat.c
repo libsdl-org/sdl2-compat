@@ -4282,12 +4282,6 @@ SDL_UnionFRect(const SDL_FRect *A, const SDL_FRect *B, SDL_FRect *result)
 }
 
 DECLSPEC void SDLCALL
-SDL_UnlockTexture(SDL_Texture *texture)
-{
-    SDL3_UnlockTexture(texture);
-}
-
-DECLSPEC void SDLCALL
 SDL_RenderPresent(SDL_Renderer *renderer)
 {
     SDL3_RenderPresent(renderer);
