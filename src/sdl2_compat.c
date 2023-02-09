@@ -4444,6 +4444,36 @@ SDL_GL_SwapWindow(SDL_Window *window)
     (void) SDL3_GL_SwapWindow(window);
 }
 
+DECLSPEC void SDLCALL 
+SDL_GetClipRect(SDL_Surface *surface, SDL_Rect *rect)
+{
+    SDL3_GetSurfaceClipRect(surface, rect);
+}
+
+DECLSPEC void SDLCALL 
+SDL_GameControllerSetPlayerIndex(SDL_GameController *gamecontroller, int player_index)
+{
+    SDL3_SetGamepadPlayerIndex(gamecontroller, player_index);
+}
+
+DECLSPEC void SDLCALL 
+SDL_AudioStreamClear(SDL_AudioStream *stream)
+{
+    SDL3_ClearAudioStream(stream);
+}
+
+DECLSPEC void SDLCALL
+SDL_JoystickGetGUIDString(SDL_JoystickGUID guid, char *pszGUID, int cbGUID)
+{
+    SDL3_GetJoystickGUIDString(guid, pszGUID, cbGUID);
+}
+
+DECLSPEC void SDLCALL 
+SDL_GUIDToString(SDL_GUID guid, char *pszGUID, int cbGUID)
+{
+    SDL3_GUIDToString(guid, pszGUID, cbGUID);
+}
+
 /* SDL3 split this into getter/setter functions. */
 DECLSPEC Uint8 SDLCALL
 SDL_EventState(Uint32 type, int state)
