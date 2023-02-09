@@ -5132,6 +5132,17 @@ SDL_UIKitRunApp(int argc, char *argv[], SDL_main_func mainFunction)
     return SDL3_RunApp(argc, argv, mainFunction, NULL);
 }
 #endif
+#if defined(__ANDROID__)
+DECLSPEC int SDLCALL
+SDL_AndroidGetExternalStorageState(void)
+{
+    Uint32 state = 0;
+    if (SDL3_AndroidGetExternalStorageState(&state) < 0) {
+        return 0;
+    }
+    return state;
+}
+#endif
 
 #ifdef __cplusplus
 }
