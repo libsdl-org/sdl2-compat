@@ -4425,6 +4425,18 @@ SDL_GL_DeleteContext(SDL_GLContext context)
     SDL3_GL_DeleteContext(context);
 }
 
+DECLSPEC void SDLCALL
+SDL_EnableScreenSaver(void)
+{
+    SDL3_EnableScreenSaver();
+}
+
+DECLSPEC void SDLCALL
+SDL_DisableScreenSaver(void)
+{
+    SDL3_DisableScreenSaver();
+}
+
 /* SDL3 added a return value. We just throw it away for SDL2. */
 DECLSPEC void SDLCALL
 SDL_GL_SwapWindow(SDL_Window *window)
