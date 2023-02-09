@@ -74,7 +74,7 @@ SDL3_SYM_PASSTHROUGH(void,iPhoneSetEventPump,(SDL_bool a),(a),)
 SDL3_SYM_PASSTHROUGH(void*,AndroidGetJNIEnv,(void),(),return)
 SDL3_SYM_PASSTHROUGH(void*,AndroidGetActivity,(void),(),return)
 SDL3_SYM_PASSTHROUGH(const char*,AndroidGetInternalStoragePath,(void),(),return)
-SDL3_SYM_PASSTHROUGH(int,AndroidGetExternalStorageState,(void),(),return)
+SDL3_SYM(int,AndroidGetExternalStorageState,(Uint32 *a),(a),return)
 SDL3_SYM_PASSTHROUGH(const char*,AndroidGetExternalStoragePath,(void),(),return)
 #endif
 
