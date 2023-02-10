@@ -4240,12 +4240,6 @@ SDL_JoystickSetPlayerIndex(SDL_Joystick *joystick, int player_index)
 }
 
 DECLSPEC void SDLCALL
-SDL_JoystickClose(SDL_Joystick *joystick)
-{
-    SDL3_CloseJoystick(joystick);
-}
-
-DECLSPEC void SDLCALL
 SDL_SetTextInputRect(const SDL_Rect *rect)
 {
     SDL3_SetTextInputRect(rect);
