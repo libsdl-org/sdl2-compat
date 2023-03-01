@@ -3279,59 +3279,40 @@ SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained)
     return -1;
 }
 
-/* this converts the buffer in-place. The buffer size does not change. */
-static Sint16 *AudioUi16LSBToSi16Sys(Uint16 *buffer, const size_t num_samples)
+/* `src` and `dst` can be the same pointer. The buffer size does not change. */
+static void AudioUi16LSBToSi16Sys(Sint16 *dst, const Uint16 *src, const size_t num_samples)
 {
     size_t i;
-    const Uint16 *src = buffer;
-    Sint16 *dst = (Sint16 *) buffer;
-
     for (i = 0; i < num_samples; i++) {
         dst[i] = (Sint16) (SDL_SwapLE16(src[i]) ^ 0x8000);
     }
-
-    return dst;
 }
 
-/* this converts the buffer in-place. The buffer size does not change. */
-static Sint16 *AudioUi16MSBToSi16Sys(Uint16 *buffer, const size_t num_samples)
+/* `src` and `dst` can be the same pointer. The buffer size does not change. */
+static void AudioUi16MSBToSi16Sys(Sint16 *dst, const Uint16 *src, const size_t num_samples)
 {
     size_t i;
-    const Uint16 *src = buffer;
-    Sint16 *dst = (Sint16 *) buffer;
-
     for (i = 0; i < num_samples; i++) {
         dst[i] = (Sint16) (SDL_SwapBE16(src[i]) ^ 0x8000);
     }
-
-    return dst;
 }
 
-/* this converts the buffer in-place. The buffer size does not change. */
-static Uint16 *AudioSi16SysToUi16LSB(Sint16 *buffer, const size_t num_samples)
+/* `src` and `dst` can be the same pointer. The buffer size does not change. */
+static void AudioSi16SysToUi16LSB(Uint16 *dst, const Sint16 *src, const size_t num_samples)
 {
     size_t i;
-    const Sint16 *src = buffer;
-    Uint16 *dst = (Uint16 *) buffer;
-
     for (i = 0; i < num_samples; i++) {
         dst[i] = SDL_SwapLE16(((Uint16) src[i]) ^ 0x8000);
     }
-
-    return dst;
 }
-/* this converts the buffer in-place. The buffer size does not change. */
-static Uint16 *AudioSi16SysToUi16MSB(Sint16 *buffer, const size_t num_samples)
+
+/* `src` and `dst` can be the same pointer. The buffer size does not change. */
+static void AudioSi16SysToUi16MSB(Uint16 *dst, const Sint16 *src, const size_t num_samples)
 {
     size_t i;
-    const Sint16 *src = buffer;
-    Uint16 *dst = (Uint16 *) buffer;
-
     for (i = 0; i < num_samples; i++) {
         dst[i] = SDL_SwapBE16(((Uint16) src[i]) ^ 0x8000);
     }
-
-    return dst;
 }
 
 DECLSPEC SDL2_AudioStream * SDLCALL
@@ -3376,11 +3357,10 @@ SDL_AudioStreamPut(SDL2_AudioStream *stream2, const void *buf, int len)
         if (!tmpbuf) {
             return SDL3_OutOfMemory();
         }
-        SDL_memcpy(tmpbuf, buf, len);
         if (stream2->src_format == SDL2_AUDIO_U16LSB) {
-            AudioUi16LSBToSi16Sys((Uint16 *) tmpbuf, tmpsamples);
+            AudioUi16LSBToSi16Sys(tmpbuf, (const Uint16 *) buf, tmpsamples);
         } else if (stream2->src_format == SDL2_AUDIO_U16MSB) {
-            AudioUi16MSBToSi16Sys((Uint16 *) tmpbuf, tmpsamples);
+            AudioUi16MSBToSi16Sys(tmpbuf, (const Uint16 *) buf, tmpsamples);
         }
         retval = SDL3_PutAudioStreamData(stream2->stream3, tmpbuf, len);
         SDL_free(tmpbuf);
@@ -3403,9 +3383,9 @@ SDL_AudioStreamGet(SDL2_AudioStream *stream2, void *buf, int len)
         SDL_assert(len > 0);
         if ((stream2->dst_format == SDL2_AUDIO_U16LSB) || (stream2->dst_format == SDL2_AUDIO_U16MSB)) {
             if (stream2->dst_format == SDL2_AUDIO_U16LSB) {
-                AudioSi16SysToUi16LSB((Sint16 *) buf, retval / sizeof (Sint16));
+                AudioSi16SysToUi16LSB((Uint16 *) buf, (const Sint16 *) buf, retval / sizeof (Sint16));
             } else if (stream2->dst_format == SDL2_AUDIO_U16MSB) {
-                AudioSi16SysToUi16MSB((Sint16 *) buf, retval / sizeof (Sint16));
+                AudioSi16SysToUi16MSB((Uint16 *) buf, (const Sint16 *) buf, retval / sizeof (Sint16));
             }
         }
     }
@@ -3448,13 +3428,12 @@ SDL_MixAudioFormat(Uint8 *dst, const Uint8 *src, SDL_AudioFormat format, Uint32 
         const Uint32 tmpsamples = len / sizeof (Uint16);
         Sint16 *tmpbuf = (Sint16 *) SDL3_malloc(len);
         if (tmpbuf) {  /* if malloc fails, oh well, no mixed audio for you. */
-            SDL_memcpy(tmpbuf, src, len);
             if (format == SDL2_AUDIO_U16LSB) {
-                AudioUi16LSBToSi16Sys((Uint16 *) tmpbuf, tmpsamples);
+                AudioUi16LSBToSi16Sys(tmpbuf, (const Uint16 *) src, tmpsamples);
             } else if (format == SDL2_AUDIO_U16MSB) {
-                AudioUi16MSBToSi16Sys((Uint16 *) tmpbuf, tmpsamples);
+                AudioUi16MSBToSi16Sys(tmpbuf, (const Uint16 *) src, tmpsamples);
             }
-            SDL3_MixAudioFormat(dst, src, AUDIO_S16SYS, tmpsamples * sizeof (Sint16), volume);
+            SDL3_MixAudioFormat(dst, (const Uint8 *) tmpbuf, AUDIO_S16SYS, tmpsamples * sizeof (Sint16), volume);
             SDL3_free(tmpbuf);
         }
     } else {
