@@ -635,6 +635,9 @@ BOOL WINAPI _DllMainCRTStartup(HANDLE dllhandle, DWORD reason, LPVOID reserved)
     #error Please define an init procedure for your platform.
 #endif
 
+/* removed in SDL3 (no U16 audio formats supported) */
+#define SDL2_AUDIO_U16LSB 0x0010  /* Unsigned 16-bit samples */
+#define SDL2_AUDIO_U16MSB 0x1010  /* As above, but big-endian byte order */
 
 /* removed in SDL3 (which only uses SDL_WINDOW_HIDDEN now). */
 #define SDL2_WINDOW_SHOWN 0x000000004
@@ -1068,6 +1071,7 @@ typedef struct EventFilterWrapperData
 
 /* Some SDL2 state we need to keep... */
 
+/* !!! FIXME: unify coding convention on the globals: some are MyVariableName and some are my_variable_name */
 static SDL2_EventFilter EventFilter2 = NULL;
 static void *EventFilterUserData2 = NULL;
 static SDL_mutex *EventWatchListMutex = NULL;
@@ -3210,8 +3214,30 @@ SDL_GL_GetSwapInterval(void)
     return val;
 }
 
+/* !!! FIXME: move these up with the other globals. */
 static SDL_AudioDeviceID g_audio_id = 0;
 static SDL_AudioSpec g_audio_spec;
+
+DECLSPEC SDL_AudioDeviceID SDLCALL
+SDL_OpenAudioDevice(const char *device, int iscapture, const SDL_AudioSpec *desired, SDL_AudioSpec *obtained, int allowed_changes)
+{
+    SDL_AudioSpec desired3;
+    SDL_memcpy(&desired3, desired, sizeof (SDL_AudioSpec));
+
+    if ((desired3.format == SDL2_AUDIO_U16LSB) || (desired3.format == SDL2_AUDIO_U16MSB)) {
+        if (allowed_changes & SDL_AUDIO_ALLOW_FORMAT_CHANGE) {
+            desired3.format = AUDIO_S16SYS;  /* just pick a supported format instead. */
+        } else {
+            /* technically we should convert this behind the scenes, but all of this is getting
+               replaced with a different interface in SDL3 soon, so it's not worth
+               hooking the audio callback to manage it before that work is done. */
+            SDL3_SetError("U16 audio unsupported");
+            return 0;
+        }
+    }
+
+    return SDL3_OpenAudioDevice(device, iscapture, &desired3, obtained, allowed_changes);
+}
 
 DECLSPEC int SDLCALL
 SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained)
@@ -3253,6 +3279,189 @@ SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained)
     return -1;
 }
 
+/* this converts the buffer in-place. The buffer size does not change. */
+static Sint16 *AudioUi16LSBToSi16Sys(Uint16 *buffer, const size_t num_samples)
+{
+    size_t i;
+    const Uint16 *src = buffer;
+    Sint16 *dst = (Sint16 *) buffer;
+
+    for (i = 0; i < num_samples; i++) {
+        dst[i] = (Sint16) (SDL_SwapLE16(src[i]) ^ 0x8000);
+    }
+
+    return dst;
+}
+
+/* this converts the buffer in-place. The buffer size does not change. */
+static Sint16 *AudioUi16MSBToSi16Sys(Uint16 *buffer, const size_t num_samples)
+{
+    size_t i;
+    const Uint16 *src = buffer;
+    Sint16 *dst = (Sint16 *) buffer;
+
+    for (i = 0; i < num_samples; i++) {
+        dst[i] = (Sint16) (SDL_SwapBE16(src[i]) ^ 0x8000);
+    }
+
+    return dst;
+}
+
+/* this converts the buffer in-place. The buffer size does not change. */
+static Uint16 *AudioSi16SysToUi16LSB(Sint16 *buffer, const size_t num_samples)
+{
+    size_t i;
+    const Sint16 *src = buffer;
+    Uint16 *dst = (Uint16 *) buffer;
+
+    for (i = 0; i < num_samples; i++) {
+        dst[i] = SDL_SwapLE16(((Uint16) src[i]) ^ 0x8000);
+    }
+
+    return dst;
+}
+/* this converts the buffer in-place. The buffer size does not change. */
+static Uint16 *AudioSi16SysToUi16MSB(Sint16 *buffer, const size_t num_samples)
+{
+    size_t i;
+    const Sint16 *src = buffer;
+    Uint16 *dst = (Uint16 *) buffer;
+
+    for (i = 0; i < num_samples; i++) {
+        dst[i] = SDL_SwapBE16(((Uint16) src[i]) ^ 0x8000);
+    }
+
+    return dst;
+}
+
+DECLSPEC SDL2_AudioStream * SDLCALL
+SDL_NewAudioStream(const SDL_AudioFormat real_src_format, const Uint8 src_channels, const int src_rate, const SDL_AudioFormat real_dst_format, const Uint8 dst_channels, const int dst_rate)
+{
+    SDL_AudioFormat src_format = real_src_format;
+    SDL_AudioFormat dst_format = real_dst_format;
+    SDL2_AudioStream *retval = SDL_malloc(sizeof (SDL2_AudioStream));
+    if (!retval) {
+        SDL3_OutOfMemory();
+        return NULL;
+    }
+
+    /* SDL3 removed U16 audio formats. Convert to S16SYS. */
+    if ((src_format == SDL2_AUDIO_U16LSB) || (src_format == SDL2_AUDIO_U16MSB)) {
+        src_format = AUDIO_S16SYS;
+    }
+    if ((dst_format == SDL2_AUDIO_U16LSB) || (dst_format == SDL2_AUDIO_U16MSB)) {
+        dst_format = AUDIO_S16SYS;
+    }
+
+    retval->stream3 = SDL3_CreateAudioStream(src_format, src_channels, src_rate, dst_format, dst_channels, dst_rate);
+    if (retval->stream3 == NULL) {
+        SDL_free(retval);
+        return NULL;
+    }
+
+    retval->src_format = real_src_format;
+    retval->dst_format = real_dst_format;
+    return retval;
+}
+
+DECLSPEC int SDLCALL
+SDL_AudioStreamPut(SDL2_AudioStream *stream2, const void *buf, int len)
+{
+    int retval;
+
+    /* SDL3 removed U16 audio formats. Convert to S16SYS. */
+    if (stream2 && buf && len && ((stream2->src_format == SDL2_AUDIO_U16LSB) || (stream2->src_format == SDL2_AUDIO_U16MSB))) {
+        const Uint32 tmpsamples = len / sizeof (Uint16);
+        Sint16 *tmpbuf = (Sint16 *) SDL3_malloc(len);
+        if (!tmpbuf) {
+            return SDL3_OutOfMemory();
+        }
+        SDL_memcpy(tmpbuf, buf, len);
+        if (stream2->src_format == SDL2_AUDIO_U16LSB) {
+            AudioUi16LSBToSi16Sys((Uint16 *) tmpbuf, tmpsamples);
+        } else if (stream2->src_format == SDL2_AUDIO_U16MSB) {
+            AudioUi16MSBToSi16Sys((Uint16 *) tmpbuf, tmpsamples);
+        }
+        retval = SDL3_PutAudioStreamData(stream2->stream3, tmpbuf, len);
+        SDL_free(tmpbuf);
+    } else {
+        retval = SDL3_PutAudioStreamData(stream2->stream3, buf, len);
+    }
+
+    return retval;
+}
+
+DECLSPEC int SDLCALL
+SDL_AudioStreamGet(SDL2_AudioStream *stream2, void *buf, int len)
+{
+    const int retval = stream2 ? SDL3_GetAudioStreamData(stream2->stream3, buf, len) : SDL3_InvalidParamError("stream");
+
+    if (retval > 0) {
+        /* SDL3 removed U16 audio formats. Convert to S16SYS. */
+        SDL_assert(stream2 != NULL);
+        SDL_assert(buf != NULL);
+        SDL_assert(len > 0);
+        if ((stream2->dst_format == SDL2_AUDIO_U16LSB) || (stream2->dst_format == SDL2_AUDIO_U16MSB)) {
+            if (stream2->dst_format == SDL2_AUDIO_U16LSB) {
+                AudioSi16SysToUi16LSB((Sint16 *) buf, retval / sizeof (Sint16));
+            } else if (stream2->dst_format == SDL2_AUDIO_U16MSB) {
+                AudioSi16SysToUi16MSB((Sint16 *) buf, retval / sizeof (Sint16));
+            }
+        }
+    }
+
+    return retval;
+}
+
+DECLSPEC int SDLCALL
+SDL_AudioStreamClear(SDL2_AudioStream *stream2)
+{
+    return SDL3_ClearAudioStream(stream2 ? stream2->stream3 : NULL);
+}
+
+DECLSPEC int SDLCALL
+SDL_AudioStreamAvailable(SDL2_AudioStream *stream2)
+{
+    return SDL3_GetAudioStreamAvailable(stream2 ? stream2->stream3 : NULL);
+}
+
+DECLSPEC void SDLCALL
+SDL_FreeAudioStream(SDL2_AudioStream *stream2)
+{
+    if (stream2) {
+        SDL3_DestroyAudioStream(stream2->stream3);
+        SDL3_free(stream2);
+    }
+}
+
+DECLSPEC int SDLCALL
+SDL_AudioStreamFlush(SDL2_AudioStream *stream2)
+{
+    return SDL3_FlushAudioStream(stream2 ? stream2->stream3 : NULL);
+}
+
+DECLSPEC void SDLCALL
+SDL_MixAudioFormat(Uint8 *dst, const Uint8 *src, SDL_AudioFormat format, Uint32 len, int volume)
+{
+    /* SDL3 removed U16 audio formats. Convert to S16SYS. */
+    if ((format == SDL2_AUDIO_U16LSB) || (format == SDL2_AUDIO_U16MSB)) {
+        const Uint32 tmpsamples = len / sizeof (Uint16);
+        Sint16 *tmpbuf = (Sint16 *) SDL3_malloc(len);
+        if (tmpbuf) {  /* if malloc fails, oh well, no mixed audio for you. */
+            SDL_memcpy(tmpbuf, src, len);
+            if (format == SDL2_AUDIO_U16LSB) {
+                AudioUi16LSBToSi16Sys((Uint16 *) tmpbuf, tmpsamples);
+            } else if (format == SDL2_AUDIO_U16MSB) {
+                AudioUi16MSBToSi16Sys((Uint16 *) tmpbuf, tmpsamples);
+            }
+            SDL3_MixAudioFormat(dst, src, AUDIO_S16SYS, tmpsamples * sizeof (Sint16), volume);
+            SDL3_free(tmpbuf);
+        }
+    } else {
+        SDL3_MixAudioFormat(dst, src, format, len, volume);
+    }
+}
+
 /*
  * Moved here from SDL_mixer.c, since it relies on internals of an opened
  *  audio device (and is deprecated, by the way!).
@@ -3262,7 +3471,7 @@ SDL_MixAudio(Uint8 *dst, const Uint8 *src, Uint32 len, int volume)
 {
     /* Mix the user-level audio format */
     if (g_audio_id > 0) {
-        SDL3_MixAudioFormat(dst, src, g_audio_spec.format, len, volume); /* FIXME: is this correct ?? */
+        SDL_MixAudioFormat(dst, src, g_audio_spec.format, len, volume);  /* call the sdl2-compat version, since it needs to handle U16 audio data. */
     }
 }
 
@@ -4222,12 +4431,6 @@ SDL_SetWindowMaximumSize(SDL_Window *window, int max_w, int max_h)
 }
 
 DECLSPEC void SDLCALL
-SDL_MixAudioFormat(Uint8 *dst, const Uint8 *src, SDL_AudioFormat format, Uint32 len, int volume)
-{
-    SDL3_MixAudioFormat(dst, src, format, len, volume);
-}
-
-DECLSPEC void SDLCALL
 SDL_hid_close(SDL_hid_device * dev)
 {
     SDL3_hid_close(dev);
@@ -4442,12 +4645,6 @@ DECLSPEC void SDLCALL
 SDL_GameControllerSetPlayerIndex(SDL_GameController *gamecontroller, int player_index)
 {
     SDL3_SetGamepadPlayerIndex(gamecontroller, player_index);
-}
-
-DECLSPEC void SDLCALL 
-SDL_AudioStreamClear(SDL_AudioStream *stream)
-{
-    SDL3_ClearAudioStream(stream);
 }
 
 DECLSPEC void SDLCALL
@@ -4873,15 +5070,16 @@ SDL_SIMDFree(void *ptr)
 }
 
 
+/* !!! FIXME: move this all up with the other audio functions */
 static SDL_bool
 SDL_IsSupportedAudioFormat(const SDL_AudioFormat fmt)
 {
     switch (fmt) {
     case AUDIO_U8:
     case AUDIO_S8:
-    case AUDIO_U16LSB:
+    case SDL2_AUDIO_U16LSB:
     case AUDIO_S16LSB:
-    case AUDIO_U16MSB:
+    case SDL2_AUDIO_U16MSB:
     case AUDIO_S16MSB:
     case AUDIO_S32LSB:
     case AUDIO_S32MSB:
@@ -5010,12 +5208,10 @@ SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
     return cvt->needed;
 }
 
-
 DECLSPEC int SDLCALL
 SDL_ConvertAudio(SDL_AudioCVT *cvt)
 {
-
-    SDL_AudioStream *stream;
+    SDL2_AudioStream *stream2;
     SDL_AudioFormat src_format, dst_format;
     int src_channels, src_rate;
     int dst_channels, dst_rate;
@@ -5044,9 +5240,10 @@ SDL_ConvertAudio(SDL_AudioCVT *cvt)
         dst_rate = ap.dst_rate;
     }
 
-    stream = SDL3_CreateAudioStream(src_format, src_channels, src_rate,
+    /* don't use the SDL3 stream directly; we want the U16 support in the sdl2-compat layer */
+    stream2 = SDL_NewAudioStream(src_format, src_channels, src_rate,
                                     dst_format, dst_channels, dst_rate);
-    if (stream == NULL) {
+    if (stream2 == NULL) {
         goto failure;
     }
 
@@ -5061,8 +5258,8 @@ SDL_ConvertAudio(SDL_AudioCVT *cvt)
     }
 
     /* Run the audio converter */
-    if (SDL3_PutAudioStreamData(stream, cvt->buf, src_len) < 0 ||
-        SDL3_FlushAudioStream(stream) < 0) {
+    if (SDL_AudioStreamPut(stream2, cvt->buf, src_len) < 0 ||
+        SDL_AudioStreamFlush(stream2) < 0) {
         goto failure;
     }
 
@@ -5070,18 +5267,19 @@ SDL_ConvertAudio(SDL_AudioCVT *cvt)
     dst_len = dst_len & ~(dst_samplesize - 1);
 
     /* Get back in the same buffer */
-    real_dst_len = SDL3_GetAudioStreamData(stream, cvt->buf, dst_len);
+    real_dst_len = SDL_AudioStreamGet(stream2, cvt->buf, dst_len);
     if (real_dst_len < 0) {
         goto failure;
     }
 
     cvt->len_cvt = real_dst_len;
 
-    SDL3_DestroyAudioStream(stream);
+    SDL_FreeAudioStream(stream2);
+
     return 0;
 
 failure:
-    SDL3_DestroyAudioStream(stream);
+    SDL_FreeAudioStream(stream2);
     return -1;
 }
 

@@ -89,4 +89,11 @@ typedef struct SDL_AudioCVT
     int filter_index;           /**< Current audio conversion function */
 } SDL_AUDIOCVT_PACKED SDL_AudioCVT;
 
+typedef struct SDL2_AudioStream
+{
+    SDL_AudioStream *stream3;
+    SDL_AudioFormat src_format;
+    SDL_AudioFormat dst_format;
+} SDL2_AudioStream;
+
 #endif /* sdl2_compat_h */
