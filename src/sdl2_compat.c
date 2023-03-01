@@ -3320,7 +3320,7 @@ SDL_NewAudioStream(const SDL_AudioFormat real_src_format, const Uint8 src_channe
 {
     SDL_AudioFormat src_format = real_src_format;
     SDL_AudioFormat dst_format = real_dst_format;
-    SDL2_AudioStream *retval = SDL_malloc(sizeof (SDL2_AudioStream));
+    SDL2_AudioStream *retval = (SDL2_AudioStream *) SDL_malloc(sizeof (SDL2_AudioStream));
     if (!retval) {
         SDL3_OutOfMemory();
         return NULL;
@@ -5221,7 +5221,7 @@ SDL_ConvertAudio(SDL_AudioCVT *cvt)
 
     /* don't use the SDL3 stream directly; we want the U16 support in the sdl2-compat layer */
     stream2 = SDL_NewAudioStream(src_format, src_channels, src_rate,
-                                    dst_format, dst_channels, dst_rate);
+                                 dst_format, dst_channels, dst_rate);
     if (stream2 == NULL) {
         goto failure;
     }
