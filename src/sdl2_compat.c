@@ -4290,12 +4290,10 @@ SDL_RenderCopyEx(SDL_Renderer *renderer, SDL_Texture *texture,
 DECLSPEC int SDLCALL
 SDL_RenderCopyExF(SDL_Renderer *renderer, SDL_Texture *texture,
                      const SDL_Rect *srcrect, const SDL_FRect *dstrect,
-                     const double angle, const SDL_Point *center, const SDL_RendererFlip flip)
+                     const double angle, const SDL_FPoint *center, const SDL_RendererFlip flip)
 {
     SDL_FRect srcfrect;
     SDL_FRect *psrcfrect = NULL;
-    SDL_FPoint fcenter;
-    SDL_FPoint *pfcenter = NULL;
 
     if (srcrect) {
         srcfrect.x = (float)srcrect->x;
@@ -4305,13 +4303,7 @@ SDL_RenderCopyExF(SDL_Renderer *renderer, SDL_Texture *texture,
         psrcfrect = &srcfrect;
     }
 
-    if (center) {
-        fcenter.x = (float)center->x;
-        fcenter.y = (float)center->y;
-        pfcenter = &fcenter;
-    }
-
-    return SDL3_RenderTextureRotated(renderer, texture, psrcfrect, dstrect, angle, pfcenter, flip);
+    return SDL3_RenderTextureRotated(renderer, texture, psrcfrect, dstrect, angle, center, flip);
 }
 
 /* SDL3 removed window parameter from SDL_Vulkan_GetInstanceExtensions() */
