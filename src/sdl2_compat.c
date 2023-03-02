@@ -101,9 +101,14 @@ This breaks the build when creating SDL_ ## DisableScreenSaver
 #define SDL2COMPAT_MAXPATH 1024
 #endif
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/* SDL2 function prototypes:  */
+#include "sdl2_protos.h"
+
 
 /** Enable this to have warnings about wrong prototypes of src/sdl3_sym.h
  *  It won't compile but it helps to make sure it's sync'ed with SDL3 headers.
@@ -364,10 +369,6 @@ SDL2Compat_GetHintBoolean(const char *name, SDL_bool default_value)
 
     return (SDL3_atoi(val) != 0) ? SDL_TRUE : SDL_FALSE;
 }
-
-
-/* Forward declarations */
-DECLSPEC int SDLCALL SDL_NumJoysticks(void);
 
 
 /* if you change this, update also SDL2Compat_ApplyQuirks() */
