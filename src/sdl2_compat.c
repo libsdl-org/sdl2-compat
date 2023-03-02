@@ -4178,7 +4178,7 @@ SDL_RenderFillRect(SDL_Renderer *renderer, const SDL_Rect *rect)
 }
 
 DECLSPEC int SDLCALL
-SDL_RenderFillRects(SDL_Renderer *renderer, const SDL_FRect *rects, int count)
+SDL_RenderFillRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
 {
     SDL_FRect *frects;
     int i;
@@ -4196,10 +4196,10 @@ SDL_RenderFillRects(SDL_Renderer *renderer, const SDL_FRect *rects, int count)
         return SDL3_OutOfMemory();
     }
     for (i = 0; i < count; ++i) {
-        frects[i].x = rects[i].x;
-        frects[i].y = rects[i].y;
-        frects[i].w = rects[i].w;
-        frects[i].h = rects[i].h;
+        frects[i].x = (float)rects[i].x;
+        frects[i].y = (float)rects[i].y;
+        frects[i].w = (float)rects[i].w;
+        frects[i].h = (float)rects[i].h;
     }
 
     retval = SDL3_RenderFillRects(renderer, frects, count);
