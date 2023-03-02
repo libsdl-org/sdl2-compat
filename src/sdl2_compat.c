@@ -4861,6 +4861,18 @@ SDL_JoystickInstanceID(SDL_Joystick *joystick)
     return (SDL2_JoystickID)jid;
 }
 
+DECLSPEC SDL_Joystick* SDLCALL
+SDL_JoystickFromInstanceID(SDL2_JoystickID jid)
+{
+    return SDL3_GetJoystickFromInstanceID((SDL_JoystickID)jid);
+}
+
+DECLSPEC SDL_GameController* SDLCALL
+SDL_GameControllerFromInstanceID(SDL2_JoystickID jid)
+{
+    return SDL3_GetGamepadFromInstanceID((SDL_JoystickID)jid);
+}
+
 DECLSPEC int SDLCALL
 SDL_JoystickGetDevicePlayerIndex(int idx)
 {
@@ -5012,6 +5024,12 @@ SDL_SensorGetInstanceID(SDL_Sensor *sensor)
         return -1;
     }
     return (SDL2_SensorID)sid;
+}
+
+DECLSPEC SDL_Sensor* SDLCALL
+SDL_SensorFromInstanceID(SDL2_SensorID sid)
+{
+    return SDL3_GetSensorFromInstanceID((SDL_SensorID)sid);
 }
 
 DECLSPEC SDL_Sensor* SDLCALL
