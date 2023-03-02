@@ -4252,8 +4252,8 @@ SDL_RenderCopyF(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect *sr
 
 DECLSPEC int SDLCALL
 SDL_RenderCopyEx(SDL_Renderer *renderer, SDL_Texture *texture,
-                     const SDL_Rect *srcrect, const SDL_Rect *dstrect,
-                     const double angle, const SDL_Point *center, const SDL_RendererFlip flip)
+                 const SDL_Rect *srcrect, const SDL_Rect *dstrect,
+                 const double angle, const SDL_Point *center, const SDL_RendererFlip flip)
 {
     SDL_FRect srcfrect;
     SDL_FRect *psrcfrect = NULL;
@@ -4289,8 +4289,8 @@ SDL_RenderCopyEx(SDL_Renderer *renderer, SDL_Texture *texture,
 
 DECLSPEC int SDLCALL
 SDL_RenderCopyExF(SDL_Renderer *renderer, SDL_Texture *texture,
-                     const SDL_Rect *srcrect, const SDL_FRect *dstrect,
-                     const double angle, const SDL_FPoint *center, const SDL_RendererFlip flip)
+                  const SDL_Rect *srcrect, const SDL_FRect *dstrect,
+                  const double angle, const SDL_FPoint *center, const SDL_RendererFlip flip)
 {
     SDL_FRect srcfrect;
     SDL_FRect *psrcfrect = NULL;
