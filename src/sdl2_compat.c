@@ -1020,7 +1020,7 @@ typedef struct SDL2_SysWMEvent
     SDL2_SysWMmsg *msg;
 } SDL2_SysWMEvent;
 
-typedef union SDL2_Event
+union SDL2_Event
 {
     Uint32 type;
     SDL2_CommonEvent common;
@@ -1054,12 +1054,10 @@ typedef union SDL2_Event
     SDL2_DollarGestureEvent dgesture;
     SDL2_DropEvent drop;
     Uint8 padding[sizeof(void *) <= 8 ? 56 : sizeof(void *) == 16 ? 64 : 3 * sizeof(void *)];
-} SDL2_Event;
+};
 
 /* Make sure we haven't broken binary compatibility */
 SDL_COMPILE_TIME_ASSERT(SDL2_Event, sizeof(SDL2_Event) == sizeof(((SDL2_Event *)NULL)->padding));
-
-typedef int (SDLCALL *SDL2_EventFilter) (void *userdata, SDL2_Event *event);
 
 typedef struct EventFilterWrapperData
 {

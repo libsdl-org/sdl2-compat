@@ -38,6 +38,9 @@ typedef Sint64 SDL2_GestureID;
 typedef struct SDL2_RWops SDL2_RWops;
 typedef struct SDL2_DisplayMode SDL2_DisplayMode;
 
+typedef union SDL2_Event SDL2_Event;
+typedef int (SDLCALL *SDL2_EventFilter) (void *userdata, SDL2_Event *event);
+
 struct SDL_AudioCVT;
 typedef void (SDLCALL * SDL_AudioFilter) (struct SDL_AudioCVT *cvt, SDL_AudioFormat format);
 
