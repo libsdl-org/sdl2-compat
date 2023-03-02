@@ -3391,10 +3391,10 @@ SDL_AudioStreamGet(SDL2_AudioStream *stream2, void *buf, int len)
     return retval;
 }
 
-DECLSPEC int SDLCALL
+DECLSPEC void SDLCALL
 SDL_AudioStreamClear(SDL2_AudioStream *stream2)
 {
-    return SDL3_ClearAudioStream(stream2 ? stream2->stream3 : NULL);
+    SDL3_ClearAudioStream(stream2 ? stream2->stream3 : NULL);
 }
 
 DECLSPEC int SDLCALL
