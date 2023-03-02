@@ -4214,8 +4214,17 @@ SDL_RenderFillRects(SDL_Renderer *renderer, const SDL_FRect *rects, int count)
 DECLSPEC int SDLCALL
 SDL_RenderCopy(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect *srcrect, const SDL_Rect *dstrect)
 {
+    SDL_FRect srcfrect;
+    SDL_FRect *psrcfrect = NULL;
     SDL_FRect dstfrect;
     SDL_FRect *pdstfrect = NULL;
+    if (srcrect) {
+        srcfrect.x = (float)srcrect->x;
+        srcfrect.y = (float)srcrect->y;
+        srcfrect.w = (float)srcrect->w;
+        srcfrect.h = (float)srcrect->h;
+        psrcfrect = &srcfrect;
+    }
     if (dstrect) {
         dstfrect.x = (float)dstrect->x;
         dstfrect.y = (float)dstrect->y;
@@ -4223,7 +4232,22 @@ SDL_RenderCopy(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect *src
         dstfrect.h = (float)dstrect->h;
         pdstfrect = &dstfrect;
     }
-    return SDL3_RenderTexture(renderer, texture, srcrect, pdstfrect);
+    return SDL3_RenderTexture(renderer, texture, psrcfrect, pdstfrect);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderCopyF(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect *srcrect, const SDL_FRect *dstrect)
+{
+    SDL_FRect srcfrect;
+    SDL_FRect *psrcfrect = NULL;
+    if (srcrect) {
+        srcfrect.x = (float)srcrect->x;
+        srcfrect.y = (float)srcrect->y;
+        srcfrect.w = (float)srcrect->w;
+        srcfrect.h = (float)srcrect->h;
+        psrcfrect = &srcfrect;
+    }
+    return SDL3_RenderTexture(renderer, texture, psrcfrect, dstrect);
 }
 
 DECLSPEC int SDLCALL
@@ -4231,10 +4255,20 @@ SDL_RenderCopyEx(SDL_Renderer *renderer, SDL_Texture *texture,
                      const SDL_Rect *srcrect, const SDL_Rect *dstrect,
                      const double angle, const SDL_Point *center, const SDL_RendererFlip flip)
 {
+    SDL_FRect srcfrect;
+    SDL_FRect *psrcfrect = NULL;
     SDL_FRect dstfrect;
     SDL_FRect *pdstfrect = NULL;
     SDL_FPoint fcenter;
     SDL_FPoint *pfcenter = NULL;
+
+    if (srcrect) {
+        srcfrect.x = (float)srcrect->x;
+        srcfrect.y = (float)srcrect->y;
+        srcfrect.w = (float)srcrect->w;
+        srcfrect.h = (float)srcrect->h;
+        psrcfrect = &srcfrect;
+    }
 
     if (dstrect) {
         dstfrect.x = (float)dstrect->x;
@@ -4250,7 +4284,34 @@ SDL_RenderCopyEx(SDL_Renderer *renderer, SDL_Texture *texture,
         pfcenter = &fcenter;
     }
 
-    return SDL3_RenderTextureRotated(renderer, texture, srcrect, pdstfrect, angle, pfcenter, flip);
+    return SDL3_RenderTextureRotated(renderer, texture, psrcfrect, pdstfrect, angle, pfcenter, flip);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderCopyExF(SDL_Renderer *renderer, SDL_Texture *texture,
+                     const SDL_Rect *srcrect, const SDL_FRect *dstrect,
+                     const double angle, const SDL_Point *center, const SDL_RendererFlip flip)
+{
+    SDL_FRect srcfrect;
+    SDL_FRect *psrcfrect = NULL;
+    SDL_FPoint fcenter;
+    SDL_FPoint *pfcenter = NULL;
+
+    if (srcrect) {
+        srcfrect.x = (float)srcrect->x;
+        srcfrect.y = (float)srcrect->y;
+        srcfrect.w = (float)srcrect->w;
+        srcfrect.h = (float)srcrect->h;
+        psrcfrect = &srcfrect;
+    }
+
+    if (center) {
+        fcenter.x = (float)center->x;
+        fcenter.y = (float)center->y;
+        pfcenter = &fcenter;
+    }
+
+    return SDL3_RenderTextureRotated(renderer, texture, psrcfrect, dstrect, angle, pfcenter, flip);
 }
 
 /* SDL3 removed window parameter from SDL_Vulkan_GetInstanceExtensions() */
