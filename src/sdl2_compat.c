@@ -4436,6 +4436,7 @@ SDL_CreateShapedWindow(const char *title, unsigned int x, unsigned int y, unsign
     SDL_Window *window;
     int hidden = flags & SDL_WINDOW_HIDDEN;
 
+    flags &= ~SDL2_WINDOW_SHOWN;
     flags |= SDL_WINDOW_HIDDEN;
 
     window = SDL3_CreateShapedWindow(title, (int)w, (int)h, flags);
