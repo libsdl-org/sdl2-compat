@@ -4434,16 +4434,15 @@ DECLSPEC SDL_Window * SDLCALL
 SDL_CreateShapedWindow(const char *title, unsigned int x, unsigned int y, unsigned int w, unsigned int h, Uint32 flags)
 {
     SDL_Window *window;
-    int setpos = (x != SDL_WINDOWPOS_UNDEFINED || y != SDL_WINDOWPOS_UNDEFINED);
     int hidden = flags & SDL_WINDOW_HIDDEN;
 
-    if (setpos) {
-        flags |= SDL_WINDOW_HIDDEN;
-    }
+    flags |= SDL_WINDOW_HIDDEN;
 
     window = SDL3_CreateShapedWindow(title, (int)w, (int)h, flags);
-    if (window && setpos) {
-        SDL3_SetWindowPosition(window, (int)x, (int)y);
+    if (window) {
+        if (!SDL_WINDOWPOS_ISUNDEFINED(x) || !SDL_WINDOWPOS_ISUNDEFINED(y)) {
+            SDL3_SetWindowPosition(window, (int)x, (int)y);
+        }
         if (!hidden) {
             SDL3_ShowWindow(window);
         }
