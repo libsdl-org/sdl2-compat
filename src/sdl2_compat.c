@@ -4422,15 +4422,12 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
     }
 
     window = SDL3_CreateWindow(title, w, h, flags);
-    if (window) {
-        if (setpos) {
-            SDL3_SetWindowPosition(window, x, y);
-        }
+    if (window && setpos) {
+        SDL3_SetWindowPosition(window, x, y);
         if (!hidden) {
             SDL3_ShowWindow(window);
         }
     }
-
     return window;
 }
 
@@ -4446,15 +4443,12 @@ SDL_CreateShapedWindow(const char *title, unsigned int x, unsigned int y, unsign
     }
 
     window = SDL3_CreateShapedWindow(title, (int)w, (int)h, flags);
-    if (window) {
-        if (setpos) {
-            SDL3_SetWindowPosition(window, (int)x, (int)y);
-        }
+    if (window && setpos) {
+        SDL3_SetWindowPosition(window, (int)x, (int)y);
         if (!hidden) {
             SDL3_ShowWindow(window);
         }
     }
-
     return window;
 }
 
