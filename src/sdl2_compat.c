@@ -4409,21 +4409,20 @@ DECLSPEC SDL_Window * SDLCALL
 SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
 {
     SDL_Window *window;
-    int setpos = (x != SDL_WINDOWPOS_UNDEFINED || y != SDL_WINDOWPOS_UNDEFINED);
     int hidden = flags & SDL_WINDOW_HIDDEN;
 
     flags &= ~SDL2_WINDOW_SHOWN;
-    if (setpos) {
-        flags |= SDL_WINDOW_HIDDEN;
-    }
+    flags |= SDL_WINDOW_HIDDEN;
     if (flags & SDL2_WINDOW_FULLSCREEN_DESKTOP) {
         flags &= ~SDL2_WINDOW_FULLSCREEN_DESKTOP;
-        flags |= SDL_WINDOW_FULLSCREEN; /* FIXME  force fullscreen desktop ? */
+        flags |= SDL_WINDOW_FULLSCREEN; /* This is fullscreen desktop for new windows */
     }
 
     window = SDL3_CreateWindow(title, w, h, flags);
-    if (window && setpos) {
-        SDL3_SetWindowPosition(window, x, y);
+    if (window) {
+        if (!SDL_WINDOWPOS_ISUNDEFINED(x) || !SDL_WINDOWPOS_ISUNDEFINED(y)) {
+            SDL3_SetWindowPosition(window, x, y);
+        }
         if (!hidden) {
             SDL3_ShowWindow(window);
         }
