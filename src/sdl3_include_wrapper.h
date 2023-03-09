@@ -865,6 +865,7 @@
 #define SDL_SetRenderScale IGNORE_THIS_VERSION_OF_SDL_SetRenderScale
 #define SDL_GetRenderScale IGNORE_THIS_VERSION_OF_SDL_GetRenderScale
 #define SDL_GetRenderWindowSize IGNORE_THIS_VERSION_OF_SDL_GetRenderWindowSize
+#define SDL_GetSystemTheme IGNORE_THIS_VERSION_OF_SDL_GetSystemTheme
 
 /* *** HACK HACK HACK:
  * *** Avoid including SDL_thread.h: it defines SDL_CreateThread() as a macro
@@ -4269,6 +4270,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetRenderWindowSize
 #undef SDL_GetRenderWindowSize
+#endif
+
+#ifdef SDL_GetSystemTheme
+#undef SDL_GetSystemTheme
 #endif
 
 /* undefine these macros too: */
