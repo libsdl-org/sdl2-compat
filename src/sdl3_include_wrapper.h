@@ -4277,6 +4277,95 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #endif
 
 /* undefine these macros too: */
+/* if needed, redefine using SDL3_xxx instead. */
+
+#ifdef SDL_enabled_assert
+#undef SDL_enabled_assert
+#endif
+
+#ifdef SDL_OutOfMemory
+#undef SDL_OutOfMemory
+#endif
+
+#ifdef SDL_Unsupported
+#undef SDL_Unsupported
+#endif
+
+#ifdef SDL_InvalidParamError
+#undef SDL_InvalidParamError
+#endif
+
+#ifdef AtomicIncRef
+#undef AtomicIncRef
+#endif
+
+#ifdef SDL_AtomicDecRef
+#undef SDL_AtomicDecRef
+#endif
+
+#ifdef SDL_mutexP
+#undef SDL_mutexP
+#endif
+
+#ifdef SDL_mutexV
+#undef SDL_mutexV
+#endif
+
+#ifdef SDL_copyp
+#undef SDL_copyp
+#endif
+
+#ifdef SDL_zero
+#undef SDL_zero
+#endif
+
+#ifdef SDL_zeroa
+#undef SDL_zeroa
+#endif
+
+#ifdef SDL_zerop
+#undef SDL_zerop
+#endif
+
+#ifdef SDL_stack_alloc
+#undef SDL_stack_alloc
+#endif
+
+#ifdef SDL_stack_free
+#undef SDL_stack_free
+#endif
+
+#ifdef SDL_iconv_utf8_locale
+#undef SDL_iconv_utf8_locale
+#endif
+
+#ifdef SDL_iconv_utf8_ucs2
+#undef SDL_iconv_utf8_ucs2
+#endif
+
+#ifdef SDL_iconv_utf8_ucs4
+#undef SDL_iconv_utf8_ucs4
+#endif
+
+#ifdef SDL_iconv_wchar_utf8
+#undef SDL_iconv_wchar_utf8
+#endif
+
+#ifdef SDL_LoadWAV
+#undef SDL_LoadWAV
+#endif
+
+#ifdef SDL_LoadBMP
+#undef SDL_LoadBMP
+#endif
+
+#ifdef SDL_SaveBMP
+#undef SDL_SaveBMP
+#endif
+
+#ifdef SDL_AddGamepadMappingsFromFile
+#undef SDL_AddGamepadMappingsFromFile
+#endif
 
 #ifdef SDL_GDKRunApp
 #undef SDL_GDKRunApp
@@ -4288,6 +4377,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_UIKitRunApp
 #undef SDL_UIKitRunApp
+#endif
+
+#ifdef SDL_iOSSetAnimationCallback
+#undef SDL_iOSSetAnimationCallback
+#endif
+
+#ifdef SDL_iOSSetEventPump
+#undef SDL_iOSSetEventPump
 #endif
 
 #endif

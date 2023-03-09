@@ -136,6 +136,8 @@ extern "C" {
 
 
 /* these are macros (etc) in the SDL headers, so make our own. */
+#define SDL3_AtomicIncRef(a)  SDL3_AtomicAdd(a, 1)
+#define SDL3_AtomicDecRef(a) (SDL3_AtomicAdd(a,-1) == 1)
 #define SDL3_OutOfMemory() SDL3_Error(SDL_ENOMEM)
 #define SDL3_Unsupported() SDL3_Error(SDL_UNSUPPORTED)
 #define SDL3_InvalidParamError(param) SDL3_SetError("Parameter '%s' is invalid", (param))
@@ -145,6 +147,21 @@ extern "C" {
 #define SDL3_copyp(dst, src)                                                    \
     { SDL_COMPILE_TIME_ASSERT(SDL3_copyp, sizeof(*(dst)) == sizeof(*(src))); }  \
     SDL3_memcpy((dst), (src), sizeof(*(src)))
+
+/* for SDL_assert() : */
+#define SDL_enabled_assert(condition) \
+do { \
+    while ( !(condition) ) { \
+        static struct SDL_AssertData sdl_assert_data = { 0, 0, #condition, 0, 0, 0, 0 }; \
+        const SDL_AssertState sdl_assert_state = SDL3_ReportAssertion(&sdl_assert_data, SDL_FUNCTION, SDL_FILE, SDL_LINE); \
+        if (sdl_assert_state == SDL_ASSERTION_RETRY) { \
+            continue; /* go again. */ \
+        } else if (sdl_assert_state == SDL_ASSERTION_BREAK) { \
+            SDL_AssertBreakpoint(); \
+        } \
+        break; /* not retrying. */ \
+    } \
+} while (SDL_NULL_WHILE_LOOP_CONDITION)
 
 
 static SDL_bool WantDebugLogging = SDL_FALSE;
@@ -3995,7 +4012,7 @@ SDL_GetClosestDisplayMode(int displayIndex, const SDL2_DisplayMode *mode, SDL2_D
     SDL_DisplayMode *ret3;
 
     if (mode == NULL || closest == NULL) {
-        SDL_InvalidParamError("mode/closest");
+        SDL3_InvalidParamError("mode/closest");
         return NULL;
     }
 
@@ -4196,6 +4213,7 @@ SDL_RenderFillRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
     if (frects == NULL) {
         return SDL3_OutOfMemory();
     }
+
     for (i = 0; i < count; ++i) {
         frects[i].x = (float)rects[i].x;
         frects[i].y = (float)rects[i].y;
@@ -5208,7 +5226,7 @@ SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
 {
     /* Sanity check target pointer */
     if (cvt == NULL) {
-        return SDL_InvalidParamError("cvt");
+        return SDL3_InvalidParamError("cvt");
     }
 
     /* Make sure we zero out the audio conversion before error checking */
@@ -5305,7 +5323,7 @@ SDL_ConvertAudio(SDL_AudioCVT *cvt)
 
     /* Sanity check target pointer */
     if (cvt == NULL) {
-        return SDL_InvalidParamError("cvt");
+        return SDL3_InvalidParamError("cvt");
     }
 
     { /* Fetch from the end of filters[], aligned */
