@@ -24,6 +24,8 @@
 
 /* these types were removed from SDL3, but we need them for SDL2 APIs exported here. */
 
+typedef SDL_AtomicInt SDL_atomic_t;
+
 typedef SDL_Gamepad SDL_GameController;  /* since they're opaque types, for simplicity we just typedef it here and use the old types in sdl3_syms.h */
 typedef SDL_GamepadAxis SDL_GameControllerAxis;
 typedef SDL_GamepadBinding SDL_GameControllerButtonBind;
