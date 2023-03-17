@@ -78,8 +78,8 @@ SDL3_SYM(int,AndroidGetExternalStorageState,(Uint32 *a),(a),return)
 SDL3_SYM_PASSTHROUGH(const char*,AndroidGetExternalStoragePath,(void),(),return)
 #endif
 
-SDL3_SYM_PASSTHROUGH(int,Init,(Uint32 a),(a),return)
-SDL3_SYM_PASSTHROUGH(int,InitSubSystem,(Uint32 a),(a),return)
+SDL3_SYM(int,Init,(Uint32 a),(a),return)
+SDL3_SYM(int,InitSubSystem,(Uint32 a),(a),return)
 SDL3_SYM_PASSTHROUGH(void,QuitSubSystem,(Uint32 a),(a),)
 SDL3_SYM_PASSTHROUGH(Uint32,WasInit,(Uint32 a),(a),return)
 SDL3_SYM_PASSTHROUGH(void,Quit,(void),(),)

@@ -3198,7 +3198,7 @@ SDL_AudioInit(const char *driver_name)
     if (driver_name) {
         SDL3_SetHint("SDL_AUDIO_DRIVER", driver_name);
     }
-    return SDL_InitSubSystem(SDL_INIT_AUDIO);
+    return SDL3_InitSubSystem(SDL_INIT_AUDIO);
 }
 
 DECLSPEC void SDLCALL
@@ -3210,16 +3210,59 @@ SDL_AudioQuit(void)
 DECLSPEC int SDLCALL
 SDL_VideoInit(const char *driver_name)
 {
+    int ret;
     if (driver_name) {
         SDL3_SetHint("SDL_VIDEO_DRIVER", driver_name);
     }
-    return SDL_InitSubSystem(SDL_INIT_VIDEO);
+
+    ret = SDL3_InitSubSystem(SDL_INIT_VIDEO);
+        
+    /* default SDL2 GL attributes */
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 3);
+    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 3);
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 2);
+    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 0);
+
+    return ret;
 }
 
 DECLSPEC void SDLCALL
 SDL_VideoQuit(void)
 {
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
+}
+
+DECLSPEC int SDLCALL
+SDL_Init(Uint32 flags)
+{
+    int ret;
+
+    ret = SDL3_Init(flags);
+    if (flags & SDL_INIT_VIDEO) {
+        /* default SDL2 GL attributes */
+        SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 3);
+        SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 3);
+        SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 2);
+        SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 0);
+    }
+
+    return ret;
+}
+
+DECLSPEC int SDLCALL
+SDL_InitSubSystem(Uint32 flags)
+{
+    int ret;
+
+    ret = SDL3_InitSubSystem(flags);
+    if (flags & SDL_INIT_VIDEO) {
+        /* default SDL2 GL attributes */
+        SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 3);
+        SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 3);
+        SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 2);
+        SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 0);
+    }
+    return ret;
 }
 
 DECLSPEC int SDLCALL
@@ -3262,7 +3305,7 @@ SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained)
 
     /* Start up the audio driver, if necessary. This is legacy behaviour! */
     if (!SDL_WasInit(SDL_INIT_AUDIO)) {
-        if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0) {
+        if (SDL3_InitSubSystem(SDL_INIT_AUDIO) < 0) {
             return -1;
         }
     }
