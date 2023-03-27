@@ -3216,7 +3216,7 @@ SDL_VideoInit(const char *driver_name)
     }
 
     ret = SDL3_InitSubSystem(SDL_INIT_VIDEO);
-        
+
     /* default SDL2 GL attributes */
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 3);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 3);
@@ -4762,13 +4762,13 @@ SDL_GL_SwapWindow(SDL_Window *window)
     (void) SDL3_GL_SwapWindow(window);
 }
 
-DECLSPEC void SDLCALL 
+DECLSPEC void SDLCALL
 SDL_GetClipRect(SDL_Surface *surface, SDL_Rect *rect)
 {
     SDL3_GetSurfaceClipRect(surface, rect);
 }
 
-DECLSPEC void SDLCALL 
+DECLSPEC void SDLCALL
 SDL_GameControllerSetPlayerIndex(SDL_GameController *gamecontroller, int player_index)
 {
     SDL3_SetGamepadPlayerIndex(gamecontroller, player_index);
@@ -4780,7 +4780,7 @@ SDL_JoystickGetGUIDString(SDL_JoystickGUID guid, char *pszGUID, int cbGUID)
     SDL3_GetJoystickGUIDString(guid, pszGUID, cbGUID);
 }
 
-DECLSPEC void SDLCALL 
+DECLSPEC void SDLCALL
 SDL_GUIDToString(SDL_GUID guid, char *pszGUID, int cbGUID)
 {
     SDL3_GUIDToString(guid, pszGUID, cbGUID);
@@ -5480,6 +5480,12 @@ SDL_AndroidGetExternalStorageState(void)
     return state;
 }
 #endif
+
+DECLSPEC SDL_bool SDLCALL
+SDL_HasRDTSC(void)
+{
+    return SDL_FALSE;
+}
 
 #ifdef __cplusplus
 }
