@@ -4373,8 +4373,8 @@ SDL_Vulkan_GetInstanceExtensions(SDL_Window *window, unsigned int *pCount, const
 }
 
 
-/* SDL3 doesn't have 3dNow. */
-#if defined(__GNUC__) && defined(__i386__)
+/* SDL3 doesn't have 3dNow or RDTSC. */
+#if (defined(__GNUC__) || defined(__llvm__)) && defined(__i386__)
 #define cpuid(func, a, b, c, d) \
     __asm__ __volatile__ ( \
 "        pushl %%ebx        \n" \
@@ -4383,7 +4383,7 @@ SDL_Vulkan_GetInstanceExtensions(SDL_Window *window, unsigned int *pCount, const
 "        movl %%ebx, %%esi  \n" \
 "        popl %%ebx         \n" : \
             "=a" (a), "=S" (b), "=c" (c), "=d" (d) : "a" (func))
-#elif defined(__GNUC__) && defined(__x86_64__)
+#elif (defined(__GNUC__) || defined(__llvm__)) && defined(__x86_64__)
 #define cpuid(func, a, b, c, d) \
     __asm__ __volatile__ ( \
 "        pushq %%rbx        \n" \
@@ -4403,12 +4403,13 @@ SDL_Vulkan_GetInstanceExtensions(SDL_Window *window, unsigned int *pCount, const
         __asm mov c, ecx \
         __asm mov d, edx \
 }
-#elif defined(_MSC_VER) && defined(_M_X64)
+#elif (defined(_MSC_VER) && defined(_M_X64))
+/* Use __cpuidex instead of __cpuid because ICL does not clear ecx register */
 #include <intrin.h>
 #define cpuid(func, a, b, c, d) \
 { \
     int CPUInfo[4]; \
-    __cpuid(CPUInfo, func); \
+    __cpuidex(CPUInfo, func, 0); \
     a = CPUInfo[0]; \
     b = CPUInfo[1]; \
     c = CPUInfo[2]; \
