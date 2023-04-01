@@ -28,38 +28,12 @@
 #ifndef INCL_SDL3_INCLUDE_WRAPPER_H
 #define INCL_SDL3_INCLUDE_WRAPPER_H
 
-#define SDL_Log IGNORE_THIS_VERSION_OF_SDL_Log
-#define SDL_LogCritical IGNORE_THIS_VERSION_OF_SDL_LogCritical
-#define SDL_LogDebug IGNORE_THIS_VERSION_OF_SDL_LogDebug
-#define SDL_LogError IGNORE_THIS_VERSION_OF_SDL_LogError
-#define SDL_LogInfo IGNORE_THIS_VERSION_OF_SDL_LogInfo
-#define SDL_LogMessage IGNORE_THIS_VERSION_OF_SDL_LogMessage
-#define SDL_LogVerbose IGNORE_THIS_VERSION_OF_SDL_LogVerbose
-#define SDL_LogWarn IGNORE_THIS_VERSION_OF_SDL_LogWarn
-#define SDL_SetError IGNORE_THIS_VERSION_OF_SDL_SetError
-#define SDL_asprintf IGNORE_THIS_VERSION_OF_SDL_asprintf
-#define SDL_snprintf IGNORE_THIS_VERSION_OF_SDL_snprintf
-#define SDL_sscanf IGNORE_THIS_VERSION_OF_SDL_sscanf
-#define SDL_CreateThread IGNORE_THIS_VERSION_OF_SDL_CreateThread
-#define SDL_CreateThreadWithStackSize IGNORE_THIS_VERSION_OF_SDL_CreateThreadWithStackSize
-#define SDL_RegisterApp IGNORE_THIS_VERSION_OF_SDL_RegisterApp
-#define SDL_RenderGetD3D12Device IGNORE_THIS_VERSION_OF_SDL_RenderGetD3D12Device
-#define SDL_SetWindowsMessageHook IGNORE_THIS_VERSION_OF_SDL_SetWindowsMessageHook
-#define SDL_UnregisterApp IGNORE_THIS_VERSION_OF_SDL_UnregisterApp
-#define SDL_DXGIGetOutputInfo IGNORE_THIS_VERSION_OF_SDL_DXGIGetOutputInfo
-#define SDL_Direct3D9GetAdapterIndex IGNORE_THIS_VERSION_OF_SDL_Direct3D9GetAdapterIndex
-#define SDL_GetRenderD3D11Device IGNORE_THIS_VERSION_OF_SDL_GetRenderD3D11Device
-#define SDL_GetRenderD3D9Device IGNORE_THIS_VERSION_OF_SDL_GetRenderD3D9Device
-#define SDL_GDKGetTaskQueue IGNORE_THIS_VERSION_OF_SDL_GDKGetTaskQueue
-#define SDL_GDKSuspendComplete IGNORE_THIS_VERSION_OF_SDL_GDKSuspendComplete
-#define SDL_WinRTGetDeviceFamily IGNORE_THIS_VERSION_OF_SDL_WinRTGetDeviceFamily
-#define SDL_WinRTGetFSPathUNICODE IGNORE_THIS_VERSION_OF_SDL_WinRTGetFSPathUNICODE
-#define SDL_WinRTGetFSPathUTF8 IGNORE_THIS_VERSION_OF_SDL_WinRTGetFSPathUTF8
-#define SDL_LinuxSetThreadPriority IGNORE_THIS_VERSION_OF_SDL_LinuxSetThreadPriority
-#define SDL_LinuxSetThreadPriorityAndPolicy IGNORE_THIS_VERSION_OF_SDL_LinuxSetThreadPriorityAndPolicy
-#define SDL_OnApplicationDidChangeStatusBarOrientation IGNORE_THIS_VERSION_OF_SDL_OnApplicationDidChangeStatusBarOrientation
-#define SDL_iPhoneSetAnimationCallback IGNORE_THIS_VERSION_OF_SDL_iPhoneSetAnimationCallback
-#define SDL_iPhoneSetEventPump IGNORE_THIS_VERSION_OF_SDL_iPhoneSetEventPump
+#define SDL_AddEventWatch IGNORE_THIS_VERSION_OF_SDL_AddEventWatch
+#define SDL_AddGamepadMapping IGNORE_THIS_VERSION_OF_SDL_AddGamepadMapping
+#define SDL_AddGamepadMappingsFromRW IGNORE_THIS_VERSION_OF_SDL_AddGamepadMappingsFromRW
+#define SDL_AddHintCallback IGNORE_THIS_VERSION_OF_SDL_AddHintCallback
+#define SDL_AddTimer IGNORE_THIS_VERSION_OF_SDL_AddTimer
+#define SDL_CreateRW IGNORE_THIS_VERSION_OF_SDL_CreateRW
 #define SDL_AndroidBackButton IGNORE_THIS_VERSION_OF_SDL_AndroidBackButton
 #define SDL_AndroidGetActivity IGNORE_THIS_VERSION_OF_SDL_AndroidGetActivity
 #define SDL_AndroidGetExternalStoragePath IGNORE_THIS_VERSION_OF_SDL_AndroidGetExternalStoragePath
@@ -69,16 +43,6 @@
 #define SDL_AndroidRequestPermission IGNORE_THIS_VERSION_OF_SDL_AndroidRequestPermission
 #define SDL_AndroidSendMessage IGNORE_THIS_VERSION_OF_SDL_AndroidSendMessage
 #define SDL_AndroidShowToast IGNORE_THIS_VERSION_OF_SDL_AndroidShowToast
-#define SDL_GetAndroidSDKVersion IGNORE_THIS_VERSION_OF_SDL_GetAndroidSDKVersion
-#define SDL_IsAndroidTV IGNORE_THIS_VERSION_OF_SDL_IsAndroidTV
-#define SDL_IsChromebook IGNORE_THIS_VERSION_OF_SDL_IsChromebook
-#define SDL_IsDeXMode IGNORE_THIS_VERSION_OF_SDL_IsDeXMode
-#define SDL_AddEventWatch IGNORE_THIS_VERSION_OF_SDL_AddEventWatch
-#define SDL_AddGamepadMapping IGNORE_THIS_VERSION_OF_SDL_AddGamepadMapping
-#define SDL_AddGamepadMappingsFromRW IGNORE_THIS_VERSION_OF_SDL_AddGamepadMappingsFromRW
-#define SDL_AddHintCallback IGNORE_THIS_VERSION_OF_SDL_AddHintCallback
-#define SDL_AddTimer IGNORE_THIS_VERSION_OF_SDL_AddTimer
-#define SDL_CreateRW IGNORE_THIS_VERSION_OF_SDL_CreateRW
 #define SDL_AtomicAdd IGNORE_THIS_VERSION_OF_SDL_AtomicAdd
 #define SDL_AtomicCAS IGNORE_THIS_VERSION_OF_SDL_AtomicCAS
 #define SDL_AtomicCASPtr IGNORE_THIS_VERSION_OF_SDL_AtomicCASPtr
@@ -129,10 +93,13 @@
 #define SDL_CreateSystemCursor IGNORE_THIS_VERSION_OF_SDL_CreateSystemCursor
 #define SDL_CreateTexture IGNORE_THIS_VERSION_OF_SDL_CreateTexture
 #define SDL_CreateTextureFromSurface IGNORE_THIS_VERSION_OF_SDL_CreateTextureFromSurface
+#define SDL_CreateThread IGNORE_THIS_VERSION_OF_SDL_CreateThread
+#define SDL_CreateThreadWithStackSize IGNORE_THIS_VERSION_OF_SDL_CreateThreadWithStackSize
 #define SDL_CreateWindow IGNORE_THIS_VERSION_OF_SDL_CreateWindow
 #define SDL_CreateWindowAndRenderer IGNORE_THIS_VERSION_OF_SDL_CreateWindowAndRenderer
 #define SDL_CreateWindowFrom IGNORE_THIS_VERSION_OF_SDL_CreateWindowFrom
 #define SDL_CursorVisible IGNORE_THIS_VERSION_OF_SDL_CursorVisible
+#define SDL_DXGIGetOutputInfo IGNORE_THIS_VERSION_OF_SDL_DXGIGetOutputInfo
 #define SDL_DelEventWatch IGNORE_THIS_VERSION_OF_SDL_DelEventWatch
 #define SDL_DelHintCallback IGNORE_THIS_VERSION_OF_SDL_DelHintCallback
 #define SDL_Delay IGNORE_THIS_VERSION_OF_SDL_Delay
@@ -150,6 +117,7 @@
 #define SDL_DestroyWindow IGNORE_THIS_VERSION_OF_SDL_DestroyWindow
 #define SDL_DetachThread IGNORE_THIS_VERSION_OF_SDL_DetachThread
 #define SDL_DetachVirtualJoystick IGNORE_THIS_VERSION_OF_SDL_DetachVirtualJoystick
+#define SDL_Direct3D9GetAdapterIndex IGNORE_THIS_VERSION_OF_SDL_Direct3D9GetAdapterIndex
 #define SDL_DisableScreenSaver IGNORE_THIS_VERSION_OF_SDL_DisableScreenSaver
 #define SDL_DuplicateSurface IGNORE_THIS_VERSION_OF_SDL_DuplicateSurface
 #define SDL_EGL_GetCurrentEGLConfig IGNORE_THIS_VERSION_OF_SDL_EGL_GetCurrentEGLConfig
@@ -169,6 +137,8 @@
 #define SDL_FlushEvents IGNORE_THIS_VERSION_OF_SDL_FlushEvents
 #define SDL_DestroyCursor IGNORE_THIS_VERSION_OF_SDL_DestroyCursor
 #define SDL_DestroyRW IGNORE_THIS_VERSION_OF_SDL_DestroyRW
+#define SDL_GDKGetTaskQueue IGNORE_THIS_VERSION_OF_SDL_GDKGetTaskQueue
+#define SDL_GDKSuspendComplete IGNORE_THIS_VERSION_OF_SDL_GDKSuspendComplete
 #define SDL_GL_BindTexture IGNORE_THIS_VERSION_OF_SDL_GL_BindTexture
 #define SDL_GL_CreateContext IGNORE_THIS_VERSION_OF_SDL_GL_CreateContext
 #define SDL_GL_DeleteContext IGNORE_THIS_VERSION_OF_SDL_GL_DeleteContext
@@ -197,6 +167,7 @@
 #define SDL_GamepadHasRumbleTriggers IGNORE_THIS_VERSION_OF_SDL_GamepadHasRumbleTriggers
 #define SDL_GamepadHasSensor IGNORE_THIS_VERSION_OF_SDL_GamepadHasSensor
 #define SDL_GamepadSensorEnabled IGNORE_THIS_VERSION_OF_SDL_GamepadSensorEnabled
+#define SDL_GetAndroidSDKVersion IGNORE_THIS_VERSION_OF_SDL_GetAndroidSDKVersion
 #define SDL_GetAssertionHandler IGNORE_THIS_VERSION_OF_SDL_GetAssertionHandler
 #define SDL_GetAssertionReport IGNORE_THIS_VERSION_OF_SDL_GetAssertionReport
 #define SDL_GetAudioDeviceName IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceName
@@ -345,6 +316,8 @@
 #define SDL_GetRelativeMouseMode IGNORE_THIS_VERSION_OF_SDL_GetRelativeMouseMode
 #define SDL_GetRelativeMouseState IGNORE_THIS_VERSION_OF_SDL_GetRelativeMouseState
 #define SDL_GetRenderClipRect IGNORE_THIS_VERSION_OF_SDL_GetRenderClipRect
+#define SDL_GetRenderD3D11Device IGNORE_THIS_VERSION_OF_SDL_GetRenderD3D11Device
+#define SDL_GetRenderD3D9Device IGNORE_THIS_VERSION_OF_SDL_GetRenderD3D9Device
 #define SDL_GetRenderDrawBlendMode IGNORE_THIS_VERSION_OF_SDL_GetRenderDrawBlendMode
 #define SDL_GetRenderDrawColor IGNORE_THIS_VERSION_OF_SDL_GetRenderDrawColor
 #define SDL_GetRenderDriver IGNORE_THIS_VERSION_OF_SDL_GetRenderDriver
@@ -457,7 +430,6 @@
 #define SDL_HasMMX IGNORE_THIS_VERSION_OF_SDL_HasMMX
 #define SDL_HasNEON IGNORE_THIS_VERSION_OF_SDL_HasNEON
 #define SDL_HasPrimarySelectionText IGNORE_THIS_VERSION_OF_SDL_HasPrimarySelectionText
-#define SDL_HasRDTSC IGNORE_THIS_VERSION_OF_SDL_HasRDTSC
 #define SDL_HasRectIntersection IGNORE_THIS_VERSION_OF_SDL_HasRectIntersection
 #define SDL_HasRectIntersectionFloat IGNORE_THIS_VERSION_OF_SDL_HasRectIntersectionFloat
 #define SDL_HasSSE IGNORE_THIS_VERSION_OF_SDL_HasSSE
@@ -470,6 +442,9 @@
 #define SDL_HideWindow IGNORE_THIS_VERSION_OF_SDL_HideWindow
 #define SDL_Init IGNORE_THIS_VERSION_OF_SDL_Init
 #define SDL_InitSubSystem IGNORE_THIS_VERSION_OF_SDL_InitSubSystem
+#define SDL_IsAndroidTV IGNORE_THIS_VERSION_OF_SDL_IsAndroidTV
+#define SDL_IsChromebook IGNORE_THIS_VERSION_OF_SDL_IsChromebook
+#define SDL_IsDeXMode IGNORE_THIS_VERSION_OF_SDL_IsDeXMode
 #define SDL_IsGamepad IGNORE_THIS_VERSION_OF_SDL_IsGamepad
 #define SDL_IsJoystickVirtual IGNORE_THIS_VERSION_OF_SDL_IsJoystickVirtual
 #define SDL_IsShapedWindow IGNORE_THIS_VERSION_OF_SDL_IsShapedWindow
@@ -480,6 +455,8 @@
 #define SDL_JoystickHasRumble IGNORE_THIS_VERSION_OF_SDL_JoystickHasRumble
 #define SDL_JoystickHasRumbleTriggers IGNORE_THIS_VERSION_OF_SDL_JoystickHasRumbleTriggers
 #define SDL_JoystickIsHaptic IGNORE_THIS_VERSION_OF_SDL_JoystickIsHaptic
+#define SDL_LinuxSetThreadPriority IGNORE_THIS_VERSION_OF_SDL_LinuxSetThreadPriority
+#define SDL_LinuxSetThreadPriorityAndPolicy IGNORE_THIS_VERSION_OF_SDL_LinuxSetThreadPriorityAndPolicy
 #define SDL_LoadBMP_RW IGNORE_THIS_VERSION_OF_SDL_LoadBMP_RW
 #define SDL_LoadFile IGNORE_THIS_VERSION_OF_SDL_LoadFile
 #define SDL_LoadFile_RW IGNORE_THIS_VERSION_OF_SDL_LoadFile_RW
@@ -492,13 +469,21 @@
 #define SDL_LockSurface IGNORE_THIS_VERSION_OF_SDL_LockSurface
 #define SDL_LockTexture IGNORE_THIS_VERSION_OF_SDL_LockTexture
 #define SDL_LockTextureToSurface IGNORE_THIS_VERSION_OF_SDL_LockTextureToSurface
+#define SDL_Log IGNORE_THIS_VERSION_OF_SDL_Log
+#define SDL_LogCritical IGNORE_THIS_VERSION_OF_SDL_LogCritical
+#define SDL_LogDebug IGNORE_THIS_VERSION_OF_SDL_LogDebug
+#define SDL_LogError IGNORE_THIS_VERSION_OF_SDL_LogError
 #define SDL_LogGetOutputFunction IGNORE_THIS_VERSION_OF_SDL_LogGetOutputFunction
 #define SDL_LogGetPriority IGNORE_THIS_VERSION_OF_SDL_LogGetPriority
+#define SDL_LogInfo IGNORE_THIS_VERSION_OF_SDL_LogInfo
+#define SDL_LogMessage IGNORE_THIS_VERSION_OF_SDL_LogMessage
 #define SDL_LogMessageV IGNORE_THIS_VERSION_OF_SDL_LogMessageV
 #define SDL_LogResetPriorities IGNORE_THIS_VERSION_OF_SDL_LogResetPriorities
 #define SDL_LogSetAllPriority IGNORE_THIS_VERSION_OF_SDL_LogSetAllPriority
 #define SDL_LogSetOutputFunction IGNORE_THIS_VERSION_OF_SDL_LogSetOutputFunction
 #define SDL_LogSetPriority IGNORE_THIS_VERSION_OF_SDL_LogSetPriority
+#define SDL_LogVerbose IGNORE_THIS_VERSION_OF_SDL_LogVerbose
+#define SDL_LogWarn IGNORE_THIS_VERSION_OF_SDL_LogWarn
 #define SDL_MapRGB IGNORE_THIS_VERSION_OF_SDL_MapRGB
 #define SDL_MapRGBA IGNORE_THIS_VERSION_OF_SDL_MapRGBA
 #define SDL_MaximizeWindow IGNORE_THIS_VERSION_OF_SDL_MaximizeWindow
@@ -512,6 +497,7 @@
 #define SDL_MouseIsHaptic IGNORE_THIS_VERSION_OF_SDL_MouseIsHaptic
 #define SDL_NumHaptics IGNORE_THIS_VERSION_OF_SDL_NumHaptics
 #define SDL_OnApplicationDidBecomeActive IGNORE_THIS_VERSION_OF_SDL_OnApplicationDidBecomeActive
+#define SDL_OnApplicationDidChangeStatusBarOrientation IGNORE_THIS_VERSION_OF_SDL_OnApplicationDidChangeStatusBarOrientation
 #define SDL_OnApplicationDidEnterBackground IGNORE_THIS_VERSION_OF_SDL_OnApplicationDidEnterBackground
 #define SDL_OnApplicationDidReceiveMemoryWarning IGNORE_THIS_VERSION_OF_SDL_OnApplicationDidReceiveMemoryWarning
 #define SDL_OnApplicationWillEnterForeground IGNORE_THIS_VERSION_OF_SDL_OnApplicationWillEnterForeground
@@ -550,6 +536,7 @@
 #define SDL_ReadLE32 IGNORE_THIS_VERSION_OF_SDL_ReadLE32
 #define SDL_ReadLE64 IGNORE_THIS_VERSION_OF_SDL_ReadLE64
 #define SDL_ReadU8 IGNORE_THIS_VERSION_OF_SDL_ReadU8
+#define SDL_RegisterApp IGNORE_THIS_VERSION_OF_SDL_RegisterApp
 #define SDL_RegisterEvents IGNORE_THIS_VERSION_OF_SDL_RegisterEvents
 #define SDL_RemoveTimer IGNORE_THIS_VERSION_OF_SDL_RemoveTimer
 #define SDL_RenderClear IGNORE_THIS_VERSION_OF_SDL_RenderClear
@@ -559,6 +546,7 @@
 #define SDL_RenderFlush IGNORE_THIS_VERSION_OF_SDL_RenderFlush
 #define SDL_RenderGeometry IGNORE_THIS_VERSION_OF_SDL_RenderGeometry
 #define SDL_RenderGeometryRaw IGNORE_THIS_VERSION_OF_SDL_RenderGeometryRaw
+#define SDL_RenderGetD3D12Device IGNORE_THIS_VERSION_OF_SDL_RenderGetD3D12Device
 #define SDL_RenderLine IGNORE_THIS_VERSION_OF_SDL_RenderLine
 #define SDL_RenderLines IGNORE_THIS_VERSION_OF_SDL_RenderLines
 #define SDL_RenderCoordinatesToWindow IGNORE_THIS_VERSION_OF_SDL_RenderCoordinatesToWindow
@@ -596,6 +584,7 @@
 #define SDL_SetAssertionHandler IGNORE_THIS_VERSION_OF_SDL_SetAssertionHandler
 #define SDL_SetClipboardText IGNORE_THIS_VERSION_OF_SDL_SetClipboardText
 #define SDL_SetCursor IGNORE_THIS_VERSION_OF_SDL_SetCursor
+#define SDL_SetError IGNORE_THIS_VERSION_OF_SDL_SetError
 #define SDL_SetEventEnabled IGNORE_THIS_VERSION_OF_SDL_SetEventEnabled
 #define SDL_SetEventFilter IGNORE_THIS_VERSION_OF_SDL_SetEventFilter
 #define SDL_SetGamepadEventsEnabled IGNORE_THIS_VERSION_OF_SDL_SetGamepadEventsEnabled
@@ -659,6 +648,7 @@
 #define SDL_SetWindowShape IGNORE_THIS_VERSION_OF_SDL_SetWindowShape
 #define SDL_SetWindowSize IGNORE_THIS_VERSION_OF_SDL_SetWindowSize
 #define SDL_SetWindowTitle IGNORE_THIS_VERSION_OF_SDL_SetWindowTitle
+#define SDL_SetWindowsMessageHook IGNORE_THIS_VERSION_OF_SDL_SetWindowsMessageHook
 #define SDL_SetYUVConversionMode IGNORE_THIS_VERSION_OF_SDL_SetYUVConversionMode
 #define SDL_ShowCursor IGNORE_THIS_VERSION_OF_SDL_ShowCursor
 #define SDL_ShowMessageBox IGNORE_THIS_VERSION_OF_SDL_ShowMessageBox
@@ -684,6 +674,7 @@
 #define SDL_UnlockMutex IGNORE_THIS_VERSION_OF_SDL_UnlockMutex
 #define SDL_UnlockSurface IGNORE_THIS_VERSION_OF_SDL_UnlockSurface
 #define SDL_UnlockTexture IGNORE_THIS_VERSION_OF_SDL_UnlockTexture
+#define SDL_UnregisterApp IGNORE_THIS_VERSION_OF_SDL_UnregisterApp
 #define SDL_UpdateGamepads IGNORE_THIS_VERSION_OF_SDL_UpdateGamepads
 #define SDL_UpdateJoysticks IGNORE_THIS_VERSION_OF_SDL_UpdateJoysticks
 #define SDL_UpdateNVTexture IGNORE_THIS_VERSION_OF_SDL_UpdateNVTexture
@@ -703,6 +694,9 @@
 #define SDL_WarpMouseGlobal IGNORE_THIS_VERSION_OF_SDL_WarpMouseGlobal
 #define SDL_WarpMouseInWindow IGNORE_THIS_VERSION_OF_SDL_WarpMouseInWindow
 #define SDL_WasInit IGNORE_THIS_VERSION_OF_SDL_WasInit
+#define SDL_WinRTGetDeviceFamily IGNORE_THIS_VERSION_OF_SDL_WinRTGetDeviceFamily
+#define SDL_WinRTGetFSPathUNICODE IGNORE_THIS_VERSION_OF_SDL_WinRTGetFSPathUNICODE
+#define SDL_WinRTGetFSPathUTF8 IGNORE_THIS_VERSION_OF_SDL_WinRTGetFSPathUTF8
 #define SDL_WriteBE16 IGNORE_THIS_VERSION_OF_SDL_WriteBE16
 #define SDL_WriteBE32 IGNORE_THIS_VERSION_OF_SDL_WriteBE32
 #define SDL_WriteBE64 IGNORE_THIS_VERSION_OF_SDL_WriteBE64
@@ -715,6 +709,7 @@
 #define SDL_acosf IGNORE_THIS_VERSION_OF_SDL_acosf
 #define SDL_asin IGNORE_THIS_VERSION_OF_SDL_asin
 #define SDL_asinf IGNORE_THIS_VERSION_OF_SDL_asinf
+#define SDL_asprintf IGNORE_THIS_VERSION_OF_SDL_asprintf
 #define SDL_atan IGNORE_THIS_VERSION_OF_SDL_atan
 #define SDL_atan2 IGNORE_THIS_VERSION_OF_SDL_atan2
 #define SDL_atan2f IGNORE_THIS_VERSION_OF_SDL_atan2f
@@ -760,6 +755,8 @@
 #define SDL_hid_send_feature_report IGNORE_THIS_VERSION_OF_SDL_hid_send_feature_report
 #define SDL_hid_set_nonblocking IGNORE_THIS_VERSION_OF_SDL_hid_set_nonblocking
 #define SDL_hid_write IGNORE_THIS_VERSION_OF_SDL_hid_write
+#define SDL_iPhoneSetAnimationCallback IGNORE_THIS_VERSION_OF_SDL_iPhoneSetAnimationCallback
+#define SDL_iPhoneSetEventPump IGNORE_THIS_VERSION_OF_SDL_iPhoneSetEventPump
 #define SDL_iconv IGNORE_THIS_VERSION_OF_SDL_iconv
 #define SDL_iconv_close IGNORE_THIS_VERSION_OF_SDL_iconv_close
 #define SDL_iconv_open IGNORE_THIS_VERSION_OF_SDL_iconv_open
@@ -802,8 +799,10 @@
 #define SDL_setenv IGNORE_THIS_VERSION_OF_SDL_setenv
 #define SDL_sin IGNORE_THIS_VERSION_OF_SDL_sin
 #define SDL_sinf IGNORE_THIS_VERSION_OF_SDL_sinf
+#define SDL_snprintf IGNORE_THIS_VERSION_OF_SDL_snprintf
 #define SDL_sqrt IGNORE_THIS_VERSION_OF_SDL_sqrt
 #define SDL_sqrtf IGNORE_THIS_VERSION_OF_SDL_sqrtf
+#define SDL_sscanf IGNORE_THIS_VERSION_OF_SDL_sscanf
 #define SDL_strcasecmp IGNORE_THIS_VERSION_OF_SDL_strcasecmp
 #define SDL_strcasestr IGNORE_THIS_VERSION_OF_SDL_strcasestr
 #define SDL_strchr IGNORE_THIS_VERSION_OF_SDL_strchr
@@ -866,6 +865,9 @@
 #define SDL_GetRenderScale IGNORE_THIS_VERSION_OF_SDL_GetRenderScale
 #define SDL_GetRenderWindowSize IGNORE_THIS_VERSION_OF_SDL_GetRenderWindowSize
 #define SDL_GetSystemTheme IGNORE_THIS_VERSION_OF_SDL_GetSystemTheme
+#define SDL_CreatePopupWindow IGNORE_THIS_VERSION_OF_SDL_CreatePopupWindow
+#define SDL_GetWindowParent IGNORE_THIS_VERSION_OF_SDL_GetWindowParent
+#define SDL_CreateWindowWithPosition IGNORE_THIS_VERSION_OF_SDL_CreateWindowWithPosition
 
 /* *** HACK HACK HACK:
  * *** Avoid including SDL_thread.h: it defines SDL_CreateThread() as a macro
@@ -924,132 +926,28 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef CreateMutex
 #endif /* _WIN32 */
 
-#ifdef SDL_Log
-#undef SDL_Log
+#ifdef SDL_AddEventWatch
+#undef SDL_AddEventWatch
 #endif
 
-#ifdef SDL_LogCritical
-#undef SDL_LogCritical
+#ifdef SDL_AddGamepadMapping
+#undef SDL_AddGamepadMapping
 #endif
 
-#ifdef SDL_LogDebug
-#undef SDL_LogDebug
+#ifdef SDL_AddGamepadMappingsFromRW
+#undef SDL_AddGamepadMappingsFromRW
 #endif
 
-#ifdef SDL_LogError
-#undef SDL_LogError
+#ifdef SDL_AddHintCallback
+#undef SDL_AddHintCallback
 #endif
 
-#ifdef SDL_LogInfo
-#undef SDL_LogInfo
+#ifdef SDL_AddTimer
+#undef SDL_AddTimer
 #endif
 
-#ifdef SDL_LogMessage
-#undef SDL_LogMessage
-#endif
-
-#ifdef SDL_LogVerbose
-#undef SDL_LogVerbose
-#endif
-
-#ifdef SDL_LogWarn
-#undef SDL_LogWarn
-#endif
-
-#ifdef SDL_SetError
-#undef SDL_SetError
-#endif
-
-#ifdef SDL_asprintf
-#undef SDL_asprintf
-#endif
-
-#ifdef SDL_snprintf
-#undef SDL_snprintf
-#endif
-
-#ifdef SDL_sscanf
-#undef SDL_sscanf
-#endif
-
-#ifdef SDL_CreateThread
-#undef SDL_CreateThread
-#endif
-
-#ifdef SDL_CreateThreadWithStackSize
-#undef SDL_CreateThreadWithStackSize
-#endif
-
-#ifdef SDL_RegisterApp
-#undef SDL_RegisterApp
-#endif
-
-#ifdef SDL_RenderGetD3D12Device
-#undef SDL_RenderGetD3D12Device
-#endif
-
-#ifdef SDL_SetWindowsMessageHook
-#undef SDL_SetWindowsMessageHook
-#endif
-
-#ifdef SDL_UnregisterApp
-#undef SDL_UnregisterApp
-#endif
-
-#ifdef SDL_DXGIGetOutputInfo
-#undef SDL_DXGIGetOutputInfo
-#endif
-
-#ifdef SDL_Direct3D9GetAdapterIndex
-#undef SDL_Direct3D9GetAdapterIndex
-#endif
-
-#ifdef SDL_GetRenderD3D11Device
-#undef SDL_GetRenderD3D11Device
-#endif
-
-#ifdef SDL_GetRenderD3D9Device
-#undef SDL_GetRenderD3D9Device
-#endif
-
-#ifdef SDL_GDKGetTaskQueue
-#undef SDL_GDKGetTaskQueue
-#endif
-
-#ifdef SDL_GDKSuspendComplete
-#undef SDL_GDKSuspendComplete
-#endif
-
-#ifdef SDL_WinRTGetDeviceFamily
-#undef SDL_WinRTGetDeviceFamily
-#endif
-
-#ifdef SDL_WinRTGetFSPathUNICODE
-#undef SDL_WinRTGetFSPathUNICODE
-#endif
-
-#ifdef SDL_WinRTGetFSPathUTF8
-#undef SDL_WinRTGetFSPathUTF8
-#endif
-
-#ifdef SDL_LinuxSetThreadPriority
-#undef SDL_LinuxSetThreadPriority
-#endif
-
-#ifdef SDL_LinuxSetThreadPriorityAndPolicy
-#undef SDL_LinuxSetThreadPriorityAndPolicy
-#endif
-
-#ifdef SDL_OnApplicationDidChangeStatusBarOrientation
-#undef SDL_OnApplicationDidChangeStatusBarOrientation
-#endif
-
-#ifdef SDL_iPhoneSetAnimationCallback
-#undef SDL_iPhoneSetAnimationCallback
-#endif
-
-#ifdef SDL_iPhoneSetEventPump
-#undef SDL_iPhoneSetEventPump
+#ifdef SDL_CreateRW
+#undef SDL_CreateRW
 #endif
 
 #ifdef SDL_AndroidBackButton
@@ -1086,46 +984,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_AndroidShowToast
 #undef SDL_AndroidShowToast
-#endif
-
-#ifdef SDL_GetAndroidSDKVersion
-#undef SDL_GetAndroidSDKVersion
-#endif
-
-#ifdef SDL_IsAndroidTV
-#undef SDL_IsAndroidTV
-#endif
-
-#ifdef SDL_IsChromebook
-#undef SDL_IsChromebook
-#endif
-
-#ifdef SDL_IsDeXMode
-#undef SDL_IsDeXMode
-#endif
-
-#ifdef SDL_AddEventWatch
-#undef SDL_AddEventWatch
-#endif
-
-#ifdef SDL_AddGamepadMapping
-#undef SDL_AddGamepadMapping
-#endif
-
-#ifdef SDL_AddGamepadMappingsFromRW
-#undef SDL_AddGamepadMappingsFromRW
-#endif
-
-#ifdef SDL_AddHintCallback
-#undef SDL_AddHintCallback
-#endif
-
-#ifdef SDL_AddTimer
-#undef SDL_AddTimer
-#endif
-
-#ifdef SDL_CreateRW
-#undef SDL_CreateRW
 #endif
 
 #ifdef SDL_AtomicAdd
@@ -1328,6 +1186,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_CreateTextureFromSurface
 #endif
 
+#ifdef SDL_CreateThread
+#undef SDL_CreateThread
+#endif
+
+#ifdef SDL_CreateThreadWithStackSize
+#undef SDL_CreateThreadWithStackSize
+#endif
+
 #ifdef SDL_CreateWindow
 #undef SDL_CreateWindow
 #endif
@@ -1342,6 +1208,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_CursorVisible
 #undef SDL_CursorVisible
+#endif
+
+#ifdef SDL_DXGIGetOutputInfo
+#undef SDL_DXGIGetOutputInfo
 #endif
 
 #ifdef SDL_DelEventWatch
@@ -1410,6 +1280,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_DetachVirtualJoystick
 #undef SDL_DetachVirtualJoystick
+#endif
+
+#ifdef SDL_Direct3D9GetAdapterIndex
+#undef SDL_Direct3D9GetAdapterIndex
 #endif
 
 #ifdef SDL_DisableScreenSaver
@@ -1486,6 +1360,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_DestroyRW
 #undef SDL_DestroyRW
+#endif
+
+#ifdef SDL_GDKGetTaskQueue
+#undef SDL_GDKGetTaskQueue
+#endif
+
+#ifdef SDL_GDKSuspendComplete
+#undef SDL_GDKSuspendComplete
 #endif
 
 #ifdef SDL_GL_BindTexture
@@ -1598,6 +1480,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GamepadSensorEnabled
 #undef SDL_GamepadSensorEnabled
+#endif
+
+#ifdef SDL_GetAndroidSDKVersion
+#undef SDL_GetAndroidSDKVersion
 #endif
 
 #ifdef SDL_GetAssertionHandler
@@ -2192,6 +2078,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetRenderClipRect
 #endif
 
+#ifdef SDL_GetRenderD3D11Device
+#undef SDL_GetRenderD3D11Device
+#endif
+
+#ifdef SDL_GetRenderD3D9Device
+#undef SDL_GetRenderD3D9Device
+#endif
+
 #ifdef SDL_GetRenderDrawBlendMode
 #undef SDL_GetRenderDrawBlendMode
 #endif
@@ -2640,10 +2534,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_HasPrimarySelectionText
 #endif
 
-#ifdef SDL_HasRDTSC
-#undef SDL_HasRDTSC
-#endif
-
 #ifdef SDL_HasRectIntersection
 #undef SDL_HasRectIntersection
 #endif
@@ -2692,6 +2582,18 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_InitSubSystem
 #endif
 
+#ifdef SDL_IsAndroidTV
+#undef SDL_IsAndroidTV
+#endif
+
+#ifdef SDL_IsChromebook
+#undef SDL_IsChromebook
+#endif
+
+#ifdef SDL_IsDeXMode
+#undef SDL_IsDeXMode
+#endif
+
 #ifdef SDL_IsGamepad
 #undef SDL_IsGamepad
 #endif
@@ -2730,6 +2632,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_JoystickIsHaptic
 #undef SDL_JoystickIsHaptic
+#endif
+
+#ifdef SDL_LinuxSetThreadPriority
+#undef SDL_LinuxSetThreadPriority
+#endif
+
+#ifdef SDL_LinuxSetThreadPriorityAndPolicy
+#undef SDL_LinuxSetThreadPriorityAndPolicy
 #endif
 
 #ifdef SDL_LoadBMP_RW
@@ -2780,12 +2690,36 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_LockTextureToSurface
 #endif
 
+#ifdef SDL_Log
+#undef SDL_Log
+#endif
+
+#ifdef SDL_LogCritical
+#undef SDL_LogCritical
+#endif
+
+#ifdef SDL_LogDebug
+#undef SDL_LogDebug
+#endif
+
+#ifdef SDL_LogError
+#undef SDL_LogError
+#endif
+
 #ifdef SDL_LogGetOutputFunction
 #undef SDL_LogGetOutputFunction
 #endif
 
 #ifdef SDL_LogGetPriority
 #undef SDL_LogGetPriority
+#endif
+
+#ifdef SDL_LogInfo
+#undef SDL_LogInfo
+#endif
+
+#ifdef SDL_LogMessage
+#undef SDL_LogMessage
 #endif
 
 #ifdef SDL_LogMessageV
@@ -2806,6 +2740,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_LogSetPriority
 #undef SDL_LogSetPriority
+#endif
+
+#ifdef SDL_LogVerbose
+#undef SDL_LogVerbose
+#endif
+
+#ifdef SDL_LogWarn
+#undef SDL_LogWarn
 #endif
 
 #ifdef SDL_MapRGB
@@ -2858,6 +2800,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_OnApplicationDidBecomeActive
 #undef SDL_OnApplicationDidBecomeActive
+#endif
+
+#ifdef SDL_OnApplicationDidChangeStatusBarOrientation
+#undef SDL_OnApplicationDidChangeStatusBarOrientation
 #endif
 
 #ifdef SDL_OnApplicationDidEnterBackground
@@ -3012,6 +2958,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_ReadU8
 #endif
 
+#ifdef SDL_RegisterApp
+#undef SDL_RegisterApp
+#endif
+
 #ifdef SDL_RegisterEvents
 #undef SDL_RegisterEvents
 #endif
@@ -3046,6 +2996,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_RenderGeometryRaw
 #undef SDL_RenderGeometryRaw
+#endif
+
+#ifdef SDL_RenderGetD3D12Device
+#undef SDL_RenderGetD3D12Device
 #endif
 
 #ifdef SDL_RenderLine
@@ -3194,6 +3148,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_SetCursor
 #undef SDL_SetCursor
+#endif
+
+#ifdef SDL_SetError
+#undef SDL_SetError
 #endif
 
 #ifdef SDL_SetEventEnabled
@@ -3448,6 +3406,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_SetWindowTitle
 #endif
 
+#ifdef SDL_SetWindowsMessageHook
+#undef SDL_SetWindowsMessageHook
+#endif
+
 #ifdef SDL_SetYUVConversionMode
 #undef SDL_SetYUVConversionMode
 #endif
@@ -3548,6 +3510,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_UnlockTexture
 #endif
 
+#ifdef SDL_UnregisterApp
+#undef SDL_UnregisterApp
+#endif
+
 #ifdef SDL_UpdateGamepads
 #undef SDL_UpdateGamepads
 #endif
@@ -3624,6 +3590,18 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_WasInit
 #endif
 
+#ifdef SDL_WinRTGetDeviceFamily
+#undef SDL_WinRTGetDeviceFamily
+#endif
+
+#ifdef SDL_WinRTGetFSPathUNICODE
+#undef SDL_WinRTGetFSPathUNICODE
+#endif
+
+#ifdef SDL_WinRTGetFSPathUTF8
+#undef SDL_WinRTGetFSPathUTF8
+#endif
+
 #ifdef SDL_WriteBE16
 #undef SDL_WriteBE16
 #endif
@@ -3670,6 +3648,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_asinf
 #undef SDL_asinf
+#endif
+
+#ifdef SDL_asprintf
+#undef SDL_asprintf
 #endif
 
 #ifdef SDL_atan
@@ -3852,6 +3834,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_hid_write
 #endif
 
+#ifdef SDL_iPhoneSetAnimationCallback
+#undef SDL_iPhoneSetAnimationCallback
+#endif
+
+#ifdef SDL_iPhoneSetEventPump
+#undef SDL_iPhoneSetEventPump
+#endif
+
 #ifdef SDL_iconv
 #undef SDL_iconv
 #endif
@@ -4020,12 +4010,20 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_sinf
 #endif
 
+#ifdef SDL_snprintf
+#undef SDL_snprintf
+#endif
+
 #ifdef SDL_sqrt
 #undef SDL_sqrt
 #endif
 
 #ifdef SDL_sqrtf
 #undef SDL_sqrtf
+#endif
+
+#ifdef SDL_sscanf
+#undef SDL_sscanf
 #endif
 
 #ifdef SDL_strcasecmp
@@ -4276,8 +4274,20 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetSystemTheme
 #endif
 
+#ifdef SDL_CreatePopupWindow
+#undef SDL_CreatePopupWindow
+#endif
+
+#ifdef SDL_GetWindowParent
+#undef SDL_GetWindowParent
+#endif
+
+#ifdef SDL_CreateWindowWithPosition
+#undef SDL_CreateWindowWithPosition
+#endif
+
 /* undefine these macros too: */
-/* if needed, redefine using SDL3_xxx instead. */
+/* redefine using SDL3_xxx, if needed. */
 
 #ifdef SDL_enabled_assert
 #undef SDL_enabled_assert
