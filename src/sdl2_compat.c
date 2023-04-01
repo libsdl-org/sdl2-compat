@@ -4435,6 +4435,14 @@ SDL_Has3DNow(void)
     return SDL_FALSE;
 }
 
+DECLSPEC SDL_bool SDLCALL
+SDL_HasRDTSC(void)
+{
+    /* FIXME */
+    return SDL_FALSE;
+}
+
+
 /* This was always a basic wrapper over SDL_free; SDL3 removed it and says use SDL_free directly. */
 DECLSPEC void SDLCALL
 SDL_FreeWAV(Uint8 *audio_buf)
@@ -5478,12 +5486,6 @@ SDL_AndroidGetExternalStorageState(void)
     return state;
 }
 #endif
-
-DECLSPEC SDL_bool SDLCALL
-SDL_HasRDTSC(void)
-{
-    return SDL_FALSE;
-}
 
 #ifdef __cplusplus
 }
