@@ -546,11 +546,9 @@ LoadSDL3(void)
                     char *p = SDL2COMPAT_stpcpy(loaderror, "SDL3 ");
 
                     SDL2COMPAT_itoa(value, v.major);
-                    p = SDL2COMPAT_stpcpy(p, value);
-                    *p++ = '.';
+                    p = SDL2COMPAT_stpcpy(p, value); *p++ = '.';
                     SDL2COMPAT_itoa(value, v.minor);
-                    p = SDL2COMPAT_stpcpy(p, value);
-                    *p++ = '.';
+                    p = SDL2COMPAT_stpcpy(p, value); *p++ = '.';
                     SDL2COMPAT_itoa(value, v.patch);
                     p = SDL2COMPAT_stpcpy(p, value);
 
