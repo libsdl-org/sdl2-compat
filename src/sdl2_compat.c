@@ -4038,9 +4038,10 @@ SDL_GetClosestDisplayModeForDisplay(SDL_DisplayID displayID,
             closest->screen_h = 480;
         }
         SDL_FinalizeDisplayMode(closest);
-        SDL_free(list);
+        SDL_free((void *)list);
         return closest;
     }
+
     SDL_free((void *)list);
     return NULL;
 }
