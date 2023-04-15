@@ -1360,7 +1360,7 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
     /* for now, the timestamp field has grown in size (and precision), everything after it is currently the same, minus padding at the end, so bump the fields down. */
     event3->common.type = event2->type;
     event3->common.timestamp = (Uint64) SDL_MS_TO_NS(event2->common.timestamp);
-    SDL3_memcpy((&event3->common) + 1, (&event2->common) + 1, sizeof (SDL_Event) - sizeof (SDL_CommonEvent));
+    SDL3_memcpy((&event3->common) + 1, (&event2->common) + 1, sizeof (SDL2_Event) - sizeof (SDL2_CommonEvent));
     /* mouse coords became floats in SDL3: */
     switch (event2->type) {
     case SDL_EVENT_MOUSE_MOTION:
