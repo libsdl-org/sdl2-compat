@@ -1339,6 +1339,13 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
         event2->wheel.mouseX = (Sint32)event3->wheel.mouseX;
         event2->wheel.mouseY = (Sint32)event3->wheel.mouseY;
         break;
+    /* sensor timestamps are in nanosecond in SDL3 */
+    case SDL_EVENT_GAMEPAD_SENSOR_UPDATE:
+        event2->csensor.timestamp_us = SDL_NS_TO_US(event3->gsensor.sensor_timestamp);
+        break;
+    case SDL_EVENT_SENSOR_UPDATE:
+        event2->sensor.timestamp_us = SDL_NS_TO_US(event3->sensor.sensor_timestamp);
+        break;
     default:
         break;
     }
