@@ -598,7 +598,7 @@ SDL3_SYM_PASSTHROUGH(SDL_bool,Vulkan_CreateSurface,(SDL_Window *a, VkInstance b,
 SDL3_SYM_PASSTHROUGH(void,GetMemoryFunctions,(SDL_malloc_func *a, SDL_calloc_func *b, SDL_realloc_func *c, SDL_free_func *d),(a,b,c,d),)
 SDL3_SYM_PASSTHROUGH(int,SetMemoryFunctions,(SDL_malloc_func a, SDL_calloc_func b, SDL_realloc_func c, SDL_free_func d),(a,b,c,d),return)
 SDL3_SYM_PASSTHROUGH(int,GetNumAllocations,(void),(),return)
-SDL3_SYM(SDL_AudioStream*,CreateAudioStream,(const SDL_AudioFormat a, const Uint8 b, const int c, const SDL_AudioFormat d, const Uint8 e, const int f),(a,b,c,d,e,f),return)
+SDL3_SYM(SDL_AudioStream*,CreateAudioStream,(SDL_AudioFormat a, int b, int c, SDL_AudioFormat d, int e, int f),(a,b,c,d,e,f),return)
 SDL3_SYM(int,PutAudioStreamData,(SDL_AudioStream *a, const void *b, int c),(a,b,c),return)
 SDL3_SYM(int,GetAudioStreamData,(SDL_AudioStream *a, void *b, int c),(a,b,c),return)
 SDL3_SYM(int,ClearAudioStream,(SDL_AudioStream *a),(a),return)
