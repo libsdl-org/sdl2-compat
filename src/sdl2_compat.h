@@ -22,9 +22,13 @@
 #ifndef sdl2_compat_h
 #define sdl2_compat_h
 
-/* these types were removed from SDL3, but we need them for SDL2 APIs exported here. */
+/* these types were removed from / renamed in SDL3. We need them for SDL2 APIs exported here. */
 
 typedef SDL_AtomicInt SDL_atomic_t;
+
+typedef SDL_Condition SDL_cond;
+typedef SDL_Mutex SDL_mutex;
+typedef SDL_Semaphore SDL_sem;
 
 typedef SDL_Gamepad SDL_GameController;  /* since they're opaque types, for simplicity we just typedef it here and use the old types in sdl3_syms.h */
 typedef SDL_GamepadAxis SDL_GameControllerAxis;

@@ -70,16 +70,16 @@
 #define SDL_CloseJoystick IGNORE_THIS_VERSION_OF_SDL_CloseJoystick
 #define SDL_CloseSensor IGNORE_THIS_VERSION_OF_SDL_CloseSensor
 #define SDL_ComposeCustomBlendMode IGNORE_THIS_VERSION_OF_SDL_ComposeCustomBlendMode
-#define SDL_CondBroadcast IGNORE_THIS_VERSION_OF_SDL_CondBroadcast
-#define SDL_CondSignal IGNORE_THIS_VERSION_OF_SDL_CondSignal
-#define SDL_CondWait IGNORE_THIS_VERSION_OF_SDL_CondWait
-#define SDL_CondWaitTimeout IGNORE_THIS_VERSION_OF_SDL_CondWaitTimeout
+#define SDL_BroadcastCondition IGNORE_THIS_VERSION_OF_SDL_BroadcastCondition
+#define SDL_SignalCondition IGNORE_THIS_VERSION_OF_SDL_SignalCondition
+#define SDL_WaitCondition IGNORE_THIS_VERSION_OF_SDL_WaitCondition
+#define SDL_WaitConditionTimeout IGNORE_THIS_VERSION_OF_SDL_WaitConditionTimeout
 #define SDL_ConvertPixels IGNORE_THIS_VERSION_OF_SDL_ConvertPixels
 #define SDL_ConvertSurface IGNORE_THIS_VERSION_OF_SDL_ConvertSurface
 #define SDL_ConvertSurfaceFormat IGNORE_THIS_VERSION_OF_SDL_ConvertSurfaceFormat
 #define SDL_CreateAudioStream IGNORE_THIS_VERSION_OF_SDL_CreateAudioStream
 #define SDL_CreateColorCursor IGNORE_THIS_VERSION_OF_SDL_CreateColorCursor
-#define SDL_CreateCond IGNORE_THIS_VERSION_OF_SDL_CreateCond
+#define SDL_CreateCondition IGNORE_THIS_VERSION_OF_SDL_CreateCondition
 #define SDL_CreateCursor IGNORE_THIS_VERSION_OF_SDL_CreateCursor
 #define SDL_CreateMutex IGNORE_THIS_VERSION_OF_SDL_CreateMutex
 #define SDL_CreatePalette IGNORE_THIS_VERSION_OF_SDL_CreatePalette
@@ -106,7 +106,7 @@
 #define SDL_DelayNS IGNORE_THIS_VERSION_OF_SDL_DelayNS
 #define SDL_DequeueAudio IGNORE_THIS_VERSION_OF_SDL_DequeueAudio
 #define SDL_DestroyAudioStream IGNORE_THIS_VERSION_OF_SDL_DestroyAudioStream
-#define SDL_DestroyCond IGNORE_THIS_VERSION_OF_SDL_DestroyCond
+#define SDL_DestroyCondition IGNORE_THIS_VERSION_OF_SDL_DestroyCondition
 #define SDL_DestroyMutex IGNORE_THIS_VERSION_OF_SDL_DestroyMutex
 #define SDL_DestroyPalette IGNORE_THIS_VERSION_OF_SDL_DestroyPalette
 #define SDL_DestroyPixelFormat IGNORE_THIS_VERSION_OF_SDL_DestroyPixelFormat
@@ -574,11 +574,11 @@
 #define SDL_SaveBMP_RW IGNORE_THIS_VERSION_OF_SDL_SaveBMP_RW
 #define SDL_ScreenKeyboardShown IGNORE_THIS_VERSION_OF_SDL_ScreenKeyboardShown
 #define SDL_ScreenSaverEnabled IGNORE_THIS_VERSION_OF_SDL_ScreenSaverEnabled
-#define SDL_SemPost IGNORE_THIS_VERSION_OF_SDL_SemPost
-#define SDL_SemTryWait IGNORE_THIS_VERSION_OF_SDL_SemTryWait
-#define SDL_SemValue IGNORE_THIS_VERSION_OF_SDL_SemValue
-#define SDL_SemWait IGNORE_THIS_VERSION_OF_SDL_SemWait
-#define SDL_SemWaitTimeout IGNORE_THIS_VERSION_OF_SDL_SemWaitTimeout
+#define SDL_PostSemaphore IGNORE_THIS_VERSION_OF_SDL_PostSemaphore
+#define SDL_TryWaitSemaphore IGNORE_THIS_VERSION_OF_SDL_TryWaitSemaphore
+#define SDL_GetSemaphoreValue IGNORE_THIS_VERSION_OF_SDL_GetSemaphoreValue
+#define SDL_WaitSemaphore IGNORE_THIS_VERSION_OF_SDL_WaitSemaphore
+#define SDL_WaitSemaphoreTimeout IGNORE_THIS_VERSION_OF_SDL_WaitSemaphoreTimeout
 #define SDL_SendGamepadEffect IGNORE_THIS_VERSION_OF_SDL_SendGamepadEffect
 #define SDL_SendJoystickEffect IGNORE_THIS_VERSION_OF_SDL_SendJoystickEffect
 #define SDL_SetAssertionHandler IGNORE_THIS_VERSION_OF_SDL_SetAssertionHandler
@@ -1103,20 +1103,20 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_ComposeCustomBlendMode
 #endif
 
-#ifdef SDL_CondBroadcast
-#undef SDL_CondBroadcast
+#ifdef SDL_BroadcastCondition
+#undef SDL_BroadcastCondition
 #endif
 
-#ifdef SDL_CondSignal
-#undef SDL_CondSignal
+#ifdef SDL_SignalCondition
+#undef SDL_SignalCondition
 #endif
 
-#ifdef SDL_CondWait
-#undef SDL_CondWait
+#ifdef SDL_WaitCondition
+#undef SDL_WaitCondition
 #endif
 
-#ifdef SDL_CondWaitTimeout
-#undef SDL_CondWaitTimeout
+#ifdef SDL_WaitConditionTimeout
+#undef SDL_WaitConditionTimeout
 #endif
 
 #ifdef SDL_ConvertPixels
@@ -1139,8 +1139,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_CreateColorCursor
 #endif
 
-#ifdef SDL_CreateCond
-#undef SDL_CreateCond
+#ifdef SDL_CreateCondition
+#undef SDL_CreateCondition
 #endif
 
 #ifdef SDL_CreateCursor
@@ -1247,8 +1247,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_DestroyAudioStream
 #endif
 
-#ifdef SDL_DestroyCond
-#undef SDL_DestroyCond
+#ifdef SDL_DestroyCondition
+#undef SDL_DestroyCondition
 #endif
 
 #ifdef SDL_DestroyMutex
@@ -3119,24 +3119,24 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_ScreenSaverEnabled
 #endif
 
-#ifdef SDL_SemPost
-#undef SDL_SemPost
+#ifdef SDL_PostSemaphore
+#undef SDL_PostSemaphore
 #endif
 
-#ifdef SDL_SemTryWait
-#undef SDL_SemTryWait
+#ifdef SDL_TryWaitSemaphore
+#undef SDL_TryWaitSemaphore
 #endif
 
-#ifdef SDL_SemValue
-#undef SDL_SemValue
+#ifdef SDL_GetSemaphoreValue
+#undef SDL_GetSemaphoreValue
 #endif
 
-#ifdef SDL_SemWait
-#undef SDL_SemWait
+#ifdef SDL_WaitSemaphore
+#undef SDL_WaitSemaphore
 #endif
 
-#ifdef SDL_SemWaitTimeout
-#undef SDL_SemWaitTimeout
+#ifdef SDL_WaitSemaphoreTimeout
+#undef SDL_WaitSemaphoreTimeout
 #endif
 
 #ifdef SDL_SendGamepadEffect
