@@ -868,6 +868,15 @@
 #define SDL_CreatePopupWindow IGNORE_THIS_VERSION_OF_SDL_CreatePopupWindow
 #define SDL_GetWindowParent IGNORE_THIS_VERSION_OF_SDL_GetWindowParent
 #define SDL_CreateWindowWithPosition IGNORE_THIS_VERSION_OF_SDL_CreateWindowWithPosition
+#define SDL_GetAudioStreamFormat IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamFormat
+#define SDL_SetAudioStreamFormat IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamFormat
+#define SDL_CreateRWLock IGNORE_THIS_VERSION_OF_SDL_CreateRWLock
+#define SDL_LockRWLockForReading IGNORE_THIS_VERSION_OF_SDL_LockRWLockForReading
+#define SDL_LockRWLockForWriting IGNORE_THIS_VERSION_OF_SDL_LockRWLockForWriting
+#define SDL_TryLockRWLockForReading IGNORE_THIS_VERSION_OF_SDL_TryLockRWLockForReading
+#define SDL_TryLockRWLockForWriting IGNORE_THIS_VERSION_OF_SDL_TryLockRWLockForWriting
+#define SDL_UnlockRWLock IGNORE_THIS_VERSION_OF_SDL_UnlockRWLock
+#define SDL_DestroyRWLock IGNORE_THIS_VERSION_OF_SDL_DestroyRWLock
 
 /* *** HACK HACK HACK:
  * *** Avoid including SDL_thread.h: it defines SDL_CreateThread() as a macro
@@ -4284,6 +4293,42 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_CreateWindowWithPosition
 #undef SDL_CreateWindowWithPosition
+#endif
+
+#ifdef SDL_GetAudioStreamFormat
+#undef SDL_GetAudioStreamFormat
+#endif
+
+#ifdef SDL_SetAudioStreamFormat
+#undef SDL_SetAudioStreamFormat
+#endif
+
+#ifdef SDL_CreateRWLock
+#undef SDL_CreateRWLock
+#endif
+
+#ifdef SDL_LockRWLockForReading
+#undef SDL_LockRWLockForReading
+#endif
+
+#ifdef SDL_LockRWLockForWriting
+#undef SDL_LockRWLockForWriting
+#endif
+
+#ifdef SDL_TryLockRWLockForReading
+#undef SDL_TryLockRWLockForReading
+#endif
+
+#ifdef SDL_TryLockRWLockForWriting
+#undef SDL_TryLockRWLockForWriting
+#endif
+
+#ifdef SDL_UnlockRWLock
+#undef SDL_UnlockRWLock
+#endif
+
+#ifdef SDL_DestroyRWLock
+#undef SDL_DestroyRWLock
 #endif
 
 /* undefine these macros too: */
