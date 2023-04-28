@@ -4358,14 +4358,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_AtomicDecRef
 #endif
 
-#ifdef SDL_mutexP
-#undef SDL_mutexP
-#endif
-
-#ifdef SDL_mutexV
-#undef SDL_mutexV
-#endif
-
 #ifdef SDL_copyp
 #undef SDL_copyp
 #endif
