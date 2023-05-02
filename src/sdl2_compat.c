@@ -3290,7 +3290,7 @@ SDL_OpenAudioDevice(const char *device, int iscapture, const SDL_AudioSpec *desi
 
     if ((desired3.format == SDL2_AUDIO_U16LSB) || (desired3.format == SDL2_AUDIO_U16MSB)) {
         if (allowed_changes & SDL_AUDIO_ALLOW_FORMAT_CHANGE) {
-            desired3.format = AUDIO_S16SYS;  /* just pick a supported format instead. */
+            desired3.format = SDL_AUDIO_S16SYS;  /* just pick a supported format instead. */
         } else {
             /* technically we should convert this behind the scenes, but all of this is getting
                replaced with a different interface in SDL3 soon, so it's not worth
@@ -3392,10 +3392,10 @@ SDL_NewAudioStream(const SDL_AudioFormat real_src_format, const Uint8 src_channe
 
     /* SDL3 removed U16 audio formats. Convert to S16SYS. */
     if ((src_format == SDL2_AUDIO_U16LSB) || (src_format == SDL2_AUDIO_U16MSB)) {
-        src_format = AUDIO_S16SYS;
+        src_format = SDL_AUDIO_S16SYS;
     }
     if ((dst_format == SDL2_AUDIO_U16LSB) || (dst_format == SDL2_AUDIO_U16MSB)) {
-        dst_format = AUDIO_S16SYS;
+        dst_format = SDL_AUDIO_S16SYS;
     }
 
     retval->stream3 = SDL3_CreateAudioStream(src_format, src_channels, src_rate, dst_format, dst_channels, dst_rate);
@@ -3497,7 +3497,7 @@ SDL_MixAudioFormat(Uint8 *dst, const Uint8 *src, SDL_AudioFormat format, Uint32 
             } else if (format == SDL2_AUDIO_U16MSB) {
                 AudioUi16MSBToSi16Sys(tmpbuf, (const Uint16 *) src, tmpsamples);
             }
-            SDL3_MixAudioFormat(dst, (const Uint8 *) tmpbuf, AUDIO_S16SYS, tmpsamples * sizeof (Sint16), volume);
+            SDL3_MixAudioFormat(dst, (const Uint8 *) tmpbuf, SDL_AUDIO_S16SYS, tmpsamples * sizeof (Sint16), volume);
             SDL3_free(tmpbuf);
         }
     } else {
@@ -5347,16 +5347,16 @@ static SDL_bool
 SDL_IsSupportedAudioFormat(const SDL_AudioFormat fmt)
 {
     switch (fmt) {
-    case AUDIO_U8:
-    case AUDIO_S8:
+    case SDL_AUDIO_U8:
+    case SDL_AUDIO_S8:
     case SDL2_AUDIO_U16LSB:
-    case AUDIO_S16LSB:
+    case SDL_AUDIO_S16LSB:
     case SDL2_AUDIO_U16MSB:
-    case AUDIO_S16MSB:
-    case AUDIO_S32LSB:
-    case AUDIO_S32MSB:
-    case AUDIO_F32LSB:
-    case AUDIO_F32MSB:
+    case SDL_AUDIO_S16MSB:
+    case SDL_AUDIO_S32LSB:
+    case SDL_AUDIO_S32MSB:
+    case SDL_AUDIO_F32LSB:
+    case SDL_AUDIO_F32MSB:
         return SDL_TRUE; /* supported. */
 
     default:
