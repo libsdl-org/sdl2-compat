@@ -483,6 +483,7 @@ SDL3_SYM(const SDL_DisplayMode*,GetCurrentDisplayMode,(SDL_DisplayID a),(a),retu
 SDL3_SYM(int,SetWindowFullscreenMode,(SDL_Window *a, const SDL_DisplayMode *b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(Uint32,GetWindowPixelFormat,(SDL_Window *a),(a),return)
 SDL3_SYM(SDL_Window*,CreateWindow,(const char *a, int b, int c, Uint32 d),(a,b,c,d),return)
+SDL3_SYM(SDL_Window*,CreatePopupWindow,(SDL_Window *a, int b, int c, int d, int e, Uint32 f),(a,b,c,d,e,f),return)
 SDL3_SYM_PASSTHROUGH(SDL_Window*,CreateWindowFrom,(const void *a),(a),return)
 SDL3_SYM_PASSTHROUGH(Uint32,GetWindowID,(SDL_Window *a),(a),return)
 SDL3_SYM_PASSTHROUGH(SDL_Window*,GetWindowFromID,(Uint32 a),(a),return)

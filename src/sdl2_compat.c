@@ -4593,11 +4593,14 @@ SDL_GetWindowFlags(SDL_Window *window)
     return flags;
 }
 
+#define POPUP_PARENT_PROP_STR "__SDL3_parentWnd"
+
 DECLSPEC SDL_Window * SDLCALL
 SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
 {
-    SDL_Window *window;
+    SDL_Window *window = NULL;
     int hidden = flags & SDL_WINDOW_HIDDEN;
+    const Uint32 is_popup = flags & (SDL_WINDOW_POPUP_MENU | SDL_WINDOW_TOOLTIP);
 
     flags &= ~SDL2_WINDOW_SHOWN;
     flags |= SDL_WINDOW_HIDDEN;
@@ -4606,7 +4609,19 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
         flags |= SDL_WINDOW_FULLSCREEN; /* This is fullscreen desktop for new windows */
     }
 
-    window = SDL3_CreateWindow(title, w, h, flags);
+    if (!is_popup) {
+        window = SDL3_CreateWindow(title, w, h, flags);
+    } else {
+        SDL_Window *parent = SDL3_GetMouseFocus();
+        if (!parent) {
+            parent = SDL3_GetKeyboardFocus();
+        }
+
+        if (parent) {
+            window = SDL3_CreatePopupWindow(parent, x, y, w, h, flags);
+            SDL3_SetWindowData(window, POPUP_PARENT_PROP_STR, parent);
+        }
+    }
     if (window) {
         if (!SDL_WINDOWPOS_ISUNDEFINED(x) || !SDL_WINDOWPOS_ISUNDEFINED(y)) {
             SDL3_SetWindowPosition(window, x, y);
@@ -4753,6 +4768,21 @@ SDL_DestroyRenderer(SDL_Renderer *renderer)
 DECLSPEC void SDLCALL
 SDL_SetWindowPosition(SDL_Window *window, int x, int y)
 {
+    /* Popup windows need to be transformed from global to relative coordinates. */
+    if (SDL3_GetWindowFlags(window) & (SDL_WINDOW_TOOLTIP | SDL_WINDOW_POPUP_MENU)) {
+        SDL_Window *parent = SDL3_GetWindowData(window, POPUP_PARENT_PROP_STR);
+
+        while (parent) {
+            int x_off, y_off;
+            SDL3_GetWindowPosition(parent, &x_off, &y_off);
+
+            x -= x_off;
+            y -= y_off;
+
+            parent = SDL3_GetWindowData(parent, POPUP_PARENT_PROP_STR);
+        }
+    }
+
     SDL3_SetWindowPosition(window, x, y);
 }
 
@@ -4760,6 +4790,21 @@ DECLSPEC void SDLCALL
 SDL_GetWindowPosition(SDL_Window *window, int *x, int *y)
 {
     SDL3_GetWindowPosition(window, x, y);
+
+    /* Popup windows need to be transformed from relative to global coordinates. */
+    if (SDL3_GetWindowFlags(window) & (SDL_WINDOW_TOOLTIP | SDL_WINDOW_POPUP_MENU)) {
+        SDL_Window *parent = SDL3_GetWindowData(window, POPUP_PARENT_PROP_STR);
+
+        while (parent) {
+            int x_off, y_off;
+            SDL3_GetWindowPosition(parent, &x_off, &y_off);
+
+            *x += x_off;
+            *y += y_off;
+
+            parent = SDL3_GetWindowData(parent, POPUP_PARENT_PROP_STR);
+        }
+    }
 }
 
 DECLSPEC void SDLCALL
