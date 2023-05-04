@@ -4770,7 +4770,7 @@ SDL_SetWindowPosition(SDL_Window *window, int x, int y)
 {
     /* Popup windows need to be transformed from global to relative coordinates. */
     if (SDL3_GetWindowFlags(window) & (SDL_WINDOW_TOOLTIP | SDL_WINDOW_POPUP_MENU)) {
-        SDL_Window *parent = SDL3_GetWindowData(window, POPUP_PARENT_PROP_STR);
+        SDL_Window *parent = (SDL_Window *) SDL3_GetWindowData(window, POPUP_PARENT_PROP_STR);
 
         while (parent) {
             int x_off, y_off;
@@ -4779,7 +4779,7 @@ SDL_SetWindowPosition(SDL_Window *window, int x, int y)
             x -= x_off;
             y -= y_off;
 
-            parent = SDL3_GetWindowData(parent, POPUP_PARENT_PROP_STR);
+            parent = (SDL_Window *) SDL3_GetWindowData(parent, POPUP_PARENT_PROP_STR);
         }
     }
 
@@ -4793,7 +4793,7 @@ SDL_GetWindowPosition(SDL_Window *window, int *x, int *y)
 
     /* Popup windows need to be transformed from relative to global coordinates. */
     if (SDL3_GetWindowFlags(window) & (SDL_WINDOW_TOOLTIP | SDL_WINDOW_POPUP_MENU)) {
-        SDL_Window *parent = SDL3_GetWindowData(window, POPUP_PARENT_PROP_STR);
+        SDL_Window *parent = (SDL_Window *) SDL3_GetWindowData(window, POPUP_PARENT_PROP_STR);
 
         while (parent) {
             int x_off, y_off;
@@ -4802,7 +4802,7 @@ SDL_GetWindowPosition(SDL_Window *window, int *x, int *y)
             *x += x_off;
             *y += y_off;
 
-            parent = SDL3_GetWindowData(parent, POPUP_PARENT_PROP_STR);
+            parent = (SDL_Window *) SDL3_GetWindowData(parent, POPUP_PARENT_PROP_STR);
         }
     }
 }
