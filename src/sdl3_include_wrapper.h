@@ -868,6 +868,10 @@
 #define SDL_CreatePopupWindow IGNORE_THIS_VERSION_OF_SDL_CreatePopupWindow
 #define SDL_GetWindowParent IGNORE_THIS_VERSION_OF_SDL_GetWindowParent
 #define SDL_CreateWindowWithPosition IGNORE_THIS_VERSION_OF_SDL_CreateWindowWithPosition
+#define SDL_SetClipboardData IGNORE_THIS_VERSION_OF_SDL_SetClipboardData
+#define SDL_GetClipboardUserdata IGNORE_THIS_VERSION_OF_SDL_GetClipboardUserdata
+#define SDL_GetClipboardData IGNORE_THIS_VERSION_OF_SDL_GetClipboardData
+#define SDL_HasClipboardData IGNORE_THIS_VERSION_OF_SDL_HasClipboardData
 #define SDL_GetAudioStreamFormat IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamFormat
 #define SDL_SetAudioStreamFormat IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamFormat
 #define SDL_CreateRWLock IGNORE_THIS_VERSION_OF_SDL_CreateRWLock
@@ -877,6 +881,7 @@
 #define SDL_TryLockRWLockForWriting IGNORE_THIS_VERSION_OF_SDL_TryLockRWLockForWriting
 #define SDL_UnlockRWLock IGNORE_THIS_VERSION_OF_SDL_UnlockRWLock
 #define SDL_DestroyRWLock IGNORE_THIS_VERSION_OF_SDL_DestroyRWLock
+#define SDL_GetPath IGNORE_THIS_VERSION_OF_SDL_GetPath
 
 /* *** HACK HACK HACK:
  * *** Avoid including SDL_thread.h: it defines SDL_CreateThread() as a macro
@@ -887,8 +892,8 @@
 #define SDL2COMPAT_WINRT
 #endif
 #endif
+
 #if defined(_WIN32) && !defined(SDL2COMPAT_WINRT)
-#define _SDL_thread_h
 #define SDL_thread_h_
 #define SDL_PASSED_BEGINTHREAD_ENDTHREAD
 #endif
@@ -4295,6 +4300,22 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_CreateWindowWithPosition
 #endif
 
+#ifdef SDL_SetClipboardData
+#undef SDL_SetClipboardData
+#endif
+
+#ifdef SDL_GetClipboardUserdata
+#undef SDL_GetClipboardUserdata
+#endif
+
+#ifdef SDL_GetClipboardData
+#undef SDL_GetClipboardData
+#endif
+
+#ifdef SDL_HasClipboardData
+#undef SDL_HasClipboardData
+#endif
+
 #ifdef SDL_GetAudioStreamFormat
 #undef SDL_GetAudioStreamFormat
 #endif
@@ -4329,6 +4350,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_DestroyRWLock
 #undef SDL_DestroyRWLock
+#endif
+
+#ifdef SDL_GetPath
+#undef SDL_GetPath
 #endif
 
 /* undefine these macros too: */
