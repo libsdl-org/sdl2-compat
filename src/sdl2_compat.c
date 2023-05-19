@@ -5503,7 +5503,7 @@ SDL_ConvertAudio(SDL_AudioCVT *cvt)
             (Uint8 *)&cvt->filters[SDL_AUDIOCVT_MAX_FILTERS + 1] - (sizeof(AudioParam) & ~3),
             sizeof(ap));
 
-        src_format = ap.dst_format;
+        src_format = ap.src_format;
         src_channels = ap.src_channels;
         src_rate = ap.src_rate;
         dst_format = ap.dst_format;
