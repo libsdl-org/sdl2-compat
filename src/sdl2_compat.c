@@ -3789,7 +3789,10 @@ SDL_GetNumDisplayModes(int displayIndex)
 DECLSPEC int SDLCALL
 SDL_GetDisplayDPI(int displayIndex, float *ddpi, float *hdpi, float *vdpi)
 {
-    float content_scale = SDL3_GetDisplayContentScale(Display_IndexToID(displayIndex));
+    SDL_DisplayID displayID = Display_IndexToID(displayIndex);
+    const SDL_DisplayMode *dp = SDL3_GetDesktopDisplayMode(displayID);
+    float pixel_density = dp ? dp->pixel_density : 1.0f;
+    float content_scale = SDL3_GetDisplayContentScale(displayID);
     float dpi;
 
     if (content_scale == 0.0f) {
@@ -3797,9 +3800,9 @@ SDL_GetDisplayDPI(int displayIndex, float *ddpi, float *hdpi, float *vdpi)
     }
 
 #if defined(__ANDROID__) || defined(__IOS__)
-    dpi = content_scale * 160.0f;
+    dpi = pixel_density * content_scale * 160.0f;
 #else
-    dpi = content_scale * 96.0f;
+    dpi = pixel_density * content_scale * 96.0f;
 #endif
 
     if (hdpi) {
