@@ -863,7 +863,6 @@
 #define SDL_ConvertEventToRenderCoordinates IGNORE_THIS_VERSION_OF_SDL_ConvertEventToRenderCoordinates
 #define SDL_SetRenderScale IGNORE_THIS_VERSION_OF_SDL_SetRenderScale
 #define SDL_GetRenderScale IGNORE_THIS_VERSION_OF_SDL_GetRenderScale
-#define SDL_GetRenderWindowSize IGNORE_THIS_VERSION_OF_SDL_GetRenderWindowSize
 #define SDL_GetSystemTheme IGNORE_THIS_VERSION_OF_SDL_GetSystemTheme
 #define SDL_CreatePopupWindow IGNORE_THIS_VERSION_OF_SDL_CreatePopupWindow
 #define SDL_GetWindowParent IGNORE_THIS_VERSION_OF_SDL_GetWindowParent
@@ -882,6 +881,9 @@
 #define SDL_UnlockRWLock IGNORE_THIS_VERSION_OF_SDL_UnlockRWLock
 #define SDL_DestroyRWLock IGNORE_THIS_VERSION_OF_SDL_DestroyRWLock
 #define SDL_GetPath IGNORE_THIS_VERSION_OF_SDL_GetPath
+#define SDL_GetDisplayContentScale IGNORE_THIS_VERSION_OF_SDL_GetDisplayContentScale
+#define SDL_GetWindowDisplayScale IGNORE_THIS_VERSION_OF_SDL_GetWindowDisplayScale
+#define SDL_GetWindowPixelDensity IGNORE_THIS_VERSION_OF_SDL_GetWindowPixelDensity
 
 /* *** HACK HACK HACK:
  * *** Avoid including SDL_thread.h: it defines SDL_CreateThread() as a macro
@@ -4280,10 +4282,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetRenderScale
 #endif
 
-#ifdef SDL_GetRenderWindowSize
-#undef SDL_GetRenderWindowSize
-#endif
-
 #ifdef SDL_GetSystemTheme
 #undef SDL_GetSystemTheme
 #endif
@@ -4354,6 +4352,18 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetPath
 #undef SDL_GetPath
+#endif
+
+#ifdef SDL_GetDisplayContentScale
+#undef SDL_GetDisplayContentScale
+#endif
+
+#ifdef SDL_GetWindowDisplayScale
+#undef SDL_GetWindowDisplayScale
+#endif
+
+#ifdef SDL_GetWindowPixelDensity
+#undef SDL_GetWindowPixelDensity
 #endif
 
 /* undefine these macros too: */
