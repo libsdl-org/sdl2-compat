@@ -5576,6 +5576,15 @@ SDL_Metal_GetDrawableSize(SDL_Window *window, int *w, int *h)
     SDL_GetWindowSizeInPixels(window, w, h);
 }
 
+
+DECLSPEC SDL_hid_device * SDLCALL
+SDL_hid_open_path(const char *path, int bExclusive)
+{
+    (void) bExclusive;
+    return SDL3_hid_open_path(path);
+}
+
+
 #ifdef __WINRT__
 DECLSPEC int SDLCALL
 SDL_WinRTRunApp(SDL_main_func mainFunction, void *reserved)

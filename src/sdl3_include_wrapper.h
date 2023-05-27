@@ -660,10 +660,10 @@
 #define SDL_StopTextInput IGNORE_THIS_VERSION_OF_SDL_StopTextInput
 #define SDL_SurfaceHasColorKey IGNORE_THIS_VERSION_OF_SDL_SurfaceHasColorKey
 #define SDL_SurfaceHasRLE IGNORE_THIS_VERSION_OF_SDL_SurfaceHasRLE
-#define SDL_TLSCleanup IGNORE_THIS_VERSION_OF_SDL_TLSCleanup
-#define SDL_TLSCreate IGNORE_THIS_VERSION_OF_SDL_TLSCreate
-#define SDL_TLSGet IGNORE_THIS_VERSION_OF_SDL_TLSGet
-#define SDL_TLSSet IGNORE_THIS_VERSION_OF_SDL_TLSSet
+#define SDL_CleanupTLS IGNORE_THIS_VERSION_OF_SDL_CleanupTLS
+#define SDL_CreateTLS IGNORE_THIS_VERSION_OF_SDL_CreateTLS
+#define SDL_GetTLS IGNORE_THIS_VERSION_OF_SDL_GetTLS
+#define SDL_SetTLS IGNORE_THIS_VERSION_OF_SDL_SetTLS
 #define SDL_TextInputActive IGNORE_THIS_VERSION_OF_SDL_TextInputActive
 #define SDL_TextInputShown IGNORE_THIS_VERSION_OF_SDL_TextInputShown
 #define SDL_ThreadID IGNORE_THIS_VERSION_OF_SDL_ThreadID
@@ -884,6 +884,12 @@
 #define SDL_GetDisplayContentScale IGNORE_THIS_VERSION_OF_SDL_GetDisplayContentScale
 #define SDL_GetWindowDisplayScale IGNORE_THIS_VERSION_OF_SDL_GetWindowDisplayScale
 #define SDL_GetWindowPixelDensity IGNORE_THIS_VERSION_OF_SDL_GetWindowPixelDensity
+#define SDL_wcstol IGNORE_THIS_VERSION_OF_SDL_wcstol
+#define SDL_swprintf IGNORE_THIS_VERSION_OF_SDL_swprintf
+#define SDL_vswprintf IGNORE_THIS_VERSION_OF_SDL_vswprintf
+#define SDL_hid_get_input_report IGNORE_THIS_VERSION_OF_SDL_hid_get_input_report
+#define SDL_hid_get_device_info IGNORE_THIS_VERSION_OF_SDL_hid_get_device_info
+#define SDL_hid_get_report_descriptor IGNORE_THIS_VERSION_OF_SDL_hid_get_report_descriptor
 
 /* *** HACK HACK HACK:
  * *** Avoid including SDL_thread.h: it defines SDL_CreateThread() as a macro
@@ -3470,20 +3476,20 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_SurfaceHasRLE
 #endif
 
-#ifdef SDL_TLSCleanup
-#undef SDL_TLSCleanup
+#ifdef SDL_CleanupTLS
+#undef SDL_CleanupTLS
 #endif
 
-#ifdef SDL_TLSCreate
-#undef SDL_TLSCreate
+#ifdef SDL_CreateTLS
+#undef SDL_CreateTLS
 #endif
 
-#ifdef SDL_TLSGet
-#undef SDL_TLSGet
+#ifdef SDL_GetTLS
+#undef SDL_GetTLS
 #endif
 
-#ifdef SDL_TLSSet
-#undef SDL_TLSSet
+#ifdef SDL_SetTLS
+#undef SDL_SetTLS
 #endif
 
 #ifdef SDL_TextInputActive
@@ -4364,6 +4370,30 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetWindowPixelDensity
 #undef SDL_GetWindowPixelDensity
+#endif
+
+#ifdef SDL_wcstol
+#undef SDL_wcstol
+#endif
+
+#ifdef SDL_swprintf
+#undef SDL_swprintf
+#endif
+
+#ifdef SDL_vswprintf
+#undef SDL_vswprintf
+#endif
+
+#ifdef SDL_hid_get_input_report
+#undef SDL_hid_get_input_report
+#endif
+
+#ifdef SDL_hid_get_device_info
+#undef SDL_hid_get_device_info
+#endif
+
+#ifdef SDL_hid_get_report_descriptor
+#undef SDL_hid_get_report_descriptor
 #endif
 
 /* undefine these macros too: */
