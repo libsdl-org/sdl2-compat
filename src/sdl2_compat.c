@@ -1083,6 +1083,27 @@ typedef struct EventFilterWrapperData
 } EventFilterWrapperData;
 
 
+/* SDL3 added a bus_type field we need to workaround. */
+typedef struct SDL2_hid_device_info
+{
+    char *path;
+    unsigned short vendor_id;
+    unsigned short product_id;
+    wchar_t *serial_number;
+    unsigned short release_number;
+    wchar_t *manufacturer_string;
+    wchar_t *product_string;
+    unsigned short usage_page;
+    unsigned short usage;
+    int interface_number;
+    int interface_class;
+    int interface_subclass;
+    int interface_protocol;
+    struct SDL2_hid_device_info *next;
+} SDL2_hid_device_info;
+
+
+
 /* Some SDL2 state we need to keep... */
 
 /* !!! FIXME: unify coding convention on the globals: some are MyVariableName and some are my_variable_name */
@@ -5582,6 +5603,74 @@ SDL_hid_open_path(const char *path, int bExclusive)
 {
     (void) bExclusive;
     return SDL3_hid_open_path(path);
+}
+
+
+DECLSPEC void SDLCALL
+SDL_hid_free_enumeration(SDL2_hid_device_info *devs)
+{
+    while (devs) {
+        struct SDL2_hid_device_info *next = devs->next;
+        SDL_free(devs->path);
+        SDL_free(devs->serial_number);
+        SDL_free(devs->manufacturer_string);
+        SDL_free(devs->product_string);
+        SDL_free(devs);
+        devs = next;
+    }
+}
+
+DECLSPEC SDL2_hid_device_info * SDLCALL
+SDL_hid_enumerate(unsigned short vendor_id, unsigned short product_id)
+{
+    /* the struct is slightly different in SDL3, convert it. */
+    SDL2_hid_device_info *retval = NULL;
+    SDL_hid_device_info *list3 = SDL3_hid_enumerate(vendor_id, product_id);
+
+    if (list3 != NULL) {
+        SDL2_hid_device_info *tail = NULL;
+        SDL_hid_device_info *i;
+        for (i = list3; i != NULL; i = i->next) {
+            SDL2_hid_device_info *info = (SDL2_hid_device_info *) SDL_calloc(1, sizeof (SDL2_hid_device_info));
+            char *path = SDL3_strdup(i->path);
+            wchar_t *serial_number = SDL3_wcsdup(i->serial_number);
+            wchar_t *manufacturer_string = SDL3_wcsdup(i->manufacturer_string);
+            wchar_t *product_string = SDL3_wcsdup(i->product_string);
+            if (!info || !path || !serial_number || !manufacturer_string || !product_string) {
+                SDL_hid_free_enumeration(retval);
+                SDL3_free(info);
+                SDL3_free(path);
+                SDL3_free(serial_number);
+                SDL3_free(manufacturer_string);
+                SDL3_free(product_string);
+                SDL3_OutOfMemory();
+                return NULL;
+            }
+            if (tail) {
+                tail->next = info;
+            } else {
+                retval = info;
+            }
+            info->path = path;
+            info->vendor_id = i->vendor_id;
+            info->product_id = i->product_id;
+            info->serial_number = serial_number;
+            info->release_number = i->release_number;
+            info->manufacturer_string = manufacturer_string;
+            info->product_string = product_string;
+            info->usage_page = i->usage_page;
+            info->usage = i->usage;
+            info->interface_number = i->interface_number;
+            info->interface_class = i->interface_class;
+            info->interface_subclass = i->interface_subclass;
+            info->interface_protocol = i->interface_protocol;
+            info->next = NULL;
+            tail = info;
+        }
+        SDL3_hid_free_enumeration(list3);
+    }
+
+    return retval;
 }
 
 
