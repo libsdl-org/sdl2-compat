@@ -3405,7 +3405,7 @@ SDL_NewAudioStream(const SDL_AudioFormat real_src_format, const Uint8 src_channe
 {
     SDL_AudioFormat src_format = real_src_format;
     SDL_AudioFormat dst_format = real_dst_format;
-    SDL2_AudioStream *retval = (SDL2_AudioStream *) SDL_malloc(sizeof (SDL2_AudioStream));
+    SDL2_AudioStream *retval = (SDL2_AudioStream *) SDL3_malloc(sizeof (SDL2_AudioStream));
     if (!retval) {
         SDL3_OutOfMemory();
         return NULL;
@@ -3421,7 +3421,7 @@ SDL_NewAudioStream(const SDL_AudioFormat real_src_format, const Uint8 src_channe
 
     retval->stream3 = SDL3_CreateAudioStream(src_format, src_channels, src_rate, dst_format, dst_channels, dst_rate);
     if (retval->stream3 == NULL) {
-        SDL_free(retval);
+        SDL3_free(retval);
         return NULL;
     }
 
@@ -3448,7 +3448,7 @@ SDL_AudioStreamPut(SDL2_AudioStream *stream2, const void *buf, int len)
             AudioUi16MSBToSi16Sys(tmpbuf, (const Uint16 *) buf, tmpsamples);
         }
         retval = SDL3_PutAudioStreamData(stream2->stream3, tmpbuf, len);
-        SDL_free(tmpbuf);
+        SDL3_free(tmpbuf);
     } else {
         retval = SDL3_PutAudioStreamData(stream2->stream3, buf, len);
     }
@@ -3706,18 +3706,18 @@ Display_IndexToID(int displayIndex)
 
     if (list == NULL || count == 0) {
         SDL3_SetError("no displays");
-        SDL_free(list);
+        SDL3_free(list);
         return 0;
     }
 
     if (displayIndex < 0 || displayIndex >= count) {
         SDL3_SetError("invalid displayIndex");
-        SDL_free(list);
+        SDL3_free(list);
         return 0;
     }
 
     displayID = list[displayIndex];
-    SDL_free(list);
+    SDL3_free(list);
     return displayID;
 }
 
@@ -3727,7 +3727,7 @@ SDL_GetNumVideoDisplays(void)
     int count = 0;
     SDL_DisplayID *list = NULL;
     list = SDL3_GetDisplays(&count);
-    SDL_free(list);
+    SDL3_free(list);
     return count;
 }
 
@@ -3768,7 +3768,7 @@ Display_IDToIndex(SDL_DisplayID displayID)
 
     if (list == NULL || count == 0) {
         SDL3_SetError("no displays");
-        SDL_free(list);
+        SDL3_free(list);
         return -1;
     }
 
@@ -3778,7 +3778,7 @@ Display_IDToIndex(SDL_DisplayID displayID)
             break;
         }
     }
-    SDL_free(list);
+    SDL3_free(list);
     return displayIndex;
 }
 
@@ -3803,7 +3803,7 @@ SDL_GetNumDisplayModes(int displayIndex)
     int count = 0;
     const SDL_DisplayMode **list;
     list = SDL3_GetFullscreenDisplayModes(displayID, &count);
-    SDL_free((void *)list);
+    SDL3_free((void *)list);
     return count;
 }
 
@@ -3866,7 +3866,7 @@ SDL_GetDisplayMode(int displayIndex, int modeIndex, SDL2_DisplayMode *mode)
         }
         ret = 0;
     }
-    SDL_free((void *)list);
+    SDL3_free((void *)list);
     return ret;
 }
 
@@ -4024,11 +4024,11 @@ SDL_GetClosestDisplayModeForDisplay(SDL_DisplayID displayID,
         if (!closest->h) {
             closest->h = 480;
         }
-        SDL_free((void *)list);
+        SDL3_free((void *)list);
         return closest;
     }
 
-    SDL_free((void *)list);
+    SDL3_free((void *)list);
     return NULL;
 }
 
@@ -4076,7 +4076,7 @@ SDL_SetWindowDisplayMode(SDL_Window *window, const SDL2_DisplayMode *mode)
         if (list && count) {
             ret = SDL3_SetWindowFullscreenMode(window, list[0]);
         }
-        SDL_free((void *)list);
+        SDL3_free((void *)list);
         return ret;
     }
 }
@@ -5631,7 +5631,7 @@ SDL_hid_enumerate(unsigned short vendor_id, unsigned short product_id)
         SDL2_hid_device_info *tail = NULL;
         SDL_hid_device_info *i;
         for (i = list3; i != NULL; i = i->next) {
-            SDL2_hid_device_info *info = (SDL2_hid_device_info *) SDL_calloc(1, sizeof (SDL2_hid_device_info));
+            SDL2_hid_device_info *info = (SDL2_hid_device_info *) SDL3_calloc(1, sizeof (SDL2_hid_device_info));
             char *path = SDL3_strdup(i->path);
             wchar_t *serial_number = SDL3_wcsdup(i->serial_number);
             wchar_t *manufacturer_string = SDL3_wcsdup(i->manufacturer_string);
