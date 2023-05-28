@@ -20,7 +20,7 @@ Here's how to test games with sdl2-compat.
 Unlike SDL 1.2, where we didn't build the compatibility layer until almost
 a decade in and most major projects had already migrated, there are _tons_
 of SDL2 games at the time of this writing; almost any Linux game on Steam
-in 2022 is using SDL2, not to mention almost any game that is in a Linux
+in 2023 is using SDL2, not to mention almost any game that is in a Linux
 distribution's package manager, etc.
 
 As such, while we kept a spreadsheet for known SDL 1.2 titles, we don't
@@ -31,7 +31,7 @@ you look!
 ## Make sure the game works with real SDL2 first!
 
 You'd be surprised how quickly games can bitrot! If it doesn't work with
-real SDL2 anymore, it's not a bug if sdl12-compat doesn't work either.
+real SDL2 anymore, it's not a bug if sdl2-compat doesn't work either.
 
 
 ## Force it to use sdl2-compat instead.
@@ -138,7 +138,7 @@ And then make sure you force it to use _your_ sdl2-compat instead of the
 system/Steam Runtime build:
 
 ```bash
-export LD_LIBRARY_PATH=/where/i/installed/sdl12-compat
+export LD_LIBRARY_PATH=/where/i/installed/sdl2-compat
 ```
 
 Putting this all together, you might run [Portal](https://store.steampowered.com/app/400/)
