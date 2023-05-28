@@ -5611,11 +5611,11 @@ SDL_hid_free_enumeration(SDL2_hid_device_info *devs)
 {
     while (devs) {
         struct SDL2_hid_device_info *next = devs->next;
-        SDL_free(devs->path);
-        SDL_free(devs->serial_number);
-        SDL_free(devs->manufacturer_string);
-        SDL_free(devs->product_string);
-        SDL_free(devs);
+        SDL3_free(devs->path);
+        SDL3_free(devs->serial_number);
+        SDL3_free(devs->manufacturer_string);
+        SDL3_free(devs->product_string);
+        SDL3_free(devs);
         devs = next;
     }
 }
