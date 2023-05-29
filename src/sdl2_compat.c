@@ -1323,6 +1323,8 @@ SysWmType3to2(const SDL_SYSWM_TYPE typ3)
    any app could get an unknown event type anyhow, as SDL development progressed or a library registered
    a user event, etc, so we don't bother filtering new SDL3 types out. */
 
+static int GetIndexFromJoystickInstance(SDL_JoystickID jid);
+
 static SDL2_Event *
 Event3to2(const SDL_Event *event3, SDL2_Event *event2)
 {
@@ -1366,6 +1368,11 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
         break;
     case SDL_EVENT_SENSOR_UPDATE:
         event2->sensor.timestamp_us = SDL_NS_TO_US(event3->sensor.sensor_timestamp);
+        break;
+    /* Change SDL3 InstanceID to index */
+    case SDL_EVENT_JOYSTICK_ADDED:
+    case SDL_EVENT_GAMEPAD_ADDED:
+        event2->jaxis.which = GetIndexFromJoystickInstance(event3->jaxis.which);
         break;
     default:
         break;
@@ -1428,7 +1435,6 @@ SDL_PushEvent(SDL2_Event *event2)
 }
 
 static int Display_IDToIndex(SDL_DisplayID displayID);
-static int GetIndexFromJoystickInstance(SDL_JoystickID jid);
 
 static int SDLCALL
 EventFilter3to2(void *userdata, SDL_Event *event3)
@@ -1454,30 +1460,11 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
     /* push new events when we need to convert something, like toplevel SDL3 events generating the SDL2 SDL_WINDOWEVENT. */
 
     switch (event3->type) {
-        case SDL_EVENT_JOYSTICK_AXIS_MOTION:
-        case SDL_EVENT_JOYSTICK_HAT_MOTION:
-        case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
-        case SDL_EVENT_JOYSTICK_BUTTON_UP:
         case SDL_EVENT_JOYSTICK_ADDED:
-        case SDL_EVENT_JOYSTICK_BATTERY_UPDATED:
-        case SDL_EVENT_GAMEPAD_AXIS_MOTION:
-        case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
-        case SDL_EVENT_GAMEPAD_BUTTON_UP:
         case SDL_EVENT_GAMEPAD_ADDED:
-        case SDL_EVENT_GAMEPAD_REMAPPED:
-        case SDL_EVENT_GAMEPAD_TOUCHPAD_DOWN:
-        case SDL_EVENT_GAMEPAD_TOUCHPAD_MOTION:
-        case SDL_EVENT_GAMEPAD_TOUCHPAD_UP:
-        case SDL_EVENT_GAMEPAD_SENSOR_UPDATE:
-            /* Change SDL3 InstanceID to index */
-            SDL_NumJoysticks(); /* Refresh */
-            event3->jaxis.which = GetIndexFromJoystickInstance(event3->jaxis.which);
-            break;
-
         case SDL_EVENT_GAMEPAD_REMOVED:
         case SDL_EVENT_JOYSTICK_REMOVED:
-            event3->jaxis.which = GetIndexFromJoystickInstance(event3->jaxis.which);
-            SDL_NumJoysticks(); /* Refresh after */
+            SDL_NumJoysticks(); /* Refresh */
             break;
 
         /* display events moved to the top level in SDL3. */
