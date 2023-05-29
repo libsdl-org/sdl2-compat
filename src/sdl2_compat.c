@@ -1085,7 +1085,7 @@ typedef struct EventFilterWrapperData
 
 
 /* SDL3 added a bus_type field we need to workaround. */
-typedef struct SDL2_hid_device_info
+struct SDL2_hid_device_info
 {
     char *path;
     unsigned short vendor_id;
@@ -1101,7 +1101,7 @@ typedef struct SDL2_hid_device_info
     int interface_subclass;
     int interface_protocol;
     struct SDL2_hid_device_info *next;
-} SDL2_hid_device_info;
+};
 
 
 
@@ -4667,12 +4667,6 @@ SDL_SetWindowMaximumSize(SDL_Window *window, int max_w, int max_h)
 }
 
 DECLSPEC void SDLCALL
-SDL_hid_close(SDL_hid_device * dev)
-{
-    SDL3_hid_close(dev);
-}
-
-DECLSPEC void SDLCALL
 SDL_JoystickSetPlayerIndex(SDL_Joystick *joystick, int player_index)
 {
     SDL3_SetJoystickPlayerIndex(joystick, player_index);
@@ -5593,6 +5587,11 @@ SDL_hid_open_path(const char *path, int bExclusive)
     return SDL3_hid_open_path(path);
 }
 
+DECLSPEC void SDLCALL
+SDL_hid_close(SDL_hid_device * dev)
+{
+    SDL3_hid_close(dev);
+}
 
 DECLSPEC void SDLCALL
 SDL_hid_free_enumeration(SDL2_hid_device_info *devs)
