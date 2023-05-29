@@ -395,13 +395,13 @@ SDL2_to_SDL3_hint(const char *name)
     if (SDL3_strcmp(name, "SDL_VIDEODRIVER") == 0) {
         return "SDL_VIDEO_DRIVER";
     }
-    if (SDL3_strcmp(name, "SDL_AUDIODRIVER") == 0) {
+    else if (SDL3_strcmp(name, "SDL_AUDIODRIVER") == 0) {
         return "SDL_AUDIO_DRIVER";
     }
-    if (SDL3_strcmp(name, "SDL_VIDEO_X11_WMCLASS") == 0) {
+    else if (SDL3_strcmp(name, "SDL_VIDEO_X11_WMCLASS") == 0) {
         return "SDL_APP_ID";
     }
-    if (SDL3_strcmp(name, "SDL_VIDEO_WAYLAND_WMCLASS") == 0) {
+    else if (SDL3_strcmp(name, "SDL_VIDEO_WAYLAND_WMCLASS") == 0) {
         return "SDL_APP_ID";
     }
 
@@ -462,29 +462,15 @@ SDL2Compat_ApplyQuirks(SDL_bool force_x11)
         SDL3_Log("This app appears to be named '%s'", exe_name);
     }
 
-    {
-        /* if you change this, update also SDL2_to_SDL3_hint() */
-        /* hint/env names updated.
-         * SDL_VIDEO_DRIVER (SDL2) to SDL_VIDEO_DRIVER (SDL3)
-         * SDL_AUDIO_DRIVER (SDL2) to SDL_AUDIO_DRIVER (SDL3)
-         */
-        const char *videodriver_env = SDL3_getenv("SDL_VIDEODRIVER");
-        const char *audiodriver_env = SDL3_getenv("SDL_AUDIODRIVER");
-        const char *x11_wmclass_env = SDL3_getenv("SDL_VIDEO_X11_WMCLASS");
-        const char *wayland_wmclass_env = SDL3_getenv("SDL_VIDEO_WAYLAND_WMCLASS");
-        if (videodriver_env) {
-            SDL3_setenv("SDL_VIDEO_DRIVER", videodriver_env, 1);
-        }
-        if (audiodriver_env) {
-            SDL3_setenv("SDL_AUDIO_DRIVER", audiodriver_env, 1);
-        }
-        if (x11_wmclass_env) {
-            SDL3_setenv("SDL_APP_ID", x11_wmclass_env, 1);
-        }
-        if (wayland_wmclass_env) {
-            SDL3_setenv("SDL_APP_ID", wayland_wmclass_env, 1);
-        }
-    }
+#define UpdateHintName(old, new) \
+    { const char *old_env = SDL3_getenv(old); if (old_env) { SDL3_setenv(new, old_env, 1); } }
+
+    /* if you change this, update also SDL2_to_SDL3_hint() */
+    UpdateHintName("SDL_VIDEODRIVER", "SDL_VIDEO_DRIVER");
+    UpdateHintName("SDL_AUDIODRIVER", "SDL_AUDIO_DRIVER");
+    UpdateHintName("SDL_VIDEO_X11_WMCLASS", "SDL_APP_ID");
+    UpdateHintName("SDL_VIDEO_WAYLAND_WMCLASS", "SDL_APP_ID");
+#undef UpdateHintName
 
     #ifdef __linux__
     if (force_x11) {
