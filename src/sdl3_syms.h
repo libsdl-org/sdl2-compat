@@ -912,6 +912,8 @@ SDL3_SYM(const SDL_DisplayMode *,GetWindowFullscreenMode,(SDL_Window *a),(a),ret
 SDL3_SYM(const SDL_DisplayMode **,GetFullscreenDisplayModes,(SDL_DisplayID a, int *b),(a,b),return)
 SDL3_SYM(int,GetRenderLogicalPresentation,(SDL_Renderer *a, int *b, int *c, SDL_RendererLogicalPresentation *d, SDL_ScaleMode *e),(a,b,c,d,e),return)
 SDL3_SYM(int,SetRenderLogicalPresentation,(SDL_Renderer *a, int b, int c, SDL_RendererLogicalPresentation d, SDL_ScaleMode e),(a,b,c,d,e),return)
+SDL3_SYM_PASSTHROUGH(SDL_bool,HasWindowSurface,(SDL_Window *a),(a),return)
+SDL3_SYM_PASSTHROUGH(int,DestroyWindowSurface,(SDL_Window *a),(a),return)
 #undef SDL3_SYM
 #undef SDL3_SYM_PASSTHROUGH
 #undef SDL3_SYM_RENAMED
