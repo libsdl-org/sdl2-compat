@@ -449,9 +449,23 @@ static void SDL_InitDynamicAPILocked(void)
     SDL_bool use_internal = SDL_TRUE;
 
     if (libname) {
-        entry = (SDL_DYNAPI_ENTRYFN) get_sdlapi_entry(libname, "SDL_DYNAPI_entry");
+        while (*libname && !entry) {
+            char *ptr = libname;
+            while (SDL_TRUE) {
+                const char ch = *ptr;
+                if ((ch == ',') || (ch == '\0')) {
+                    *ptr = '\0';
+                    entry = (SDL_DYNAPI_ENTRYFN)get_sdlapi_entry(libname, "SDL_DYNAPI_entry");
+                    *ptr = ch;
+                    libname = (ch == '\0') ? ptr : (ptr + 1);
+                    break;
+                } else {
+                    ptr++;
+                }
+            }
+        }
         if (!entry) {
-            dynapi_warn("Couldn't load overriding SDL library. Please fix or remove the " SDL_DYNAMIC_API_ENVVAR " environment variable. Using the default SDL.");
+            dynapi_warn("Couldn't load an overriding SDL library. Please fix or remove the " SDL_DYNAMIC_API_ENVVAR " environment variable. Using the default SDL.");
             /* Just fill in the function pointers from this library, later. */
         }
     }
