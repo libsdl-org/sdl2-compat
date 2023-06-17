@@ -192,7 +192,7 @@
 #define SDL_GetDisplayForPoint IGNORE_THIS_VERSION_OF_SDL_GetDisplayForPoint
 #define SDL_GetDisplayForRect IGNORE_THIS_VERSION_OF_SDL_GetDisplayForRect
 #define SDL_GetDisplayName IGNORE_THIS_VERSION_OF_SDL_GetDisplayName
-#define SDL_GetDisplayOrientation IGNORE_THIS_VERSION_OF_SDL_GetDisplayOrientation
+#define SDL_GetCurrentDisplayOrientation IGNORE_THIS_VERSION_OF_SDL_GetCurrentDisplayOrientation
 #define SDL_GetDisplayUsableBounds IGNORE_THIS_VERSION_OF_SDL_GetDisplayUsableBounds
 #define SDL_GetError IGNORE_THIS_VERSION_OF_SDL_GetError
 #define SDL_GetErrorMsg IGNORE_THIS_VERSION_OF_SDL_GetErrorMsg
@@ -892,6 +892,7 @@
 #define SDL_hid_get_report_descriptor IGNORE_THIS_VERSION_OF_SDL_hid_get_report_descriptor
 #define SDL_HasWindowSurface IGNORE_THIS_VERSION_OF_SDL_HasWindowSurface
 #define SDL_DestroyWindowSurface IGNORE_THIS_VERSION_OF_SDL_DestroyWindowSurface
+#define SDL_GetNaturalDisplayOrientation IGNORE_THIS_VERSION_OF_SDL_GetNaturalDisplayOrientation
 
 /* *** HACK HACK HACK:
  * *** Avoid including SDL_thread.h: it defines SDL_CreateThread() as a macro
@@ -1606,8 +1607,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetDisplayName
 #endif
 
-#ifdef SDL_GetDisplayOrientation
-#undef SDL_GetDisplayOrientation
+#ifdef SDL_GetCurrentDisplayOrientation
+#undef SDL_GetCurrentDisplayOrientation
 #endif
 
 #ifdef SDL_GetDisplayUsableBounds
@@ -4404,6 +4405,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_DestroyWindowSurface
 #undef SDL_DestroyWindowSurface
+#endif
+
+#ifdef SDL_GetNaturalDisplayOrientation
+#undef SDL_GetNaturalDisplayOrientation
 #endif
 
 /* undefine these macros too: */

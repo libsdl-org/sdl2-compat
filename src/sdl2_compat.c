@@ -3837,7 +3837,7 @@ DECLSPEC SDL_DisplayOrientation SDLCALL
 SDL_GetDisplayOrientation(int displayIndex)
 {
     SDL_DisplayID displayID = Display_IndexToID(displayIndex);
-    return SDL3_GetDisplayOrientation(displayID);
+    return SDL3_GetCurrentDisplayOrientation(displayID);
 }
 
 DECLSPEC int SDLCALL

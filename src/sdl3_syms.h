@@ -656,7 +656,7 @@ SDL3_SYM_RENAMED(int,SensorGetData,GetSensorData,(SDL_Sensor *a, float *b, int c
 SDL3_SYM_RENAMED(void,SensorClose,CloseSensor,(SDL_Sensor *a),(a),)
 SDL3_SYM_RENAMED(void,SensorUpdate,UpdateSensors,(void),(),)
 SDL3_SYM_PASSTHROUGH(SDL_bool,IsTablet,(void),(),return)
-SDL3_SYM(SDL_DisplayOrientation,GetDisplayOrientation,(SDL_DisplayID a),(a),return)
+SDL3_SYM(SDL_DisplayOrientation,GetCurrentDisplayOrientation,(SDL_DisplayID a),(a),return)
 SDL3_SYM_RENAMED(SDL_bool,HasColorKey,SurfaceHasColorKey,(SDL_Surface *a),(a),return)
 
 #if (defined(__WIN32__) || defined(__GDK__)) && !defined(__WINRT__)
