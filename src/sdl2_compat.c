@@ -667,27 +667,6 @@ BOOL WINAPI _DllMainCRTStartup(HANDLE dllhandle, DWORD reason, LPVOID reserved)
 
 #define SDL2_RENDERER_TARGETTEXTURE 0x00000008
 
-/* this enum changed in SDL3. */
-typedef enum
-{
-    SDL2_SYSWM_UNKNOWN,
-    SDL2_SYSWM_WINDOWS,
-    SDL2_SYSWM_X11,
-    SDL2_SYSWM_DIRECTFB,
-    SDL2_SYSWM_COCOA,
-    SDL2_SYSWM_UIKIT,
-    SDL2_SYSWM_WAYLAND,
-    SDL2_SYSWM_MIR,
-    SDL2_SYSWM_WINRT,
-    SDL2_SYSWM_ANDROID,
-    SDL2_SYSWM_VIVANTE,
-    SDL2_SYSWM_OS2,
-    SDL2_SYSWM_HAIKU,
-    SDL2_SYSWM_KMSDRM,
-    SDL2_SYSWM_RISCOS
-} SDL2_SYSWM_TYPE;
-
-
 /* Events changed in SDL3; notably, the `timestamp` field moved from
    32 bit milliseconds to 64-bit nanoseconds, and the padding of the union
    changed, so all the SDL2 structs have to be reproduced here. */
@@ -1283,30 +1262,6 @@ SDL_LOG_IMPL(Warn, WARN)
 SDL_LOG_IMPL(Error, ERROR)
 SDL_LOG_IMPL(Critical, CRITICAL)
 #undef SDL_LOG_IMPL
-
-
-#if 0
-static SDL2_SYSWM_TYPE
-SysWmType3to2(const SDL_SYSWM_TYPE typ3)
-{
-    switch (typ3) {
-        case SDL_SYSWM_UNKNOWN: return SDL2_SYSWM_UNKNOWN;
-        case SDL_SYSWM_ANDROID: return SDL2_SYSWM_ANDROID;
-        case SDL_SYSWM_COCOA: return SDL2_SYSWM_COCOA;
-        case SDL_SYSWM_HAIKU: return SDL2_SYSWM_HAIKU;
-        case SDL_SYSWM_KMSDRM: return SDL2_SYSWM_KMSDRM;
-        case SDL_SYSWM_RISCOS: return SDL2_SYSWM_RISCOS;
-        case SDL_SYSWM_UIKIT: return SDL2_SYSWM_UIKIT;
-        case SDL_SYSWM_VIVANTE: return SDL2_SYSWM_VIVANTE;
-        case SDL_SYSWM_WAYLAND: return SDL2_SYSWM_WAYLAND;
-        case SDL_SYSWM_WINDOWS: return SDL2_SYSWM_WINDOWS;
-        case SDL_SYSWM_WINRT: return SDL2_SYSWM_WINRT;
-        case SDL_SYSWM_X11: return SDL2_SYSWM_X11;
-        default: break;
-    }
-    return SDL2_SYSWM_UNKNOWN;
-}
-#endif
 
 
 /* (current) strategy for SDL_Events:
@@ -2333,10 +2288,139 @@ SDL_GetTicks64(void)
     return SDL3_GetTicks();
 }
 
+static SDL_bool
+SysWMInfo3to2(SDL_SysWMinfo *wminfo3, SDL2_SysWMinfo *wminfo2)
+{
+    switch (wminfo3->subsystem) {
+#if defined(SDL_ENABLE_SYSWM_ANDROID)
+    case SDL_SYSWM_ANDROID:
+        wminfo2->subsystem = SDL2_SYSWM_ANDROID;
+        wminfo2->info.android.window = wminfo3->info.android.window;
+        wminfo2->info.android.surface = wminfo3->info.android.surface;
+        break;
+#endif
+#if defined(SDL_ENABLE_SYSWM_COCOA)
+    case SDL_SYSWM_COCOA:
+        wminfo2->subsystem = SDL2_SYSWM_COCOA;
+        wminfo2->info.cocoa.window = wminfo3->info.cocoa.window;
+        break;
+#endif
+#if defined(SDL_ENABLE_SYSWM_DIRECTFB)
+    case SDL_SYSWM_DIRECTFB:
+        wminfo2->info.dfb.dfb = wminfo3->info.dfb.dfb;
+        wminfo2->info.dfb.window = wminfo3->info.dfb.window;
+        wminfo2->info.dfb.surface = wminfo3->info.dfb.surface;
+        break;
+#endif
+#if defined(SDL_ENABLE_SYSWM_KMSDRM)
+    case SDL_SYSWM_KMSDRM:
+        wminfo2->subsystem = SDL2_SYSWM_KMSDRM;
+        wminfo2->info.kmsdrm.dev_index = wminfo3->info.kmsdrm.dev_index;
+        wminfo2->info.kmsdrm.drm_fd = wminfo3->info.kmsdrm.drm_fd;
+        wminfo2->info.kmsdrm.gbm_dev = wminfo3->info.kmsdrm.gbm_dev;
+        break;
+#endif
+#if defined(SDL_ENABLE_SYSWM_OS2)
+    case SDL_SYSWM_OS2:
+        wminfo2->subsystem = SDL2_SYSWM_OS2;
+        wminfo2->info.os2.hwnd = wminfo3->info.os2.hwnd;
+        wminfo2->info.os2.hwndFrame = wminfo3->info.os2.hwndFrame;
+        break;
+#endif
+#if defined(SDL_ENABLE_SYSWM_UIKIT)
+    case SDL_SYSWM_COCOA:
+        wminfo2->subsystem = SDL2_SYSWM_UIKIT;
+        wminfo2->info.uikit.window = wminfo3->info.uikit.window;
+        break;
+#endif
+#if defined(SDL_ENABLE_SYSWM_VIVANTE)
+    case SDL_SYSWM_VIVANTE:
+        wminfo2->subsystem = SDL2_SYSWM_VIVANTE;
+        wminfo2->info.vivante.display = wminfo3->info.vivante.display;
+        wminfo2->info.vivante.window = wminfo3->info.vivante.window;
+        break;
+#endif
+#if defined(SDL_ENABLE_SYSWM_WAYLAND)
+    case SDL_SYSWM_WAYLAND: {
+        Uint32 version2 = SDL_VERSIONNUM((Uint32)wminfo2->version.major,
+                                         (Uint32)wminfo2->version.minor,
+                                         (Uint32)wminfo2->version.patch);
+
+        /* Before 2.0.6, it was possible to build an SDL with Wayland support
+         * (SDL_SysWMinfo will be large enough to hold Wayland info), but build
+         * your app against SDL headers that didn't have Wayland support
+         * (SDL_SysWMinfo could be smaller than Wayland needs. This would lead
+         * to an app properly using SDL_GetWindowWMInfo() but we'd accidentally
+         * overflow memory on the stack or heap. To protect against this, we've
+         * padded out the struct unconditionally in the headers and Wayland will
+         * just return an error for older apps using this function. Those apps
+         * will need to be recompiled against newer headers or not use Wayland,
+         * maybe by forcing SDL_VIDEODRIVER=x11.
+         */
+        if (version2 < SDL_VERSIONNUM(2, 0, 6)) {
+            wminfo2->subsystem = SDL2_SYSWM_UNKNOWN;
+            SDL_SetError("Version must be 2.0.6 or newer");
+            return SDL_FALSE;
+        }
+
+        wminfo2->subsystem = SDL2_SYSWM_WAYLAND;
+        wminfo2->info.wl.display = wminfo3->info.wl.display;
+        wminfo2->info.wl.surface = wminfo3->info.wl.surface;
+        wminfo2->info.wl.shell_surface = NULL; /* Deprecated */
+
+        if (version2 >= SDL_VERSIONNUM(2, 0, 15)) {
+            wminfo2->info.wl.egl_window = wminfo3->info.wl.egl_window;
+            wminfo2->info.wl.xdg_surface = wminfo3->info.wl.xdg_surface;
+            if (version2 >= SDL_VERSIONNUM(2, 0, 17)) {
+                wminfo2->info.wl.xdg_toplevel = wminfo3->info.wl.xdg_toplevel;
+                if (version2 >= SDL_VERSIONNUM(2, 0, 22)) {
+                    wminfo2->info.wl.xdg_popup = wminfo3->info.wl.xdg_popup;
+                    wminfo2->info.wl.xdg_positioner =
+                        wminfo3->info.wl.xdg_positioner;
+                }
+            }
+        }
+    } break;
+#endif
+#if defined(SDL_ENABLE_SYSWM_WINDOWS)
+    case SDL_SYSWM_WINDOWS:
+        wminfo2->subsystem = SDL2_SYSWM_WINDOWS;
+        wminfo2->info.win.window = wminfo3->info.win.window;
+        wminfo2->info.win.hdc = wminfo3->info.win.hdc;
+        wminfo2->info.win.hinstance = wminfo3->info.win.hinstance;
+        break;
+#endif
+#if defined(SDL_ENABLE_SYSWM_WINRT)
+    case SDL_SYSWM_WINRT:
+        wminfo2->subsystem = SDL2_SYSWM_WINRT;
+        wminfo2->info.winrt.window = wminfo3->info.winrt.window;
+        break;
+#endif
+#if defined(SDL_ENABLE_SYSWM_X11)
+    case SDL_SYSWM_X11:
+        wminfo2->subsystem = SDL2_SYSWM_X11;
+        wminfo2->info.x11.display = wminfo3->info.x11.display;
+        wminfo2->info.x11.window = wminfo3->info.x11.window;
+        break;
+#endif
+    default:
+        wminfo2->subsystem = SDL2_SYSWM_UNKNOWN;
+        return SDL_FALSE;
+    }
+
+    return SDL_TRUE;
+}
+
 DECLSPEC SDL_bool SDLCALL
 SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWMinfo *wminfo)
 {
-    SDL3_Unsupported();  /* !!! FIXME: write me. */
+    SDL_SysWMinfo wminfo3;
+    SDL3_zero(wminfo3);
+
+    if (SDL3_GetWindowWMInfo(window, &wminfo3, SDL_VERSIONNUM(3, 0, 0)) == 0) {
+        return SysWMInfo3to2(&wminfo3, (SDL2_SysWMinfo*)wminfo);
+    }
+
     return SDL_FALSE;
 }
 
