@@ -688,7 +688,7 @@ extern DECLSPEC size_t SDLCALL SDL_iconv(SDL_iconv_t cd, const char **inbuf,
                                          size_t * outbytesleft);
 
 /**
- * This function converts a string between encodings in one pass, returning a
+ * This function converts a buffer or string between encodings in one pass, returning a
  * string that must be freed with SDL_free() or NULL on error.
  *
  * \since This function is available since SDL 2.0.0.
@@ -716,10 +716,19 @@ size_t strlcpy(char* dst, const char* src, size_t size);
 size_t strlcat(char* dst, const char* src, size_t size);
 #endif
 
+#ifndef HAVE_WCSLCPY
+size_t wcslcpy(wchar_t *dst, const wchar_t *src, size_t size);
+#endif
+
+#ifndef HAVE_WCSLCAT
+size_t wcslcat(wchar_t *dst, const wchar_t *src, size_t size);
+#endif
+
 /* Starting LLVM 16, the analyser errors out if these functions do not have
    their prototype defined (clang-diagnostic-implicit-function-declaration) */
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #define SDL_malloc malloc
 #define SDL_calloc calloc
