@@ -659,6 +659,7 @@ BOOL WINAPI _DllMainCRTStartup(HANDLE dllhandle, DWORD reason, LPVOID reserved)
 /* removed in SDL3 (which only uses SDL_WINDOW_HIDDEN now). */
 #define SDL2_WINDOW_SHOWN 0x000000004
 #define SDL2_WINDOW_FULLSCREEN_DESKTOP 0x00001000
+#define SDL2_WINDOW_SKIP_TASKBAR 0x00010000
 
 /* removed in SDL3 (APIs like this were split into getter/setter functions). */
 #define SDL2_QUERY   -1
@@ -4627,19 +4628,25 @@ SDL_FreeWAV(Uint8 *audio_buf)
  * mode will be used or the fullscreen desktop mode will be used when
  * the window is fullscreen. */
 /* SDL3 removed SDL_WINDOW_SHOWN as redundant to SDL_WINDOW_HIDDEN. */
+/* SDL3 removed SDL_WINDOW_SKIP_TASKBAR as redundant to SDL_WINDOW_UTILITY. */
 DECLSPEC Uint32 SDLCALL
 SDL_GetWindowFlags(SDL_Window *window)
 {
-    Uint32 flags = SDL3_GetWindowFlags(window);
-    if ((flags & SDL_WINDOW_HIDDEN) == 0) {
+    Uint32 flags3 = SDL3_GetWindowFlags(window);
+    Uint32 flags = (flags3 & ~(SDL2_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN | SDL2_WINDOW_FULLSCREEN_DESKTOP | SDL2_WINDOW_SKIP_TASKBAR));
+
+    if ((flags3 & SDL_WINDOW_HIDDEN) == 0) {
         flags |= SDL2_WINDOW_SHOWN;
     }
-    if ((flags & SDL_WINDOW_FULLSCREEN)) {
+    if ((flags3 & SDL_WINDOW_FULLSCREEN)) {
         if (SDL3_GetWindowFullscreenMode(window)) {
             flags |= SDL_WINDOW_FULLSCREEN;
         } else {
             flags |= SDL2_WINDOW_FULLSCREEN_DESKTOP;
         }
+    }
+    if (flags3 & SDL_WINDOW_UTILITY) {
+        flags |= SDL2_WINDOW_SKIP_TASKBAR;
     }
     return flags;
 }
@@ -4650,7 +4657,7 @@ DECLSPEC SDL_Window * SDLCALL
 SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
 {
     SDL_Window *window = NULL;
-    int hidden = flags & SDL_WINDOW_HIDDEN;
+    SDL_bool hidden = (flags & SDL_WINDOW_HIDDEN) ? SDL_TRUE : SDL_FALSE;
     const Uint32 is_popup = flags & (SDL_WINDOW_POPUP_MENU | SDL_WINDOW_TOOLTIP);
 
     flags &= ~SDL2_WINDOW_SHOWN;
@@ -4658,6 +4665,10 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
     if (flags & SDL2_WINDOW_FULLSCREEN_DESKTOP) {
         flags &= ~SDL2_WINDOW_FULLSCREEN_DESKTOP;
         flags |= SDL_WINDOW_FULLSCREEN; /* This is fullscreen desktop for new windows */
+    }
+    if (flags & SDL2_WINDOW_SKIP_TASKBAR) {
+        flags &= ~SDL2_WINDOW_SKIP_TASKBAR;
+        flags |= SDL_WINDOW_UTILITY;
     }
 
     if (!is_popup) {
