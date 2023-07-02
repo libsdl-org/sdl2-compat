@@ -3160,8 +3160,8 @@ SDL_GetRenderDriverInfo(int index, SDL_RendererInfo *info)
         info->num_texture_formats = 4;
         info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
         info->texture_formats[1] = SDL_PIXELFORMAT_ABGR8888;
-        info->texture_formats[2] = SDL_PIXELFORMAT_RGB888;
-        info->texture_formats[3] = SDL_PIXELFORMAT_BGR888;
+        info->texture_formats[2] = SDL_PIXELFORMAT_XRGB8888;
+        info->texture_formats[3] = SDL_PIXELFORMAT_XBGR8888;
     } else if (SDL3_strcmp(name, "opengles") == 0) {
         info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
         info->num_texture_formats = 1;
@@ -3174,7 +3174,7 @@ SDL_GetRenderDriverInfo(int index, SDL_RendererInfo *info)
         info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
         info->num_texture_formats = 6;
         info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
-        info->texture_formats[1] = SDL_PIXELFORMAT_RGB888;
+        info->texture_formats[1] = SDL_PIXELFORMAT_XRGB8888;
         info->texture_formats[2] = SDL_PIXELFORMAT_YV12;
         info->texture_formats[3] = SDL_PIXELFORMAT_IYUV;
         info->texture_formats[4] = SDL_PIXELFORMAT_NV12;
@@ -3183,7 +3183,7 @@ SDL_GetRenderDriverInfo(int index, SDL_RendererInfo *info)
         info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
         info->num_texture_formats = 6;
         info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
-        info->texture_formats[1] = SDL_PIXELFORMAT_RGB888;
+        info->texture_formats[1] = SDL_PIXELFORMAT_XRGB8888;
         info->texture_formats[2] = SDL_PIXELFORMAT_YV12;
         info->texture_formats[3] = SDL_PIXELFORMAT_IYUV;
         info->texture_formats[4] = SDL_PIXELFORMAT_NV12;
@@ -4089,7 +4089,7 @@ SDL_GetClosestDisplayModeForDisplay(SDL_DisplayID displayID,
 
         /* Pick some reasonable defaults if the app and driver don't care */
         if (!closest->format) {
-            closest->format = SDL_PIXELFORMAT_RGB888;
+            closest->format = SDL_PIXELFORMAT_XRGB8888;
         }
         if (!closest->w) {
             closest->w = 640;
