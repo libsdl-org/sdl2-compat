@@ -33,7 +33,6 @@
 #define SDL_AddGamepadMappingsFromRW IGNORE_THIS_VERSION_OF_SDL_AddGamepadMappingsFromRW
 #define SDL_AddHintCallback IGNORE_THIS_VERSION_OF_SDL_AddHintCallback
 #define SDL_AddTimer IGNORE_THIS_VERSION_OF_SDL_AddTimer
-#define SDL_CreateRW IGNORE_THIS_VERSION_OF_SDL_CreateRW
 #define SDL_AndroidBackButton IGNORE_THIS_VERSION_OF_SDL_AndroidBackButton
 #define SDL_AndroidGetActivity IGNORE_THIS_VERSION_OF_SDL_AndroidGetActivity
 #define SDL_AndroidGetExternalStoragePath IGNORE_THIS_VERSION_OF_SDL_AndroidGetExternalStoragePath
@@ -59,7 +58,9 @@
 #define SDL_BlitSurfaceScaled IGNORE_THIS_VERSION_OF_SDL_BlitSurfaceScaled
 #define SDL_BlitSurfaceUnchecked IGNORE_THIS_VERSION_OF_SDL_BlitSurfaceUnchecked
 #define SDL_BlitSurfaceUncheckedScaled IGNORE_THIS_VERSION_OF_SDL_BlitSurfaceUncheckedScaled
+#define SDL_BroadcastCondition IGNORE_THIS_VERSION_OF_SDL_BroadcastCondition
 #define SDL_CaptureMouse IGNORE_THIS_VERSION_OF_SDL_CaptureMouse
+#define SDL_CleanupTLS IGNORE_THIS_VERSION_OF_SDL_CleanupTLS
 #define SDL_ClearAudioStream IGNORE_THIS_VERSION_OF_SDL_ClearAudioStream
 #define SDL_ClearComposition IGNORE_THIS_VERSION_OF_SDL_ClearComposition
 #define SDL_ClearError IGNORE_THIS_VERSION_OF_SDL_ClearError
@@ -70,10 +71,8 @@
 #define SDL_CloseJoystick IGNORE_THIS_VERSION_OF_SDL_CloseJoystick
 #define SDL_CloseSensor IGNORE_THIS_VERSION_OF_SDL_CloseSensor
 #define SDL_ComposeCustomBlendMode IGNORE_THIS_VERSION_OF_SDL_ComposeCustomBlendMode
-#define SDL_BroadcastCondition IGNORE_THIS_VERSION_OF_SDL_BroadcastCondition
-#define SDL_SignalCondition IGNORE_THIS_VERSION_OF_SDL_SignalCondition
-#define SDL_WaitCondition IGNORE_THIS_VERSION_OF_SDL_WaitCondition
-#define SDL_WaitConditionTimeout IGNORE_THIS_VERSION_OF_SDL_WaitConditionTimeout
+#define SDL_ConvertAudioSamples IGNORE_THIS_VERSION_OF_SDL_ConvertAudioSamples
+#define SDL_ConvertEventToRenderCoordinates IGNORE_THIS_VERSION_OF_SDL_ConvertEventToRenderCoordinates
 #define SDL_ConvertPixels IGNORE_THIS_VERSION_OF_SDL_ConvertPixels
 #define SDL_ConvertSurface IGNORE_THIS_VERSION_OF_SDL_ConvertSurface
 #define SDL_ConvertSurfaceFormat IGNORE_THIS_VERSION_OF_SDL_ConvertSurfaceFormat
@@ -84,6 +83,9 @@
 #define SDL_CreateMutex IGNORE_THIS_VERSION_OF_SDL_CreateMutex
 #define SDL_CreatePalette IGNORE_THIS_VERSION_OF_SDL_CreatePalette
 #define SDL_CreatePixelFormat IGNORE_THIS_VERSION_OF_SDL_CreatePixelFormat
+#define SDL_CreatePopupWindow IGNORE_THIS_VERSION_OF_SDL_CreatePopupWindow
+#define SDL_CreateRW IGNORE_THIS_VERSION_OF_SDL_CreateRW
+#define SDL_CreateRWLock IGNORE_THIS_VERSION_OF_SDL_CreateRWLock
 #define SDL_CreateRenderer IGNORE_THIS_VERSION_OF_SDL_CreateRenderer
 #define SDL_CreateSemaphore IGNORE_THIS_VERSION_OF_SDL_CreateSemaphore
 #define SDL_CreateShapedWindow IGNORE_THIS_VERSION_OF_SDL_CreateShapedWindow
@@ -91,6 +93,7 @@
 #define SDL_CreateSurface IGNORE_THIS_VERSION_OF_SDL_CreateSurface
 #define SDL_CreateSurfaceFrom IGNORE_THIS_VERSION_OF_SDL_CreateSurfaceFrom
 #define SDL_CreateSystemCursor IGNORE_THIS_VERSION_OF_SDL_CreateSystemCursor
+#define SDL_CreateTLS IGNORE_THIS_VERSION_OF_SDL_CreateTLS
 #define SDL_CreateTexture IGNORE_THIS_VERSION_OF_SDL_CreateTexture
 #define SDL_CreateTextureFromSurface IGNORE_THIS_VERSION_OF_SDL_CreateTextureFromSurface
 #define SDL_CreateThread IGNORE_THIS_VERSION_OF_SDL_CreateThread
@@ -98,6 +101,7 @@
 #define SDL_CreateWindow IGNORE_THIS_VERSION_OF_SDL_CreateWindow
 #define SDL_CreateWindowAndRenderer IGNORE_THIS_VERSION_OF_SDL_CreateWindowAndRenderer
 #define SDL_CreateWindowFrom IGNORE_THIS_VERSION_OF_SDL_CreateWindowFrom
+#define SDL_CreateWindowWithPosition IGNORE_THIS_VERSION_OF_SDL_CreateWindowWithPosition
 #define SDL_CursorVisible IGNORE_THIS_VERSION_OF_SDL_CursorVisible
 #define SDL_DXGIGetOutputInfo IGNORE_THIS_VERSION_OF_SDL_DXGIGetOutputInfo
 #define SDL_DelEventWatch IGNORE_THIS_VERSION_OF_SDL_DelEventWatch
@@ -107,14 +111,18 @@
 #define SDL_DequeueAudio IGNORE_THIS_VERSION_OF_SDL_DequeueAudio
 #define SDL_DestroyAudioStream IGNORE_THIS_VERSION_OF_SDL_DestroyAudioStream
 #define SDL_DestroyCondition IGNORE_THIS_VERSION_OF_SDL_DestroyCondition
+#define SDL_DestroyCursor IGNORE_THIS_VERSION_OF_SDL_DestroyCursor
 #define SDL_DestroyMutex IGNORE_THIS_VERSION_OF_SDL_DestroyMutex
 #define SDL_DestroyPalette IGNORE_THIS_VERSION_OF_SDL_DestroyPalette
 #define SDL_DestroyPixelFormat IGNORE_THIS_VERSION_OF_SDL_DestroyPixelFormat
+#define SDL_DestroyRW IGNORE_THIS_VERSION_OF_SDL_DestroyRW
+#define SDL_DestroyRWLock IGNORE_THIS_VERSION_OF_SDL_DestroyRWLock
 #define SDL_DestroyRenderer IGNORE_THIS_VERSION_OF_SDL_DestroyRenderer
 #define SDL_DestroySemaphore IGNORE_THIS_VERSION_OF_SDL_DestroySemaphore
 #define SDL_DestroySurface IGNORE_THIS_VERSION_OF_SDL_DestroySurface
 #define SDL_DestroyTexture IGNORE_THIS_VERSION_OF_SDL_DestroyTexture
 #define SDL_DestroyWindow IGNORE_THIS_VERSION_OF_SDL_DestroyWindow
+#define SDL_DestroyWindowSurface IGNORE_THIS_VERSION_OF_SDL_DestroyWindowSurface
 #define SDL_DetachThread IGNORE_THIS_VERSION_OF_SDL_DetachThread
 #define SDL_DetachVirtualJoystick IGNORE_THIS_VERSION_OF_SDL_DetachVirtualJoystick
 #define SDL_Direct3D9GetAdapterIndex IGNORE_THIS_VERSION_OF_SDL_Direct3D9GetAdapterIndex
@@ -135,8 +143,6 @@
 #define SDL_FlushAudioStream IGNORE_THIS_VERSION_OF_SDL_FlushAudioStream
 #define SDL_FlushEvent IGNORE_THIS_VERSION_OF_SDL_FlushEvent
 #define SDL_FlushEvents IGNORE_THIS_VERSION_OF_SDL_FlushEvents
-#define SDL_DestroyCursor IGNORE_THIS_VERSION_OF_SDL_DestroyCursor
-#define SDL_DestroyRW IGNORE_THIS_VERSION_OF_SDL_DestroyRW
 #define SDL_GDKGetTaskQueue IGNORE_THIS_VERSION_OF_SDL_GDKGetTaskQueue
 #define SDL_GDKSuspendComplete IGNORE_THIS_VERSION_OF_SDL_GDKSuspendComplete
 #define SDL_GL_BindTexture IGNORE_THIS_VERSION_OF_SDL_GL_BindTexture
@@ -176,12 +182,18 @@
 #define SDL_GetAudioDriver IGNORE_THIS_VERSION_OF_SDL_GetAudioDriver
 #define SDL_GetAudioStreamAvailable IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamAvailable
 #define SDL_GetAudioStreamData IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamData
+#define SDL_GetAudioStreamFormat IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamFormat
 #define SDL_GetBasePath IGNORE_THIS_VERSION_OF_SDL_GetBasePath
 #define SDL_GetCPUCacheLineSize IGNORE_THIS_VERSION_OF_SDL_GetCPUCacheLineSize
 #define SDL_GetCPUCount IGNORE_THIS_VERSION_OF_SDL_GetCPUCount
+#define SDL_GetClipboardData IGNORE_THIS_VERSION_OF_SDL_GetClipboardData
 #define SDL_GetClipboardText IGNORE_THIS_VERSION_OF_SDL_GetClipboardText
+#define SDL_GetClipboardUserdata IGNORE_THIS_VERSION_OF_SDL_GetClipboardUserdata
+#define SDL_GetClosestFullscreenDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetClosestFullscreenDisplayMode
 #define SDL_GetCurrentAudioDriver IGNORE_THIS_VERSION_OF_SDL_GetCurrentAudioDriver
 #define SDL_GetCurrentDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetCurrentDisplayMode
+#define SDL_GetCurrentDisplayOrientation IGNORE_THIS_VERSION_OF_SDL_GetCurrentDisplayOrientation
+#define SDL_GetCurrentRenderOutputSize IGNORE_THIS_VERSION_OF_SDL_GetCurrentRenderOutputSize
 #define SDL_GetCurrentVideoDriver IGNORE_THIS_VERSION_OF_SDL_GetCurrentVideoDriver
 #define SDL_GetCursor IGNORE_THIS_VERSION_OF_SDL_GetCursor
 #define SDL_GetDefaultAssertionHandler IGNORE_THIS_VERSION_OF_SDL_GetDefaultAssertionHandler
@@ -189,14 +201,17 @@
 #define SDL_GetDefaultCursor IGNORE_THIS_VERSION_OF_SDL_GetDefaultCursor
 #define SDL_GetDesktopDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetDesktopDisplayMode
 #define SDL_GetDisplayBounds IGNORE_THIS_VERSION_OF_SDL_GetDisplayBounds
+#define SDL_GetDisplayContentScale IGNORE_THIS_VERSION_OF_SDL_GetDisplayContentScale
 #define SDL_GetDisplayForPoint IGNORE_THIS_VERSION_OF_SDL_GetDisplayForPoint
 #define SDL_GetDisplayForRect IGNORE_THIS_VERSION_OF_SDL_GetDisplayForRect
+#define SDL_GetDisplayForWindow IGNORE_THIS_VERSION_OF_SDL_GetDisplayForWindow
 #define SDL_GetDisplayName IGNORE_THIS_VERSION_OF_SDL_GetDisplayName
-#define SDL_GetCurrentDisplayOrientation IGNORE_THIS_VERSION_OF_SDL_GetCurrentDisplayOrientation
 #define SDL_GetDisplayUsableBounds IGNORE_THIS_VERSION_OF_SDL_GetDisplayUsableBounds
+#define SDL_GetDisplays IGNORE_THIS_VERSION_OF_SDL_GetDisplays
 #define SDL_GetError IGNORE_THIS_VERSION_OF_SDL_GetError
 #define SDL_GetErrorMsg IGNORE_THIS_VERSION_OF_SDL_GetErrorMsg
 #define SDL_GetEventFilter IGNORE_THIS_VERSION_OF_SDL_GetEventFilter
+#define SDL_GetFullscreenDisplayModes IGNORE_THIS_VERSION_OF_SDL_GetFullscreenDisplayModes
 #define SDL_GetGamepadAppleSFSymbolsNameForAxis IGNORE_THIS_VERSION_OF_SDL_GetGamepadAppleSFSymbolsNameForAxis
 #define SDL_GetGamepadAppleSFSymbolsNameForButton IGNORE_THIS_VERSION_OF_SDL_GetGamepadAppleSFSymbolsNameForButton
 #define SDL_GetGamepadAxis IGNORE_THIS_VERSION_OF_SDL_GetGamepadAxis
@@ -222,8 +237,6 @@
 #define SDL_GetGamepadMappingForGUID IGNORE_THIS_VERSION_OF_SDL_GetGamepadMappingForGUID
 #define SDL_GetGamepadMappingForIndex IGNORE_THIS_VERSION_OF_SDL_GetGamepadMappingForIndex
 #define SDL_GetGamepadName IGNORE_THIS_VERSION_OF_SDL_GetGamepadName
-#define SDL_GetNumGamepadTouchpadFingers IGNORE_THIS_VERSION_OF_SDL_GetNumGamepadTouchpadFingers
-#define SDL_GetNumGamepadTouchpads IGNORE_THIS_VERSION_OF_SDL_GetNumGamepadTouchpads
 #define SDL_GetGamepadPath IGNORE_THIS_VERSION_OF_SDL_GetGamepadPath
 #define SDL_GetGamepadPlayerIndex IGNORE_THIS_VERSION_OF_SDL_GetGamepadPlayerIndex
 #define SDL_GetGamepadProduct IGNORE_THIS_VERSION_OF_SDL_GetGamepadProduct
@@ -281,10 +294,13 @@
 #define SDL_GetModState IGNORE_THIS_VERSION_OF_SDL_GetModState
 #define SDL_GetMouseFocus IGNORE_THIS_VERSION_OF_SDL_GetMouseFocus
 #define SDL_GetMouseState IGNORE_THIS_VERSION_OF_SDL_GetMouseState
+#define SDL_GetNaturalDisplayOrientation IGNORE_THIS_VERSION_OF_SDL_GetNaturalDisplayOrientation
 #define SDL_GetNumAllocations IGNORE_THIS_VERSION_OF_SDL_GetNumAllocations
 #define SDL_GetNumAudioDevices IGNORE_THIS_VERSION_OF_SDL_GetNumAudioDevices
 #define SDL_GetNumAudioDrivers IGNORE_THIS_VERSION_OF_SDL_GetNumAudioDrivers
 #define SDL_GetNumGamepadMappings IGNORE_THIS_VERSION_OF_SDL_GetNumGamepadMappings
+#define SDL_GetNumGamepadTouchpadFingers IGNORE_THIS_VERSION_OF_SDL_GetNumGamepadTouchpadFingers
+#define SDL_GetNumGamepadTouchpads IGNORE_THIS_VERSION_OF_SDL_GetNumGamepadTouchpads
 #define SDL_GetNumJoystickAxes IGNORE_THIS_VERSION_OF_SDL_GetNumJoystickAxes
 #define SDL_GetNumJoystickButtons IGNORE_THIS_VERSION_OF_SDL_GetNumJoystickButtons
 #define SDL_GetNumJoystickHats IGNORE_THIS_VERSION_OF_SDL_GetNumJoystickHats
@@ -293,6 +309,7 @@
 #define SDL_GetNumTouchFingers IGNORE_THIS_VERSION_OF_SDL_GetNumTouchFingers
 #define SDL_GetNumVideoDrivers IGNORE_THIS_VERSION_OF_SDL_GetNumVideoDrivers
 #define SDL_GetOriginalMemoryFunctions IGNORE_THIS_VERSION_OF_SDL_GetOriginalMemoryFunctions
+#define SDL_GetPath IGNORE_THIS_VERSION_OF_SDL_GetPath
 #define SDL_GetPerformanceCounter IGNORE_THIS_VERSION_OF_SDL_GetPerformanceCounter
 #define SDL_GetPerformanceFrequency IGNORE_THIS_VERSION_OF_SDL_GetPerformanceFrequency
 #define SDL_GetPixelFormatEnumForMasks IGNORE_THIS_VERSION_OF_SDL_GetPixelFormatEnumForMasks
@@ -301,6 +318,7 @@
 #define SDL_GetPowerInfo IGNORE_THIS_VERSION_OF_SDL_GetPowerInfo
 #define SDL_GetPrefPath IGNORE_THIS_VERSION_OF_SDL_GetPrefPath
 #define SDL_GetPreferredLocales IGNORE_THIS_VERSION_OF_SDL_GetPreferredLocales
+#define SDL_GetPrimaryDisplay IGNORE_THIS_VERSION_OF_SDL_GetPrimaryDisplay
 #define SDL_GetPrimarySelectionText IGNORE_THIS_VERSION_OF_SDL_GetPrimarySelectionText
 #define SDL_GetQueuedAudioSize IGNORE_THIS_VERSION_OF_SDL_GetQueuedAudioSize
 #define SDL_GetRGB IGNORE_THIS_VERSION_OF_SDL_GetRGB
@@ -324,16 +342,19 @@
 #define SDL_GetRenderLogicalPresentation IGNORE_THIS_VERSION_OF_SDL_GetRenderLogicalPresentation
 #define SDL_GetRenderMetalCommandEncoder IGNORE_THIS_VERSION_OF_SDL_GetRenderMetalCommandEncoder
 #define SDL_GetRenderMetalLayer IGNORE_THIS_VERSION_OF_SDL_GetRenderMetalLayer
+#define SDL_GetRenderOutputSize IGNORE_THIS_VERSION_OF_SDL_GetRenderOutputSize
+#define SDL_GetRenderScale IGNORE_THIS_VERSION_OF_SDL_GetRenderScale
 #define SDL_GetRenderTarget IGNORE_THIS_VERSION_OF_SDL_GetRenderTarget
+#define SDL_GetRenderVSync IGNORE_THIS_VERSION_OF_SDL_GetRenderVSync
 #define SDL_GetRenderViewport IGNORE_THIS_VERSION_OF_SDL_GetRenderViewport
 #define SDL_GetRenderWindow IGNORE_THIS_VERSION_OF_SDL_GetRenderWindow
 #define SDL_GetRenderer IGNORE_THIS_VERSION_OF_SDL_GetRenderer
 #define SDL_GetRendererInfo IGNORE_THIS_VERSION_OF_SDL_GetRendererInfo
-#define SDL_GetCurrentRenderOutputSize IGNORE_THIS_VERSION_OF_SDL_GetCurrentRenderOutputSize
 #define SDL_GetRevision IGNORE_THIS_VERSION_OF_SDL_GetRevision
 #define SDL_GetScancodeFromKey IGNORE_THIS_VERSION_OF_SDL_GetScancodeFromKey
 #define SDL_GetScancodeFromName IGNORE_THIS_VERSION_OF_SDL_GetScancodeFromName
 #define SDL_GetScancodeName IGNORE_THIS_VERSION_OF_SDL_GetScancodeName
+#define SDL_GetSemaphoreValue IGNORE_THIS_VERSION_OF_SDL_GetSemaphoreValue
 #define SDL_GetSensorData IGNORE_THIS_VERSION_OF_SDL_GetSensorData
 #define SDL_GetSensorFromInstanceID IGNORE_THIS_VERSION_OF_SDL_GetSensorFromInstanceID
 #define SDL_GetSensorInstanceID IGNORE_THIS_VERSION_OF_SDL_GetSensorInstanceID
@@ -351,6 +372,8 @@
 #define SDL_GetSurfaceColorKey IGNORE_THIS_VERSION_OF_SDL_GetSurfaceColorKey
 #define SDL_GetSurfaceColorMod IGNORE_THIS_VERSION_OF_SDL_GetSurfaceColorMod
 #define SDL_GetSystemRAM IGNORE_THIS_VERSION_OF_SDL_GetSystemRAM
+#define SDL_GetSystemTheme IGNORE_THIS_VERSION_OF_SDL_GetSystemTheme
+#define SDL_GetTLS IGNORE_THIS_VERSION_OF_SDL_GetTLS
 #define SDL_GetTextureAlphaMod IGNORE_THIS_VERSION_OF_SDL_GetTextureAlphaMod
 #define SDL_GetTextureBlendMode IGNORE_THIS_VERSION_OF_SDL_GetTextureBlendMode
 #define SDL_GetTextureColorMod IGNORE_THIS_VERSION_OF_SDL_GetTextureColorMod
@@ -368,10 +391,10 @@
 #define SDL_GetVideoDriver IGNORE_THIS_VERSION_OF_SDL_GetVideoDriver
 #define SDL_GetWindowBordersSize IGNORE_THIS_VERSION_OF_SDL_GetWindowBordersSize
 #define SDL_GetWindowData IGNORE_THIS_VERSION_OF_SDL_GetWindowData
-#define SDL_GetDisplayForWindow IGNORE_THIS_VERSION_OF_SDL_GetDisplayForWindow
-#define SDL_GetWindowFullscreenMode IGNORE_THIS_VERSION_OF_SDL_GetWindowFullscreenMode
+#define SDL_GetWindowDisplayScale IGNORE_THIS_VERSION_OF_SDL_GetWindowDisplayScale
 #define SDL_GetWindowFlags IGNORE_THIS_VERSION_OF_SDL_GetWindowFlags
 #define SDL_GetWindowFromID IGNORE_THIS_VERSION_OF_SDL_GetWindowFromID
+#define SDL_GetWindowFullscreenMode IGNORE_THIS_VERSION_OF_SDL_GetWindowFullscreenMode
 #define SDL_GetWindowGrab IGNORE_THIS_VERSION_OF_SDL_GetWindowGrab
 #define SDL_GetWindowICCProfile IGNORE_THIS_VERSION_OF_SDL_GetWindowICCProfile
 #define SDL_GetWindowID IGNORE_THIS_VERSION_OF_SDL_GetWindowID
@@ -381,6 +404,8 @@
 #define SDL_GetWindowMouseGrab IGNORE_THIS_VERSION_OF_SDL_GetWindowMouseGrab
 #define SDL_GetWindowMouseRect IGNORE_THIS_VERSION_OF_SDL_GetWindowMouseRect
 #define SDL_GetWindowOpacity IGNORE_THIS_VERSION_OF_SDL_GetWindowOpacity
+#define SDL_GetWindowParent IGNORE_THIS_VERSION_OF_SDL_GetWindowParent
+#define SDL_GetWindowPixelDensity IGNORE_THIS_VERSION_OF_SDL_GetWindowPixelDensity
 #define SDL_GetWindowPixelFormat IGNORE_THIS_VERSION_OF_SDL_GetWindowPixelFormat
 #define SDL_GetWindowPosition IGNORE_THIS_VERSION_OF_SDL_GetWindowPosition
 #define SDL_GetWindowSize IGNORE_THIS_VERSION_OF_SDL_GetWindowSize
@@ -422,6 +447,7 @@
 #define SDL_HasAVX2 IGNORE_THIS_VERSION_OF_SDL_HasAVX2
 #define SDL_HasAVX512F IGNORE_THIS_VERSION_OF_SDL_HasAVX512F
 #define SDL_HasAltiVec IGNORE_THIS_VERSION_OF_SDL_HasAltiVec
+#define SDL_HasClipboardData IGNORE_THIS_VERSION_OF_SDL_HasClipboardData
 #define SDL_HasClipboardText IGNORE_THIS_VERSION_OF_SDL_HasClipboardText
 #define SDL_HasEvent IGNORE_THIS_VERSION_OF_SDL_HasEvent
 #define SDL_HasEvents IGNORE_THIS_VERSION_OF_SDL_HasEvents
@@ -438,6 +464,7 @@
 #define SDL_HasSSE41 IGNORE_THIS_VERSION_OF_SDL_HasSSE41
 #define SDL_HasSSE42 IGNORE_THIS_VERSION_OF_SDL_HasSSE42
 #define SDL_HasScreenKeyboardSupport IGNORE_THIS_VERSION_OF_SDL_HasScreenKeyboardSupport
+#define SDL_HasWindowSurface IGNORE_THIS_VERSION_OF_SDL_HasWindowSurface
 #define SDL_HideCursor IGNORE_THIS_VERSION_OF_SDL_HideCursor
 #define SDL_HideWindow IGNORE_THIS_VERSION_OF_SDL_HideWindow
 #define SDL_Init IGNORE_THIS_VERSION_OF_SDL_Init
@@ -457,6 +484,7 @@
 #define SDL_JoystickIsHaptic IGNORE_THIS_VERSION_OF_SDL_JoystickIsHaptic
 #define SDL_LinuxSetThreadPriority IGNORE_THIS_VERSION_OF_SDL_LinuxSetThreadPriority
 #define SDL_LinuxSetThreadPriorityAndPolicy IGNORE_THIS_VERSION_OF_SDL_LinuxSetThreadPriorityAndPolicy
+#define SDL_LoadBMP IGNORE_THIS_VERSION_OF_SDL_LoadBMP
 #define SDL_LoadBMP_RW IGNORE_THIS_VERSION_OF_SDL_LoadBMP_RW
 #define SDL_LoadFile IGNORE_THIS_VERSION_OF_SDL_LoadFile
 #define SDL_LoadFile_RW IGNORE_THIS_VERSION_OF_SDL_LoadFile_RW
@@ -466,6 +494,8 @@
 #define SDL_LockAudioDevice IGNORE_THIS_VERSION_OF_SDL_LockAudioDevice
 #define SDL_LockJoysticks IGNORE_THIS_VERSION_OF_SDL_LockJoysticks
 #define SDL_LockMutex IGNORE_THIS_VERSION_OF_SDL_LockMutex
+#define SDL_LockRWLockForReading IGNORE_THIS_VERSION_OF_SDL_LockRWLockForReading
+#define SDL_LockRWLockForWriting IGNORE_THIS_VERSION_OF_SDL_LockRWLockForWriting
 #define SDL_LockSurface IGNORE_THIS_VERSION_OF_SDL_LockSurface
 #define SDL_LockTexture IGNORE_THIS_VERSION_OF_SDL_LockTexture
 #define SDL_LockTextureToSurface IGNORE_THIS_VERSION_OF_SDL_LockTextureToSurface
@@ -510,7 +540,9 @@
 #define SDL_OpenURL IGNORE_THIS_VERSION_OF_SDL_OpenURL
 #define SDL_PauseAudioDevice IGNORE_THIS_VERSION_OF_SDL_PauseAudioDevice
 #define SDL_PeepEvents IGNORE_THIS_VERSION_OF_SDL_PeepEvents
+#define SDL_PlayAudioDevice IGNORE_THIS_VERSION_OF_SDL_PlayAudioDevice
 #define SDL_PollEvent IGNORE_THIS_VERSION_OF_SDL_PollEvent
+#define SDL_PostSemaphore IGNORE_THIS_VERSION_OF_SDL_PostSemaphore
 #define SDL_PremultiplyAlpha IGNORE_THIS_VERSION_OF_SDL_PremultiplyAlpha
 #define SDL_PumpEvents IGNORE_THIS_VERSION_OF_SDL_PumpEvents
 #define SDL_PushEvent IGNORE_THIS_VERSION_OF_SDL_PushEvent
@@ -541,6 +573,8 @@
 #define SDL_RemoveTimer IGNORE_THIS_VERSION_OF_SDL_RemoveTimer
 #define SDL_RenderClear IGNORE_THIS_VERSION_OF_SDL_RenderClear
 #define SDL_RenderClipEnabled IGNORE_THIS_VERSION_OF_SDL_RenderClipEnabled
+#define SDL_RenderCoordinatesFromWindow IGNORE_THIS_VERSION_OF_SDL_RenderCoordinatesFromWindow
+#define SDL_RenderCoordinatesToWindow IGNORE_THIS_VERSION_OF_SDL_RenderCoordinatesToWindow
 #define SDL_RenderFillRect IGNORE_THIS_VERSION_OF_SDL_RenderFillRect
 #define SDL_RenderFillRects IGNORE_THIS_VERSION_OF_SDL_RenderFillRects
 #define SDL_RenderFlush IGNORE_THIS_VERSION_OF_SDL_RenderFlush
@@ -549,7 +583,6 @@
 #define SDL_RenderGetD3D12Device IGNORE_THIS_VERSION_OF_SDL_RenderGetD3D12Device
 #define SDL_RenderLine IGNORE_THIS_VERSION_OF_SDL_RenderLine
 #define SDL_RenderLines IGNORE_THIS_VERSION_OF_SDL_RenderLines
-#define SDL_RenderCoordinatesToWindow IGNORE_THIS_VERSION_OF_SDL_RenderCoordinatesToWindow
 #define SDL_RenderPoint IGNORE_THIS_VERSION_OF_SDL_RenderPoint
 #define SDL_RenderPoints IGNORE_THIS_VERSION_OF_SDL_RenderPoints
 #define SDL_RenderPresent IGNORE_THIS_VERSION_OF_SDL_RenderPresent
@@ -558,7 +591,6 @@
 #define SDL_RenderRects IGNORE_THIS_VERSION_OF_SDL_RenderRects
 #define SDL_RenderTexture IGNORE_THIS_VERSION_OF_SDL_RenderTexture
 #define SDL_RenderTextureRotated IGNORE_THIS_VERSION_OF_SDL_RenderTextureRotated
-#define SDL_RenderCoordinatesFromWindow IGNORE_THIS_VERSION_OF_SDL_RenderCoordinatesFromWindow
 #define SDL_ReportAssertion IGNORE_THIS_VERSION_OF_SDL_ReportAssertion
 #define SDL_ResetAssertionReport IGNORE_THIS_VERSION_OF_SDL_ResetAssertionReport
 #define SDL_ResetHint IGNORE_THIS_VERSION_OF_SDL_ResetHint
@@ -571,17 +603,15 @@
 #define SDL_RumbleJoystickTriggers IGNORE_THIS_VERSION_OF_SDL_RumbleJoystickTriggers
 #define SDL_RunApp IGNORE_THIS_VERSION_OF_SDL_RunApp
 #define SDL_SIMDGetAlignment IGNORE_THIS_VERSION_OF_SDL_SIMDGetAlignment
+#define SDL_SaveBMP IGNORE_THIS_VERSION_OF_SDL_SaveBMP
 #define SDL_SaveBMP_RW IGNORE_THIS_VERSION_OF_SDL_SaveBMP_RW
 #define SDL_ScreenKeyboardShown IGNORE_THIS_VERSION_OF_SDL_ScreenKeyboardShown
 #define SDL_ScreenSaverEnabled IGNORE_THIS_VERSION_OF_SDL_ScreenSaverEnabled
-#define SDL_PostSemaphore IGNORE_THIS_VERSION_OF_SDL_PostSemaphore
-#define SDL_TryWaitSemaphore IGNORE_THIS_VERSION_OF_SDL_TryWaitSemaphore
-#define SDL_GetSemaphoreValue IGNORE_THIS_VERSION_OF_SDL_GetSemaphoreValue
-#define SDL_WaitSemaphore IGNORE_THIS_VERSION_OF_SDL_WaitSemaphore
-#define SDL_WaitSemaphoreTimeout IGNORE_THIS_VERSION_OF_SDL_WaitSemaphoreTimeout
 #define SDL_SendGamepadEffect IGNORE_THIS_VERSION_OF_SDL_SendGamepadEffect
 #define SDL_SendJoystickEffect IGNORE_THIS_VERSION_OF_SDL_SendJoystickEffect
 #define SDL_SetAssertionHandler IGNORE_THIS_VERSION_OF_SDL_SetAssertionHandler
+#define SDL_SetAudioStreamFormat IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamFormat
+#define SDL_SetClipboardData IGNORE_THIS_VERSION_OF_SDL_SetClipboardData
 #define SDL_SetClipboardText IGNORE_THIS_VERSION_OF_SDL_SetClipboardText
 #define SDL_SetCursor IGNORE_THIS_VERSION_OF_SDL_SetCursor
 #define SDL_SetError IGNORE_THIS_VERSION_OF_SDL_SetError
@@ -610,6 +640,7 @@
 #define SDL_SetRenderDrawBlendMode IGNORE_THIS_VERSION_OF_SDL_SetRenderDrawBlendMode
 #define SDL_SetRenderDrawColor IGNORE_THIS_VERSION_OF_SDL_SetRenderDrawColor
 #define SDL_SetRenderLogicalPresentation IGNORE_THIS_VERSION_OF_SDL_SetRenderLogicalPresentation
+#define SDL_SetRenderScale IGNORE_THIS_VERSION_OF_SDL_SetRenderScale
 #define SDL_SetRenderTarget IGNORE_THIS_VERSION_OF_SDL_SetRenderTarget
 #define SDL_SetRenderVSync IGNORE_THIS_VERSION_OF_SDL_SetRenderVSync
 #define SDL_SetRenderViewport IGNORE_THIS_VERSION_OF_SDL_SetRenderViewport
@@ -620,6 +651,7 @@
 #define SDL_SetSurfaceColorMod IGNORE_THIS_VERSION_OF_SDL_SetSurfaceColorMod
 #define SDL_SetSurfacePalette IGNORE_THIS_VERSION_OF_SDL_SetSurfacePalette
 #define SDL_SetSurfaceRLE IGNORE_THIS_VERSION_OF_SDL_SetSurfaceRLE
+#define SDL_SetTLS IGNORE_THIS_VERSION_OF_SDL_SetTLS
 #define SDL_SetTextInputRect IGNORE_THIS_VERSION_OF_SDL_SetTextInputRect
 #define SDL_SetTextureAlphaMod IGNORE_THIS_VERSION_OF_SDL_SetTextureAlphaMod
 #define SDL_SetTextureBlendMode IGNORE_THIS_VERSION_OF_SDL_SetTextureBlendMode
@@ -630,8 +662,8 @@
 #define SDL_SetWindowAlwaysOnTop IGNORE_THIS_VERSION_OF_SDL_SetWindowAlwaysOnTop
 #define SDL_SetWindowBordered IGNORE_THIS_VERSION_OF_SDL_SetWindowBordered
 #define SDL_SetWindowData IGNORE_THIS_VERSION_OF_SDL_SetWindowData
-#define SDL_SetWindowFullscreenMode IGNORE_THIS_VERSION_OF_SDL_SetWindowFullscreenMode
 #define SDL_SetWindowFullscreen IGNORE_THIS_VERSION_OF_SDL_SetWindowFullscreen
+#define SDL_SetWindowFullscreenMode IGNORE_THIS_VERSION_OF_SDL_SetWindowFullscreenMode
 #define SDL_SetWindowGrab IGNORE_THIS_VERSION_OF_SDL_SetWindowGrab
 #define SDL_SetWindowHitTest IGNORE_THIS_VERSION_OF_SDL_SetWindowHitTest
 #define SDL_SetWindowIcon IGNORE_THIS_VERSION_OF_SDL_SetWindowIcon
@@ -654,24 +686,25 @@
 #define SDL_ShowMessageBox IGNORE_THIS_VERSION_OF_SDL_ShowMessageBox
 #define SDL_ShowSimpleMessageBox IGNORE_THIS_VERSION_OF_SDL_ShowSimpleMessageBox
 #define SDL_ShowWindow IGNORE_THIS_VERSION_OF_SDL_ShowWindow
+#define SDL_SignalCondition IGNORE_THIS_VERSION_OF_SDL_SignalCondition
 #define SDL_SoftStretch IGNORE_THIS_VERSION_OF_SDL_SoftStretch
 #define SDL_SoftStretchLinear IGNORE_THIS_VERSION_OF_SDL_SoftStretchLinear
 #define SDL_StartTextInput IGNORE_THIS_VERSION_OF_SDL_StartTextInput
 #define SDL_StopTextInput IGNORE_THIS_VERSION_OF_SDL_StopTextInput
 #define SDL_SurfaceHasColorKey IGNORE_THIS_VERSION_OF_SDL_SurfaceHasColorKey
 #define SDL_SurfaceHasRLE IGNORE_THIS_VERSION_OF_SDL_SurfaceHasRLE
-#define SDL_CleanupTLS IGNORE_THIS_VERSION_OF_SDL_CleanupTLS
-#define SDL_CreateTLS IGNORE_THIS_VERSION_OF_SDL_CreateTLS
-#define SDL_GetTLS IGNORE_THIS_VERSION_OF_SDL_GetTLS
-#define SDL_SetTLS IGNORE_THIS_VERSION_OF_SDL_SetTLS
 #define SDL_TextInputActive IGNORE_THIS_VERSION_OF_SDL_TextInputActive
 #define SDL_TextInputShown IGNORE_THIS_VERSION_OF_SDL_TextInputShown
 #define SDL_ThreadID IGNORE_THIS_VERSION_OF_SDL_ThreadID
 #define SDL_TryLockMutex IGNORE_THIS_VERSION_OF_SDL_TryLockMutex
+#define SDL_TryLockRWLockForReading IGNORE_THIS_VERSION_OF_SDL_TryLockRWLockForReading
+#define SDL_TryLockRWLockForWriting IGNORE_THIS_VERSION_OF_SDL_TryLockRWLockForWriting
+#define SDL_TryWaitSemaphore IGNORE_THIS_VERSION_OF_SDL_TryWaitSemaphore
 #define SDL_UnloadObject IGNORE_THIS_VERSION_OF_SDL_UnloadObject
 #define SDL_UnlockAudioDevice IGNORE_THIS_VERSION_OF_SDL_UnlockAudioDevice
 #define SDL_UnlockJoysticks IGNORE_THIS_VERSION_OF_SDL_UnlockJoysticks
 #define SDL_UnlockMutex IGNORE_THIS_VERSION_OF_SDL_UnlockMutex
+#define SDL_UnlockRWLock IGNORE_THIS_VERSION_OF_SDL_UnlockRWLock
 #define SDL_UnlockSurface IGNORE_THIS_VERSION_OF_SDL_UnlockSurface
 #define SDL_UnlockTexture IGNORE_THIS_VERSION_OF_SDL_UnlockTexture
 #define SDL_UnregisterApp IGNORE_THIS_VERSION_OF_SDL_UnregisterApp
@@ -688,8 +721,12 @@
 #define SDL_Vulkan_GetVkGetInstanceProcAddr IGNORE_THIS_VERSION_OF_SDL_Vulkan_GetVkGetInstanceProcAddr
 #define SDL_Vulkan_LoadLibrary IGNORE_THIS_VERSION_OF_SDL_Vulkan_LoadLibrary
 #define SDL_Vulkan_UnloadLibrary IGNORE_THIS_VERSION_OF_SDL_Vulkan_UnloadLibrary
+#define SDL_WaitCondition IGNORE_THIS_VERSION_OF_SDL_WaitCondition
+#define SDL_WaitConditionTimeout IGNORE_THIS_VERSION_OF_SDL_WaitConditionTimeout
 #define SDL_WaitEvent IGNORE_THIS_VERSION_OF_SDL_WaitEvent
 #define SDL_WaitEventTimeout IGNORE_THIS_VERSION_OF_SDL_WaitEventTimeout
+#define SDL_WaitSemaphore IGNORE_THIS_VERSION_OF_SDL_WaitSemaphore
+#define SDL_WaitSemaphoreTimeout IGNORE_THIS_VERSION_OF_SDL_WaitSemaphoreTimeout
 #define SDL_WaitThread IGNORE_THIS_VERSION_OF_SDL_WaitThread
 #define SDL_WarpMouseGlobal IGNORE_THIS_VERSION_OF_SDL_WarpMouseGlobal
 #define SDL_WarpMouseInWindow IGNORE_THIS_VERSION_OF_SDL_WarpMouseInWindow
@@ -707,6 +744,8 @@
 #define SDL_abs IGNORE_THIS_VERSION_OF_SDL_abs
 #define SDL_acos IGNORE_THIS_VERSION_OF_SDL_acos
 #define SDL_acosf IGNORE_THIS_VERSION_OF_SDL_acosf
+#define SDL_aligned_alloc IGNORE_THIS_VERSION_OF_SDL_aligned_alloc
+#define SDL_aligned_free IGNORE_THIS_VERSION_OF_SDL_aligned_free
 #define SDL_asin IGNORE_THIS_VERSION_OF_SDL_asin
 #define SDL_asinf IGNORE_THIS_VERSION_OF_SDL_asinf
 #define SDL_asprintf IGNORE_THIS_VERSION_OF_SDL_asprintf
@@ -742,10 +781,13 @@
 #define SDL_hid_enumerate IGNORE_THIS_VERSION_OF_SDL_hid_enumerate
 #define SDL_hid_exit IGNORE_THIS_VERSION_OF_SDL_hid_exit
 #define SDL_hid_free_enumeration IGNORE_THIS_VERSION_OF_SDL_hid_free_enumeration
+#define SDL_hid_get_device_info IGNORE_THIS_VERSION_OF_SDL_hid_get_device_info
 #define SDL_hid_get_feature_report IGNORE_THIS_VERSION_OF_SDL_hid_get_feature_report
 #define SDL_hid_get_indexed_string IGNORE_THIS_VERSION_OF_SDL_hid_get_indexed_string
+#define SDL_hid_get_input_report IGNORE_THIS_VERSION_OF_SDL_hid_get_input_report
 #define SDL_hid_get_manufacturer_string IGNORE_THIS_VERSION_OF_SDL_hid_get_manufacturer_string
 #define SDL_hid_get_product_string IGNORE_THIS_VERSION_OF_SDL_hid_get_product_string
+#define SDL_hid_get_report_descriptor IGNORE_THIS_VERSION_OF_SDL_hid_get_report_descriptor
 #define SDL_hid_get_serial_number_string IGNORE_THIS_VERSION_OF_SDL_hid_get_serial_number_string
 #define SDL_hid_init IGNORE_THIS_VERSION_OF_SDL_hid_init
 #define SDL_hid_open IGNORE_THIS_VERSION_OF_SDL_hid_open
@@ -788,6 +830,8 @@
 #define SDL_memmove IGNORE_THIS_VERSION_OF_SDL_memmove
 #define SDL_memset IGNORE_THIS_VERSION_OF_SDL_memset
 #define SDL_memset4 IGNORE_THIS_VERSION_OF_SDL_memset4
+#define SDL_modf IGNORE_THIS_VERSION_OF_SDL_modf
+#define SDL_modff IGNORE_THIS_VERSION_OF_SDL_modff
 #define SDL_pow IGNORE_THIS_VERSION_OF_SDL_pow
 #define SDL_powf IGNORE_THIS_VERSION_OF_SDL_powf
 #define SDL_qsort IGNORE_THIS_VERSION_OF_SDL_qsort
@@ -824,6 +868,7 @@
 #define SDL_strtoul IGNORE_THIS_VERSION_OF_SDL_strtoul
 #define SDL_strtoull IGNORE_THIS_VERSION_OF_SDL_strtoull
 #define SDL_strupr IGNORE_THIS_VERSION_OF_SDL_strupr
+#define SDL_swprintf IGNORE_THIS_VERSION_OF_SDL_swprintf
 #define SDL_tan IGNORE_THIS_VERSION_OF_SDL_tan
 #define SDL_tanf IGNORE_THIS_VERSION_OF_SDL_tanf
 #define SDL_tolower IGNORE_THIS_VERSION_OF_SDL_tolower
@@ -839,6 +884,7 @@
 #define SDL_vasprintf IGNORE_THIS_VERSION_OF_SDL_vasprintf
 #define SDL_vsnprintf IGNORE_THIS_VERSION_OF_SDL_vsnprintf
 #define SDL_vsscanf IGNORE_THIS_VERSION_OF_SDL_vsscanf
+#define SDL_vswprintf IGNORE_THIS_VERSION_OF_SDL_vswprintf
 #define SDL_wcscasecmp IGNORE_THIS_VERSION_OF_SDL_wcscasecmp
 #define SDL_wcscmp IGNORE_THIS_VERSION_OF_SDL_wcscmp
 #define SDL_wcsdup IGNORE_THIS_VERSION_OF_SDL_wcsdup
@@ -848,51 +894,7 @@
 #define SDL_wcsncasecmp IGNORE_THIS_VERSION_OF_SDL_wcsncasecmp
 #define SDL_wcsncmp IGNORE_THIS_VERSION_OF_SDL_wcsncmp
 #define SDL_wcsstr IGNORE_THIS_VERSION_OF_SDL_wcsstr
-#define SDL_modf IGNORE_THIS_VERSION_OF_SDL_modf
-#define SDL_modff IGNORE_THIS_VERSION_OF_SDL_modff
-#define SDL_GetRenderVSync IGNORE_THIS_VERSION_OF_SDL_GetRenderVSync
-#define SDL_PlayAudioDevice IGNORE_THIS_VERSION_OF_SDL_PlayAudioDevice
-#define SDL_aligned_alloc IGNORE_THIS_VERSION_OF_SDL_aligned_alloc
-#define SDL_aligned_free IGNORE_THIS_VERSION_OF_SDL_aligned_free
-#define SDL_ConvertAudioSamples IGNORE_THIS_VERSION_OF_SDL_ConvertAudioSamples
-#define SDL_GetDisplays IGNORE_THIS_VERSION_OF_SDL_GetDisplays
-#define SDL_GetPrimaryDisplay IGNORE_THIS_VERSION_OF_SDL_GetPrimaryDisplay
-#define SDL_GetFullscreenDisplayModes IGNORE_THIS_VERSION_OF_SDL_GetFullscreenDisplayModes
-#define SDL_GetClosestFullscreenDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetClosestFullscreenDisplayMode
-#define SDL_GetRenderOutputSize IGNORE_THIS_VERSION_OF_SDL_GetRenderOutputSize
-#define SDL_ConvertEventToRenderCoordinates IGNORE_THIS_VERSION_OF_SDL_ConvertEventToRenderCoordinates
-#define SDL_SetRenderScale IGNORE_THIS_VERSION_OF_SDL_SetRenderScale
-#define SDL_GetRenderScale IGNORE_THIS_VERSION_OF_SDL_GetRenderScale
-#define SDL_GetSystemTheme IGNORE_THIS_VERSION_OF_SDL_GetSystemTheme
-#define SDL_CreatePopupWindow IGNORE_THIS_VERSION_OF_SDL_CreatePopupWindow
-#define SDL_GetWindowParent IGNORE_THIS_VERSION_OF_SDL_GetWindowParent
-#define SDL_CreateWindowWithPosition IGNORE_THIS_VERSION_OF_SDL_CreateWindowWithPosition
-#define SDL_SetClipboardData IGNORE_THIS_VERSION_OF_SDL_SetClipboardData
-#define SDL_GetClipboardUserdata IGNORE_THIS_VERSION_OF_SDL_GetClipboardUserdata
-#define SDL_GetClipboardData IGNORE_THIS_VERSION_OF_SDL_GetClipboardData
-#define SDL_HasClipboardData IGNORE_THIS_VERSION_OF_SDL_HasClipboardData
-#define SDL_GetAudioStreamFormat IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamFormat
-#define SDL_SetAudioStreamFormat IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamFormat
-#define SDL_CreateRWLock IGNORE_THIS_VERSION_OF_SDL_CreateRWLock
-#define SDL_LockRWLockForReading IGNORE_THIS_VERSION_OF_SDL_LockRWLockForReading
-#define SDL_LockRWLockForWriting IGNORE_THIS_VERSION_OF_SDL_LockRWLockForWriting
-#define SDL_TryLockRWLockForReading IGNORE_THIS_VERSION_OF_SDL_TryLockRWLockForReading
-#define SDL_TryLockRWLockForWriting IGNORE_THIS_VERSION_OF_SDL_TryLockRWLockForWriting
-#define SDL_UnlockRWLock IGNORE_THIS_VERSION_OF_SDL_UnlockRWLock
-#define SDL_DestroyRWLock IGNORE_THIS_VERSION_OF_SDL_DestroyRWLock
-#define SDL_GetPath IGNORE_THIS_VERSION_OF_SDL_GetPath
-#define SDL_GetDisplayContentScale IGNORE_THIS_VERSION_OF_SDL_GetDisplayContentScale
-#define SDL_GetWindowDisplayScale IGNORE_THIS_VERSION_OF_SDL_GetWindowDisplayScale
-#define SDL_GetWindowPixelDensity IGNORE_THIS_VERSION_OF_SDL_GetWindowPixelDensity
 #define SDL_wcstol IGNORE_THIS_VERSION_OF_SDL_wcstol
-#define SDL_swprintf IGNORE_THIS_VERSION_OF_SDL_swprintf
-#define SDL_vswprintf IGNORE_THIS_VERSION_OF_SDL_vswprintf
-#define SDL_hid_get_input_report IGNORE_THIS_VERSION_OF_SDL_hid_get_input_report
-#define SDL_hid_get_device_info IGNORE_THIS_VERSION_OF_SDL_hid_get_device_info
-#define SDL_hid_get_report_descriptor IGNORE_THIS_VERSION_OF_SDL_hid_get_report_descriptor
-#define SDL_HasWindowSurface IGNORE_THIS_VERSION_OF_SDL_HasWindowSurface
-#define SDL_DestroyWindowSurface IGNORE_THIS_VERSION_OF_SDL_DestroyWindowSurface
-#define SDL_GetNaturalDisplayOrientation IGNORE_THIS_VERSION_OF_SDL_GetNaturalDisplayOrientation
 
 /* *** HACK HACK HACK:
  * *** Avoid including SDL_thread.h: it defines SDL_CreateThread() as a macro
@@ -969,10 +971,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_AddTimer
 #undef SDL_AddTimer
-#endif
-
-#ifdef SDL_CreateRW
-#undef SDL_CreateRW
 #endif
 
 #ifdef SDL_AndroidBackButton
@@ -1075,8 +1073,16 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_BlitSurfaceUncheckedScaled
 #endif
 
+#ifdef SDL_BroadcastCondition
+#undef SDL_BroadcastCondition
+#endif
+
 #ifdef SDL_CaptureMouse
 #undef SDL_CaptureMouse
+#endif
+
+#ifdef SDL_CleanupTLS
+#undef SDL_CleanupTLS
 #endif
 
 #ifdef SDL_ClearAudioStream
@@ -1119,20 +1125,12 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_ComposeCustomBlendMode
 #endif
 
-#ifdef SDL_BroadcastCondition
-#undef SDL_BroadcastCondition
+#ifdef SDL_ConvertAudioSamples
+#undef SDL_ConvertAudioSamples
 #endif
 
-#ifdef SDL_SignalCondition
-#undef SDL_SignalCondition
-#endif
-
-#ifdef SDL_WaitCondition
-#undef SDL_WaitCondition
-#endif
-
-#ifdef SDL_WaitConditionTimeout
-#undef SDL_WaitConditionTimeout
+#ifdef SDL_ConvertEventToRenderCoordinates
+#undef SDL_ConvertEventToRenderCoordinates
 #endif
 
 #ifdef SDL_ConvertPixels
@@ -1175,6 +1173,18 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_CreatePixelFormat
 #endif
 
+#ifdef SDL_CreatePopupWindow
+#undef SDL_CreatePopupWindow
+#endif
+
+#ifdef SDL_CreateRW
+#undef SDL_CreateRW
+#endif
+
+#ifdef SDL_CreateRWLock
+#undef SDL_CreateRWLock
+#endif
+
 #ifdef SDL_CreateRenderer
 #undef SDL_CreateRenderer
 #endif
@@ -1203,6 +1213,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_CreateSystemCursor
 #endif
 
+#ifdef SDL_CreateTLS
+#undef SDL_CreateTLS
+#endif
+
 #ifdef SDL_CreateTexture
 #undef SDL_CreateTexture
 #endif
@@ -1229,6 +1243,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_CreateWindowFrom
 #undef SDL_CreateWindowFrom
+#endif
+
+#ifdef SDL_CreateWindowWithPosition
+#undef SDL_CreateWindowWithPosition
 #endif
 
 #ifdef SDL_CursorVisible
@@ -1267,6 +1285,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_DestroyCondition
 #endif
 
+#ifdef SDL_DestroyCursor
+#undef SDL_DestroyCursor
+#endif
+
 #ifdef SDL_DestroyMutex
 #undef SDL_DestroyMutex
 #endif
@@ -1277,6 +1299,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_DestroyPixelFormat
 #undef SDL_DestroyPixelFormat
+#endif
+
+#ifdef SDL_DestroyRW
+#undef SDL_DestroyRW
+#endif
+
+#ifdef SDL_DestroyRWLock
+#undef SDL_DestroyRWLock
 #endif
 
 #ifdef SDL_DestroyRenderer
@@ -1297,6 +1327,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_DestroyWindow
 #undef SDL_DestroyWindow
+#endif
+
+#ifdef SDL_DestroyWindowSurface
+#undef SDL_DestroyWindowSurface
 #endif
 
 #ifdef SDL_DetachThread
@@ -1377,14 +1411,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_FlushEvents
 #undef SDL_FlushEvents
-#endif
-
-#ifdef SDL_DestroyCursor
-#undef SDL_DestroyCursor
-#endif
-
-#ifdef SDL_DestroyRW
-#undef SDL_DestroyRW
 #endif
 
 #ifdef SDL_GDKGetTaskQueue
@@ -1543,6 +1569,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetAudioStreamData
 #endif
 
+#ifdef SDL_GetAudioStreamFormat
+#undef SDL_GetAudioStreamFormat
+#endif
+
 #ifdef SDL_GetBasePath
 #undef SDL_GetBasePath
 #endif
@@ -1555,8 +1585,20 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetCPUCount
 #endif
 
+#ifdef SDL_GetClipboardData
+#undef SDL_GetClipboardData
+#endif
+
 #ifdef SDL_GetClipboardText
 #undef SDL_GetClipboardText
+#endif
+
+#ifdef SDL_GetClipboardUserdata
+#undef SDL_GetClipboardUserdata
+#endif
+
+#ifdef SDL_GetClosestFullscreenDisplayMode
+#undef SDL_GetClosestFullscreenDisplayMode
 #endif
 
 #ifdef SDL_GetCurrentAudioDriver
@@ -1565,6 +1607,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetCurrentDisplayMode
 #undef SDL_GetCurrentDisplayMode
+#endif
+
+#ifdef SDL_GetCurrentDisplayOrientation
+#undef SDL_GetCurrentDisplayOrientation
+#endif
+
+#ifdef SDL_GetCurrentRenderOutputSize
+#undef SDL_GetCurrentRenderOutputSize
 #endif
 
 #ifdef SDL_GetCurrentVideoDriver
@@ -1595,6 +1645,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetDisplayBounds
 #endif
 
+#ifdef SDL_GetDisplayContentScale
+#undef SDL_GetDisplayContentScale
+#endif
+
 #ifdef SDL_GetDisplayForPoint
 #undef SDL_GetDisplayForPoint
 #endif
@@ -1603,16 +1657,20 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetDisplayForRect
 #endif
 
+#ifdef SDL_GetDisplayForWindow
+#undef SDL_GetDisplayForWindow
+#endif
+
 #ifdef SDL_GetDisplayName
 #undef SDL_GetDisplayName
 #endif
 
-#ifdef SDL_GetCurrentDisplayOrientation
-#undef SDL_GetCurrentDisplayOrientation
-#endif
-
 #ifdef SDL_GetDisplayUsableBounds
 #undef SDL_GetDisplayUsableBounds
+#endif
+
+#ifdef SDL_GetDisplays
+#undef SDL_GetDisplays
 #endif
 
 #ifdef SDL_GetError
@@ -1625,6 +1683,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetEventFilter
 #undef SDL_GetEventFilter
+#endif
+
+#ifdef SDL_GetFullscreenDisplayModes
+#undef SDL_GetFullscreenDisplayModes
 #endif
 
 #ifdef SDL_GetGamepadAppleSFSymbolsNameForAxis
@@ -1725,14 +1787,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetGamepadName
 #undef SDL_GetGamepadName
-#endif
-
-#ifdef SDL_GetNumGamepadTouchpadFingers
-#undef SDL_GetNumGamepadTouchpadFingers
-#endif
-
-#ifdef SDL_GetNumGamepadTouchpads
-#undef SDL_GetNumGamepadTouchpads
 #endif
 
 #ifdef SDL_GetGamepadPath
@@ -1963,6 +2017,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetMouseState
 #endif
 
+#ifdef SDL_GetNaturalDisplayOrientation
+#undef SDL_GetNaturalDisplayOrientation
+#endif
+
 #ifdef SDL_GetNumAllocations
 #undef SDL_GetNumAllocations
 #endif
@@ -1977,6 +2035,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetNumGamepadMappings
 #undef SDL_GetNumGamepadMappings
+#endif
+
+#ifdef SDL_GetNumGamepadTouchpadFingers
+#undef SDL_GetNumGamepadTouchpadFingers
+#endif
+
+#ifdef SDL_GetNumGamepadTouchpads
+#undef SDL_GetNumGamepadTouchpads
 #endif
 
 #ifdef SDL_GetNumJoystickAxes
@@ -2011,6 +2077,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetOriginalMemoryFunctions
 #endif
 
+#ifdef SDL_GetPath
+#undef SDL_GetPath
+#endif
+
 #ifdef SDL_GetPerformanceCounter
 #undef SDL_GetPerformanceCounter
 #endif
@@ -2041,6 +2111,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetPreferredLocales
 #undef SDL_GetPreferredLocales
+#endif
+
+#ifdef SDL_GetPrimaryDisplay
+#undef SDL_GetPrimaryDisplay
 #endif
 
 #ifdef SDL_GetPrimarySelectionText
@@ -2135,8 +2209,20 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetRenderMetalLayer
 #endif
 
+#ifdef SDL_GetRenderOutputSize
+#undef SDL_GetRenderOutputSize
+#endif
+
+#ifdef SDL_GetRenderScale
+#undef SDL_GetRenderScale
+#endif
+
 #ifdef SDL_GetRenderTarget
 #undef SDL_GetRenderTarget
+#endif
+
+#ifdef SDL_GetRenderVSync
+#undef SDL_GetRenderVSync
 #endif
 
 #ifdef SDL_GetRenderViewport
@@ -2155,10 +2241,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetRendererInfo
 #endif
 
-#ifdef SDL_GetCurrentRenderOutputSize
-#undef SDL_GetCurrentRenderOutputSize
-#endif
-
 #ifdef SDL_GetRevision
 #undef SDL_GetRevision
 #endif
@@ -2173,6 +2255,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetScancodeName
 #undef SDL_GetScancodeName
+#endif
+
+#ifdef SDL_GetSemaphoreValue
+#undef SDL_GetSemaphoreValue
 #endif
 
 #ifdef SDL_GetSensorData
@@ -2243,6 +2329,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetSystemRAM
 #endif
 
+#ifdef SDL_GetSystemTheme
+#undef SDL_GetSystemTheme
+#endif
+
+#ifdef SDL_GetTLS
+#undef SDL_GetTLS
+#endif
+
 #ifdef SDL_GetTextureAlphaMod
 #undef SDL_GetTextureAlphaMod
 #endif
@@ -2311,12 +2405,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetWindowData
 #endif
 
-#ifdef SDL_GetDisplayForWindow
-#undef SDL_GetDisplayForWindow
-#endif
-
-#ifdef SDL_GetWindowFullscreenMode
-#undef SDL_GetWindowFullscreenMode
+#ifdef SDL_GetWindowDisplayScale
+#undef SDL_GetWindowDisplayScale
 #endif
 
 #ifdef SDL_GetWindowFlags
@@ -2325,6 +2415,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetWindowFromID
 #undef SDL_GetWindowFromID
+#endif
+
+#ifdef SDL_GetWindowFullscreenMode
+#undef SDL_GetWindowFullscreenMode
 #endif
 
 #ifdef SDL_GetWindowGrab
@@ -2361,6 +2455,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetWindowOpacity
 #undef SDL_GetWindowOpacity
+#endif
+
+#ifdef SDL_GetWindowParent
+#undef SDL_GetWindowParent
+#endif
+
+#ifdef SDL_GetWindowPixelDensity
+#undef SDL_GetWindowPixelDensity
 #endif
 
 #ifdef SDL_GetWindowPixelFormat
@@ -2527,6 +2629,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_HasAltiVec
 #endif
 
+#ifdef SDL_HasClipboardData
+#undef SDL_HasClipboardData
+#endif
+
 #ifdef SDL_HasClipboardText
 #undef SDL_HasClipboardText
 #endif
@@ -2589,6 +2695,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_HasScreenKeyboardSupport
 #undef SDL_HasScreenKeyboardSupport
+#endif
+
+#ifdef SDL_HasWindowSurface
+#undef SDL_HasWindowSurface
 #endif
 
 #ifdef SDL_HideCursor
@@ -2667,6 +2777,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_LinuxSetThreadPriorityAndPolicy
 #endif
 
+#ifdef SDL_LoadBMP
+#undef SDL_LoadBMP
+#endif
+
 #ifdef SDL_LoadBMP_RW
 #undef SDL_LoadBMP_RW
 #endif
@@ -2701,6 +2815,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_LockMutex
 #undef SDL_LockMutex
+#endif
+
+#ifdef SDL_LockRWLockForReading
+#undef SDL_LockRWLockForReading
+#endif
+
+#ifdef SDL_LockRWLockForWriting
+#undef SDL_LockRWLockForWriting
 #endif
 
 #ifdef SDL_LockSurface
@@ -2879,8 +3001,16 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_PeepEvents
 #endif
 
+#ifdef SDL_PlayAudioDevice
+#undef SDL_PlayAudioDevice
+#endif
+
 #ifdef SDL_PollEvent
 #undef SDL_PollEvent
+#endif
+
+#ifdef SDL_PostSemaphore
+#undef SDL_PostSemaphore
 #endif
 
 #ifdef SDL_PremultiplyAlpha
@@ -3003,6 +3133,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_RenderClipEnabled
 #endif
 
+#ifdef SDL_RenderCoordinatesFromWindow
+#undef SDL_RenderCoordinatesFromWindow
+#endif
+
+#ifdef SDL_RenderCoordinatesToWindow
+#undef SDL_RenderCoordinatesToWindow
+#endif
+
 #ifdef SDL_RenderFillRect
 #undef SDL_RenderFillRect
 #endif
@@ -3035,10 +3173,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_RenderLines
 #endif
 
-#ifdef SDL_RenderCoordinatesToWindow
-#undef SDL_RenderCoordinatesToWindow
-#endif
-
 #ifdef SDL_RenderPoint
 #undef SDL_RenderPoint
 #endif
@@ -3069,10 +3203,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_RenderTextureRotated
 #undef SDL_RenderTextureRotated
-#endif
-
-#ifdef SDL_RenderCoordinatesFromWindow
-#undef SDL_RenderCoordinatesFromWindow
 #endif
 
 #ifdef SDL_ReportAssertion
@@ -3123,6 +3253,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_SIMDGetAlignment
 #endif
 
+#ifdef SDL_SaveBMP
+#undef SDL_SaveBMP
+#endif
+
 #ifdef SDL_SaveBMP_RW
 #undef SDL_SaveBMP_RW
 #endif
@@ -3135,26 +3269,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_ScreenSaverEnabled
 #endif
 
-#ifdef SDL_PostSemaphore
-#undef SDL_PostSemaphore
-#endif
-
-#ifdef SDL_TryWaitSemaphore
-#undef SDL_TryWaitSemaphore
-#endif
-
-#ifdef SDL_GetSemaphoreValue
-#undef SDL_GetSemaphoreValue
-#endif
-
-#ifdef SDL_WaitSemaphore
-#undef SDL_WaitSemaphore
-#endif
-
-#ifdef SDL_WaitSemaphoreTimeout
-#undef SDL_WaitSemaphoreTimeout
-#endif
-
 #ifdef SDL_SendGamepadEffect
 #undef SDL_SendGamepadEffect
 #endif
@@ -3165,6 +3279,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_SetAssertionHandler
 #undef SDL_SetAssertionHandler
+#endif
+
+#ifdef SDL_SetAudioStreamFormat
+#undef SDL_SetAudioStreamFormat
+#endif
+
+#ifdef SDL_SetClipboardData
+#undef SDL_SetClipboardData
 #endif
 
 #ifdef SDL_SetClipboardText
@@ -3279,6 +3401,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_SetRenderLogicalPresentation
 #endif
 
+#ifdef SDL_SetRenderScale
+#undef SDL_SetRenderScale
+#endif
+
 #ifdef SDL_SetRenderTarget
 #undef SDL_SetRenderTarget
 #endif
@@ -3317,6 +3443,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_SetSurfaceRLE
 #undef SDL_SetSurfaceRLE
+#endif
+
+#ifdef SDL_SetTLS
+#undef SDL_SetTLS
 #endif
 
 #ifdef SDL_SetTextInputRect
@@ -3359,12 +3489,12 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_SetWindowData
 #endif
 
-#ifdef SDL_SetWindowFullscreenMode
-#undef SDL_SetWindowFullscreenMode
-#endif
-
 #ifdef SDL_SetWindowFullscreen
 #undef SDL_SetWindowFullscreen
+#endif
+
+#ifdef SDL_SetWindowFullscreenMode
+#undef SDL_SetWindowFullscreenMode
 #endif
 
 #ifdef SDL_SetWindowGrab
@@ -3455,6 +3585,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_ShowWindow
 #endif
 
+#ifdef SDL_SignalCondition
+#undef SDL_SignalCondition
+#endif
+
 #ifdef SDL_SoftStretch
 #undef SDL_SoftStretch
 #endif
@@ -3479,22 +3613,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_SurfaceHasRLE
 #endif
 
-#ifdef SDL_CleanupTLS
-#undef SDL_CleanupTLS
-#endif
-
-#ifdef SDL_CreateTLS
-#undef SDL_CreateTLS
-#endif
-
-#ifdef SDL_GetTLS
-#undef SDL_GetTLS
-#endif
-
-#ifdef SDL_SetTLS
-#undef SDL_SetTLS
-#endif
-
 #ifdef SDL_TextInputActive
 #undef SDL_TextInputActive
 #endif
@@ -3511,6 +3629,18 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_TryLockMutex
 #endif
 
+#ifdef SDL_TryLockRWLockForReading
+#undef SDL_TryLockRWLockForReading
+#endif
+
+#ifdef SDL_TryLockRWLockForWriting
+#undef SDL_TryLockRWLockForWriting
+#endif
+
+#ifdef SDL_TryWaitSemaphore
+#undef SDL_TryWaitSemaphore
+#endif
+
 #ifdef SDL_UnloadObject
 #undef SDL_UnloadObject
 #endif
@@ -3525,6 +3655,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_UnlockMutex
 #undef SDL_UnlockMutex
+#endif
+
+#ifdef SDL_UnlockRWLock
+#undef SDL_UnlockRWLock
 #endif
 
 #ifdef SDL_UnlockSurface
@@ -3591,12 +3725,28 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_Vulkan_UnloadLibrary
 #endif
 
+#ifdef SDL_WaitCondition
+#undef SDL_WaitCondition
+#endif
+
+#ifdef SDL_WaitConditionTimeout
+#undef SDL_WaitConditionTimeout
+#endif
+
 #ifdef SDL_WaitEvent
 #undef SDL_WaitEvent
 #endif
 
 #ifdef SDL_WaitEventTimeout
 #undef SDL_WaitEventTimeout
+#endif
+
+#ifdef SDL_WaitSemaphore
+#undef SDL_WaitSemaphore
+#endif
+
+#ifdef SDL_WaitSemaphoreTimeout
+#undef SDL_WaitSemaphoreTimeout
 #endif
 
 #ifdef SDL_WaitThread
@@ -3665,6 +3815,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_acosf
 #undef SDL_acosf
+#endif
+
+#ifdef SDL_aligned_alloc
+#undef SDL_aligned_alloc
+#endif
+
+#ifdef SDL_aligned_free
+#undef SDL_aligned_free
 #endif
 
 #ifdef SDL_asin
@@ -3807,6 +3965,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_hid_free_enumeration
 #endif
 
+#ifdef SDL_hid_get_device_info
+#undef SDL_hid_get_device_info
+#endif
+
 #ifdef SDL_hid_get_feature_report
 #undef SDL_hid_get_feature_report
 #endif
@@ -3815,12 +3977,20 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_hid_get_indexed_string
 #endif
 
+#ifdef SDL_hid_get_input_report
+#undef SDL_hid_get_input_report
+#endif
+
 #ifdef SDL_hid_get_manufacturer_string
 #undef SDL_hid_get_manufacturer_string
 #endif
 
 #ifdef SDL_hid_get_product_string
 #undef SDL_hid_get_product_string
+#endif
+
+#ifdef SDL_hid_get_report_descriptor
+#undef SDL_hid_get_report_descriptor
 #endif
 
 #ifdef SDL_hid_get_serial_number_string
@@ -3991,6 +4161,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_memset4
 #endif
 
+#ifdef SDL_modf
+#undef SDL_modf
+#endif
+
+#ifdef SDL_modff
+#undef SDL_modff
+#endif
+
 #ifdef SDL_pow
 #undef SDL_pow
 #endif
@@ -4135,6 +4313,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_strupr
 #endif
 
+#ifdef SDL_swprintf
+#undef SDL_swprintf
+#endif
+
 #ifdef SDL_tan
 #undef SDL_tan
 #endif
@@ -4195,6 +4377,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_vsscanf
 #endif
 
+#ifdef SDL_vswprintf
+#undef SDL_vswprintf
+#endif
+
 #ifdef SDL_wcscasecmp
 #undef SDL_wcscasecmp
 #endif
@@ -4231,184 +4417,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_wcsstr
 #endif
 
-#ifdef SDL_modf
-#undef SDL_modf
-#endif
-
-#ifdef SDL_modff
-#undef SDL_modff
-#endif
-
-#ifdef SDL_GetRenderVSync
-#undef SDL_GetRenderVSync
-#endif
-
-#ifdef SDL_PlayAudioDevice
-#undef SDL_PlayAudioDevice
-#endif
-
-#ifdef SDL_aligned_alloc
-#undef SDL_aligned_alloc
-#endif
-
-#ifdef SDL_aligned_free
-#undef SDL_aligned_free
-#endif
-
-#ifdef SDL_ConvertAudioSamples
-#undef SDL_ConvertAudioSamples
-#endif
-
-#ifdef SDL_GetDisplays
-#undef SDL_GetDisplays
-#endif
-
-#ifdef SDL_GetPrimaryDisplay
-#undef SDL_GetPrimaryDisplay
-#endif
-
-#ifdef SDL_GetFullscreenDisplayModes
-#undef SDL_GetFullscreenDisplayModes
-#endif
-
-#ifdef SDL_GetClosestFullscreenDisplayMode
-#undef SDL_GetClosestFullscreenDisplayMode
-#endif
-
-#ifdef SDL_GetRenderOutputSize
-#undef SDL_GetRenderOutputSize
-#endif
-
-#ifdef SDL_ConvertEventToRenderCoordinates
-#undef SDL_ConvertEventToRenderCoordinates
-#endif
-
-#ifdef SDL_SetRenderScale
-#undef SDL_SetRenderScale
-#endif
-
-#ifdef SDL_GetRenderScale
-#undef SDL_GetRenderScale
-#endif
-
-#ifdef SDL_GetSystemTheme
-#undef SDL_GetSystemTheme
-#endif
-
-#ifdef SDL_CreatePopupWindow
-#undef SDL_CreatePopupWindow
-#endif
-
-#ifdef SDL_GetWindowParent
-#undef SDL_GetWindowParent
-#endif
-
-#ifdef SDL_CreateWindowWithPosition
-#undef SDL_CreateWindowWithPosition
-#endif
-
-#ifdef SDL_SetClipboardData
-#undef SDL_SetClipboardData
-#endif
-
-#ifdef SDL_GetClipboardUserdata
-#undef SDL_GetClipboardUserdata
-#endif
-
-#ifdef SDL_GetClipboardData
-#undef SDL_GetClipboardData
-#endif
-
-#ifdef SDL_HasClipboardData
-#undef SDL_HasClipboardData
-#endif
-
-#ifdef SDL_GetAudioStreamFormat
-#undef SDL_GetAudioStreamFormat
-#endif
-
-#ifdef SDL_SetAudioStreamFormat
-#undef SDL_SetAudioStreamFormat
-#endif
-
-#ifdef SDL_CreateRWLock
-#undef SDL_CreateRWLock
-#endif
-
-#ifdef SDL_LockRWLockForReading
-#undef SDL_LockRWLockForReading
-#endif
-
-#ifdef SDL_LockRWLockForWriting
-#undef SDL_LockRWLockForWriting
-#endif
-
-#ifdef SDL_TryLockRWLockForReading
-#undef SDL_TryLockRWLockForReading
-#endif
-
-#ifdef SDL_TryLockRWLockForWriting
-#undef SDL_TryLockRWLockForWriting
-#endif
-
-#ifdef SDL_UnlockRWLock
-#undef SDL_UnlockRWLock
-#endif
-
-#ifdef SDL_DestroyRWLock
-#undef SDL_DestroyRWLock
-#endif
-
-#ifdef SDL_GetPath
-#undef SDL_GetPath
-#endif
-
-#ifdef SDL_GetDisplayContentScale
-#undef SDL_GetDisplayContentScale
-#endif
-
-#ifdef SDL_GetWindowDisplayScale
-#undef SDL_GetWindowDisplayScale
-#endif
-
-#ifdef SDL_GetWindowPixelDensity
-#undef SDL_GetWindowPixelDensity
-#endif
-
 #ifdef SDL_wcstol
 #undef SDL_wcstol
-#endif
-
-#ifdef SDL_swprintf
-#undef SDL_swprintf
-#endif
-
-#ifdef SDL_vswprintf
-#undef SDL_vswprintf
-#endif
-
-#ifdef SDL_hid_get_input_report
-#undef SDL_hid_get_input_report
-#endif
-
-#ifdef SDL_hid_get_device_info
-#undef SDL_hid_get_device_info
-#endif
-
-#ifdef SDL_hid_get_report_descriptor
-#undef SDL_hid_get_report_descriptor
-#endif
-
-#ifdef SDL_HasWindowSurface
-#undef SDL_HasWindowSurface
-#endif
-
-#ifdef SDL_DestroyWindowSurface
-#undef SDL_DestroyWindowSurface
-#endif
-
-#ifdef SDL_GetNaturalDisplayOrientation
-#undef SDL_GetNaturalDisplayOrientation
 #endif
 
 /* undefine these macros too: */
@@ -4480,14 +4490,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_LoadWAV
 #undef SDL_LoadWAV
-#endif
-
-#ifdef SDL_LoadBMP
-#undef SDL_LoadBMP
-#endif
-
-#ifdef SDL_SaveBMP
-#undef SDL_SaveBMP
 #endif
 
 #ifdef SDL_AddGamepadMappingsFromFile
