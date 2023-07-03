@@ -862,7 +862,7 @@
 #define SDL_strrev IGNORE_THIS_VERSION_OF_SDL_strrev
 #define SDL_strstr IGNORE_THIS_VERSION_OF_SDL_strstr
 #define SDL_strtod IGNORE_THIS_VERSION_OF_SDL_strtod
-#define SDL_strtokr IGNORE_THIS_VERSION_OF_SDL_strtokr
+#define SDL_strtok_r IGNORE_THIS_VERSION_OF_SDL_strtok_r
 #define SDL_strtol IGNORE_THIS_VERSION_OF_SDL_strtol
 #define SDL_strtoll IGNORE_THIS_VERSION_OF_SDL_strtoll
 #define SDL_strtoul IGNORE_THIS_VERSION_OF_SDL_strtoul
@@ -4289,8 +4289,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_strtod
 #endif
 
-#ifdef SDL_strtokr
-#undef SDL_strtokr
+#ifdef SDL_strtok_r
+#undef SDL_strtok_r
 #endif
 
 #ifdef SDL_strtol
@@ -4516,6 +4516,4 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_iOSSetEventPump
 #endif
 
-#endif
-
-/* vi: set ts=4 sw=4 expandtab: */
+#endif /*  INCL_SDL3_INCLUDE_WRAPPER_H */

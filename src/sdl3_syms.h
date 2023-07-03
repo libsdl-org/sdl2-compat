@@ -693,7 +693,7 @@ SDL3_SYM_PASSTHROUGH(SDL_MetalView,Metal_CreateView,(SDL_Window *a),(a),return)
 SDL3_SYM_PASSTHROUGH(void,Metal_DestroyView,(SDL_MetalView a),(a),)
 SDL3_SYM_PASSTHROUGH(int,LockTextureToSurface,(SDL_Texture *a, const SDL_Rect *b, SDL_Surface **c),(a,b,c),return)
 SDL3_SYM_PASSTHROUGH(SDL_bool,HasARMSIMD,(void),(),return)
-SDL3_SYM_PASSTHROUGH(char*,strtokr,(char *a, const char *b, char **c),(a,b,c),return)
+SDL3_SYM_RENAMED(char*,strtokr,strtok_r,(char *a, const char *b, char **c),(a,b,c),return)
 SDL3_SYM_PASSTHROUGH(wchar_t*,wcsstr,(const wchar_t *a, const wchar_t *b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(int,wcsncmp,(const wchar_t *a, const wchar_t *b, size_t c),(a,b,c),return)
 SDL3_SYM_RENAMED(SDL_GameControllerType,GameControllerGetType,GetGamepadType,(SDL_GameController *a),(a),return)
@@ -918,5 +918,3 @@ SDL3_SYM_PASSTHROUGH(int,DestroyWindowSurface,(SDL_Window *a),(a),return)
 #undef SDL3_SYM_PASSTHROUGH
 #undef SDL3_SYM_RENAMED
 #undef SDL3_SYM_VARARGS
-
-/* vi: set ts=4 sw=4 expandtab: */
