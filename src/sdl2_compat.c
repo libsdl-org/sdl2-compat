@@ -2275,6 +2275,18 @@ SDL_CreateRGBSurfaceWithFormatFrom(void *pixels, int width, int height, int dept
     return SDL3_CreateSurfaceFrom(pixels, width, height, pitch, format);
 }
 
+DECLSPEC int SDLCALL
+SDL_LowerBlit(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect)
+{
+    return SDL3_BlitSurfaceUnchecked(src, srcrect, dst, dstrect);
+}
+
+DECLSPEC int SDLCALL
+SDL_LowerBlitScaled(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect)
+{
+    return SDL3_BlitSurfaceUncheckedScaled(src, srcrect, dst, dstrect);
+}
+
 /* SDL_GetTicks is 64-bit in SDL3. Clamp it for SDL2. */
 DECLSPEC Uint32 SDLCALL
 SDL_GetTicks(void)
