@@ -188,7 +188,6 @@
 #define SDL_GetCPUCount IGNORE_THIS_VERSION_OF_SDL_GetCPUCount
 #define SDL_GetClipboardData IGNORE_THIS_VERSION_OF_SDL_GetClipboardData
 #define SDL_GetClipboardText IGNORE_THIS_VERSION_OF_SDL_GetClipboardText
-#define SDL_GetClipboardUserdata IGNORE_THIS_VERSION_OF_SDL_GetClipboardUserdata
 #define SDL_GetClosestFullscreenDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetClosestFullscreenDisplayMode
 #define SDL_GetCurrentAudioDriver IGNORE_THIS_VERSION_OF_SDL_GetCurrentAudioDriver
 #define SDL_GetCurrentDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetCurrentDisplayMode
@@ -895,6 +894,7 @@
 #define SDL_wcsncmp IGNORE_THIS_VERSION_OF_SDL_wcsncmp
 #define SDL_wcsstr IGNORE_THIS_VERSION_OF_SDL_wcsstr
 #define SDL_wcstol IGNORE_THIS_VERSION_OF_SDL_wcstol
+#define SDL_ClearClipboardData IGNORE_THIS_VERSION_OF_SDL_ClearClipboardData
 
 /* *** HACK HACK HACK:
  * *** Avoid including SDL_thread.h: it defines SDL_CreateThread() as a macro
@@ -1591,10 +1591,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetClipboardText
 #undef SDL_GetClipboardText
-#endif
-
-#ifdef SDL_GetClipboardUserdata
-#undef SDL_GetClipboardUserdata
 #endif
 
 #ifdef SDL_GetClosestFullscreenDisplayMode
@@ -4419,6 +4415,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_wcstol
 #undef SDL_wcstol
+#endif
+
+#ifdef SDL_ClearClipboardData
+#undef SDL_ClearClipboardData
 #endif
 
 /* undefine these macros too: */
