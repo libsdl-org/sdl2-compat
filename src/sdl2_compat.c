@@ -2078,7 +2078,7 @@ SDL_LoadFile_RW(SDL2_RWops *rwops2, size_t *datasize, int freesrc)
     void *retval = NULL;
     SDL_RWops *rwops3 = RWops2to3(rwops2);
     if (rwops3) {
-        retval = SDL3_LoadFile_RW(rwops3, datasize, freesrc);
+        retval = SDL3_LoadFile_RW(rwops3, datasize, freesrc ? SDL_TRUE : SDL_FALSE);
         if (!freesrc) {
             SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }
@@ -2096,7 +2096,7 @@ SDL_LoadWAV_RW(SDL2_RWops *rwops2, int freesrc, SDL_AudioSpec *spec, Uint8 **aud
     SDL_AudioSpec *retval = NULL;
     SDL_RWops *rwops3 = RWops2to3(rwops2);
     if (rwops3) {
-        retval = SDL3_LoadWAV_RW(rwops3, freesrc, spec, audio_buf, audio_len);
+        retval = SDL3_LoadWAV_RW(rwops3, freesrc ? SDL_TRUE : SDL_FALSE, spec, audio_buf, audio_len);
         if (!freesrc) {
             SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }
@@ -2114,7 +2114,7 @@ SDL_LoadBMP_RW(SDL2_RWops *rwops2, int freesrc)
     SDL_Surface *retval = NULL;
     SDL_RWops *rwops3 = RWops2to3(rwops2);
     if (rwops3) {
-        retval = SDL3_LoadBMP_RW(rwops3, freesrc);
+        retval = SDL3_LoadBMP_RW(rwops3, freesrc ? SDL_TRUE : SDL_FALSE);
         if (!freesrc) {
             SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }

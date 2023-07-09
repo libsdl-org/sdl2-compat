@@ -106,7 +106,7 @@ SDL3_SYM(SDL_AudioDeviceID,OpenAudioDevice,(const char *a, int b, const SDL_Audi
 SDL3_SYM(SDL_AudioStatus,GetAudioDeviceStatus,(SDL_AudioDeviceID a),(a),return)
 SDL3_SYM(int,PlayAudioDevice,(SDL_AudioDeviceID a),(a),return)
 SDL3_SYM(int,PauseAudioDevice,(SDL_AudioDeviceID a),(a),return)
-SDL3_SYM(SDL_AudioSpec*,LoadWAV_RW,(SDL_RWops *a, int b, SDL_AudioSpec *c, Uint8 **d, Uint32 *e),(a,b,c,d,e),return)
+SDL3_SYM(SDL_AudioSpec*,LoadWAV_RW,(SDL_RWops *a, SDL_bool b, SDL_AudioSpec *c, Uint8 **d, Uint32 *e),(a,b,c,d,e),return)
 SDL3_SYM(int,MixAudioFormat,(Uint8 *a, const Uint8 *b, SDL_AudioFormat c, Uint32 d, int e),(a,b,c,d,e),return)
 SDL3_SYM(int,LockAudioDevice,(SDL_AudioDeviceID a),(a),return)
 SDL3_SYM(void,UnlockAudioDevice,(SDL_AudioDeviceID a),(a),)
@@ -428,7 +428,7 @@ SDL3_SYM_RENAMED(void,FreeSurface,DestroySurface,(SDL_Surface *a),(a),)
 SDL3_SYM_PASSTHROUGH(int,SetSurfacePalette,(SDL_Surface *a, SDL_Palette *b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(int,LockSurface,(SDL_Surface *a),(a),return)
 SDL3_SYM_PASSTHROUGH(void,UnlockSurface,(SDL_Surface *a),(a),)
-SDL3_SYM(SDL_Surface*,LoadBMP_RW,(SDL_RWops *a, int b),(a,b),return)
+SDL3_SYM(SDL_Surface*,LoadBMP_RW,(SDL_RWops *a, SDL_bool b),(a,b),return)
 SDL3_SYM(int,SaveBMP_RW,(SDL_Surface *a, SDL_RWops *b, int c),(a,b,c),return)
 SDL3_SYM_PASSTHROUGH(int,SetSurfaceRLE,(SDL_Surface *a, int b),(a,b),return)
 SDL3_SYM_RENAMED(int,SetColorKey,SetSurfaceColorKey,(SDL_Surface *a, int b, Uint32 c),(a,b,c),return)
@@ -588,7 +588,7 @@ SDL3_SYM_RENAMED(SDL_JoystickType,JoystickGetType,GetJoystickType,(SDL_Joystick 
 SDL3_SYM_PASSTHROUGH(void,MemoryBarrierReleaseFunction,(void),(),)
 SDL3_SYM_PASSTHROUGH(void,MemoryBarrierAcquireFunction,(void),(),)
 SDL3_SYM_PASSTHROUGH(size_t,utf8strlen,(const char *a),(a),return)
-SDL3_SYM(void*,LoadFile_RW,(SDL_RWops *a, size_t *b, int c),(a,b,c),return)
+SDL3_SYM(void*,LoadFile_RW,(SDL_RWops *a, size_t *b, SDL_bool c),(a,b,c),return)
 SDL3_SYM_PASSTHROUGH(int,wcscmp,(const wchar_t *a, const wchar_t *b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(SDL_BlendMode,ComposeCustomBlendMode,(SDL_BlendFactor a, SDL_BlendFactor b, SDL_BlendOperation c, SDL_BlendFactor d, SDL_BlendFactor e, SDL_BlendOperation f),(a,b,c,d,e,f),return)
 SDL3_SYM_PASSTHROUGH(SDL_Surface*,DuplicateSurface,(SDL_Surface *a),(a),return)
@@ -918,3 +918,4 @@ SDL3_SYM_PASSTHROUGH(int,DestroyWindowSurface,(SDL_Window *a),(a),return)
 #undef SDL3_SYM_PASSTHROUGH
 #undef SDL3_SYM_RENAMED
 #undef SDL3_SYM_VARARGS
+
