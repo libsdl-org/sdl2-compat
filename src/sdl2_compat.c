@@ -1755,15 +1755,43 @@ RWops3to2_seek(SDL2_RWops *rwops2, Sint64 offset, int whence)
 static size_t SDLCALL
 RWops3to2_read(SDL2_RWops *rwops2, void *ptr, size_t size, size_t maxnum)
 {
-    const Sint64 br = SDL3_RWread(rwops2->hidden.sdl3.rwops, ptr, ((Sint64) size) * ((Sint64) maxnum));
-    return (br <= 0) ? 0 : (size_t) br;
+    Sint64 br;
+    size_t nmemb;
+    if (!size || !maxnum) {
+        return 0;
+    }
+    br = SDL3_RWread(rwops2->hidden.sdl3.rwops, ptr, ((Sint64) size) * ((Sint64) maxnum));
+    if (br <= 0) {
+        return 0;
+    }
+    nmemb = (size_t) br / size;
+    #if 0
+    if ((size_t) br % size) { /* last member partially read? */
+        nmemb++;
+    }
+    #endif
+    return nmemb;
 }
 
 static size_t SDLCALL
 RWops3to2_write(SDL2_RWops *rwops2, const void *ptr, size_t size, size_t maxnum)
 {
-    const Sint64 bw = SDL3_RWwrite(rwops2->hidden.sdl3.rwops, ptr, ((Sint64) size) * ((Sint64) maxnum));
-    return (bw <= 0) ? 0 : (size_t) bw;
+    Sint64 bw;
+    size_t nmemb;
+    if (!size || !maxnum) {
+        return 0;
+    }
+    bw = SDL3_RWwrite(rwops2->hidden.sdl3.rwops, ptr, ((Sint64) size) * ((Sint64) maxnum));
+    if (bw <= 0) {
+        return 0;
+    }
+    nmemb = (size_t) bw / size;
+    #if 0
+    if ((size_t) bw % size) { /* last member partially written? */
+        nmemb++;
+    }
+    #endif
+    return nmemb;
 }
 
 static int SDLCALL
