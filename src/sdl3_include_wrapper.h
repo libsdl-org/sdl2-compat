@@ -896,6 +896,7 @@
 #define SDL_wcstol IGNORE_THIS_VERSION_OF_SDL_wcstol
 #define SDL_ClearClipboardData IGNORE_THIS_VERSION_OF_SDL_ClearClipboardData
 #define SDL_GetGamepadInstanceID IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstanceID
+#define SDL_GetGamepadPowerLevel IGNORE_THIS_VERSION_OF_SDL_GetGamepadPowerLevel
 
 /* *** HACK HACK HACK:
  * *** Avoid including SDL_thread.h: it defines SDL_CreateThread() as a macro
@@ -4426,8 +4427,12 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetGamepadInstanceID
 #endif
 
+#ifdef SDL_GetGamepadPowerLevel
+#undef SDL_GetGamepadPowerLevel
+#endif
+
 /* undefine these macros too: */
-/* redefine using SDL3_xxx, if needed. */
+/* redefine as SDL3_xxx, if needed. */
 
 #ifdef SDL_enabled_assert
 #undef SDL_enabled_assert
