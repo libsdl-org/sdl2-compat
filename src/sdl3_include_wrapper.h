@@ -895,6 +895,7 @@
 #define SDL_wcsstr IGNORE_THIS_VERSION_OF_SDL_wcsstr
 #define SDL_wcstol IGNORE_THIS_VERSION_OF_SDL_wcstol
 #define SDL_ClearClipboardData IGNORE_THIS_VERSION_OF_SDL_ClearClipboardData
+#define SDL_GetGamepadInstanceID IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstanceID
 
 /* *** HACK HACK HACK:
  * *** Avoid including SDL_thread.h: it defines SDL_CreateThread() as a macro
@@ -4419,6 +4420,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_ClearClipboardData
 #undef SDL_ClearClipboardData
+#endif
+
+#ifdef SDL_GetGamepadInstanceID
+#undef SDL_GetGamepadInstanceID
 #endif
 
 /* undefine these macros too: */
