@@ -30,11 +30,50 @@ typedef SDL_Condition SDL_cond;
 typedef SDL_Mutex SDL_mutex;
 typedef SDL_Semaphore SDL_sem;
 
+typedef enum
+{
+    SDL_CONTROLLER_BINDTYPE_NONE = 0,
+    SDL_CONTROLLER_BINDTYPE_BUTTON,
+    SDL_CONTROLLER_BINDTYPE_AXIS,
+    SDL_CONTROLLER_BINDTYPE_HAT
+} SDL_GameControllerBindType;
+
+typedef struct SDL_GameControllerButtonBind
+{
+    SDL_GameControllerBindType bindType;
+    union
+    {
+        int button;
+        int axis;
+        struct {
+            int hat;
+            int hat_mask;
+        } hat;
+    } value;
+
+} SDL_GameControllerButtonBind;
+
+typedef enum
+{
+    SDL_CONTROLLER_TYPE_UNKNOWN = 0,
+    SDL_CONTROLLER_TYPE_XBOX360,
+    SDL_CONTROLLER_TYPE_XBOXONE,
+    SDL_CONTROLLER_TYPE_PS3,
+    SDL_CONTROLLER_TYPE_PS4,
+    SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO,
+    SDL_CONTROLLER_TYPE_VIRTUAL,
+    SDL_CONTROLLER_TYPE_PS5,
+    SDL_CONTROLLER_TYPE_AMAZON_LUNA,
+    SDL_CONTROLLER_TYPE_GOOGLE_STADIA,
+    SDL_CONTROLLER_TYPE_NVIDIA_SHIELD,
+    SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_LEFT,
+    SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT,
+    SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR
+} SDL_GameControllerType;
+
 typedef SDL_Gamepad SDL_GameController;  /* since they're opaque types, for simplicity we just typedef it here and use the old types in sdl3_syms.h */
 typedef SDL_GamepadAxis SDL_GameControllerAxis;
-typedef SDL_GamepadBinding SDL_GameControllerButtonBind;
 typedef SDL_GamepadButton SDL_GameControllerButton;
-typedef SDL_GamepadType SDL_GameControllerType;
 
 typedef Sint32 SDL2_JoystickID;  /* this became unsigned in SDL3, but we'll just hope we don't overflow. */
 typedef Sint32 SDL2_SensorID;  /* this became unsigned in SDL3, but we'll just hope we don't overflow. */

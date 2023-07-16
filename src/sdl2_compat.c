@@ -5295,11 +5295,59 @@ SDL_GameControllerOpen(int idx)
     return jid ? SDL3_OpenGamepad(jid) : NULL;
 }
 
+static SDL_GameControllerType SDLCALL
+SDL2COMPAT_GetGamepadInstanceType(const SDL_JoystickID jid)
+{
+    const Uint16 vid = SDL3_GetJoystickInstanceVendor(jid);
+    const Uint16 pid = SDL3_GetJoystickInstanceProduct(jid);
+    if (SDL3_IsJoystickVirtual(jid)) {
+        return SDL_CONTROLLER_TYPE_VIRTUAL;
+    }
+    if ((vid == 0x1949 && pid == 0x0419) ||
+        (vid == 0x0171 && pid == 0x0419)) {
+        return SDL_CONTROLLER_TYPE_AMAZON_LUNA;
+    }
+    if (vid == 0x18d1 && pid == 0x9400) {
+        return SDL_CONTROLLER_TYPE_GOOGLE_STADIA;
+    }
+    if (vid == 0x0955 && (pid == 0x7210 || pid == 0x7214)) {
+        return SDL_CONTROLLER_TYPE_NVIDIA_SHIELD;
+    }
+    switch (SDL3_GetGamepadInstanceType(jid)) {
+    case SDL_GAMEPAD_TYPE_XBOX360:
+        return SDL_CONTROLLER_TYPE_XBOX360;
+    case SDL_GAMEPAD_TYPE_XBOXONE:
+        return SDL_CONTROLLER_TYPE_XBOXONE;
+    case SDL_GAMEPAD_TYPE_PS3:
+        return SDL_CONTROLLER_TYPE_PS3;
+    case SDL_GAMEPAD_TYPE_PS4:
+        return SDL_CONTROLLER_TYPE_PS4;
+    case SDL_GAMEPAD_TYPE_PS5:
+        return SDL_CONTROLLER_TYPE_PS5;
+    case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_PRO:
+        return SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO;
+    case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_LEFT:
+        return SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_LEFT;
+    case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT:
+        return SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT;
+    case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR:
+        return SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR;
+    default:
+        return SDL_CONTROLLER_TYPE_UNKNOWN;
+    }
+}
+
+DECLSPEC SDL_GameControllerType SDLCALL
+SDL_GameControllerGetType(SDL_GameController *controller)
+{
+    return SDL2COMPAT_GetGamepadInstanceType(SDL3_GetGamepadInstanceID(controller));
+}
+
 DECLSPEC SDL_GameControllerType SDLCALL
 SDL_GameControllerTypeForIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_GetGamepadInstanceType(jid) : SDL_GAMEPAD_TYPE_UNKNOWN;
+    return jid ? SDL2COMPAT_GetGamepadInstanceType(jid) : SDL_CONTROLLER_TYPE_UNKNOWN;
 }
 
 DECLSPEC const char* SDLCALL
@@ -5307,6 +5355,30 @@ SDL_GameControllerPathForIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
     return jid ? SDL3_GetGamepadInstancePath(jid) : NULL;
+}
+
+DECLSPEC SDL_GameControllerButtonBind SDLCALL
+SDL_GameControllerGetBindForAxis(SDL_GameController *controller,
+                                 SDL_GameControllerAxis axis)
+{
+    SDL_GameControllerButtonBind bind;
+    /* FIXME */
+    (void) controller;
+    (void) axis;
+    SDL3_zero(bind);
+    return bind;
+}
+
+DECLSPEC SDL_GameControllerButtonBind SDLCALL
+SDL_GameControllerGetBindForButton(SDL_GameController *controller,
+                                   SDL_GameControllerButton button)
+{
+    SDL_GameControllerButtonBind bind;
+    /* FIXME */
+    (void) controller;
+    (void) button;
+    SDL3_zero(bind);
+    return bind;
 }
 
 DECLSPEC int SDLCALL

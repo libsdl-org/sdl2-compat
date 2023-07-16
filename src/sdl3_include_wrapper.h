@@ -215,8 +215,6 @@
 #define SDL_GetGamepadAppleSFSymbolsNameForButton IGNORE_THIS_VERSION_OF_SDL_GetGamepadAppleSFSymbolsNameForButton
 #define SDL_GetGamepadAxis IGNORE_THIS_VERSION_OF_SDL_GetGamepadAxis
 #define SDL_GetGamepadAxisFromString IGNORE_THIS_VERSION_OF_SDL_GetGamepadAxisFromString
-#define SDL_GetGamepadBindForAxis IGNORE_THIS_VERSION_OF_SDL_GetGamepadBindForAxis
-#define SDL_GetGamepadBindForButton IGNORE_THIS_VERSION_OF_SDL_GetGamepadBindForButton
 #define SDL_GetGamepadButton IGNORE_THIS_VERSION_OF_SDL_GetGamepadButton
 #define SDL_GetGamepadButtonFromString IGNORE_THIS_VERSION_OF_SDL_GetGamepadButtonFromString
 #define SDL_GetGamepadFirmwareVersion IGNORE_THIS_VERSION_OF_SDL_GetGamepadFirmwareVersion
@@ -897,6 +895,8 @@
 #define SDL_ClearClipboardData IGNORE_THIS_VERSION_OF_SDL_ClearClipboardData
 #define SDL_GetGamepadInstanceID IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstanceID
 #define SDL_GetGamepadPowerLevel IGNORE_THIS_VERSION_OF_SDL_GetGamepadPowerLevel
+#define SDL_SetGamepadMapping IGNORE_THIS_VERSION_OF_SDL_SetGamepadMapping
+#define SDL_strndup IGNORE_THIS_VERSION_OF_SDL_strndup
 
 /* *** HACK HACK HACK:
  * *** Avoid including SDL_thread.h: it defines SDL_CreateThread() as a macro
@@ -1701,14 +1701,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetGamepadAxisFromString
 #undef SDL_GetGamepadAxisFromString
-#endif
-
-#ifdef SDL_GetGamepadBindForAxis
-#undef SDL_GetGamepadBindForAxis
-#endif
-
-#ifdef SDL_GetGamepadBindForButton
-#undef SDL_GetGamepadBindForButton
 #endif
 
 #ifdef SDL_GetGamepadButton
@@ -4429,6 +4421,14 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetGamepadPowerLevel
 #undef SDL_GetGamepadPowerLevel
+#endif
+
+#ifdef SDL_SetGamepadMapping
+#undef SDL_SetGamepadMapping
+#endif
+
+#ifdef SDL_strndup
+#undef SDL_strndup
 #endif
 
 /* undefine these macros too: */
