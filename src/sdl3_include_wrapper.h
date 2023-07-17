@@ -897,6 +897,10 @@
 #define SDL_GetGamepadPowerLevel IGNORE_THIS_VERSION_OF_SDL_GetGamepadPowerLevel
 #define SDL_SetGamepadMapping IGNORE_THIS_VERSION_OF_SDL_SetGamepadMapping
 #define SDL_strndup IGNORE_THIS_VERSION_OF_SDL_strndup
+#define SDL_GetGamepadTypeFromString IGNORE_THIS_VERSION_OF_SDL_GetGamepadTypeFromString
+#define SDL_GetGamepadStringForType IGNORE_THIS_VERSION_OF_SDL_GetGamepadStringForType
+#define SDL_GetRealGamepadInstanceType IGNORE_THIS_VERSION_OF_SDL_GetRealGamepadInstanceType
+#define SDL_GetRealGamepadType IGNORE_THIS_VERSION_OF_SDL_GetRealGamepadType
 
 /* *** HACK HACK HACK:
  * *** Avoid including SDL_thread.h: it defines SDL_CreateThread() as a macro
@@ -4429,6 +4433,22 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_strndup
 #undef SDL_strndup
+#endif
+
+#ifdef SDL_GetGamepadTypeFromString
+#undef SDL_GetGamepadTypeFromString
+#endif
+
+#ifdef SDL_GetGamepadStringForType
+#undef SDL_GetGamepadStringForType
+#endif
+
+#ifdef SDL_GetRealGamepadInstanceType
+#undef SDL_GetRealGamepadInstanceType
+#endif
+
+#ifdef SDL_GetRealGamepadType
+#undef SDL_GetRealGamepadType
 #endif
 
 /* undefine these macros too: */
