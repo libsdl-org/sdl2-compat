@@ -904,6 +904,7 @@
 #define SDL_wcsnlen IGNORE_THIS_VERSION_OF_SDL_wcsnlen
 #define SDL_strnlen IGNORE_THIS_VERSION_OF_SDL_strnlen
 #define SDL_AddGamepadMappingsFromFile IGNORE_THIS_VERSION_OF_SDL_AddGamepadMappingsFromFile
+#define SDL_ReloadGamepadMappings IGNORE_THIS_VERSION_OF_SDL_ReloadGamepadMappings
 
 /* *** HACK HACK HACK:
  * *** Avoid including SDL_thread.h: it defines SDL_CreateThread() as a macro
@@ -4464,6 +4465,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_AddGamepadMappingsFromFile
 #undef SDL_AddGamepadMappingsFromFile
+#endif
+
+#ifdef SDL_ReloadGamepadMappings
+#undef SDL_ReloadGamepadMappings
 #endif
 
 /* undefine these macros too: */
