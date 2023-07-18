@@ -901,6 +901,9 @@
 #define SDL_GetGamepadStringForType IGNORE_THIS_VERSION_OF_SDL_GetGamepadStringForType
 #define SDL_GetRealGamepadInstanceType IGNORE_THIS_VERSION_OF_SDL_GetRealGamepadInstanceType
 #define SDL_GetRealGamepadType IGNORE_THIS_VERSION_OF_SDL_GetRealGamepadType
+#define SDL_wcsnlen IGNORE_THIS_VERSION_OF_SDL_wcsnlen
+#define SDL_strnlen IGNORE_THIS_VERSION_OF_SDL_strnlen
+#define SDL_AddGamepadMappingsFromFile IGNORE_THIS_VERSION_OF_SDL_AddGamepadMappingsFromFile
 
 /* *** HACK HACK HACK:
  * *** Avoid including SDL_thread.h: it defines SDL_CreateThread() as a macro
@@ -4451,6 +4454,18 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetRealGamepadType
 #endif
 
+#ifdef SDL_wcsnlen
+#undef SDL_wcsnlen
+#endif
+
+#ifdef SDL_strnlen
+#undef SDL_strnlen
+#endif
+
+#ifdef SDL_AddGamepadMappingsFromFile
+#undef SDL_AddGamepadMappingsFromFile
+#endif
+
 /* undefine these macros too: */
 /* redefine as SDL3_xxx, if needed. */
 
@@ -4520,10 +4535,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_LoadWAV
 #undef SDL_LoadWAV
-#endif
-
-#ifdef SDL_AddGamepadMappingsFromFile
-#undef SDL_AddGamepadMappingsFromFile
 #endif
 
 #ifdef SDL_GDKRunApp
