@@ -2,7 +2,7 @@
 #        you can define SDL3_INCLUDE_DIRS on the cmdline.  For example:
 #        cmake -DSDL3_INCLUDE_DIRS=/opt/SDL3/include [other stuff ....]
 
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.0.0...3.5)
 project(sdl2_compat VERSION 2.90.0 LANGUAGES C)
 
 if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
