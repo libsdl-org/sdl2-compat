@@ -2559,32 +2559,6 @@ GestureAddTouch(const SDL_TouchID touchId)
     return &GestureTouches[GestureNumTouches++];
 }
 
-static int
-GestureDelTouch(const SDL_TouchID touchId)
-{
-    int i;
-
-    for (i = 0; i < GestureNumTouches; i++) {
-        if (GestureTouches[i].touchId == touchId) {
-            break;
-        }
-    }
-
-    if (i == GestureNumTouches) {
-        /* not found */
-        return -1;
-    }
-
-    SDL3_free(GestureTouches[i].dollarTemplate);
-    SDL3_zero(GestureTouches[i]);
-
-    GestureNumTouches--;
-    if (i != GestureNumTouches) {
-        SDL3_copyp(&GestureTouches[i], &GestureTouches[GestureNumTouches]);
-    }
-    return 0;
-}
-
 static GestureTouch *
 GestureGetTouch(const SDL_TouchID touchId)
 {
@@ -2630,12 +2604,16 @@ SDL_RecordGesture(SDL_TouchID touchId)
     return 1;
 }
 
-/* !!! FIXME: we need to hook this up when we override SDL_Quit */
 static void
 GestureQuit(void)
 {
+    int i;
+    for (i = 0; i < GestureNumTouches; i++) {
+        SDL3_free(GestureTouches[i].dollarTemplate);
+    }
     SDL3_free(GestureTouches);
     GestureTouches = NULL;
+    GestureNumTouches = 0;
 }
 
 static unsigned long
@@ -3351,7 +3329,7 @@ SDL_AudioInit(const char *driver_name)
 DECLSPEC void SDLCALL
 SDL_AudioQuit(void)
 {
-    SDL_QuitSubSystem(SDL_INIT_AUDIO);
+    SDL3_QuitSubSystem(SDL_INIT_AUDIO);
 }
 
 DECLSPEC int SDLCALL
@@ -3410,6 +3388,24 @@ SDL_InitSubSystem(Uint32 flags)
         SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 0);
     }
     return ret;
+}
+
+DECLSPEC void SDLCALL
+SDL_Quit(void)
+{
+    if (SDL3_WasInit(SDL_INIT_VIDEO)) {
+        GestureQuit();
+    }
+    SDL3_Quit();
+}
+
+DECLSPEC void SDLCALL
+SDL_QuitSubSystem(Uint32 flags)
+{
+    if (flags & SDL_INIT_VIDEO) {
+        GestureQuit();
+    }
+    SDL3_QuitSubSystem(flags);
 }
 
 DECLSPEC int SDLCALL

@@ -873,9 +873,7 @@ SDL2_PROTO(void*,GetTextureUserData,(SDL_Texture *a))
 SDL2_PROTO(int,RenderGeometry,(SDL_Renderer *a, SDL_Texture *b, const SDL_Vertex *c, int d, const int *e, int f))
 SDL2_PROTO(int,RenderGeometryRaw,(SDL_Renderer *a, SDL_Texture *b, const float *c, int d, const SDL_Color *e, int f, const float *g, int h, int i, const void *j, int k, int l))
 SDL2_PROTO(int,RenderSetVSync,(SDL_Renderer *a, int b))
-#if !SDL2_PROTO_NO_VARARGS
 SDL2_PROTO(int,asprintf,(char **a, SDL_PRINTF_FORMAT_STRING const char *b, ...))
-#endif
 SDL2_PROTO(int,vasprintf,(char **a, const char *b, va_list c))
 SDL2_PROTO(void*,GetWindowICCProfile,(SDL_Window *a, size_t *b))
 SDL2_PROTO(Uint64,GetTicks64,(void))
@@ -940,7 +938,6 @@ SDL2_PROTO(SDL_bool,HasLASX,(void))
 SDL2_PROTO(ID3D12Device*,RenderGetD3D12Device,(SDL_Renderer *a))
 #endif
 SDL2_PROTO(size_t,utf8strnlen,(const char *a, size_t b))
-
 #if defined(__GDK__)
 SDL2_PROTO(int,GDKGetTaskQueue,(XTaskQueueHandle *a))
 SDL2_PROTO(int,GDKRunApp,(SDL_main_func a, void *b))
