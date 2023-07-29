@@ -3239,15 +3239,25 @@ SDL_GetRenderDriverInfo(int index, SDL_RendererInfo *info)
 DECLSPEC SDL_Renderer *SDLCALL
 SDL_CreateRenderer(SDL_Window *window, int index, Uint32 flags)
 {
+    SDL_Renderer *renderer = NULL;
     const char *name = NULL;
+    int want_targettexture = flags & SDL2_RENDERER_TARGETTEXTURE;
     if (index != -1) {
         name = SDL3_GetRenderDriver(index);
         if (!name) {
             return NULL;  /* assume SDL3_GetRenderDriver set the SDL error. */
         }
     }
+
     flags = flags & ~SDL2_RENDERER_TARGETTEXTURE; /* clear flags removed in SDL3 */
-    return SDL3_CreateRenderer(window, name, flags);
+    renderer = SDL3_CreateRenderer(window, name, flags);
+
+    if (renderer != NULL && want_targettexture && !SDL_RenderTargetSupported(renderer)) {
+        SDL_DestroyRenderer(renderer);
+        SDL_SetError("Couldn't find render driver with SDL_RENDERER_TARGETTEXTURE flags");
+        return NULL;
+    }
+    return renderer;
 }
 
 DECLSPEC SDL_bool SDLCALL
@@ -3257,9 +3267,12 @@ SDL_RenderTargetSupported(SDL_Renderer *renderer)
     SDL_RendererInfo info;
     ret = SDL_GetRendererInfo(renderer, &info);
     if (ret == 0) {
-        if (info.flags & SDL2_RENDERER_TARGETTEXTURE) {
-            return SDL_TRUE;
+        /* SDL_RENDERER_TARGETTEXTURE was removed in SDL3, check by name for 
+         * renderer that does not support render target. */
+        if (SDL3_strcmp(info.name, "opengles") == 0) {
+            return SDL_FALSE;
         }
+        return SDL_TRUE;
     }
     return SDL_FALSE;
 }
