@@ -3246,6 +3246,7 @@ SDL_CreateRenderer(SDL_Window *window, int index, Uint32 flags)
             return NULL;  /* assume SDL3_GetRenderDriver set the SDL error. */
         }
     }
+    flags = flags & ~SDL2_RENDERER_TARGETTEXTURE; /* clear flags removed in SDL3 */
     return SDL3_CreateRenderer(window, name, flags);
 }
 
