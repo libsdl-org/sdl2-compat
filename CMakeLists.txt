@@ -3,7 +3,7 @@
 #        cmake -DSDL3_INCLUDE_DIRS=/opt/SDL3/include [other stuff ....]
 
 cmake_minimum_required(VERSION 3.0.0...3.5)
-project(sdl2_compat VERSION 2.90.0 LANGUAGES C)
+project(sdl2_compat VERSION 2.28.50 LANGUAGES C)
 
 if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
   set(SDL2COMPAT_SUBPROJECT OFF)
