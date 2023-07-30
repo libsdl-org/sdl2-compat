@@ -177,10 +177,10 @@ add_library(SDL2::SDL2 ALIAS SDL2)
 target_link_libraries(SDL2 PRIVATE $<BUILD_INTERFACE:SDL3::Headers>)
 target_include_directories(SDL2
   INTERFACE
-    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
-    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/SDL2>"
     "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>"
     "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include/SDL2>"
+    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
+    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/SDL2>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SDL2>"
 )
@@ -288,7 +288,13 @@ endif()
     add_library(SDL2main STATIC src/SDLmain/dummy/SDL_dummy_main.c)
 #endif()
 add_library(SDL2::SDL2main ALIAS SDL2main)
-target_include_directories(SDL2main PRIVATE "include/SDL2")
+target_include_directories(SDL2main
+    PRIVATE
+      "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>"
+      "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include/SDL2>"
+      "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
+      "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/SDL2>"
+)
 if(MINGW OR CYGWIN)
   if(CMAKE_SIZEOF_VOID_P EQUAL 4)
     target_link_libraries(SDL2main PUBLIC "$<$<STREQUAL:$<TARGET_PROPERTY:TYPE>,EXECUTABLE>:-Wl,--undefined=_WinMain@16>")
@@ -319,10 +325,10 @@ add_library(SDL2_test STATIC
 add_library(SDL2::SDL2test ALIAS SDL2_test)
 target_include_directories(SDL2_test
   PUBLIC
-    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
-    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/SDL2>"
     "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>"
     "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include/SDL2>"
+    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
+    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/SDL2>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SDL2>"
 )
@@ -347,7 +353,6 @@ if(SDL2COMPAT_TESTS)
 
   macro(test_program _NAME _SRCS)
     add_executable(${_NAME} ${_SRCS})
-    target_include_directories(${_NAME} PRIVATE "include/SDL2")
     target_link_libraries(${_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2test SDL2::SDL2)
     # Turn off MSVC's aggressive C runtime warnings for the old test programs.
     if(MSVC)
@@ -501,10 +506,10 @@ if(SDL2COMPAT_STATICDEVEL AND SDL2COMPAT_DEVEL)
   target_link_libraries(SDL2-static PRIVATE $<BUILD_INTERFACE:SDL3::Headers>)
   target_include_directories(SDL2-static
     INTERFACE
-      "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
-      "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/SDL2>"
       "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>"
       "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include/SDL2>"
+      "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
+      "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/SDL2>"
       "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
       "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SDL2>"
   )
