@@ -45,6 +45,9 @@ This breaks the build when creating SDL_ ## DisableScreenSaver
 #define DECLSPEC
 #endif
 
+#define STRINGIFY2(V) #V
+#define STRINGIFY(V) STRINGIFY2(V)
+
 /*
  * We report the library version as
  * 2.$(SDL2_COMPAT_VERSION_MINOR).$(SDL2_COMPAT_VERSION_PATCH). This number
@@ -56,6 +59,10 @@ This breaks the build when creating SDL_ ## DisableScreenSaver
  */
 #define SDL2_COMPAT_VERSION_MINOR 90
 #define SDL2_COMPAT_VERSION_PATCH 0
+
+#ifndef SDL2COMPAT_REVISION
+#define SDL2COMPAT_REVISION "SDL-2." STRINGIFY(SDL2_COMPAT_VERSION_MINOR) "." STRINGIFY(SDL2_COMPAT_VERSION_PATCH) "-no-vcs"
+#endif
 
 #include <stdarg.h>
 #include <limits.h>
@@ -1172,6 +1179,11 @@ SDL_GetRevisionNumber(void)
     return 0;
 }
 
+DECLSPEC const char * SDLCALL
+SDL_GetRevision(void)
+{
+    return SDL2COMPAT_REVISION;
+}
 
 DECLSPEC int SDLCALL
 SDL_SetError(const char *fmt, ...)
