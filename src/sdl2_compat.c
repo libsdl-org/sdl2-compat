@@ -1285,6 +1285,9 @@ static int GetIndexFromJoystickInstance(SDL_JoystickID jid);
 static SDL2_Event *
 Event3to2(const SDL_Event *event3, SDL2_Event *event2)
 {
+    SDL_Renderer *renderer;
+    SDL_Event cvtevent3;
+
 #if 0
     if (event3->type == SDL_SYSWMEVENT) {
         return SDL_FALSE;  /* !!! FIXME: figure out what to do with this. */
@@ -1301,6 +1304,12 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     /* mouse coords became floats in SDL3: */
     switch (event3->type) {
     case SDL_EVENT_MOUSE_MOTION:
+        renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->motion.windowID));
+        if (renderer) {
+            SDL_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
+            SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
+            event3 = &cvtevent3;
+        }
         event2->motion.x = (Sint32)event3->motion.x;
         event2->motion.y = (Sint32)event3->motion.y;
         event2->motion.xrel = (Sint32)event3->motion.xrel;
@@ -1308,10 +1317,22 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
         break;
     case SDL_EVENT_MOUSE_BUTTON_DOWN:
     case SDL_EVENT_MOUSE_BUTTON_UP:
+        renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->button.windowID));
+        if (renderer) {
+            SDL_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
+            SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
+            event3 = &cvtevent3;
+        }
         event2->button.x = (Sint32)event3->button.x;
         event2->button.y = (Sint32)event3->button.y;
         break;
     case SDL_EVENT_MOUSE_WHEEL:
+        renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->wheel.windowID));
+        if (renderer) {
+            SDL_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
+            SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
+            event3 = &cvtevent3;
+        }
         event2->wheel.x = (Sint32)event3->wheel.x;
         event2->wheel.y = (Sint32)event3->wheel.y;
         event2->wheel.preciseX = event3->wheel.x;

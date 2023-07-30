@@ -439,6 +439,7 @@ SDL3_SYM_PASSTHROUGH(int,SetSurfaceBlendMode,(SDL_Surface *a, SDL_BlendMode b),(
 SDL3_SYM_PASSTHROUGH(int,GetSurfaceBlendMode,(SDL_Surface *a, SDL_BlendMode *b),(a,b),return)
 SDL3_SYM_RENAMED(SDL_bool,SetClipRect,SetSurfaceClipRect,(SDL_Surface *a, const SDL_Rect *b),(a,b),return)
 SDL3_SYM(int,GetSurfaceClipRect,(SDL_Surface *a, SDL_Rect *b),(a,b),return)
+SDL3_SYM(int,ConvertEventToRenderCoordinates,(SDL_Renderer *a, SDL_Event *b),(a,b),return)
 SDL3_SYM(SDL_Surface*,ConvertSurface,(SDL_Surface *a, const SDL_PixelFormat *b),(a,b),return)
 SDL3_SYM(SDL_Surface*,ConvertSurfaceFormat,(SDL_Surface *a, Uint32 b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(int,ConvertPixels,(int a, int b, Uint32 c, const void *d, int e, Uint32 f, void *g, int h),(a,b,c,d,e,f,g,h),return)
