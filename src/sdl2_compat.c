@@ -1306,7 +1306,7 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     case SDL_EVENT_MOUSE_MOTION:
         renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->motion.windowID));
         if (renderer) {
-            SDL_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
+            SDL3_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
             SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
             event3 = &cvtevent3;
         }
@@ -1319,7 +1319,7 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     case SDL_EVENT_MOUSE_BUTTON_UP:
         renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->button.windowID));
         if (renderer) {
-            SDL_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
+            SDL3_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
             SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
             event3 = &cvtevent3;
         }
@@ -1329,7 +1329,7 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     case SDL_EVENT_MOUSE_WHEEL:
         renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->wheel.windowID));
         if (renderer) {
-            SDL_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
+            SDL3_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
             SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
             event3 = &cvtevent3;
         }
@@ -3459,7 +3459,7 @@ DECLSPEC SDL_AudioDeviceID SDLCALL
 SDL_OpenAudioDevice(const char *device, int iscapture, const SDL_AudioSpec *desired, SDL_AudioSpec *obtained, int allowed_changes)
 {
     SDL_AudioSpec desired3;
-    SDL_memcpy(&desired3, desired, sizeof (SDL_AudioSpec));
+    SDL3_memcpy(&desired3, desired, sizeof (SDL_AudioSpec));
 
     if ((desired3.format == SDL2_AUDIO_U16LSB) || (desired3.format == SDL2_AUDIO_U16MSB)) {
         if (allowed_changes & SDL_AUDIO_ALLOW_FORMAT_CHANGE) {
