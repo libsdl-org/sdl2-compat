@@ -184,6 +184,7 @@ target_include_directories(SDL2
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SDL2>"
 )
+target_compile_definitions(SDL2 PRIVATE "SDL2COMPAT_REVISION=\"${SDL_REVISION}\"")
 
 set(EXTRA_CFLAGS )
 if(CMAKE_C_COMPILER_ID MATCHES "Clang|GNU")
@@ -514,6 +515,7 @@ if(SDL2COMPAT_STATICDEVEL AND SDL2COMPAT_DEVEL)
       "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SDL2>"
   )
   target_compile_definitions(SDL2-static PRIVATE _REENTRANT)
+  target_compile_definitions(SDL2-static PRIVATE "SDL2COMPAT_REVISION=\"${SDL_REVISION}\"")
   target_link_libraries(SDL2-static PRIVATE ${CMAKE_DL_LIBS})
   set_target_properties(SDL2-static PROPERTIES
     VERSION "${PROJECT_VERSION}"
