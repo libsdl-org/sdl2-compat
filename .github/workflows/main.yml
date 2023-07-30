@@ -26,8 +26,12 @@ jobs:
         repository: libsdl-org/SDL
         ref: main
         path: SDL3
+    - name: Check that versioning is consistent
+      # We only need to run this once: arbitrarily use the Linux build
+      if: ${{ runner.os == 'Linux' }}
+      shell: bash
+      run: ./build-scripts/test-versioning.sh
     - name: Configure CMake
       run: cmake -DSDL3_INCLUDE_DIRS="${{ github.workspace }}/SDL3/include" -B build ${{ matrix.platform.flags }}
     - name: Build
       run: cmake --build build/
-
