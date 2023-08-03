@@ -38,8 +38,6 @@ perl -w -pi -e 's/(PRODUCTVERSION\s+)\d+,\d+,\d+/${1}'${MAJOR}','${MINOR}','${PA
 perl -w -pi -e 's/(VALUE "FileVersion", ")\d+, \d+, \d+/${1}'${MAJOR}', '${MINOR}', '${PATCH}'/;' src/version.rc
 perl -w -pi -e 's/(VALUE "ProductVersion", ")\d+, \d+, \d+/${1}'${MAJOR}', '${MINOR}', '${PATCH}'/;' src/version.rc
 
-perl -w -pi -e 's/(VERSION\s+=\s+)\d+.\d+.\d+/${1}'${MAJOR}'.'${MINOR}'.'${PATCH}'/;' src/Makefile.w32
-
 perl -w -pi -e 's/(\#define SDL2_COMPAT_VERSION_MINOR\s+)\d+/${1}'${MINOR}'/;' src/sdl2_compat.c
 perl -w -pi -e 's/(\#define SDL2_COMPAT_VERSION_PATCH\s+)\d+/${1}'${PATCH}'/;' src/sdl2_compat.c
 

@@ -67,14 +67,6 @@ else
     not_ok "version.rc ProductVersion $tuple disagrees with SDL_version.h $ref_tuple"
 fi
 
-version=$(sed -Ene 's/^VERSION = ([0-9.]+)$/\1/p' src/Makefile.w32)
-
-if [ "$ref_version" = "$version" ]; then
-    ok "Makefile.w32 $version"
-else
-    not_ok "Makefile.w32 $version disagrees with SDL_version.h $ref_version"
-fi
-
 minor=$(sed -Ene 's/^#define SDL2_COMPAT_VERSION_MINOR ([0-9]+)$/\1/p' src/sdl2_compat.c)
 
 if [ "$ref_minor" = "$minor" ]; then

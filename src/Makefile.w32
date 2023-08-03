@@ -5,7 +5,6 @@
 !endif
 
 DLLNAME = SDL2
-VERSION = 2.28.50
 
 # change SDL2INC to point to the SDL2 headers
 SDL2INC = include
@@ -77,7 +76,7 @@ $(LNKFILE):
 	@%append $@ OPTION SHOWDEAD
 
 clean: .SYMBOLIC
-	@echo * Clean: $(LIBNAME) $(VERSION)
+	@echo * Clean: $(LIBNAME)
 	@if exist *.obj rm *.obj
 	@if exist *.res rm *.res
 	@if exist *.lbc rm *.lbc
