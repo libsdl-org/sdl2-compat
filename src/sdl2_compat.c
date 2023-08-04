@@ -1090,6 +1090,17 @@ struct SDL2_hid_device_info
     struct SDL2_hid_device_info *next;
 };
 
+typedef struct AudioDeviceInfo
+{
+    SDL_AudioDeviceID devid;
+    char *name;
+} AudioDeviceInfo;
+
+typedef struct AudioDeviceList
+{
+    AudioDeviceInfo *devices;
+    int num_devices;
+} AudioDeviceList;
 
 
 /* Some SDL2 state we need to keep... */
@@ -1106,6 +1117,12 @@ static int num_sensors = 0;
 
 static SDL_mutex *joystick_lock = NULL;
 static SDL_mutex *sensor_lock = NULL;
+
+static SDL_Mutex *AudioDeviceLock = NULL;
+static SDL2_AudioStream *AudioOpenDevices[16];  /* SDL2 had a limit of 16 simultaneous devices opens (and the first slot was for the 1.2 legacy interface). We track these as _SDL2_ audio streams. */
+static AudioDeviceList AudioSDL3OutputDevices;
+static AudioDeviceList AudioSDL3CaptureDevices;
+
 
 /* Functions! */
 
@@ -1130,6 +1147,11 @@ SDL2Compat_InitOnStartup(void)
         goto fail;
     }
 
+    AudioDeviceLock = SDL3_CreateMutex();
+    if (AudioDeviceLock == NULL) {
+        goto fail;
+    }
+
     SDL3_SetEventFilter(EventFilter3to2, NULL);
 
     SDL3_SetHint("SDL_WINDOWS_DPI_SCALING", 0);
@@ -1150,7 +1172,9 @@ fail:
     if (joystick_lock) {
         SDL3_DestroyMutex(joystick_lock);
     }
-
+    if (AudioDeviceLock) {
+        SDL3_DestroyMutex(AudioDeviceLock);
+    }
     return 0;
 }
 
@@ -2151,21 +2175,39 @@ SDL_LoadFile_RW(SDL2_RWops *rwops2, size_t *datasize, int freesrc)
     return retval;
 }
 
-DECLSPEC SDL_AudioSpec *SDLCALL
-SDL_LoadWAV_RW(SDL2_RWops *rwops2, int freesrc, SDL_AudioSpec *spec, Uint8 **audio_buf, Uint32 *audio_len)
+DECLSPEC SDL2_AudioSpec *SDLCALL
+SDL_LoadWAV_RW(SDL2_RWops *rwops2, int freesrc, SDL2_AudioSpec *spec2, Uint8 **audio_buf, Uint32 *audio_len)
 {
-    SDL_AudioSpec *retval = NULL;
-    SDL_RWops *rwops3 = RWops2to3(rwops2);
-    if (rwops3) {
-        retval = SDL3_LoadWAV_RW(rwops3, freesrc ? SDL_TRUE : SDL_FALSE, spec, audio_buf, audio_len);
-        if (!freesrc) {
-            SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
-        }
-    } else if (rwops2) {
-        if (freesrc) {
-            SDL_RWclose(rwops2);
+    SDL2_AudioSpec *retval = NULL;
+
+    if (spec2 == NULL) {
+        SDL3_InvalidParamError("spec");
+    } else {
+        SDL_RWops *rwops3 = RWops2to3(rwops2);
+        if (rwops3) {
+            SDL_AudioSpec spec3;
+            const int rc = SDL3_LoadWAV_RW(rwops3, freesrc ? SDL_TRUE : SDL_FALSE, &spec3, audio_buf, audio_len);
+            SDL3_zerop(spec2);
+            if (rc == 0) {
+                spec2->format = spec3.format;
+                spec2->channels = spec3.channels;
+                spec2->freq = spec3.freq;
+                spec2->samples = 4096; /* This is what SDL2 hardcodes, also. */
+                spec2->silence = SDL3_GetSilenceValueForFormat(spec3.format);
+                retval = spec2;
+            }
+            if (!freesrc) {
+                SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
+            } else {
+                freesrc = 0;  /* this was handled already, don't do it again. */
+            }
         }
     }
+
+    if (rwops2 && freesrc) {
+        SDL_RWclose(rwops2);
+    }
+
     return retval;
 }
 
@@ -3463,66 +3505,512 @@ SDL_GL_GetSwapInterval(void)
     return val;
 }
 
-/* !!! FIXME: move these up with the other globals. */
-static SDL_AudioDeviceID g_audio_id = 0;
-static SDL_AudioSpec g_audio_spec;
-
-DECLSPEC SDL_AudioDeviceID SDLCALL
-SDL_OpenAudioDevice(const char *device, int iscapture, const SDL_AudioSpec *desired, SDL_AudioSpec *obtained, int allowed_changes)
+static Uint16 GetDefaultSamplesFromFreq(int freq)
 {
-    SDL_AudioSpec desired3;
-    SDL3_memcpy(&desired3, desired, sizeof (SDL_AudioSpec));
+    /* Pick a default of ~46 ms at desired frequency */
+    /* !!! FIXME: remove this when the non-Po2 resampling is in. */
+    const Uint16 max_sample = (freq / 1000) * 46;
+    Uint16 current_sample = 1;
+    while (current_sample < max_sample) {
+        current_sample *= 2;
+    }
+    return current_sample;
+}
 
-    if ((desired3.format == SDL2_AUDIO_U16LSB) || (desired3.format == SDL2_AUDIO_U16MSB)) {
-        if (allowed_changes & SDL_AUDIO_ALLOW_FORMAT_CHANGE) {
-            desired3.format = SDL_AUDIO_S16SYS;  /* just pick a supported format instead. */
+static int GetNumAudioDevices(int iscapture)
+{
+    AudioDeviceList newlist;
+    AudioDeviceList *list = iscapture ? &AudioSDL3CaptureDevices : &AudioSDL3OutputDevices;
+    SDL_AudioDeviceID *devices;
+    int num_devices;
+    int i;
+
+    /* SDL_GetNumAudioDevices triggers a device redetect in SDL2, so we'll just build our list from here. */
+    devices = iscapture ? SDL3_GetAudioCaptureDevices(&num_devices) : SDL3_GetAudioOutputDevices(&num_devices);
+    if (!devices) {
+        return list->num_devices;  /* just return the existing one for now. Oh well. */
+    }
+
+    SDL3_zero(newlist);
+    if (num_devices > 0) {
+        newlist.num_devices = num_devices;
+        newlist.devices = (AudioDeviceInfo *) SDL3_malloc(sizeof (AudioDeviceInfo) * num_devices);
+        if (!newlist.devices) {
+            SDL3_free(devices);
+            return list->num_devices;  /* just return the existing one for now. Oh well. */
+        }
+
+        for (i = 0; i < num_devices; i++) {
+            char *newname = SDL3_GetAudioDeviceName(devices[i]);
+            char *fullname = NULL;
+            if (newname == NULL) {
+                /* ugh, whatever, just make up a name. */
+                newname = SDL3_strdup("Unidentified device");
+            }
+
+            /* Device names must be unique in SDL2, as that's how we open them.
+               SDL2 took serious pains to try to add numbers to the end of duplicate device names ("SoundBlaster Pro" and then "SoundBlaster Pro (2)"),
+               but here we're just putting the actual SDL3 instance id at the end of everything. Good enough. I hope. */
+            if (!newname || (SDL3_asprintf(&fullname, "%s (id=%u)", newname, (unsigned int) devices[i]) < 0)) {
+                /* we're in real trouble now.  :/  */
+                int j;
+                for (j = 0; j < i; j++) {
+                    SDL3_free(newlist.devices[i].name);
+                }
+                SDL3_free(devices);
+                SDL3_free(newname);
+                SDL3_free(fullname);
+                SDL3_OutOfMemory();
+                return list->num_devices;  /* just return the existing one for now. Oh well. */
+            }
+
+            SDL3_free(newname);
+            newlist.devices[i].devid = devices[i];
+            newlist.devices[i].name = fullname;
+        }
+    }
+
+    for (i = 0; i < list->num_devices; i++) {
+        SDL3_free(list->devices[i].name);
+    }
+    SDL3_free(list->devices);
+
+    SDL3_memcpy(list, &newlist, sizeof (AudioDeviceList));
+    return num_devices;
+}
+
+DECLSPEC int SDLCALL
+SDL_GetNumAudioDevices(int iscapture)
+{
+    int retval;
+
+    if (!SDL3_GetCurrentAudioDriver()) {
+        return SDL3_SetError("Audio subsystem is not initialized");
+    }
+
+    SDL3_LockMutex(AudioDeviceLock);
+    retval = GetNumAudioDevices(iscapture);
+    SDL3_UnlockMutex(AudioDeviceLock);
+    return retval;
+}
+
+DECLSPEC const char * SDLCALL
+SDL_GetAudioDeviceName(int index, int iscapture)
+{
+    const char *retval = NULL;
+    AudioDeviceList *list;
+
+    if (!SDL3_GetCurrentAudioDriver()) {
+        SDL3_SetError("Audio subsystem is not initialized");
+        return NULL;
+    }
+
+    SDL3_LockMutex(AudioDeviceLock);
+    list = iscapture ? &AudioSDL3CaptureDevices : &AudioSDL3OutputDevices;
+    if ((index < 0) || (index >= list->num_devices)) {
+        SDL3_InvalidParamError("index");
+    } else {
+        retval = list->devices[index].name;
+    }
+    SDL3_UnlockMutex(AudioDeviceLock);
+
+    return retval;
+}
+
+DECLSPEC int SDLCALL
+SDL_GetAudioDeviceSpec(int index, int iscapture, SDL2_AudioSpec *spec2)
+{
+    AudioDeviceList *list;
+    SDL_AudioSpec spec3;
+    int retval = -1;
+
+    if (spec2 == NULL) {
+        return SDL3_InvalidParamError("spec");
+    } else if (!SDL3_GetCurrentAudioDriver()) {
+        return SDL3_SetError("Audio subsystem is not initialized");
+    }
+
+    SDL3_LockMutex(AudioDeviceLock);
+    list = iscapture ? &AudioSDL3CaptureDevices : &AudioSDL3OutputDevices;
+    if ((index < 0) || (index >= list->num_devices)) {
+        SDL3_InvalidParamError("index");
+    } else {
+        retval = SDL3_GetAudioDeviceFormat(list->devices[index].devid, &spec3);
+    }
+    SDL3_UnlockMutex(AudioDeviceLock);
+
+    if (retval == 0) {
+        SDL3_zerop(spec2);
+        spec2->format = spec3.format;
+        spec2->channels = spec3.channels;
+        spec2->freq = spec3.freq;
+    }
+
+    return retval;
+}
+
+DECLSPEC int SDLCALL
+SDL_GetDefaultAudioInfo(char **name, SDL2_AudioSpec *spec2, int iscapture)
+{
+    SDL_AudioSpec spec3;
+    int retval;
+
+    if (spec2 == NULL) {
+        return SDL3_InvalidParamError("spec");
+    } else if (!SDL3_GetCurrentAudioDriver()) {
+        return SDL3_SetError("Audio subsystem is not initialized");
+    }
+
+    retval = SDL3_GetAudioDeviceFormat(iscapture ? SDL_AUDIO_DEVICE_DEFAULT_CAPTURE : SDL_AUDIO_DEVICE_DEFAULT_OUTPUT, &spec3);
+    if (retval == 0) {
+        if (name) {
+            *name = SDL3_strdup("System default");  /* the default device can change to different physical hardware on-the-fly in SDL3, so we don't provide a name for it. */
+            if (*name == NULL) {
+                return SDL3_OutOfMemory();
+            }
+        }
+
+        SDL3_zerop(spec2);
+        spec2->format = spec3.format;
+        spec2->channels = spec3.channels;
+        spec2->freq = spec3.freq;
+    }
+
+    return retval;
+}
+
+static SDL_AudioFormat ParseAudioFormat(const char *string)
+{
+#define CHECK_FMT_STRING(x) if (SDL3_strcmp(string, #x) == 0) { return SDL_AUDIO_##x; }
+    CHECK_FMT_STRING(U8);
+    CHECK_FMT_STRING(S8);
+    CHECK_FMT_STRING(S16LSB);
+    CHECK_FMT_STRING(S16MSB);
+    CHECK_FMT_STRING(S16SYS);
+    CHECK_FMT_STRING(S16);
+    CHECK_FMT_STRING(S32LSB);
+    CHECK_FMT_STRING(S32MSB);
+    CHECK_FMT_STRING(S32SYS);
+    CHECK_FMT_STRING(S32);
+    CHECK_FMT_STRING(F32LSB);
+    CHECK_FMT_STRING(F32MSB);
+    CHECK_FMT_STRING(F32SYS);
+    CHECK_FMT_STRING(F32);
+#undef CHECK_FMT_STRING
+
+    /* removed U16 support in SDL3... */
+    if (SDL3_strcmp(string, "U16LSB") == 0) { return SDL_AUDIO_S16LSB & ~SDL_AUDIO_MASK_SIGNED; }
+    if (SDL3_strcmp(string, "U16MSB") == 0) { return SDL_AUDIO_S16MSB & ~SDL_AUDIO_MASK_SIGNED; }
+    if (SDL3_strcmp(string, "U16SYS") == 0) { return SDL_AUDIO_S16SYS & ~SDL_AUDIO_MASK_SIGNED; }
+    if (SDL3_strcmp(string, "U16") == 0) { return SDL_AUDIO_S16 & ~SDL_AUDIO_MASK_SIGNED; }
+
+    return 0;
+}
+
+static int PrepareAudiospec(const SDL2_AudioSpec *orig2, SDL2_AudioSpec *prepared2)
+{
+    SDL3_copyp(prepared2, orig2);
+
+    if (orig2->freq == 0) {
+        static const int DEFAULT_FREQ = 22050;
+        const char *env = SDL3_getenv("SDL_AUDIO_FREQUENCY");
+        if (env != NULL) {
+            int freq = SDL3_atoi(env);
+            prepared2->freq = freq != 0 ? freq : DEFAULT_FREQ;
         } else {
-            /* technically we should convert this behind the scenes, but all of this is getting
-               replaced with a different interface in SDL3 soon, so it's not worth
-               hooking the audio callback to manage it before that work is done. */
-            SDL3_SetError("U16 audio unsupported");
+            prepared2->freq = DEFAULT_FREQ;
+        }
+    }
+
+    if (orig2->format == 0) {
+        const char *env = SDL3_getenv("SDL_AUDIO_FORMAT");
+        if (env != NULL) {
+            const SDL_AudioFormat format = ParseAudioFormat(env);
+            prepared2->format = format != 0 ? format : SDL_AUDIO_S16;
+        } else {
+            prepared2->format = SDL_AUDIO_S16;
+        }
+    }
+
+    if (orig2->channels == 0) {
+        const char *env = SDL3_getenv("SDL_AUDIO_CHANNELS");
+        if (env != NULL) {
+            Uint8 channels = (Uint8)SDL3_atoi(env);
+            prepared2->channels = channels != 0 ? channels : 2;
+        } else {
+            prepared2->channels = 2;
+        }
+    } else if (orig2->channels > 8) {
+        SDL_SetError("Unsupported number of audio channels.");
+        return 0;
+    }
+
+    if (orig2->samples == 0) {
+        const char *env = SDL3_getenv("SDL_AUDIO_SAMPLES");
+        if (env != NULL) {
+            Uint16 samples = (Uint16)SDL3_atoi(env);
+            prepared2->samples = samples != 0 ? samples : GetDefaultSamplesFromFreq(prepared2->freq);
+        } else {
+            prepared2->samples = GetDefaultSamplesFromFreq(prepared2->freq);
+        }
+    }
+
+    /* Calculate the silence and size of the audio specification */
+    if ((prepared2->format == SDL_AUDIO_U8) || (prepared2->format == (SDL_AUDIO_S16LSB & ~SDL_AUDIO_MASK_SIGNED)) || (prepared2->format == (SDL_AUDIO_S16MSB & ~SDL_AUDIO_MASK_SIGNED))) {
+        prepared2->silence = 0x80;
+    } else {
+        prepared2->silence = 0x00;
+    }
+
+    prepared2->size = SDL_AUDIO_BITSIZE(prepared2->format) / 8;
+    prepared2->size *= prepared2->channels;
+    prepared2->size *= prepared2->samples;
+
+    return 1;
+}
+
+static void SDLCALL SDL2AudioDeviceQueueingCallback(SDL_AudioStream *stream3, int approx_request, void *userdata)
+{
+    SDL2_AudioStream *stream2 = (SDL2_AudioStream *) userdata;
+    Uint8 *buffer;
+
+    SDL_assert(stream2 != NULL);
+    SDL_assert(stream3 == stream2->stream3);
+    SDL_assert(stream2->dataqueue3 != NULL);
+
+    buffer = (Uint8 *) SDL3_malloc(approx_request);
+    if (!buffer) {
+        return;  /* oh well */
+    }
+
+    if (stream2->iscapture) {
+        const int br = SDL_AudioStreamGet(stream2, buffer, approx_request);
+        if (br > 0) {
+            SDL3_PutAudioStreamData(stream2->dataqueue3, buffer, br);
+        }
+    } else {
+        const int br = SDL3_GetAudioStreamData(stream2->dataqueue3, buffer, approx_request);
+        if (br > 0) {
+            SDL_AudioStreamPut(stream2, buffer, br);
+        }
+    }
+
+    SDL3_free(buffer);
+}
+
+static void SDLCALL SDL2AudioDeviceCallbackBridge(SDL_AudioStream *stream3, int approx_request, void *userdata)
+{
+    SDL2_AudioStream *stream2 = (SDL2_AudioStream *) userdata;
+    Uint8 *buffer;
+
+    SDL_assert(stream2 != NULL);
+    SDL_assert(stream3 == stream2->stream3);
+    SDL_assert(stream2->dataqueue3 == NULL);
+
+    buffer = (Uint8 *) SDL3_malloc(approx_request);
+    if (!buffer) {
+        return;  /* oh well */
+    }
+
+    if (stream2->iscapture) {
+        const int br = SDL_AudioStreamGet(stream2, buffer, approx_request);
+        stream2->callback2(stream2->callback2_userdata, buffer, br);
+    } else {
+        stream2->callback2(stream2->callback2_userdata, buffer, approx_request);
+        SDL_AudioStreamPut(stream2, buffer, approx_request);
+    }
+
+    SDL3_free(buffer);
+}
+
+static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devname, int iscapture,
+                                               const SDL2_AudioSpec *desired2, SDL2_AudioSpec *obtained2,
+                                               int allowed_changes, int min_id)
+{
+    /* we use an SDL2 audio stream for this, since it'll use an SDL3 audio stream behind the scenes, but also support the removed-from-SDL3 U16 audio format. */
+    SDL2_AudioStream *stream2;
+    SDL_AudioDeviceID device3 = 0;
+    SDL_AudioSpec spec3;
+    int id;
+
+    SDL_assert(obtained2 != NULL);  /* we checked this before locking. */
+
+    /* Find an available device ID... */
+    for (id = min_id - 1; id < (int)SDL_arraysize(AudioOpenDevices); id++) {
+        if (AudioOpenDevices[id] == NULL) {
+            break;
+        }
+    }
+
+    if (id == SDL_arraysize(AudioOpenDevices)) {
+        SDL3_SetError("Too many open audio devices");
+        return 0;
+    }
+
+    /* (also note that SDL2 doesn't check if `desired2` is NULL before dereferencing, either.) */
+    if (!PrepareAudiospec(desired2, obtained2)) {
+        return 0;
+    }
+
+    /* If app doesn't care about a specific device, let the user override. */
+    if (devname == NULL) {
+        devname = SDL3_getenv("SDL_AUDIO_DEVICE_NAME");
+    }
+
+    if (devname == NULL) {
+        device3 = iscapture ? SDL_AUDIO_DEVICE_DEFAULT_CAPTURE : SDL_AUDIO_DEVICE_DEFAULT_OUTPUT;
+    } else {
+        AudioDeviceList *list = iscapture ? &AudioSDL3CaptureDevices : &AudioSDL3OutputDevices;
+        const int total = list->num_devices;
+        int i;
+        for (i = 0; i < total; i++) {
+            if (SDL3_strcmp(list->devices[i].name, devname) == 0) {
+                device3 = list->devices[i].devid;
+                break;
+            }
+        }
+        if (device3 == 0) {
+            SDL3_SetError("No such device.");
             return 0;
         }
     }
 
-    return SDL3_OpenAudioDevice(device, iscapture, &desired3, obtained, allowed_changes);
+    spec3.format = obtained2->format;
+    spec3.channels = obtained2->channels;
+    spec3.freq = obtained2->freq;
+
+    /* Don't try to open the SDL3 audio device with the (abandoned) U16 formats... */
+    if (spec3.format == SDL2_AUDIO_U16LSB) {
+        spec3.format = SDL_AUDIO_S16LSB;
+    } else if (spec3.format == SDL2_AUDIO_U16MSB) {
+        spec3.format = SDL_AUDIO_S16MSB;
+    }
+
+    device3 = SDL3_OpenAudioDevice(device3, &spec3);
+    if (device3 == 0) {
+        return 0;
+    }
+
+    SDL3_PauseAudioDevice(device3);  /* they start paused in SDL2 */
+    SDL3_GetAudioDeviceFormat(device3, &spec3);
+
+    if ((spec3.format != obtained2->format) && (allowed_changes & SDL2_AUDIO_ALLOW_FORMAT_CHANGE)) {
+        obtained2->format = spec3.format;
+    }
+    if ((spec3.channels != obtained2->channels) && (allowed_changes & SDL2_AUDIO_ALLOW_CHANNELS_CHANGE)) {
+        obtained2->freq = spec3.channels;
+    }
+    if ((spec3.freq != obtained2->freq) && (allowed_changes & SDL2_AUDIO_ALLOW_FREQUENCY_CHANGE)) {
+        obtained2->freq = spec3.freq;
+    }
+
+    if (iscapture) {
+        stream2 = SDL_NewAudioStream(spec3.format, spec3.channels, spec3.freq, obtained2->format, obtained2->channels, obtained2->freq);
+    } else {
+        stream2 = SDL_NewAudioStream(obtained2->format, obtained2->channels, obtained2->freq, spec3.format, spec3.channels, spec3.freq);
+    }
+
+    if (!stream2) {
+        SDL3_CloseAudioDevice(device3);
+        return 0;
+    }
+
+    if (desired2->callback) {
+        stream2->callback2 = desired2->callback;
+        stream2->callback2_userdata = desired2->userdata;
+        if (iscapture) {
+            SDL3_SetAudioStreamPutCallback(stream2->stream3, SDL2AudioDeviceCallbackBridge, stream2);
+        } else {
+            SDL3_SetAudioStreamGetCallback(stream2->stream3, SDL2AudioDeviceCallbackBridge, stream2);
+        }
+    } else {
+        /* SDL2 treats this as a simple data queue that doesn't convert before the audio callback gets it,
+           so just make a second audiostream with no conversion and let it work like a flexible buffer. */
+        stream2->dataqueue3 = SDL3_CreateAudioStream(&spec3, &spec3);
+        if (!stream2->dataqueue3) {
+            SDL3_CloseAudioDevice(device3);
+            SDL_FreeAudioStream(stream2);
+        }
+        if (iscapture) {
+            SDL3_SetAudioStreamPutCallback(stream2->stream3, SDL2AudioDeviceQueueingCallback, stream2);
+        } else {
+            SDL3_SetAudioStreamGetCallback(stream2->stream3, SDL2AudioDeviceQueueingCallback, stream2);
+        }
+    }
+
+    if (SDL3_BindAudioStream(device3, stream2->stream3) < 0) {
+        SDL_FreeAudioStream(stream2);
+        SDL3_CloseAudioDevice(device3);
+        return 0;
+    }
+
+    stream2->iscapture = iscapture ? SDL_TRUE : SDL_FALSE;
+    AudioOpenDevices[id] = stream2;
+
+    return id + 1;
+}
+
+static SDL_AudioDeviceID OpenAudioDevice(const char *devname, int iscapture,
+                                         const SDL2_AudioSpec *desired2, SDL2_AudioSpec *obtained2,
+                                         int allowed_changes, int min_id)
+{
+    SDL2_AudioSpec _obtained2;
+    SDL_AudioDeviceID retval;
+
+    if (!SDL3_GetCurrentAudioDriver()) {
+        SDL_SetError("Audio subsystem is not initialized");
+        return 0;
+    }
+
+    if (!obtained2) {
+        obtained2 = &_obtained2;
+    }
+
+    SDL3_LockMutex(AudioDeviceLock);
+    retval = OpenAudioDeviceLocked(devname, iscapture, desired2, obtained2, allowed_changes, min_id);
+    SDL3_UnlockMutex(AudioDeviceLock);
+
+    return retval;
+}
+
+
+DECLSPEC SDL_AudioDeviceID SDLCALL
+SDL_OpenAudioDevice(const char *device, int iscapture, const SDL2_AudioSpec *desired2, SDL2_AudioSpec *obtained2, int allowed_changes)
+{
+    return OpenAudioDevice(device, iscapture, desired2, obtained2, allowed_changes, 2);
 }
 
 DECLSPEC int SDLCALL
-SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained)
+SDL_OpenAudio(SDL2_AudioSpec *desired2, SDL2_AudioSpec *obtained2)
 {
     SDL_AudioDeviceID id = 0;
 
     /* Start up the audio driver, if necessary. This is legacy behaviour! */
-    if (!SDL_WasInit(SDL_INIT_AUDIO)) {
+    if (!SDL3_WasInit(SDL_INIT_AUDIO)) {
         if (SDL3_InitSubSystem(SDL_INIT_AUDIO) < 0) {
             return -1;
         }
     }
 
-    if (g_audio_id > 0) {
+    if (AudioOpenDevices[0] != NULL) {
         return SDL3_SetError("Audio device is already opened");
     }
 
-    if (obtained) {
-        id = SDL_OpenAudioDevice(NULL, 0, desired, obtained, SDL_AUDIO_ALLOW_ANY_CHANGE);
-
-        g_audio_spec = *obtained;
+    if (obtained2) {
+        id = OpenAudioDevice(NULL, 0, desired2, obtained2, SDL2_AUDIO_ALLOW_ANY_CHANGE, 1);
     } else {
-        SDL_AudioSpec _obtained;
-        SDL3_zero(_obtained);
-        id = SDL_OpenAudioDevice(NULL, 0, desired, &_obtained, 0);
+        SDL2_AudioSpec _obtained2;
+        SDL3_zero(_obtained2);
+        id = OpenAudioDevice(NULL, 0, desired2, &_obtained2, 0, 1);
+
         /* On successful open, copy calculated values into 'desired'. */
         if (id > 0) {
-            desired->size = _obtained.size;
-            desired->silence = _obtained.silence;
+            desired2->size = _obtained2.size;
+            desired2->silence = _obtained2.silence;
         }
-
-        g_audio_spec = _obtained;
     }
 
     if (id > 0) {
-        g_audio_id = id;
         return 0;
     }
     return -1;
@@ -3569,7 +4057,9 @@ SDL_NewAudioStream(const SDL_AudioFormat real_src_format, const Uint8 src_channe
 {
     SDL_AudioFormat src_format = real_src_format;
     SDL_AudioFormat dst_format = real_dst_format;
-    SDL2_AudioStream *retval = (SDL2_AudioStream *) SDL3_malloc(sizeof (SDL2_AudioStream));
+    SDL2_AudioStream *retval = (SDL2_AudioStream *) SDL3_calloc(1, sizeof (SDL2_AudioStream));
+    SDL_AudioSpec srcspec3, dstspec3;
+
     if (!retval) {
         SDL3_OutOfMemory();
         return NULL;
@@ -3583,7 +4073,13 @@ SDL_NewAudioStream(const SDL_AudioFormat real_src_format, const Uint8 src_channe
         dst_format = SDL_AUDIO_S16SYS;
     }
 
-    retval->stream3 = SDL3_CreateAudioStream(src_format, src_channels, src_rate, dst_format, dst_channels, dst_rate);
+    srcspec3.format = src_format;
+    srcspec3.channels = src_channels;
+    srcspec3.freq = src_rate;
+    dstspec3.format = dst_format;
+    dstspec3.channels = dst_channels;
+    dstspec3.freq = dst_rate;
+    retval->stream3 = SDL3_CreateAudioStream(&srcspec3, &dstspec3);
     if (retval->stream3 == NULL) {
         SDL3_free(retval);
         return NULL;
@@ -3659,6 +4155,7 @@ SDL_FreeAudioStream(SDL2_AudioStream *stream2)
 {
     if (stream2) {
         SDL3_DestroyAudioStream(stream2->stream3);
+        SDL3_DestroyAudioStream(stream2->dataqueue3);
         SDL3_free(stream2);
     }
 }
@@ -3690,84 +4187,131 @@ SDL_MixAudioFormat(Uint8 *dst, const Uint8 *src, SDL_AudioFormat format, Uint32 
     }
 }
 
-/*
- * Moved here from SDL_mixer.c, since it relies on internals of an opened
- *  audio device (and is deprecated, by the way!).
- */
+static SDL2_AudioStream *GetOpenAudioDevice(SDL_AudioDeviceID id)
+{
+    id--;
+    if ((id >= SDL_arraysize(AudioOpenDevices)) || (AudioOpenDevices[id] == NULL)) {
+        SDL3_SetError("Invalid audio device ID");
+        return NULL;
+    }
+    return AudioOpenDevices[id];
+}
+
 DECLSPEC void SDLCALL
 SDL_MixAudio(Uint8 *dst, const Uint8 *src, Uint32 len, int volume)
 {
-    /* Mix the user-level audio format */
-    if (g_audio_id > 0) {
-        SDL_MixAudioFormat(dst, src, g_audio_spec.format, len, volume);  /* call the sdl2-compat version, since it needs to handle U16 audio data. */
+    SDL2_AudioStream *stream2 = GetOpenAudioDevice(1);
+    if (stream2 != NULL) {
+        SDL_MixAudioFormat(dst, src, stream2->dst_format, len, volume);  /* call the sdl2-compat version, since it needs to handle U16 audio data. */
     }
 }
 
 DECLSPEC Uint32 SDLCALL
 SDL_GetQueuedAudioSize(SDL_AudioDeviceID dev)
 {
-    SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
-    return SDL3_GetQueuedAudioSize(id);
+    SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
+    return (stream2 && (stream2->dataqueue3 != NULL)) ? SDL3_GetAudioStreamAvailable(stream2->dataqueue3) : 0;
 }
 
 DECLSPEC int SDLCALL
 SDL_QueueAudio(SDL_AudioDeviceID dev, const void *data, Uint32 len)
 {
-    SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
-    return SDL3_QueueAudio(id, data, len);
+    SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
+    if (!stream2) {
+        return -1;
+    } else if (stream2->iscapture) {
+        return SDL3_SetError("This is a capture device, queueing not allowed");
+    } else if (stream2->dataqueue3 == NULL) {
+        return SDL3_SetError("Audio device has a callback, queueing not allowed");
+    } else if (len == 0) {
+        return 0;  /* nothing to do. */
+    }
+
+    SDL_assert(stream2->dataqueue3 != NULL);
+    return SDL3_PutAudioStreamData(stream2->dataqueue3, data, len);
 }
 
 DECLSPEC Uint32 SDLCALL
 SDL_DequeueAudio(SDL_AudioDeviceID dev, void *data, Uint32 len)
 {
-    SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
-    return SDL3_DequeueAudio(id, data, len);
+    SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
+    if ((len == 0) ||                      /* nothing to do? */
+        (!stream2) ||                      /* called with bogus device id */
+        (!stream2->iscapture) ||           /* playback devices can't dequeue */
+        (stream2->dataqueue3 == NULL)) {   /* not set for queueing */
+        return 0;                          /* just report zero bytes dequeued. */
+    }
+
+    SDL_assert(stream2->dataqueue3 != NULL);
+    return SDL3_GetAudioStreamData(stream2->dataqueue3, data, len);
 }
 
 DECLSPEC void SDLCALL
 SDL_ClearQueuedAudio(SDL_AudioDeviceID dev)
 {
-    SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
-    SDL3_ClearQueuedAudio(id);
+    SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
+    if (stream2 && stream2->dataqueue3) {
+        SDL3_ClearAudioStream(stream2->dataqueue3);
+    }
 }
 
 DECLSPEC void SDLCALL
 SDL_PauseAudioDevice(SDL_AudioDeviceID dev, int pause_on)
 {
-    SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
-    if (pause_on) {
-        SDL3_PauseAudioDevice(id);
-    } else {
-        SDL3_PlayAudioDevice(id);
+    SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
+    if (stream2) {
+        const SDL_AudioDeviceID device3 = SDL3_GetAudioStreamBinding(stream2->stream3);
+        if (device3) {
+            if (pause_on) {
+                SDL3_PauseAudioDevice(device3);
+            } else {
+                SDL3_UnpauseAudioDevice(device3);
+            }
+        }
     }
 }
 
-DECLSPEC SDL_AudioStatus SDLCALL
+DECLSPEC SDL2_AudioStatus SDLCALL
 SDL_GetAudioDeviceStatus(SDL_AudioDeviceID dev)
 {
-    SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
-    return SDL3_GetAudioDeviceStatus(id);
+    SDL2_AudioStatus retval = SDL2_AUDIO_STOPPED;
+    SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
+    if (stream2) {
+        const SDL_AudioDeviceID device3 = SDL3_GetAudioStreamBinding(stream2->stream3);
+        if (device3) {
+            retval = SDL3_IsAudioDevicePaused(device3) ? SDL2_AUDIO_PAUSED : SDL2_AUDIO_PLAYING;
+        }
+    }
+    return retval;
 }
 
 DECLSPEC void SDLCALL
 SDL_LockAudioDevice(SDL_AudioDeviceID dev)
 {
-    SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
-    SDL3_LockAudioDevice(id);
+    SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
+    if (stream2) {
+        SDL3_LockAudioStream(stream2->stream3);
+    }
 }
 
 DECLSPEC void SDLCALL
 SDL_UnlockAudioDevice(SDL_AudioDeviceID dev)
 {
-    SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
-    SDL3_UnlockAudioDevice(id);
+    SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
+    if (stream2) {
+        SDL3_UnlockAudioStream(stream2->stream3);
+    }
 }
 
 DECLSPEC void SDLCALL
 SDL_CloseAudioDevice(SDL_AudioDeviceID dev)
 {
-    SDL_AudioDeviceID id = dev == 1 ? g_audio_id : dev;
-    SDL3_CloseAudioDevice(id);
+    SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
+    if (stream2) {
+        SDL3_CloseAudioDevice(SDL3_GetAudioStreamBinding(stream2->stream3));
+        SDL_FreeAudioStream(stream2);
+        AudioOpenDevices[dev] = NULL;  /* this doesn't hold a lock in SDL2, either; the lock only prevents two racing opens from getting the same id. We can NULL it whenever, though. */
+    }
 }
 
 DECLSPEC void SDLCALL
@@ -3786,7 +4330,6 @@ DECLSPEC void SDLCALL
 SDL_CloseAudio(void)
 {
     SDL_CloseAudioDevice(1);
-    g_audio_id = 0;
 }
 
 DECLSPEC void SDLCALL
@@ -3795,7 +4338,7 @@ SDL_PauseAudio(int pause_on)
     SDL_PauseAudioDevice(1, pause_on);
 }
 
-DECLSPEC SDL_AudioStatus SDLCALL
+DECLSPEC SDL2_AudioStatus SDLCALL
 SDL_GetAudioStatus(void)
 {
     return SDL_GetAudioDeviceStatus(1);
@@ -5776,7 +6319,7 @@ SDL_ConvertAudio(SDL_AudioCVT *cvt)
         dst_rate = ap.dst_rate;
     }
 
-    /* don't use the SDL3 stream directly; we want the U16 support in the sdl2-compat layer */
+    /* don't use the SDL3 stream directly or even SDL_ConvertAudioSamples; we want the U16 support in the sdl2-compat layer */
     stream2 = SDL_NewAudioStream(src_format, src_channels, src_rate,
                                  dst_format, dst_channels, dst_rate);
     if (stream2 == NULL) {

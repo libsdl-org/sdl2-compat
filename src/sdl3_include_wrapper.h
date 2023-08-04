@@ -61,22 +61,17 @@
 #define SDL_BroadcastCondition IGNORE_THIS_VERSION_OF_SDL_BroadcastCondition
 #define SDL_CaptureMouse IGNORE_THIS_VERSION_OF_SDL_CaptureMouse
 #define SDL_CleanupTLS IGNORE_THIS_VERSION_OF_SDL_CleanupTLS
-#define SDL_ClearAudioStream IGNORE_THIS_VERSION_OF_SDL_ClearAudioStream
 #define SDL_ClearComposition IGNORE_THIS_VERSION_OF_SDL_ClearComposition
 #define SDL_ClearError IGNORE_THIS_VERSION_OF_SDL_ClearError
 #define SDL_ClearHints IGNORE_THIS_VERSION_OF_SDL_ClearHints
-#define SDL_ClearQueuedAudio IGNORE_THIS_VERSION_OF_SDL_ClearQueuedAudio
-#define SDL_CloseAudioDevice IGNORE_THIS_VERSION_OF_SDL_CloseAudioDevice
 #define SDL_CloseGamepad IGNORE_THIS_VERSION_OF_SDL_CloseGamepad
 #define SDL_CloseJoystick IGNORE_THIS_VERSION_OF_SDL_CloseJoystick
 #define SDL_CloseSensor IGNORE_THIS_VERSION_OF_SDL_CloseSensor
 #define SDL_ComposeCustomBlendMode IGNORE_THIS_VERSION_OF_SDL_ComposeCustomBlendMode
-#define SDL_ConvertAudioSamples IGNORE_THIS_VERSION_OF_SDL_ConvertAudioSamples
 #define SDL_ConvertEventToRenderCoordinates IGNORE_THIS_VERSION_OF_SDL_ConvertEventToRenderCoordinates
 #define SDL_ConvertPixels IGNORE_THIS_VERSION_OF_SDL_ConvertPixels
 #define SDL_ConvertSurface IGNORE_THIS_VERSION_OF_SDL_ConvertSurface
 #define SDL_ConvertSurfaceFormat IGNORE_THIS_VERSION_OF_SDL_ConvertSurfaceFormat
-#define SDL_CreateAudioStream IGNORE_THIS_VERSION_OF_SDL_CreateAudioStream
 #define SDL_CreateColorCursor IGNORE_THIS_VERSION_OF_SDL_CreateColorCursor
 #define SDL_CreateCondition IGNORE_THIS_VERSION_OF_SDL_CreateCondition
 #define SDL_CreateCursor IGNORE_THIS_VERSION_OF_SDL_CreateCursor
@@ -108,8 +103,6 @@
 #define SDL_DelHintCallback IGNORE_THIS_VERSION_OF_SDL_DelHintCallback
 #define SDL_Delay IGNORE_THIS_VERSION_OF_SDL_Delay
 #define SDL_DelayNS IGNORE_THIS_VERSION_OF_SDL_DelayNS
-#define SDL_DequeueAudio IGNORE_THIS_VERSION_OF_SDL_DequeueAudio
-#define SDL_DestroyAudioStream IGNORE_THIS_VERSION_OF_SDL_DestroyAudioStream
 #define SDL_DestroyCondition IGNORE_THIS_VERSION_OF_SDL_DestroyCondition
 #define SDL_DestroyCursor IGNORE_THIS_VERSION_OF_SDL_DestroyCursor
 #define SDL_DestroyMutex IGNORE_THIS_VERSION_OF_SDL_DestroyMutex
@@ -140,7 +133,6 @@
 #define SDL_FillSurfaceRects IGNORE_THIS_VERSION_OF_SDL_FillSurfaceRects
 #define SDL_FilterEvents IGNORE_THIS_VERSION_OF_SDL_FilterEvents
 #define SDL_FlashWindow IGNORE_THIS_VERSION_OF_SDL_FlashWindow
-#define SDL_FlushAudioStream IGNORE_THIS_VERSION_OF_SDL_FlushAudioStream
 #define SDL_FlushEvent IGNORE_THIS_VERSION_OF_SDL_FlushEvent
 #define SDL_FlushEvents IGNORE_THIS_VERSION_OF_SDL_FlushEvents
 #define SDL_GDKGetTaskQueue IGNORE_THIS_VERSION_OF_SDL_GDKGetTaskQueue
@@ -176,27 +168,18 @@
 #define SDL_GetAndroidSDKVersion IGNORE_THIS_VERSION_OF_SDL_GetAndroidSDKVersion
 #define SDL_GetAssertionHandler IGNORE_THIS_VERSION_OF_SDL_GetAssertionHandler
 #define SDL_GetAssertionReport IGNORE_THIS_VERSION_OF_SDL_GetAssertionReport
-#define SDL_GetAudioDeviceName IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceName
-#define SDL_GetAudioDeviceSpec IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceSpec
-#define SDL_GetAudioDeviceStatus IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceStatus
-#define SDL_GetAudioDriver IGNORE_THIS_VERSION_OF_SDL_GetAudioDriver
-#define SDL_GetAudioStreamAvailable IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamAvailable
-#define SDL_GetAudioStreamData IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamData
-#define SDL_GetAudioStreamFormat IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamFormat
 #define SDL_GetBasePath IGNORE_THIS_VERSION_OF_SDL_GetBasePath
 #define SDL_GetCPUCacheLineSize IGNORE_THIS_VERSION_OF_SDL_GetCPUCacheLineSize
 #define SDL_GetCPUCount IGNORE_THIS_VERSION_OF_SDL_GetCPUCount
 #define SDL_GetClipboardData IGNORE_THIS_VERSION_OF_SDL_GetClipboardData
 #define SDL_GetClipboardText IGNORE_THIS_VERSION_OF_SDL_GetClipboardText
 #define SDL_GetClosestFullscreenDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetClosestFullscreenDisplayMode
-#define SDL_GetCurrentAudioDriver IGNORE_THIS_VERSION_OF_SDL_GetCurrentAudioDriver
 #define SDL_GetCurrentDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetCurrentDisplayMode
 #define SDL_GetCurrentDisplayOrientation IGNORE_THIS_VERSION_OF_SDL_GetCurrentDisplayOrientation
 #define SDL_GetCurrentRenderOutputSize IGNORE_THIS_VERSION_OF_SDL_GetCurrentRenderOutputSize
 #define SDL_GetCurrentVideoDriver IGNORE_THIS_VERSION_OF_SDL_GetCurrentVideoDriver
 #define SDL_GetCursor IGNORE_THIS_VERSION_OF_SDL_GetCursor
 #define SDL_GetDefaultAssertionHandler IGNORE_THIS_VERSION_OF_SDL_GetDefaultAssertionHandler
-#define SDL_GetDefaultAudioInfo IGNORE_THIS_VERSION_OF_SDL_GetDefaultAudioInfo
 #define SDL_GetDefaultCursor IGNORE_THIS_VERSION_OF_SDL_GetDefaultCursor
 #define SDL_GetDesktopDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetDesktopDisplayMode
 #define SDL_GetDisplayBounds IGNORE_THIS_VERSION_OF_SDL_GetDisplayBounds
@@ -293,8 +276,6 @@
 #define SDL_GetMouseState IGNORE_THIS_VERSION_OF_SDL_GetMouseState
 #define SDL_GetNaturalDisplayOrientation IGNORE_THIS_VERSION_OF_SDL_GetNaturalDisplayOrientation
 #define SDL_GetNumAllocations IGNORE_THIS_VERSION_OF_SDL_GetNumAllocations
-#define SDL_GetNumAudioDevices IGNORE_THIS_VERSION_OF_SDL_GetNumAudioDevices
-#define SDL_GetNumAudioDrivers IGNORE_THIS_VERSION_OF_SDL_GetNumAudioDrivers
 #define SDL_GetNumGamepadMappings IGNORE_THIS_VERSION_OF_SDL_GetNumGamepadMappings
 #define SDL_GetNumGamepadTouchpadFingers IGNORE_THIS_VERSION_OF_SDL_GetNumGamepadTouchpadFingers
 #define SDL_GetNumGamepadTouchpads IGNORE_THIS_VERSION_OF_SDL_GetNumGamepadTouchpads
@@ -317,7 +298,6 @@
 #define SDL_GetPreferredLocales IGNORE_THIS_VERSION_OF_SDL_GetPreferredLocales
 #define SDL_GetPrimaryDisplay IGNORE_THIS_VERSION_OF_SDL_GetPrimaryDisplay
 #define SDL_GetPrimarySelectionText IGNORE_THIS_VERSION_OF_SDL_GetPrimarySelectionText
-#define SDL_GetQueuedAudioSize IGNORE_THIS_VERSION_OF_SDL_GetQueuedAudioSize
 #define SDL_GetRGB IGNORE_THIS_VERSION_OF_SDL_GetRGB
 #define SDL_GetRGBA IGNORE_THIS_VERSION_OF_SDL_GetRGBA
 #define SDL_GetRectAndLineIntersection IGNORE_THIS_VERSION_OF_SDL_GetRectAndLineIntersection
@@ -487,8 +467,6 @@
 #define SDL_LoadFile_RW IGNORE_THIS_VERSION_OF_SDL_LoadFile_RW
 #define SDL_LoadFunction IGNORE_THIS_VERSION_OF_SDL_LoadFunction
 #define SDL_LoadObject IGNORE_THIS_VERSION_OF_SDL_LoadObject
-#define SDL_LoadWAV_RW IGNORE_THIS_VERSION_OF_SDL_LoadWAV_RW
-#define SDL_LockAudioDevice IGNORE_THIS_VERSION_OF_SDL_LockAudioDevice
 #define SDL_LockJoysticks IGNORE_THIS_VERSION_OF_SDL_LockJoysticks
 #define SDL_LockMutex IGNORE_THIS_VERSION_OF_SDL_LockMutex
 #define SDL_LockRWLockForReading IGNORE_THIS_VERSION_OF_SDL_LockRWLockForReading
@@ -520,7 +498,6 @@
 #define SDL_Metal_DestroyView IGNORE_THIS_VERSION_OF_SDL_Metal_DestroyView
 #define SDL_Metal_GetLayer IGNORE_THIS_VERSION_OF_SDL_Metal_GetLayer
 #define SDL_MinimizeWindow IGNORE_THIS_VERSION_OF_SDL_MinimizeWindow
-#define SDL_MixAudioFormat IGNORE_THIS_VERSION_OF_SDL_MixAudioFormat
 #define SDL_MouseIsHaptic IGNORE_THIS_VERSION_OF_SDL_MouseIsHaptic
 #define SDL_NumHaptics IGNORE_THIS_VERSION_OF_SDL_NumHaptics
 #define SDL_OnApplicationDidBecomeActive IGNORE_THIS_VERSION_OF_SDL_OnApplicationDidBecomeActive
@@ -530,22 +507,17 @@
 #define SDL_OnApplicationWillEnterForeground IGNORE_THIS_VERSION_OF_SDL_OnApplicationWillEnterForeground
 #define SDL_OnApplicationWillResignActive IGNORE_THIS_VERSION_OF_SDL_OnApplicationWillResignActive
 #define SDL_OnApplicationWillTerminate IGNORE_THIS_VERSION_OF_SDL_OnApplicationWillTerminate
-#define SDL_OpenAudioDevice IGNORE_THIS_VERSION_OF_SDL_OpenAudioDevice
 #define SDL_OpenGamepad IGNORE_THIS_VERSION_OF_SDL_OpenGamepad
 #define SDL_OpenJoystick IGNORE_THIS_VERSION_OF_SDL_OpenJoystick
 #define SDL_OpenSensor IGNORE_THIS_VERSION_OF_SDL_OpenSensor
 #define SDL_OpenURL IGNORE_THIS_VERSION_OF_SDL_OpenURL
-#define SDL_PauseAudioDevice IGNORE_THIS_VERSION_OF_SDL_PauseAudioDevice
 #define SDL_PeepEvents IGNORE_THIS_VERSION_OF_SDL_PeepEvents
-#define SDL_PlayAudioDevice IGNORE_THIS_VERSION_OF_SDL_PlayAudioDevice
 #define SDL_PollEvent IGNORE_THIS_VERSION_OF_SDL_PollEvent
 #define SDL_PostSemaphore IGNORE_THIS_VERSION_OF_SDL_PostSemaphore
 #define SDL_PremultiplyAlpha IGNORE_THIS_VERSION_OF_SDL_PremultiplyAlpha
 #define SDL_PumpEvents IGNORE_THIS_VERSION_OF_SDL_PumpEvents
 #define SDL_PushEvent IGNORE_THIS_VERSION_OF_SDL_PushEvent
-#define SDL_PutAudioStreamData IGNORE_THIS_VERSION_OF_SDL_PutAudioStreamData
 #define SDL_QueryTexture IGNORE_THIS_VERSION_OF_SDL_QueryTexture
-#define SDL_QueueAudio IGNORE_THIS_VERSION_OF_SDL_QueueAudio
 #define SDL_Quit IGNORE_THIS_VERSION_OF_SDL_Quit
 #define SDL_QuitSubSystem IGNORE_THIS_VERSION_OF_SDL_QuitSubSystem
 #define SDL_RWFromConstMem IGNORE_THIS_VERSION_OF_SDL_RWFromConstMem
@@ -607,7 +579,6 @@
 #define SDL_SendGamepadEffect IGNORE_THIS_VERSION_OF_SDL_SendGamepadEffect
 #define SDL_SendJoystickEffect IGNORE_THIS_VERSION_OF_SDL_SendJoystickEffect
 #define SDL_SetAssertionHandler IGNORE_THIS_VERSION_OF_SDL_SetAssertionHandler
-#define SDL_SetAudioStreamFormat IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamFormat
 #define SDL_SetClipboardData IGNORE_THIS_VERSION_OF_SDL_SetClipboardData
 #define SDL_SetClipboardText IGNORE_THIS_VERSION_OF_SDL_SetClipboardText
 #define SDL_SetCursor IGNORE_THIS_VERSION_OF_SDL_SetCursor
@@ -698,7 +669,6 @@
 #define SDL_TryLockRWLockForWriting IGNORE_THIS_VERSION_OF_SDL_TryLockRWLockForWriting
 #define SDL_TryWaitSemaphore IGNORE_THIS_VERSION_OF_SDL_TryWaitSemaphore
 #define SDL_UnloadObject IGNORE_THIS_VERSION_OF_SDL_UnloadObject
-#define SDL_UnlockAudioDevice IGNORE_THIS_VERSION_OF_SDL_UnlockAudioDevice
 #define SDL_UnlockJoysticks IGNORE_THIS_VERSION_OF_SDL_UnlockJoysticks
 #define SDL_UnlockMutex IGNORE_THIS_VERSION_OF_SDL_UnlockMutex
 #define SDL_UnlockRWLock IGNORE_THIS_VERSION_OF_SDL_UnlockRWLock
@@ -905,6 +875,43 @@
 #define SDL_strnlen IGNORE_THIS_VERSION_OF_SDL_strnlen
 #define SDL_AddGamepadMappingsFromFile IGNORE_THIS_VERSION_OF_SDL_AddGamepadMappingsFromFile
 #define SDL_ReloadGamepadMappings IGNORE_THIS_VERSION_OF_SDL_ReloadGamepadMappings
+#define SDL_GetNumAudioDrivers IGNORE_THIS_VERSION_OF_SDL_GetNumAudioDrivers
+#define SDL_GetAudioDriver IGNORE_THIS_VERSION_OF_SDL_GetAudioDriver
+#define SDL_GetCurrentAudioDriver IGNORE_THIS_VERSION_OF_SDL_GetCurrentAudioDriver
+#define SDL_GetAudioOutputDevices IGNORE_THIS_VERSION_OF_SDL_GetAudioOutputDevices
+#define SDL_GetAudioCaptureDevices IGNORE_THIS_VERSION_OF_SDL_GetAudioCaptureDevices
+#define SDL_GetAudioDeviceName IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceName
+#define SDL_GetAudioDeviceFormat IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceFormat
+#define SDL_OpenAudioDevice IGNORE_THIS_VERSION_OF_SDL_OpenAudioDevice
+#define SDL_CloseAudioDevice IGNORE_THIS_VERSION_OF_SDL_CloseAudioDevice
+#define SDL_BindAudioStreams IGNORE_THIS_VERSION_OF_SDL_BindAudioStreams
+#define SDL_BindAudioStream IGNORE_THIS_VERSION_OF_SDL_BindAudioStream
+#define SDL_UnbindAudioStreams IGNORE_THIS_VERSION_OF_SDL_UnbindAudioStreams
+#define SDL_UnbindAudioStream IGNORE_THIS_VERSION_OF_SDL_UnbindAudioStream
+#define SDL_CreateAudioStream IGNORE_THIS_VERSION_OF_SDL_CreateAudioStream
+#define SDL_GetAudioStreamFormat IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamFormat
+#define SDL_SetAudioStreamFormat IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamFormat
+#define SDL_PutAudioStreamData IGNORE_THIS_VERSION_OF_SDL_PutAudioStreamData
+#define SDL_GetAudioStreamData IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamData
+#define SDL_GetAudioStreamAvailable IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamAvailable
+#define SDL_FlushAudioStream IGNORE_THIS_VERSION_OF_SDL_FlushAudioStream
+#define SDL_ClearAudioStream IGNORE_THIS_VERSION_OF_SDL_ClearAudioStream
+#define SDL_LockAudioStream IGNORE_THIS_VERSION_OF_SDL_LockAudioStream
+#define SDL_UnlockAudioStream IGNORE_THIS_VERSION_OF_SDL_UnlockAudioStream
+#define SDL_SetAudioStreamGetCallback IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamGetCallback
+#define SDL_SetAudioStreamPutCallback IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamPutCallback
+#define SDL_DestroyAudioStream IGNORE_THIS_VERSION_OF_SDL_DestroyAudioStream
+#define SDL_CreateAndBindAudioStream IGNORE_THIS_VERSION_OF_SDL_CreateAndBindAudioStream
+#define SDL_LoadWAV_RW IGNORE_THIS_VERSION_OF_SDL_LoadWAV_RW
+#define SDL_LoadWAV IGNORE_THIS_VERSION_OF_SDL_LoadWAV
+#define SDL_MixAudioFormat IGNORE_THIS_VERSION_OF_SDL_MixAudioFormat
+#define SDL_ConvertAudioSamples IGNORE_THIS_VERSION_OF_SDL_ConvertAudioSamples
+#define SDL_GetSilenceValueForFormat IGNORE_THIS_VERSION_OF_SDL_GetSilenceValueForFormat
+#define SDL_LoadWAV IGNORE_THIS_VERSION_OF_SDL_LoadWAV
+#define SDL_PauseAudioDevice IGNORE_THIS_VERSION_OF_SDL_PauseAudioDevice
+#define SDL_UnpauseAudioDevice IGNORE_THIS_VERSION_OF_SDL_UnpauseAudioDevice
+#define SDL_IsAudioDevicePaused IGNORE_THIS_VERSION_OF_SDL_IsAudioDevicePaused
+#define SDL_GetAudioStreamBinding IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamBinding
 
 /* *** HACK HACK HACK:
  * *** Avoid including SDL_thread.h: it defines SDL_CreateThread() as a macro
@@ -1095,10 +1102,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_CleanupTLS
 #endif
 
-#ifdef SDL_ClearAudioStream
-#undef SDL_ClearAudioStream
-#endif
-
 #ifdef SDL_ClearComposition
 #undef SDL_ClearComposition
 #endif
@@ -1109,14 +1112,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_ClearHints
 #undef SDL_ClearHints
-#endif
-
-#ifdef SDL_ClearQueuedAudio
-#undef SDL_ClearQueuedAudio
-#endif
-
-#ifdef SDL_CloseAudioDevice
-#undef SDL_CloseAudioDevice
 #endif
 
 #ifdef SDL_CloseGamepad
@@ -1135,10 +1130,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_ComposeCustomBlendMode
 #endif
 
-#ifdef SDL_ConvertAudioSamples
-#undef SDL_ConvertAudioSamples
-#endif
-
 #ifdef SDL_ConvertEventToRenderCoordinates
 #undef SDL_ConvertEventToRenderCoordinates
 #endif
@@ -1153,10 +1144,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_ConvertSurfaceFormat
 #undef SDL_ConvertSurfaceFormat
-#endif
-
-#ifdef SDL_CreateAudioStream
-#undef SDL_CreateAudioStream
 #endif
 
 #ifdef SDL_CreateColorCursor
@@ -1283,14 +1270,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_DelayNS
 #endif
 
-#ifdef SDL_DequeueAudio
-#undef SDL_DequeueAudio
-#endif
-
-#ifdef SDL_DestroyAudioStream
-#undef SDL_DestroyAudioStream
-#endif
-
 #ifdef SDL_DestroyCondition
 #undef SDL_DestroyCondition
 #endif
@@ -1409,10 +1388,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_FlashWindow
 #undef SDL_FlashWindow
-#endif
-
-#ifdef SDL_FlushAudioStream
-#undef SDL_FlushAudioStream
 #endif
 
 #ifdef SDL_FlushEvent
@@ -1555,34 +1530,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetAssertionReport
 #endif
 
-#ifdef SDL_GetAudioDeviceName
-#undef SDL_GetAudioDeviceName
-#endif
-
-#ifdef SDL_GetAudioDeviceSpec
-#undef SDL_GetAudioDeviceSpec
-#endif
-
-#ifdef SDL_GetAudioDeviceStatus
-#undef SDL_GetAudioDeviceStatus
-#endif
-
-#ifdef SDL_GetAudioDriver
-#undef SDL_GetAudioDriver
-#endif
-
-#ifdef SDL_GetAudioStreamAvailable
-#undef SDL_GetAudioStreamAvailable
-#endif
-
-#ifdef SDL_GetAudioStreamData
-#undef SDL_GetAudioStreamData
-#endif
-
-#ifdef SDL_GetAudioStreamFormat
-#undef SDL_GetAudioStreamFormat
-#endif
-
 #ifdef SDL_GetBasePath
 #undef SDL_GetBasePath
 #endif
@@ -1607,10 +1554,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetClosestFullscreenDisplayMode
 #endif
 
-#ifdef SDL_GetCurrentAudioDriver
-#undef SDL_GetCurrentAudioDriver
-#endif
-
 #ifdef SDL_GetCurrentDisplayMode
 #undef SDL_GetCurrentDisplayMode
 #endif
@@ -1633,10 +1576,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetDefaultAssertionHandler
 #undef SDL_GetDefaultAssertionHandler
-#endif
-
-#ifdef SDL_GetDefaultAudioInfo
-#undef SDL_GetDefaultAudioInfo
 #endif
 
 #ifdef SDL_GetDefaultCursor
@@ -2023,14 +1962,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetNumAllocations
 #endif
 
-#ifdef SDL_GetNumAudioDevices
-#undef SDL_GetNumAudioDevices
-#endif
-
-#ifdef SDL_GetNumAudioDrivers
-#undef SDL_GetNumAudioDrivers
-#endif
-
 #ifdef SDL_GetNumGamepadMappings
 #undef SDL_GetNumGamepadMappings
 #endif
@@ -2117,10 +2048,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetPrimarySelectionText
 #undef SDL_GetPrimarySelectionText
-#endif
-
-#ifdef SDL_GetQueuedAudioSize
-#undef SDL_GetQueuedAudioSize
 #endif
 
 #ifdef SDL_GetRGB
@@ -2799,14 +2726,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_LoadObject
 #endif
 
-#ifdef SDL_LoadWAV_RW
-#undef SDL_LoadWAV_RW
-#endif
-
-#ifdef SDL_LockAudioDevice
-#undef SDL_LockAudioDevice
-#endif
-
 #ifdef SDL_LockJoysticks
 #undef SDL_LockJoysticks
 #endif
@@ -2931,10 +2850,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_MinimizeWindow
 #endif
 
-#ifdef SDL_MixAudioFormat
-#undef SDL_MixAudioFormat
-#endif
-
 #ifdef SDL_MouseIsHaptic
 #undef SDL_MouseIsHaptic
 #endif
@@ -2971,10 +2886,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_OnApplicationWillTerminate
 #endif
 
-#ifdef SDL_OpenAudioDevice
-#undef SDL_OpenAudioDevice
-#endif
-
 #ifdef SDL_OpenGamepad
 #undef SDL_OpenGamepad
 #endif
@@ -2991,16 +2902,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_OpenURL
 #endif
 
-#ifdef SDL_PauseAudioDevice
-#undef SDL_PauseAudioDevice
-#endif
-
 #ifdef SDL_PeepEvents
 #undef SDL_PeepEvents
-#endif
-
-#ifdef SDL_PlayAudioDevice
-#undef SDL_PlayAudioDevice
 #endif
 
 #ifdef SDL_PollEvent
@@ -3023,16 +2926,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_PushEvent
 #endif
 
-#ifdef SDL_PutAudioStreamData
-#undef SDL_PutAudioStreamData
-#endif
-
 #ifdef SDL_QueryTexture
 #undef SDL_QueryTexture
-#endif
-
-#ifdef SDL_QueueAudio
-#undef SDL_QueueAudio
 #endif
 
 #ifdef SDL_Quit
@@ -3277,10 +3172,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_SetAssertionHandler
 #undef SDL_SetAssertionHandler
-#endif
-
-#ifdef SDL_SetAudioStreamFormat
-#undef SDL_SetAudioStreamFormat
 #endif
 
 #ifdef SDL_SetClipboardData
@@ -3641,10 +3532,6 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_UnloadObject
 #undef SDL_UnloadObject
-#endif
-
-#ifdef SDL_UnlockAudioDevice
-#undef SDL_UnlockAudioDevice
 #endif
 
 #ifdef SDL_UnlockJoysticks
@@ -4469,6 +4356,154 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_ReloadGamepadMappings
 #undef SDL_ReloadGamepadMappings
+#endif
+
+#ifdef SDL_GetNumAudioDrivers
+#undef SDL_GetNumAudioDrivers
+#endif
+
+#ifdef SDL_GetAudioDriver
+#undef SDL_GetAudioDriver
+#endif
+
+#ifdef SDL_GetCurrentAudioDriver
+#undef SDL_GetCurrentAudioDriver
+#endif
+
+#ifdef SDL_GetAudioOutputDevices
+#undef SDL_GetAudioOutputDevices
+#endif
+
+#ifdef SDL_GetAudioCaptureDevices
+#undef SDL_GetAudioCaptureDevices
+#endif
+
+#ifdef SDL_GetAudioDeviceName
+#undef SDL_GetAudioDeviceName
+#endif
+
+#ifdef SDL_GetAudioDeviceFormat
+#undef SDL_GetAudioDeviceFormat
+#endif
+
+#ifdef SDL_OpenAudioDevice
+#undef SDL_OpenAudioDevice
+#endif
+
+#ifdef SDL_CloseAudioDevice
+#undef SDL_CloseAudioDevice
+#endif
+
+#ifdef SDL_BindAudioStreams
+#undef SDL_BindAudioStreams
+#endif
+
+#ifdef SDL_BindAudioStream
+#undef SDL_BindAudioStream
+#endif
+
+#ifdef SDL_UnbindAudioStreams
+#undef SDL_UnbindAudioStreams
+#endif
+
+#ifdef SDL_UnbindAudioStream
+#undef SDL_UnbindAudioStream
+#endif
+
+#ifdef SDL_CreateAudioStream
+#undef SDL_CreateAudioStream
+#endif
+
+#ifdef SDL_GetAudioStreamFormat
+#undef SDL_GetAudioStreamFormat
+#endif
+
+#ifdef SDL_SetAudioStreamFormat
+#undef SDL_SetAudioStreamFormat
+#endif
+
+#ifdef SDL_PutAudioStreamData
+#undef SDL_PutAudioStreamData
+#endif
+
+#ifdef SDL_GetAudioStreamData
+#undef SDL_GetAudioStreamData
+#endif
+
+#ifdef SDL_GetAudioStreamAvailable
+#undef SDL_GetAudioStreamAvailable
+#endif
+
+#ifdef SDL_FlushAudioStream
+#undef SDL_FlushAudioStream
+#endif
+
+#ifdef SDL_ClearAudioStream
+#undef SDL_ClearAudioStream
+#endif
+
+#ifdef SDL_LockAudioStream
+#undef SDL_LockAudioStream
+#endif
+
+#ifdef SDL_UnlockAudioStream
+#undef SDL_UnlockAudioStream
+#endif
+
+#ifdef SDL_SetAudioStreamGetCallback
+#undef SDL_SetAudioStreamGetCallback
+#endif
+
+#ifdef SDL_SetAudioStreamPutCallback
+#undef SDL_SetAudioStreamPutCallback
+#endif
+
+#ifdef SDL_DestroyAudioStream
+#undef SDL_DestroyAudioStream
+#endif
+
+#ifdef SDL_CreateAndBindAudioStream
+#undef SDL_CreateAndBindAudioStream
+#endif
+
+#ifdef SDL_LoadWAV_RW
+#undef SDL_LoadWAV_RW
+#endif
+
+#ifdef SDL_LoadWAV
+#undef SDL_LoadWAV
+#endif
+
+#ifdef SDL_MixAudioFormat
+#undef SDL_MixAudioFormat
+#endif
+
+#ifdef SDL_ConvertAudioSamples
+#undef SDL_ConvertAudioSamples
+#endif
+
+#ifdef SDL_GetSilenceValueForFormat
+#undef SDL_GetSilenceValueForFormat
+#endif
+
+#ifdef SDL_LoadWAV
+#undef SDL_LoadWAV
+#endif
+
+#ifdef SDL_PauseAudioDevice
+#undef SDL_PauseAudioDevice
+#endif
+
+#ifdef SDL_UnpauseAudioDevice
+#undef SDL_UnpauseAudioDevice
+#endif
+
+#ifdef SDL_IsAudioDevicePaused
+#undef SDL_IsAudioDevicePaused
+#endif
+
+#ifdef SDL_GetAudioStreamBinding
+#undef SDL_GetAudioStreamBinding
 #endif
 
 /* undefine these macros too: */
