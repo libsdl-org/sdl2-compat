@@ -92,6 +92,28 @@ typedef int (SDLCALL *SDL2_EventFilter) (void *userdata, SDL2_Event *event);
 struct SDL_AudioCVT;
 typedef void (SDLCALL * SDL_AudioFilter) (struct SDL_AudioCVT *cvt, SDL_AudioFormat format);
 
+typedef void (SDLCALL * SDL2_AudioCallback) (void *userdata, Uint8 * stream, int len);
+
+typedef enum
+{
+    SDL2_AUDIO_STOPPED = 0,
+    SDL2_AUDIO_PLAYING,
+    SDL2_AUDIO_PAUSED
+} SDL2_AudioStatus;
+
+typedef struct SDL2_AudioSpec
+{
+    int freq;                    /**< DSP frequency -- samples per second */
+    SDL_AudioFormat format;      /**< Audio data format */
+    Uint8 channels;              /**< Number of channels: 1 mono, 2 stereo */
+    Uint8 silence;               /**< Audio buffer silence value (calculated) */
+    Uint16 samples;              /**< Audio buffer size in sample FRAMES (total samples divided by channel count) */
+    Uint16 padding;              /**< Necessary for some compile environments */
+    Uint32 size;                 /**< Audio buffer size in bytes (calculated) */
+    SDL2_AudioCallback callback; /**< Callback that feeds the audio device (NULL to use SDL_QueueAudio()). */
+    void *userdata;              /**< Userdata passed to callback (ignored for NULL callbacks). */
+} SDL2_AudioSpec;
+
 /**
  *  \brief Upper limit of filters in SDL_AudioCVT
  *
@@ -145,7 +167,19 @@ typedef struct SDL2_AudioStream
     SDL_AudioStream *stream3;
     SDL_AudioFormat src_format;
     SDL_AudioFormat dst_format;
+
+    /* these are used when this stream is powering an opened audio device, and not when just used as an SDL2 audio stream. */
+    SDL2_AudioCallback callback2;
+    void *callback2_userdata;
+    SDL_AudioStream *dataqueue3;
+    SDL_bool iscapture;
 } SDL2_AudioStream;
+
+#define SDL2_AUDIO_ALLOW_FREQUENCY_CHANGE    0x00000001
+#define SDL2_AUDIO_ALLOW_FORMAT_CHANGE       0x00000002
+#define SDL2_AUDIO_ALLOW_CHANNELS_CHANGE     0x00000004
+#define SDL2_AUDIO_ALLOW_SAMPLES_CHANGE      0x00000008
+#define SDL2_AUDIO_ALLOW_ANY_CHANGE          (SDL2_AUDIO_ALLOW_FREQUENCY_CHANGE|SDL2_AUDIO_ALLOW_FORMAT_CHANGE|SDL2_AUDIO_ALLOW_CHANNELS_CHANGE|SDL2_AUDIO_ALLOW_SAMPLES_CHANGE)
 
 typedef enum
 {
