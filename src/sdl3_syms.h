@@ -919,7 +919,7 @@ SDL3_SYM(int,ConvertAudioSamples,(const SDL_AudioSpec *a, const Uint8 *b, int c,
 SDL3_SYM(int,GetSilenceValueForFormat,(SDL_AudioFormat a),(a),return)
 SDL3_SYM(int,LoadWAV,(const char *a, SDL_AudioSpec *b, Uint8 **c, Uint32 *d),(a,b,c,d),return)
 SDL3_SYM(int,PauseAudioDevice,(SDL_AudioDeviceID a),(a),return)
-SDL3_SYM(int,UnpauseAudioDevice,(SDL_AudioDeviceID a),(a),return)
+SDL3_SYM(int,ResumeAudioDevice,(SDL_AudioDeviceID a),(a),return)
 SDL3_SYM(SDL_bool,IsAudioDevicePaused,(SDL_AudioDeviceID a),(a),return)
 SDL3_SYM(SDL_AudioDeviceID,GetAudioStreamBinding,(SDL_AudioStream *a),(a),return)
 

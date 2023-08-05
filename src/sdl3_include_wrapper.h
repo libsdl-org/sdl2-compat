@@ -909,7 +909,7 @@
 #define SDL_GetSilenceValueForFormat IGNORE_THIS_VERSION_OF_SDL_GetSilenceValueForFormat
 #define SDL_LoadWAV IGNORE_THIS_VERSION_OF_SDL_LoadWAV
 #define SDL_PauseAudioDevice IGNORE_THIS_VERSION_OF_SDL_PauseAudioDevice
-#define SDL_UnpauseAudioDevice IGNORE_THIS_VERSION_OF_SDL_UnpauseAudioDevice
+#define SDL_ResumeAudioDevice IGNORE_THIS_VERSION_OF_SDL_ResumeAudioDevice
 #define SDL_IsAudioDevicePaused IGNORE_THIS_VERSION_OF_SDL_IsAudioDevicePaused
 #define SDL_GetAudioStreamBinding IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamBinding
 #define SDL_ShowWindowSystemMenu IGNORE_THIS_VERSION_OF_SDL_ShowWindowSystemMenu
@@ -4495,8 +4495,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_PauseAudioDevice
 #endif
 
-#ifdef SDL_UnpauseAudioDevice
-#undef SDL_UnpauseAudioDevice
+#ifdef SDL_ResumeAudioDevice
+#undef SDL_ResumeAudioDevice
 #endif
 
 #ifdef SDL_IsAudioDevicePaused

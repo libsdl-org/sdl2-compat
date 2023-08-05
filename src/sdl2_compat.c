@@ -4265,7 +4265,7 @@ SDL_PauseAudioDevice(SDL_AudioDeviceID dev, int pause_on)
             if (pause_on) {
                 SDL3_PauseAudioDevice(device3);
             } else {
-                SDL3_UnpauseAudioDevice(device3);
+                SDL3_ResumeAudioDevice(device3);
             }
         }
     }
