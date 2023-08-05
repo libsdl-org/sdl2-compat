@@ -287,7 +287,7 @@
 #define SDL_GetNumTouchFingers IGNORE_THIS_VERSION_OF_SDL_GetNumTouchFingers
 #define SDL_GetNumVideoDrivers IGNORE_THIS_VERSION_OF_SDL_GetNumVideoDrivers
 #define SDL_GetOriginalMemoryFunctions IGNORE_THIS_VERSION_OF_SDL_GetOriginalMemoryFunctions
-#define SDL_GetPath IGNORE_THIS_VERSION_OF_SDL_GetPath
+#define SDL_GetUserFolder IGNORE_THIS_VERSION_OF_SDL_GetUserFolder
 #define SDL_GetPerformanceCounter IGNORE_THIS_VERSION_OF_SDL_GetPerformanceCounter
 #define SDL_GetPerformanceFrequency IGNORE_THIS_VERSION_OF_SDL_GetPerformanceFrequency
 #define SDL_GetPixelFormatEnumForMasks IGNORE_THIS_VERSION_OF_SDL_GetPixelFormatEnumForMasks
@@ -912,6 +912,7 @@
 #define SDL_UnpauseAudioDevice IGNORE_THIS_VERSION_OF_SDL_UnpauseAudioDevice
 #define SDL_IsAudioDevicePaused IGNORE_THIS_VERSION_OF_SDL_IsAudioDevicePaused
 #define SDL_GetAudioStreamBinding IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamBinding
+#define SDL_ShowWindowSystemMenu IGNORE_THIS_VERSION_OF_SDL_ShowWindowSystemMenu
 
 /* *** HACK HACK HACK:
  * *** Avoid including SDL_thread.h: it defines SDL_CreateThread() as a macro
@@ -2006,8 +2007,8 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 #undef SDL_GetOriginalMemoryFunctions
 #endif
 
-#ifdef SDL_GetPath
-#undef SDL_GetPath
+#ifdef SDL_GetUserFolder
+#undef SDL_GetUserFolder
 #endif
 
 #ifdef SDL_GetPerformanceCounter
@@ -4504,6 +4505,10 @@ typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
 
 #ifdef SDL_GetAudioStreamBinding
 #undef SDL_GetAudioStreamBinding
+#endif
+
+#ifdef SDL_ShowWindowSystemMenu
+#undef SDL_ShowWindowSystemMenu
 #endif
 
 /* undefine these macros too: */
