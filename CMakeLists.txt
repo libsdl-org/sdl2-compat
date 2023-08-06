@@ -528,6 +528,22 @@ if(SDL2COMPAT_TESTS)
     "utf8.txt")
       file(COPY "${CMAKE_SOURCE_DIR}/test/${fname}" DESTINATION "${CMAKE_BINARY_DIR}")
   endforeach()
+
+  check_c_compiler_flag(-Wformat HAVE_WFORMAT)
+  if(HAVE_WFORMAT)
+    target_compile_definitions(testautomation PRIVATE HAVE_WFORMAT)
+  endif()
+
+  cmake_push_check_state()
+  if(HAVE_WFORMAT)
+    # Some compilers ignore -Wformat-extra-args without -Wformat
+    string(APPEND CMAKE_REQUIRED_FLAGS " -Wformat")
+  endif()
+  check_c_compiler_flag(-Wformat-extra-args HAVE_WFORMAT_EXTRA_ARGS)
+  cmake_pop_check_state()
+  if(HAVE_WFORMAT_EXTRA_ARGS)
+    target_compile_definitions(testautomation PRIVATE HAVE_WFORMAT_EXTRA_ARGS)
+  endif()
 endif()
 
 set(installed_targets SDL2)
