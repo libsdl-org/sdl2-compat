@@ -61,7 +61,7 @@ SDL3_SYM_PASSTHROUGH(void,UnregisterApp,(void),(),)
 #endif
 
 #if defined(__WIN32__) || defined(__WINGDK__)
-SDL3_SYM_PASSTHROUGH(int,Direct3D9GetAdapterIndex,(int a),(a),return)
+SDL3_SYM(int,Direct3D9GetAdapterIndex,(SDL_DisplayID a),(a),return)
 SDL3_SYM_RENAMED(IDirect3DDevice9*,RenderGetD3D9Device,GetRenderD3D9Device,(SDL_Renderer *a),(a),return)
 #endif
 
@@ -524,7 +524,7 @@ SDL3_SYM_PASSTHROUGH(SDL_bool,HasAVX,(void),(),return)
 SDL3_SYM_PASSTHROUGH(SDL_AssertionHandler,GetDefaultAssertionHandler,(void),(),return)
 SDL3_SYM_PASSTHROUGH(SDL_AssertionHandler,GetAssertionHandler,(void **a),(a),return)
 #if defined(__WIN32__) || defined(__WINGDK__)
-SDL3_SYM_PASSTHROUGH(SDL_bool,DXGIGetOutputInfo,(int a,int *b, int *c),(a,b,c),return)
+SDL3_SYM(SDL_bool,DXGIGetOutputInfo,(SDL_DisplayID a,int *b, int *c),(a,b,c),return)
 #endif
 SDL3_SYM_RENAMED(SDL_bool,RenderIsClipEnabled,RenderClipEnabled,(SDL_Renderer *a),(a),return)
 #ifdef __WINRT__

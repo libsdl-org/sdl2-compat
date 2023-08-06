@@ -6461,6 +6461,19 @@ SDL_hid_enumerate(unsigned short vendor_id, unsigned short product_id)
     return retval;
 }
 
+#if defined(__WIN32__) || defined(__WINGDK__)
+DECLSPEC int SDLCALL
+SDL_Direct3D9GetAdapterIndex(int displayIndex)
+{
+    return SDL3_Direct3D9GetAdapterIndex((SDL_DisplayID)displayIndex);
+}
+
+DECLSPEC SDL_bool SDLCALL
+SDL_DXGIGetOutputInfo(int displayIndex, int *adapterIndex, int *outputIndex)
+{
+    return SDL3_DXGIGetOutputInfo((SDL_DisplayID)displayIndex, adapterIndex, outputIndex);
+}
+#endif
 
 #ifdef __WINRT__
 DECLSPEC int SDLCALL
