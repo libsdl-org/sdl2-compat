@@ -86,10 +86,9 @@ include("${CMAKE_CURRENT_LIST_DIR}/cmake/sdlcompilers.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/sdlplatform.cmake")
 
 SDL_DetectCompiler()
+SDL_DetectCPUArchitecture()
 SDL_DetectCMakePlatform()
 CheckOpenGLES()
-
-check_cpu_architecture(x86 SDL_CPU_X86)
 
 if(NOT MSVC AND NOT APPLE AND NOT OPENBSD)
   cmake_push_check_state()
