@@ -913,7 +913,7 @@ SDL3_SYM(int,SetAudioStreamGetCallback,(SDL_AudioStream *a, SDL_AudioStreamReque
 SDL3_SYM(int,SetAudioStreamPutCallback,(SDL_AudioStream *a, SDL_AudioStreamRequestCallback b, void *c),(a,b,c),return)
 SDL3_SYM(void,DestroyAudioStream,(SDL_AudioStream *a),(a),)
 SDL3_SYM(SDL_AudioStream*,CreateAndBindAudioStream,(SDL_AudioDeviceID a, const SDL_AudioSpec *b),(a,b),return)
-SDL3_SYM(int,LoadWAV_RW,(SDL_RWops *a, int b, SDL_AudioSpec *c, Uint8 **d, Uint32 *e),(a,b,c,d,e),return)
+SDL3_SYM(int,LoadWAV_RW,(SDL_RWops *a, SDL_bool b, SDL_AudioSpec *c, Uint8 **d, Uint32 *e),(a,b,c,d,e),return)
 SDL3_SYM(int,MixAudioFormat,(Uint8 *a, const Uint8 *b, SDL_AudioFormat c, Uint32 d, int e),(a,b,c,d,e),return)
 SDL3_SYM(int,ConvertAudioSamples,(const SDL_AudioSpec *a, const Uint8 *b, int c, const SDL_AudioSpec *d, Uint8 **e, int *f),(a,b,c,d,e,f),return)
 SDL3_SYM(int,GetSilenceValueForFormat,(SDL_AudioFormat a),(a),return)
