@@ -4630,14 +4630,9 @@ SDL_GetClosestDisplayModeForDisplay(SDL_DisplayID displayID,
     Uint32 target_format;
     float target_refresh_rate;
     int i;
-    SDL_DisplayMode requested_mode;
     const SDL_DisplayMode *current, *match;
     const SDL_DisplayMode **list;
     int count = 0;
-
-    /* Make sure all the fields are filled out in the requested mode */
-    requested_mode = *mode;
-    mode = &requested_mode;
 
     /* Default to the desktop format */
     if (mode->format) {
