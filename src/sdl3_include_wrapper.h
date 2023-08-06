@@ -928,7 +928,6 @@
 #include <SDL3/SDL_syswm.h>
 #include <SDL3/SDL_vulkan.h>
 
-/* Missing SDL_thread.h stuff (see above) */
 #ifdef _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
@@ -939,7 +938,7 @@
 #undef CreateThread
 #undef CreateSemaphore
 #undef CreateMutex
-#endif /* _WIN32 */
+#endif  /* _WIN32 */
 
 #ifdef SDL_AddEventWatch
 #undef SDL_AddEventWatch
