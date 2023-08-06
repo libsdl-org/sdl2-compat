@@ -914,21 +914,6 @@
 #define SDL_GetAudioStreamBinding IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamBinding
 #define SDL_ShowWindowSystemMenu IGNORE_THIS_VERSION_OF_SDL_ShowWindowSystemMenu
 
-/* *** HACK HACK HACK:
- * *** Avoid including SDL_thread.h: it defines SDL_CreateThread() as a macro
- * *** for Win32 Desktop and GDK, but not for WinRT. */
-#ifdef SDL_HAVE_WINAPIFAMILY_H
-#include <winapifamily.h>
-#if (!WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP) && WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP))
-#define SDL2COMPAT_WINRT
-#endif
-#endif
-
-#if defined(_WIN32) && !defined(SDL2COMPAT_WINRT)
-#define SDL_thread_h_
-#define SDL_PASSED_BEGINTHREAD_ENDTHREAD
-#endif
-
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
 #define SDL_DISABLE_OLD_NAMES 1
 #define __BUILDING_SDL2_COMPAT__ 1
@@ -949,21 +934,6 @@
 #define WIN32_LEAN_AND_MEAN 1
 #endif
 #include <windows.h>
-#ifndef SDL2COMPAT_WINRT
-typedef struct SDL_Thread SDL_Thread;
-typedef unsigned long SDL_threadID;
-typedef enum {
-    SDL_THREAD_PRIORITY_LOW,
-    SDL_THREAD_PRIORITY_NORMAL,
-    SDL_THREAD_PRIORITY_HIGH,
-    SDL_THREAD_PRIORITY_TIME_CRITICAL
-} SDL_ThreadPriority;
-typedef unsigned int SDL_TLSID;
-typedef int (SDLCALL *SDL_ThreadFunction) (void*);
-typedef UINT_PTR (__cdecl *pfnSDL_CurrentBeginThread)
-                   (void*, unsigned, unsigned (__stdcall *func)(void*), void*, unsigned, unsigned*);
-typedef void (__cdecl *pfnSDL_CurrentEndThread) (unsigned);
-#endif
 /* the following macros from Win32 SDK headers are harmful here. */
 #undef CreateWindow
 #undef CreateThread
