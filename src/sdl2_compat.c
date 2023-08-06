@@ -6229,7 +6229,7 @@ SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
         return SDL_SetError("Destination rate is too high");
     }
 
-#if DEBUG_CONVERT
+#ifdef DEBUG_CONVERT
     SDL_Log("SDL_AUDIO_CONVERT: Build format %04x->%04x, channels %u->%u, rate %d->%d\n",
             src_format, dst_format, src_channels, dst_channels, src_rate, dst_rate);
 #endif

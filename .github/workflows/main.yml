@@ -59,7 +59,8 @@ jobs:
         sudo apt-get install -y libgl1-mesa-dev libglu1-mesa-dev
     - name: Configure (CMake)
       run: |
-        cmake -B build -GNinja
+        cmake -B build -GNinja \
+          -DSDL2COMPAT_WERROR=ON
     - name: Build (CMake)
       run: |
         cmake --build build/ --verbose
