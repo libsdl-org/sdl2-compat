@@ -4,20 +4,23 @@ on: [push, pull_request]
 
 jobs:
   Build:
-    name: ${{ matrix.platform.name }}
-    runs-on: ${{ matrix.platform.os }}
+    name: '${{ matrix.platform.name }}'
+    runs-on: '${{ matrix.platform.os }}'
     strategy:
       fail-fast: false
       matrix:
         platform:
-        - { name: Windows, os: windows-latest, msvc: true }
-        - { name: Linux,   os: ubuntu-latest }
-        - { name: MacOS,   os: macos-latest }
+        - { name: 'Windows (x64)',    os: windows-latest, msvc: true, msvc-arch: x64 }
+        - { name: 'Windows (x86)',    os: windows-latest, msvc: true, msvc-arch: x86 }
+        - { name: 'Windows (arm32)',  os: windows-latest, msvc: true, msvc-arch: amd64_arm, cross: true }
+        - { name: 'Windows (arm64)',  os: windows-latest, msvc: true, msvc-arch: amd64_arm64, cross: true }
+        - { name: 'Linux',            os: ubuntu-latest }
+        - { name: 'MacOS',            os: macos-latest }
     steps:
     - uses: ilammy/msvc-dev-cmd@v1
       if: ${{ matrix.platform.msvc }}
       with:
-        arch: x64
+        arch: ${{ matrix.platform.msvc-arch }}
     - name: Get sdl2-compat sources
       uses: actions/checkout@v3
     - name: Install Ninja
@@ -44,7 +47,7 @@ jobs:
       run: |
         cmake --build build/
     - name: Run build-time tests (CMake)
-      if: ${{ false }} # FIXME: enable build-time tests on CI
+      if: ${{ false && !matrix.platform.cross }} # FIXME: enable build-time tests on CI
       shell: sh
       run: |
         set -eu
