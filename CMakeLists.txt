@@ -65,7 +65,7 @@ set(SDL_DYLIB_COMPAT_VERSION "${SDL_DYLIB_COMPAT_VERSION_MAJOR}.${SDL_DYLIB_COMP
 option(SDL2COMPAT_TESTS "Enable to build SDL2 test programs" ON)
 option(SDL2COMPAT_DEVEL "Enable installing SDL2 development headers" ON)
 option(SDL2COMPAT_STATICDEVEL "Enable installing static link library" OFF)
-option(SDL2COMPAT_WERROR "Treat warnings as errors" ON)
+option(SDL2COMPAT_WERROR "Treat warnings as errors" OFF)
 set(SDL2COMPAT_VENDOR_INFO "" CACHE STRING "Vendor name and/or version to add to SDL_REVISION")
 #FIXME: should SDL2-compat modify vendor_info/revision information?
 
