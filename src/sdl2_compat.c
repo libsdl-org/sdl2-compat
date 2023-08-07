@@ -588,6 +588,33 @@ LoadSDL3(void)
 #include "x86_msvc.h"
 #endif
 
+#ifdef _WIN32
+/* NOLINTNEXTLINE(readability-redundant-declaration) */
+extern void *memcpy(void *dst, const void *src, size_t len);
+/* NOLINTNEXTLINE(readability-redundant-declaration) */
+extern void *memset(void *dst, int c, size_t len);
+#if defined(_MSC_VER)
+#if !defined(__INTEL_LLVM_COMPILER)
+#pragma intrinsic(memcpy)
+#pragma intrinsic(memset)
+#endif
+#pragma function(memcpy)
+#pragma function(memset)
+#endif
+
+/* NOLINTNEXTLINE(readability-inconsistent-declaration-parameter-name) */
+void *memcpy(void *dst, const void *src, size_t len)
+{
+    return SDL3_memcpy(dst, src, len);
+}
+
+/* NOLINTNEXTLINE(readability-inconsistent-declaration-parameter-name) */
+void *memset(void *dst, int c, size_t len)
+{
+    return SDL3_memset(dst, c, len);
+}
+#endif
+
 #if defined(_WIN32)
 static void error_dialog(const char *errorMsg)
 {
