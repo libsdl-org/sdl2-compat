@@ -2613,7 +2613,7 @@ typedef struct
 typedef struct
 {
     SDL_FPoint path[GESTURE_DOLLARNPOINTS];
-    unsigned long hash;
+    Sint64 hash;
 } GestureDollarTemplate;
 
 typedef struct
@@ -3157,7 +3157,7 @@ GestureProcessEvent(const SDL_Event *event3)
                 const float error = GestureDollarRecognize(&inTouch->dollarPath, &bestTempl, inTouch);
                 if (bestTempl >= 0) {
                     /* Send Event */
-                    const unsigned long gestureId = inTouch->dollarTemplate[bestTempl].hash;
+                    Sint64 gestureId = inTouch->dollarTemplate[bestTempl].hash;
                     GestureSendDollar(inTouch, gestureId, error);
                     /* printf ("%s\n",);("Dollar error: %f\n",error); */
                 }
