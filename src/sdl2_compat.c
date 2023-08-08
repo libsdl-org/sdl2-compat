@@ -1812,43 +1812,15 @@ RWops3to2_seek(SDL2_RWops *rwops2, Sint64 offset, int whence)
 static size_t SDLCALL
 RWops3to2_read(SDL2_RWops *rwops2, void *ptr, size_t size, size_t maxnum)
 {
-    Sint64 br;
-    size_t nmemb;
-    if (!size || !maxnum) {
-        return 0;
-    }
-    br = SDL3_RWread(rwops2->hidden.sdl3.rwops, ptr, ((Sint64) size) * ((Sint64) maxnum));
-    if (br <= 0) {
-        return 0;
-    }
-    nmemb = (size_t) br / size;
-    #if 0
-    if ((size_t) br % size) { /* last member partially read? */
-        nmemb++;
-    }
-    #endif
-    return nmemb;
+    size_t count = SDL3_RWread(rwops2->hidden.sdl3.rwops, ptr, (size * maxnum)) / size;
+    return count;
 }
 
 static size_t SDLCALL
 RWops3to2_write(SDL2_RWops *rwops2, const void *ptr, size_t size, size_t maxnum)
 {
-    Sint64 bw;
-    size_t nmemb;
-    if (!size || !maxnum) {
-        return 0;
-    }
-    bw = SDL3_RWwrite(rwops2->hidden.sdl3.rwops, ptr, ((Sint64) size) * ((Sint64) maxnum));
-    if (bw <= 0) {
-        return 0;
-    }
-    nmemb = (size_t) bw / size;
-    #if 0
-    if ((size_t) bw % size) { /* last member partially written? */
-        nmemb++;
-    }
-    #endif
-    return nmemb;
+    size_t count = SDL3_RWwrite(rwops2->hidden.sdl3.rwops, ptr, (size * maxnum)) / size;
+    return count;
 }
 
 static int SDLCALL
@@ -2113,25 +2085,23 @@ RWops2to3_seek(struct SDL_RWops *rwops3, Sint64 offset, int whence)
     return SDL_RWseek((SDL2_RWops *) rwops3->hidden.unknown.data1, offset, whence);
 }
 
-static Sint64 SDLCALL
-RWops2to3_read(struct SDL_RWops *rwops3, void *ptr, Sint64 size)
+static size_t SDLCALL
+RWops2to3_read(struct SDL_RWops *rwops3, void *ptr, size_t size)
 {
-    const size_t br = SDL_RWread((SDL2_RWops *) rwops3->hidden.unknown.data1, ptr, 1, (size_t) size);
-    return (Sint64) br;
+    return SDL_RWread((SDL2_RWops *) rwops3->hidden.unknown.data1, ptr, 1, size);
 }
 
-static Sint64 SDLCALL
-RWops2to3_write(struct SDL_RWops *rwops3, const void *ptr, Sint64 size)
+static size_t SDLCALL
+RWops2to3_write(struct SDL_RWops *rwops3, const void *ptr, size_t size)
 {
-    const size_t bw = SDL_RWwrite((SDL2_RWops *) rwops3->hidden.unknown.data1, ptr, 1, (size_t) size);
-    return (bw == 0) ? -1 : (Sint64) bw;
+    return SDL_RWwrite((SDL2_RWops *) rwops3->hidden.unknown.data1, ptr, 1, size);
 }
 
 static int SDLCALL
 RWops2to3_close(struct SDL_RWops *rwops3)
 {
     const int retval = SDL_RWclose((SDL2_RWops *) rwops3->hidden.unknown.data1);
-    SDL3_DestroyRW(rwops3);  /* !!! FIXME: _should_ we free this if SDL_RWclose failed? */
+    SDL3_DestroyRW(rwops3);  /* we should always free this */
     return retval;
 }
 
@@ -2235,7 +2205,7 @@ SDL_SaveBMP_RW(SDL_Surface *surface, SDL2_RWops *rwops2, int freedst)
     int retval = -1;
     SDL_RWops *rwops3 = RWops2to3(rwops2);
     if (rwops3) {
-        retval = SDL3_SaveBMP_RW(surface, rwops3, freedst);
+        retval = SDL3_SaveBMP_RW(surface, rwops3, freedst ? SDL_TRUE : SDL_FALSE);
         if (!freedst) {
             SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }
@@ -2253,7 +2223,7 @@ SDL_GameControllerAddMappingsFromRW(SDL2_RWops *rwops2, int freerw)
     int retval = -1;
     SDL_RWops *rwops3 = RWops2to3(rwops2);
     if (rwops3) {
-        retval = SDL3_AddGamepadMappingsFromRW(rwops3, freerw);
+        retval = SDL3_AddGamepadMappingsFromRW(rwops3, freerw ? SDL_TRUE : SDL_FALSE);
         if (!freerw) {
             SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }
