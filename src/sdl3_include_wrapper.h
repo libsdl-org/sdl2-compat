@@ -530,12 +530,12 @@
 #define SDL_RWtell IGNORE_THIS_VERSION_OF_SDL_RWtell
 #define SDL_RWwrite IGNORE_THIS_VERSION_OF_SDL_RWwrite
 #define SDL_RaiseWindow IGNORE_THIS_VERSION_OF_SDL_RaiseWindow
-#define SDL_ReadBE16 IGNORE_THIS_VERSION_OF_SDL_ReadBE16
-#define SDL_ReadBE32 IGNORE_THIS_VERSION_OF_SDL_ReadBE32
-#define SDL_ReadBE64 IGNORE_THIS_VERSION_OF_SDL_ReadBE64
-#define SDL_ReadLE16 IGNORE_THIS_VERSION_OF_SDL_ReadLE16
-#define SDL_ReadLE32 IGNORE_THIS_VERSION_OF_SDL_ReadLE32
-#define SDL_ReadLE64 IGNORE_THIS_VERSION_OF_SDL_ReadLE64
+#define SDL_ReadU16BE IGNORE_THIS_VERSION_OF_SDL_ReadU16BE
+#define SDL_ReadU32BE IGNORE_THIS_VERSION_OF_SDL_ReadU32BE
+#define SDL_ReadU64BE IGNORE_THIS_VERSION_OF_SDL_ReadU64BE
+#define SDL_ReadU16LE IGNORE_THIS_VERSION_OF_SDL_ReadU16LE
+#define SDL_ReadU32LE IGNORE_THIS_VERSION_OF_SDL_ReadU32LE
+#define SDL_ReadU64LE IGNORE_THIS_VERSION_OF_SDL_ReadU64LE
 #define SDL_ReadU8 IGNORE_THIS_VERSION_OF_SDL_ReadU8
 #define SDL_RegisterApp IGNORE_THIS_VERSION_OF_SDL_RegisterApp
 #define SDL_RegisterEvents IGNORE_THIS_VERSION_OF_SDL_RegisterEvents
@@ -701,12 +701,12 @@
 #define SDL_WinRTGetDeviceFamily IGNORE_THIS_VERSION_OF_SDL_WinRTGetDeviceFamily
 #define SDL_WinRTGetFSPathUNICODE IGNORE_THIS_VERSION_OF_SDL_WinRTGetFSPathUNICODE
 #define SDL_WinRTGetFSPathUTF8 IGNORE_THIS_VERSION_OF_SDL_WinRTGetFSPathUTF8
-#define SDL_WriteBE16 IGNORE_THIS_VERSION_OF_SDL_WriteBE16
-#define SDL_WriteBE32 IGNORE_THIS_VERSION_OF_SDL_WriteBE32
-#define SDL_WriteBE64 IGNORE_THIS_VERSION_OF_SDL_WriteBE64
-#define SDL_WriteLE16 IGNORE_THIS_VERSION_OF_SDL_WriteLE16
-#define SDL_WriteLE32 IGNORE_THIS_VERSION_OF_SDL_WriteLE32
-#define SDL_WriteLE64 IGNORE_THIS_VERSION_OF_SDL_WriteLE64
+#define SDL_WriteU16BE IGNORE_THIS_VERSION_OF_SDL_WriteU16BE
+#define SDL_WriteU32BE IGNORE_THIS_VERSION_OF_SDL_WriteU32BE
+#define SDL_WriteU64BE IGNORE_THIS_VERSION_OF_SDL_WriteU64BE
+#define SDL_WriteU16LE IGNORE_THIS_VERSION_OF_SDL_WriteU16LE
+#define SDL_WriteU32LE IGNORE_THIS_VERSION_OF_SDL_WriteU32LE
+#define SDL_WriteU64LE IGNORE_THIS_VERSION_OF_SDL_WriteU64LE
 #define SDL_WriteU8 IGNORE_THIS_VERSION_OF_SDL_WriteU8
 #define SDL_abs IGNORE_THIS_VERSION_OF_SDL_abs
 #define SDL_acos IGNORE_THIS_VERSION_OF_SDL_acos
@@ -913,6 +913,17 @@
 #define SDL_IsAudioDevicePaused IGNORE_THIS_VERSION_OF_SDL_IsAudioDevicePaused
 #define SDL_GetAudioStreamBinding IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamBinding
 #define SDL_ShowWindowSystemMenu IGNORE_THIS_VERSION_OF_SDL_ShowWindowSystemMenu
+#define SDL_ReadS16LE IGNORE_THIS_VERSION_OF_SDL_ReadS16LE
+#define SDL_ReadS16BE IGNORE_THIS_VERSION_OF_SDL_ReadS16BE
+#define SDL_ReadS32LE IGNORE_THIS_VERSION_OF_SDL_ReadS32LE
+#define SDL_ReadS32BE IGNORE_THIS_VERSION_OF_SDL_ReadS32BE
+#define SDL_ReadS64LE IGNORE_THIS_VERSION_OF_SDL_ReadS64LE
+#define SDL_ReadS64BE IGNORE_THIS_VERSION_OF_SDL_ReadS64BE
+#define SDL_WriteS16LE IGNORE_THIS_VERSION_OF_SDL_WriteS16LE
+#define SDL_WriteS16BE IGNORE_THIS_VERSION_OF_SDL_WriteS16BE
+#define SDL_WriteS32LE IGNORE_THIS_VERSION_OF_SDL_WriteS32LE
+#define SDL_WriteS32BE IGNORE_THIS_VERSION_OF_SDL_WriteS32BE
+#define SDL_WriteS64LE IGNORE_THIS_VERSION_OF_SDL_WriteS64LE
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
 #define SDL_DISABLE_OLD_NAMES 1
@@ -2948,28 +2959,28 @@
 #undef SDL_RaiseWindow
 #endif
 
-#ifdef SDL_ReadBE16
-#undef SDL_ReadBE16
+#ifdef SDL_ReadU16BE
+#undef SDL_ReadU16BE
 #endif
 
-#ifdef SDL_ReadBE32
-#undef SDL_ReadBE32
+#ifdef SDL_ReadU32BE
+#undef SDL_ReadU32BE
 #endif
 
-#ifdef SDL_ReadBE64
-#undef SDL_ReadBE64
+#ifdef SDL_ReadU64BE
+#undef SDL_ReadU64BE
 #endif
 
-#ifdef SDL_ReadLE16
-#undef SDL_ReadLE16
+#ifdef SDL_ReadU16LE
+#undef SDL_ReadU16LE
 #endif
 
-#ifdef SDL_ReadLE32
-#undef SDL_ReadLE32
+#ifdef SDL_ReadU32LE
+#undef SDL_ReadU32LE
 #endif
 
-#ifdef SDL_ReadLE64
-#undef SDL_ReadLE64
+#ifdef SDL_ReadU64LE
+#undef SDL_ReadU64LE
 #endif
 
 #ifdef SDL_ReadU8
@@ -3632,28 +3643,28 @@
 #undef SDL_WinRTGetFSPathUTF8
 #endif
 
-#ifdef SDL_WriteBE16
-#undef SDL_WriteBE16
+#ifdef SDL_WriteU16BE
+#undef SDL_WriteU16BE
 #endif
 
-#ifdef SDL_WriteBE32
-#undef SDL_WriteBE32
+#ifdef SDL_WriteU32BE
+#undef SDL_WriteU32BE
 #endif
 
-#ifdef SDL_WriteBE64
-#undef SDL_WriteBE64
+#ifdef SDL_WriteU64BE
+#undef SDL_WriteU64BE
 #endif
 
-#ifdef SDL_WriteLE16
-#undef SDL_WriteLE16
+#ifdef SDL_WriteU16LE
+#undef SDL_WriteU16LE
 #endif
 
-#ifdef SDL_WriteLE32
-#undef SDL_WriteLE32
+#ifdef SDL_WriteU32LE
+#undef SDL_WriteU32LE
 #endif
 
-#ifdef SDL_WriteLE64
-#undef SDL_WriteLE64
+#ifdef SDL_WriteU64LE
+#undef SDL_WriteU64LE
 #endif
 
 #ifdef SDL_WriteU8
@@ -4478,6 +4489,50 @@
 
 #ifdef SDL_ShowWindowSystemMenu
 #undef SDL_ShowWindowSystemMenu
+#endif
+
+#ifdef SDL_ReadS16LE
+#undef SDL_ReadS16LE
+#endif
+
+#ifdef SDL_ReadS16BE
+#undef SDL_ReadS16BE
+#endif
+
+#ifdef SDL_ReadS32LE
+#undef SDL_ReadS32LE
+#endif
+
+#ifdef SDL_ReadS32BE
+#undef SDL_ReadS32BE
+#endif
+
+#ifdef SDL_ReadS64LE
+#undef SDL_ReadS64LE
+#endif
+
+#ifdef SDL_ReadS64BE
+#undef SDL_ReadS64BE
+#endif
+
+#ifdef SDL_WriteS16LE
+#undef SDL_WriteS16LE
+#endif
+
+#ifdef SDL_WriteS16BE
+#undef SDL_WriteS16BE
+#endif
+
+#ifdef SDL_WriteS32LE
+#undef SDL_WriteS32LE
+#endif
+
+#ifdef SDL_WriteS32BE
+#undef SDL_WriteS32BE
+#endif
+
+#ifdef SDL_WriteS64LE
+#undef SDL_WriteS64LE
 #endif
 
 /* undefine these macros too: */
