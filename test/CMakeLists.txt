@@ -56,6 +56,12 @@ function(test_program NAME)
       ENVIRONMENT "SDL_AUDIODRIVER=dummy;SDL_VIDEODRIVER=dummy"
       TIMEOUT ${timeout}
     )
+    if(WIN32 AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.27")
+      set_property(TEST ${NAME} APPEND PROPERTY ENVIRONMENT_MODIFICATION "PATH=path_list_prepend:$<TARGET_RUNTIME_DLL_DIRS:${NAME}>")
+      if(TARGET SDL3::SDL3-shared)
+        set_property(TEST ${NAME} APPEND PROPERTY ENVIRONMENT_MODIFICATION "PATH=path_list_prepend:$<TARGET_FILE_DIR:SDL3::SDL3-shared>")
+      endif()
+    endif()
     if(SDL2COMPAT_INSTALL_TESTS)
       set(exe ${NAME})
       set(installedtestsdir "${CMAKE_INSTALL_FULL_LIBEXECDIR}/installed-tests/SDL2_compat")
