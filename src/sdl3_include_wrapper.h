@@ -4554,8 +4554,8 @@
 #undef SDL_InvalidParamError
 #endif
 
-#ifdef AtomicIncRef
-#undef AtomicIncRef
+#ifdef SDL_AtomicIncRef
+#undef SDL_AtomicIncRef
 #endif
 
 #ifdef SDL_AtomicDecRef
