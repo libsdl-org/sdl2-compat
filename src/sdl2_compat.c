@@ -2305,7 +2305,13 @@ SDL_CalculateGammaRamp(float gamma, Uint16 *ramp)
 DECLSPEC int SDLCALL
 SDL_GetWindowGammaRamp(SDL_Window *window, Uint16 *red, Uint16 *blue, Uint16 *green)
 {
-    Uint16 *buf = red ? red : (green ? green : blue);
+    Uint16 *buf;
+
+    if (!window) {
+        return SDL_SetError("Invalid window");
+    }
+
+    buf = red ? red : (green ? green : blue);
     if (buf) {
         SDL_CalculateGammaRamp(1.0f, buf);
         if (red && (red != buf)) {
