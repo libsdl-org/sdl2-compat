@@ -3693,7 +3693,7 @@ static SDL_AudioFormat ParseAudioFormat(const char *string)
 
 static int PrepareAudiospec(const SDL2_AudioSpec *orig2, SDL2_AudioSpec *prepared2)
 {
-    SDL3_copyp(prepared2, orig2);
+    SDL3_memcpy(prepared2, orig2, sizeof(*orig2));
 
     if (orig2->freq == 0) {
         static const int DEFAULT_FREQ = 22050;
