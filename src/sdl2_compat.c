@@ -5378,6 +5378,19 @@ SDL_SetCursor(SDL_Cursor * cursor)
     SDL3_SetCursor(cursor);
 }
 
+DECLSPEC const char *
+SDL_GetPixelFormatName(Uint32 format)
+{
+    switch (format) {
+    case SDL_PIXELFORMAT_XRGB8888:
+        return "SDL_PIXELFORMAT_RGB888";
+    case SDL_PIXELFORMAT_XBGR8888:
+        return "SDL_PIXELFORMAT_BGR888";
+    default:
+        return SDL3_GetPixelFormatName(format);
+    }
+}
+
 DECLSPEC void SDLCALL
 SDL_FreeFormat(SDL_PixelFormat *format)
 {
