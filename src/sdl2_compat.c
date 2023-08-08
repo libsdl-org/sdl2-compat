@@ -4583,7 +4583,17 @@ DECLSPEC int SDLCALL
 SDL_GetWindowDisplayMode(SDL_Window *window, SDL2_DisplayMode *mode)
 {
     /* returns a pointer to the fullscreen mode to use or NULL for desktop mode */
-    const SDL_DisplayMode *dp = SDL3_GetWindowFullscreenMode(window);
+    const SDL_DisplayMode *dp;
+
+    if (!window) {
+        return SDL_SetError("Invalid window");
+    }
+
+    if (!mode) {
+        return SDL3_InvalidParamError("mode");
+    }
+
+    dp = SDL3_GetWindowFullscreenMode(window);
     if (dp == NULL) {
         /* Desktop mode */
         /* FIXME: is this correct ? */
@@ -4592,9 +4602,7 @@ SDL_GetWindowDisplayMode(SDL_Window *window, SDL2_DisplayMode *mode)
             return -1;
         }
     }
-    if (mode) {
-        DisplayMode_3to2(dp, mode);
-    }
+    DisplayMode_3to2(dp, mode);
     return 0;
 }
 
