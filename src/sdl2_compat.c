@@ -4480,8 +4480,11 @@ SDL_GetNumDisplayModes(int displayIndex)
     int count = 0;
     const SDL_DisplayMode **list;
     list = SDL3_GetFullscreenDisplayModes(displayID, &count);
-    SDL3_free((void *)list);
-    return count;
+    if (list) {
+        SDL3_free(list);
+        return count;
+    }
+    return -1;
 }
 
 DECLSPEC int SDLCALL
