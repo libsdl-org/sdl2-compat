@@ -4280,7 +4280,7 @@ SDL_CloseAudioDevice(SDL_AudioDeviceID dev)
     if (stream2) {
         SDL3_CloseAudioDevice(SDL3_GetAudioStreamBinding(stream2->stream3));
         SDL_FreeAudioStream(stream2);
-        AudioOpenDevices[dev] = NULL;  /* this doesn't hold a lock in SDL2, either; the lock only prevents two racing opens from getting the same id. We can NULL it whenever, though. */
+        AudioOpenDevices[dev - 1] = NULL;  /* this doesn't hold a lock in SDL2, either; the lock only prevents two racing opens from getting the same id. We can NULL it whenever, though. */
     }
 }
 
