@@ -2249,6 +2249,9 @@ SDL_SetWindowBrightness(SDL_Window *window, float brightness)
 DECLSPEC float SDLCALL
 SDL_GetWindowBrightness(SDL_Window *window)
 {
+    if (!window) {
+        SDL_SetError("Invalid window");
+    }
     return 1.0f;
 }
 
