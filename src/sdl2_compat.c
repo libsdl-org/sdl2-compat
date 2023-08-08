@@ -4522,7 +4522,7 @@ SDL_GetNumDisplayModes(int displayIndex)
     const SDL_DisplayMode **list;
     list = SDL3_GetFullscreenDisplayModes(displayID, &count);
     if (list) {
-        SDL3_free(list);
+        SDL3_free((void*)list);
         return count;
     }
     return -1;
