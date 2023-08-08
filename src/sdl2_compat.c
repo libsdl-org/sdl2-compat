@@ -117,10 +117,13 @@ extern "C" {
 #include "sdl2_protos.h"
 
 
-/** Enable this to have warnings about wrong prototypes of src/sdl3_sym.h
+/** Define SDL2COMPAT_TEST_SYMS=1 to have warnings about wrong prototypes of src/sdl3_sym.h
  *  It won't compile but it helps to make sure it's sync'ed with SDL3 headers.
  */
-#if 0
+#ifndef SDL2COMPAT_TEST_SYMS
+#define SDL2COMPAT_TEST_SYMS 0
+#endif
+#if SDL2COMPAT_TEST_SYMS
 #define SDL3_SYM(rc,fn,params,args,ret) \
     typedef rc (SDLCALL *SDL3_##fn##_t) params; \
     static SDL3_##fn##_t SDL3_##fn = IGNORE_THIS_VERSION_OF_SDL_##fn;
