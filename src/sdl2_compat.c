@@ -2756,41 +2756,40 @@ GestureAddDollar_one(GestureTouch *inTouch, SDL_FPoint *path)
 {
     GestureDollarTemplate *dollarTemplate;
     GestureDollarTemplate *templ;
-    int index;
+    int idx;
 
-    index = inTouch->numDollarTemplates;
-    dollarTemplate = (GestureDollarTemplate *)SDL3_realloc(inTouch->dollarTemplate, (index + 1) * sizeof(GestureDollarTemplate));
+    idx = inTouch->numDollarTemplates;
+    dollarTemplate = (GestureDollarTemplate *)SDL3_realloc(inTouch->dollarTemplate, (idx + 1) * sizeof(GestureDollarTemplate));
     if (dollarTemplate == NULL) {
         return SDL3_OutOfMemory();
     }
     inTouch->dollarTemplate = dollarTemplate;
 
-    templ = &inTouch->dollarTemplate[index];
+    templ = &inTouch->dollarTemplate[idx];
     SDL3_memcpy(templ->path, path, GESTURE_DOLLARNPOINTS * sizeof(SDL_FPoint));
     templ->hash = GestureHashDollar(templ->path);
     inTouch->numDollarTemplates++;
 
-    return index;
+    return idx;
 }
 
 static int
 GestureAddDollar(GestureTouch *inTouch, SDL_FPoint *path)
 {
-    int index = -1;
-    int i = 0;
     if (inTouch == NULL) {
+        int i, idx;
         if (GestureNumTouches == 0) {
             return SDL3_SetError("no gesture touch devices registered");
         }
-        for (i = 0; i < GestureNumTouches; i++) {
+        for (i = 0, idx = -1; i < GestureNumTouches; i++) {
             inTouch = &GestureTouches[i];
-            index = GestureAddDollar_one(inTouch, path);
-            if (index < 0) {
+            idx = GestureAddDollar_one(inTouch, path);
+            if (idx < 0) {
                 return -1;
             }
         }
         /* Use the index of the last one added. */
-        return index;
+        return idx;
     }
     return GestureAddDollar_one(inTouch, path);
 }
@@ -3081,7 +3080,7 @@ static void
 GestureProcessEvent(const SDL_Event *event3)
 {
     float x, y;
-    int i, index;
+    int i, idx;
     float pathDx, pathDy;
     SDL_FPoint lastP;
     SDL_FPoint lastCentroid;
@@ -3113,16 +3112,16 @@ GestureProcessEvent(const SDL_Event *event3)
                 GestureDollarNormalize(&inTouch->dollarPath, path, SDL_TRUE);
                 /* PrintPath(path); */
                 if (GestureRecordAll) {
-                    index = GestureAddDollar(NULL, path);
+                    idx = GestureAddDollar(NULL, path);
                     for (i = 0; i < GestureNumTouches; i++) {
                         GestureTouches[i].recording = SDL_FALSE;
                     }
                 } else {
-                    index = GestureAddDollar(inTouch, path);
+                    idx = GestureAddDollar(inTouch, path);
                 }
 
-                if (index >= 0) {
-                    GestureSendDollarRecord(inTouch, inTouch->dollarTemplate[index].hash);
+                if (idx >= 0) {
+                    GestureSendDollarRecord(inTouch, inTouch->dollarTemplate[idx].hash);
                 } else {
                     GestureSendDollarRecord(inTouch, -1);
                 }
@@ -3230,9 +3229,9 @@ GestureProcessEvent(const SDL_Event *event3)
 
 
 DECLSPEC int SDLCALL
-SDL_GetRenderDriverInfo(int index, SDL_RendererInfo *info)
+SDL_GetRenderDriverInfo(int idx, SDL_RendererInfo *info)
 {
-    const char *name = SDL3_GetRenderDriver(index);
+    const char *name = SDL3_GetRenderDriver(idx);
     if (!name) {
         return -1;  /* assume SDL3_GetRenderDriver set the SDL error. */
     }
@@ -3297,13 +3296,13 @@ SDL_GetRenderDriverInfo(int index, SDL_RendererInfo *info)
 
 /* Second parameter changed from an index to a string in SDL3. */
 DECLSPEC SDL_Renderer *SDLCALL
-SDL_CreateRenderer(SDL_Window *window, int index, Uint32 flags)
+SDL_CreateRenderer(SDL_Window *window, int idx, Uint32 flags)
 {
     SDL_Renderer *renderer = NULL;
     const char *name = NULL;
     int want_targettexture = flags & SDL2_RENDERER_TARGETTEXTURE;
-    if (index != -1) {
-        name = SDL3_GetRenderDriver(index);
+    if (idx != -1) {
+        name = SDL3_GetRenderDriver(idx);
         if (!name) {
             return NULL;  /* assume SDL3_GetRenderDriver set the SDL error. */
         }
@@ -3580,7 +3579,7 @@ SDL_GetNumAudioDevices(int iscapture)
 }
 
 DECLSPEC const char * SDLCALL
-SDL_GetAudioDeviceName(int index, int iscapture)
+SDL_GetAudioDeviceName(int idx, int iscapture)
 {
     const char *retval = NULL;
     AudioDeviceList *list;
@@ -3592,10 +3591,10 @@ SDL_GetAudioDeviceName(int index, int iscapture)
 
     SDL3_LockMutex(AudioDeviceLock);
     list = iscapture ? &AudioSDL3CaptureDevices : &AudioSDL3OutputDevices;
-    if ((index < 0) || (index >= list->num_devices)) {
+    if ((idx < 0) || (idx >= list->num_devices)) {
         SDL3_InvalidParamError("index");
     } else {
-        retval = list->devices[index].name;
+        retval = list->devices[idx].name;
     }
     SDL3_UnlockMutex(AudioDeviceLock);
 
@@ -3603,7 +3602,7 @@ SDL_GetAudioDeviceName(int index, int iscapture)
 }
 
 DECLSPEC int SDLCALL
-SDL_GetAudioDeviceSpec(int index, int iscapture, SDL2_AudioSpec *spec2)
+SDL_GetAudioDeviceSpec(int idx, int iscapture, SDL2_AudioSpec *spec2)
 {
     AudioDeviceList *list;
     SDL_AudioSpec spec3;
@@ -3617,10 +3616,10 @@ SDL_GetAudioDeviceSpec(int index, int iscapture, SDL2_AudioSpec *spec2)
 
     SDL3_LockMutex(AudioDeviceLock);
     list = iscapture ? &AudioSDL3CaptureDevices : &AudioSDL3OutputDevices;
-    if ((index < 0) || (index >= list->num_devices)) {
+    if ((idx < 0) || (idx >= list->num_devices)) {
         SDL3_InvalidParamError("index");
     } else {
-        retval = SDL3_GetAudioDeviceFormat(list->devices[index].devid, &spec3);
+        retval = SDL3_GetAudioDeviceFormat(list->devices[idx].devid, &spec3);
     }
     SDL3_UnlockMutex(AudioDeviceLock);
 
@@ -3808,7 +3807,7 @@ static void SDLCALL SDL2AudioDeviceCallbackBridge(SDL_AudioStream *stream3, int 
     SDL3_free(buffer);
 }
 
-static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devname, int iscapture,
+static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devicename, int iscapture,
                                                const SDL2_AudioSpec *desired2, SDL2_AudioSpec *obtained2,
                                                int allowed_changes, int min_id)
 {
@@ -3838,18 +3837,18 @@ static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devname, int iscaptur
     }
 
     /* If app doesn't care about a specific device, let the user override. */
-    if (devname == NULL) {
-        devname = SDL3_getenv("SDL_AUDIO_DEVICE_NAME");
+    if (devicename == NULL) {
+        devicename = SDL3_getenv("SDL_AUDIO_DEVICE_NAME");
     }
 
-    if (devname == NULL) {
+    if (devicename == NULL) {
         device3 = iscapture ? SDL_AUDIO_DEVICE_DEFAULT_CAPTURE : SDL_AUDIO_DEVICE_DEFAULT_OUTPUT;
     } else {
         AudioDeviceList *list = iscapture ? &AudioSDL3CaptureDevices : &AudioSDL3OutputDevices;
         const int total = list->num_devices;
         int i;
         for (i = 0; i < total; i++) {
-            if (SDL3_strcmp(list->devices[i].name, devname) == 0) {
+            if (SDL3_strcmp(list->devices[i].name, devicename) == 0) {
                 device3 = list->devices[i].devid;
                 break;
             }
@@ -3935,7 +3934,7 @@ static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devname, int iscaptur
     return id + 1;
 }
 
-static SDL_AudioDeviceID OpenAudioDevice(const char *devname, int iscapture,
+static SDL_AudioDeviceID OpenAudioDevice(const char *devicename, int iscapture,
                                          const SDL2_AudioSpec *desired2, SDL2_AudioSpec *obtained2,
                                          int allowed_changes, int min_id)
 {
@@ -3952,7 +3951,7 @@ static SDL_AudioDeviceID OpenAudioDevice(const char *devname, int iscapture,
     }
 
     SDL3_LockMutex(AudioDeviceLock);
-    retval = OpenAudioDeviceLocked(devname, iscapture, desired2, obtained2, allowed_changes, min_id);
+    retval = OpenAudioDeviceLocked(devicename, iscapture, desired2, obtained2, allowed_changes, min_id);
     SDL3_UnlockMutex(AudioDeviceLock);
 
     return retval;
@@ -6303,8 +6302,8 @@ SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
             cvt->len_mult *= mult;
             cvt->len_ratio *= mult;
         } else {
-            const int div = (src_rate / dst_rate);
-            cvt->len_ratio /= div;
+            const int divisor = (src_rate / dst_rate);
+            cvt->len_ratio /= divisor;
         }
 
         if (src_channels < dst_channels) {
