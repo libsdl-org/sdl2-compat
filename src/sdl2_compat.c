@@ -4389,9 +4389,9 @@ DisplayMode_3to2(const SDL_DisplayMode *in, SDL2_DisplayMode *out) {
 static SDL_DisplayID
 Display_IndexToID(int displayIndex)
 {
-    SDL_DisplayID displayID = 0;
+    SDL_DisplayID displayID;
     int count = 0;
-    SDL_DisplayID *list = NULL;
+    SDL_DisplayID *list;
 
     list = SDL3_GetDisplays(&count);
 
@@ -4416,7 +4416,7 @@ DECLSPEC int SDLCALL
 SDL_GetNumVideoDisplays(void)
 {
     int count = 0;
-    SDL_DisplayID *list = NULL;
+    SDL_DisplayID *list;
     list = SDL3_GetDisplays(&count);
     SDL3_free(list);
     return count;
@@ -4448,7 +4448,7 @@ Display_IDToIndex(SDL_DisplayID displayID)
 {
     int displayIndex = 0;
     int count = 0, i;
-    SDL_DisplayID *list = NULL;
+    SDL_DisplayID *list;
 
     if (displayID == 0) {
         SDL3_SetError("invalid displayID");
