@@ -1812,14 +1812,20 @@ RWops3to2_seek(SDL2_RWops *rwops2, Sint64 offset, int whence)
 static size_t SDLCALL
 RWops3to2_read(SDL2_RWops *rwops2, void *ptr, size_t size, size_t maxnum)
 {
-    size_t count = SDL3_RWread(rwops2->hidden.sdl3.rwops, ptr, (size * maxnum)) / size;
+    size_t count = 0;
+    if (size > 0 && maxnum > 0) {
+        count = SDL3_RWread(rwops2->hidden.sdl3.rwops, ptr, (size * maxnum)) / size;
+    }
     return count;
 }
 
 static size_t SDLCALL
 RWops3to2_write(SDL2_RWops *rwops2, const void *ptr, size_t size, size_t maxnum)
 {
-    size_t count = SDL3_RWwrite(rwops2->hidden.sdl3.rwops, ptr, (size * maxnum)) / size;
+    size_t count = 0;
+    if (size > 0 && maxnum > 0) {
+        count = SDL3_RWwrite(rwops2->hidden.sdl3.rwops, ptr, (size * maxnum)) / size;
+    }
     return count;
 }
 
