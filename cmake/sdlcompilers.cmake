@@ -54,11 +54,6 @@ function(SDL_AddCommonCompilerFlags TARGET)
       target_compile_options(${TARGET} PRIVATE "-Wundef")
     endif()
 
-    check_c_compiler_flag(-fno-strict-aliasing HAVE_GCC_NO_STRICT_ALIASING)
-    if(HAVE_GCC_NO_STRICT_ALIASING)
-      target_compile_options(${TARGET} PRIVATE "-fno-strict-aliasing")
-    endif()
-
     check_c_compiler_flag(-Wdocumentation HAVE_GCC_WDOCUMENTATION)
     if(HAVE_GCC_WDOCUMENTATION)
       if(ARGS_WERROR)
