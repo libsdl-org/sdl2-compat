@@ -112,21 +112,13 @@ jobs:
       run: |
         cmake --build build/ --target package
     - name: Run build-time tests (CMake)
-      if: ${{ false && !matrix.platform.cross }} # FIXME: enable build-time tests on CI
+      if: ${{ !matrix.platform.cross }}
       run: |
-        #FIXME: do this in libsdl-org/setup-sdl (by adding it to .bashrc)? Or move to separate ci step?
-        sdl_binpath="${{ steps.sdl.outputs.prefix }}/bin"
-        if [ "x${{ runner.os }}" = "xWindows" ]; then
-          sdl_binpath="$( cygpath -u "$sdl_binpath" )"
-        fi
-        echo "sdl_binpath=$sdl_binpath"
-        export PATH="$sdl_binpath:$PATH"
-        export LD_LIBRARY_PATH="$PWD:$LD_LIBRARY_PATH"
-
         set -eu
         export SDL_TESTS_QUICK=1
         ctest -VV --test-dir build/
-    - name: Run build tests (CMake)
+    - name: Run compile tests (CMake)
+      if: ${{ always() }}
       run: |
         cmake --build build/ --verbose --target sdl2compat-build-tests
     - name: Check that versioning is consistent
