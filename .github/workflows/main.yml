@@ -79,6 +79,9 @@ jobs:
         set -eu
         export SDL_TESTS_QUICK=1
         ctest -VV --test-dir build/
+    - name: Run build tests (CMake)
+      run: |
+        cmake --build build/ --verbose --target sdl2compat-build-tests
     - name: Check that versioning is consistent
       # We only need to run this once: arbitrarily use the Linux build
       if: ${{ runner.os == 'Linux' }}
