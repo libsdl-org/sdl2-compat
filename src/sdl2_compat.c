@@ -5371,12 +5371,36 @@ SDL_SetWindowSize(SDL_Window *window, int w, int h)
 DECLSPEC void SDLCALL
 SDL_SetWindowMinimumSize(SDL_Window *window, int min_w, int min_h)
 {
+    if (!window) {
+        SDL_SetError("Invalid window");
+        return;
+    }
+    if (min_w <= 0) {
+        SDL3_InvalidParamError("min_w");
+        return;
+    }
+    if (min_h <= 0) {
+        SDL3_InvalidParamError("min_h");
+        return;
+    }
     SDL3_SetWindowMinimumSize(window, min_w, min_h);
 }
 
 DECLSPEC void SDLCALL
 SDL_SetWindowMaximumSize(SDL_Window *window, int max_w, int max_h)
 {
+    if (!window) {
+        SDL_SetError("Invalid window");
+        return;
+    }
+    if (max_w <= 0) {
+        SDL3_InvalidParamError("max_w");
+        return;
+    }
+    if (max_h <= 0) {
+        SDL3_InvalidParamError("max_h");
+        return;
+    }
     SDL3_SetWindowMaximumSize(window, max_w, max_h);
 }
 
