@@ -3792,6 +3792,10 @@ static void SDLCALL SDL2AudioDeviceQueueingCallback(SDL_AudioStream *stream3, in
     SDL_assert(stream3 == stream2->stream3);
     SDL_assert(stream2->dataqueue3 != NULL);
 
+    if (approx_request == 0) {
+        return;  /* nothing to do right now. */
+    }
+
     buffer = (Uint8 *) SDL3_malloc(approx_request);
     if (!buffer) {
         return;  /* oh well */
@@ -3816,6 +3820,10 @@ static void SDLCALL SDL2AudioDeviceCallbackBridge(SDL_AudioStream *stream3, int 
 {
     SDL2_AudioStream *stream2 = (SDL2_AudioStream *) userdata;
     Uint8 *buffer;
+
+    if (approx_request == 0) {
+        return;  /* nothing to do right now. */
+    }
 
     SDL_assert(stream2 != NULL);
     SDL_assert(stream3 == stream2->stream3);
@@ -4275,6 +4283,7 @@ SDL_PauseAudioDevice(SDL_AudioDeviceID dev, int pause_on)
     SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
     if (stream2) {
         const SDL_AudioDeviceID device3 = SDL3_GetAudioStreamBinding(stream2->stream3);
+        SDL3_ClearAudioStream(stream2->stream3);
         if (device3) {
             if (pause_on) {
                 SDL3_PauseAudioDevice(device3);
