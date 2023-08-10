@@ -163,6 +163,12 @@ if(APPLE)
   endif()
 endif()
 
+if(WINDOWS_STORE)
+  list(APPEND SDL2COMPAT_SRCS
+    "src/sdl2_compat_winrt.cpp"
+  )
+endif()
+
 if(WIN32)
   list(APPEND SDL2COMPAT_SRCS
     "src/version.rc"
@@ -279,7 +285,10 @@ if(MINGW)
     endif()
   endif()
 endif()
-if(MSVC)
+if(WINDOWS_STORE)
+  set_target_properties(SDL2 PROPERTIES DEFINE_SYMBOL "SDL_BUILDING_WINRT=1")
+  target_compile_options(SDL2 PRIVATE "-ZW")
+elseif(MSVC)
   # Don't try to link with the default set of libraries.
   target_compile_options(SDL2 PRIVATE /GS-)
   if(SDL_CPU_X86)  # don't emit SSE2 in x86 builds

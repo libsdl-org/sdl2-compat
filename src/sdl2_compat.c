@@ -217,10 +217,15 @@ SDL2COMPAT_itoa(char *dst, int val)
 /* FIXME: Updated library names after https://github.com/libsdl-org/SDL/issues/5626 solidifies.  */
 static char loaderror[256];
 #if defined(_WIN32)
-    #define DIRSEP "\\"
-    #define SDL3_LIBNAME "SDL3.dll"
     static HMODULE Loaded_SDL3 = NULL;
+    #define DIRSEP "\\"
+    #ifdef SDL_BUILDING_WINRT
+    #define SDL3_LIBNAME L"SDL3.dll"
+    #define LoadSDL3Library() ((Loaded_SDL3 = LoadPackagedLibrary(SDL3_LIBNAME,0)) != NULL)
+    #else
+    #define SDL3_LIBNAME "SDL3.dll"
     #define LoadSDL3Library() ((Loaded_SDL3 = LoadLibraryA(SDL3_LIBNAME)) != NULL)
+    #endif
     #define LookupSDL3Sym(sym) (void *)GetProcAddress(Loaded_SDL3, sym)
     #define CloseSDL3Library() { if (Loaded_SDL3) { FreeLibrary(Loaded_SDL3); Loaded_SDL3 = NULL; } }
 #elif defined(__APPLE__)
@@ -587,6 +592,7 @@ LoadSDL3(void)
     return okay;
 }
 
+#ifndef SDL_BUILDING_WINRT
 #if defined(_MSC_VER) && defined(_M_IX86)
 #include "x86_msvc.h"
 #endif
@@ -617,8 +623,11 @@ void *memset(void *dst, int c, size_t len)
     return SDL3_memset(dst, c, len);
 }
 #endif
+#endif  /* ! WINRT */
 
-#if defined(_WIN32)
+#ifdef SDL_BUILDING_WINRT
+EXTERN_C void error_dialog(const char *errorMsg);
+#elif defined(_WIN32)
 static void error_dialog(const char *errorMsg)
 {
     MessageBoxA(NULL, errorMsg, "Error", MB_OK | MB_SETFOREGROUND | MB_ICONSTOP);
