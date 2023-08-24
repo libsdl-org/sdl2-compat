@@ -924,6 +924,7 @@
 #define SDL_WriteS32LE IGNORE_THIS_VERSION_OF_SDL_WriteS32LE
 #define SDL_WriteS32BE IGNORE_THIS_VERSION_OF_SDL_WriteS32BE
 #define SDL_WriteS64LE IGNORE_THIS_VERSION_OF_SDL_WriteS64LE
+#define SDL_WriteS64BE IGNORE_THIS_VERSION_OF_SDL_WriteS64BE
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
 #define SDL_DISABLE_OLD_NAMES 1
@@ -4533,6 +4534,10 @@
 
 #ifdef SDL_WriteS64LE
 #undef SDL_WriteS64LE
+#endif
+
+#ifdef SDL_WriteS64BE
+#undef SDL_WriteS64BE
 #endif
 
 /* undefine these macros too: */
