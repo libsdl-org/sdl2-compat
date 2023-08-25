@@ -963,6 +963,9 @@ SDL2_PROTO(void,GDKSuspendComplete,(void))
 #endif
 SDL2_PROTO(SDL_bool,HasWindowSurface,(SDL_Window *a))
 SDL2_PROTO(int,DestroyWindowSurface,(SDL_Window *a))
+#if defined(__GDK__)
+SDL2_PROTO(int,GDKGetDefaultUser,(XUserHandle *a))
+#endif
 
 #undef SDL2_PROTO
 

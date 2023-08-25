@@ -908,6 +908,9 @@ SDL3_SYM(int,PauseAudioDevice,(SDL_AudioDeviceID a),(a),return)
 SDL3_SYM(int,ResumeAudioDevice,(SDL_AudioDeviceID a),(a),return)
 SDL3_SYM(SDL_bool,IsAudioDevicePaused,(SDL_AudioDeviceID a),(a),return)
 SDL3_SYM(SDL_AudioDeviceID,GetAudioStreamBinding,(SDL_AudioStream *a),(a),return)
+#if defined(__GDK__)
+SDL3_SYM_PASSTHROUGH(int,GDKGetDefaultUser,(XUserHandle *a),(a),return)
+#endif
 
 #undef SDL3_SYM
 #undef SDL3_SYM_PASSTHROUGH

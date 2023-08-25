@@ -925,18 +925,20 @@
 #define SDL_WriteS32BE IGNORE_THIS_VERSION_OF_SDL_WriteS32BE
 #define SDL_WriteS64LE IGNORE_THIS_VERSION_OF_SDL_WriteS64LE
 #define SDL_WriteS64BE IGNORE_THIS_VERSION_OF_SDL_WriteS64BE
+#define SDL_GDKGetDefaultUser IGNORE_THIS_VERSION_OF_SDL_GDKGetDefaultUser
+
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
 #define SDL_DISABLE_OLD_NAMES 1
 #define __BUILDING_SDL2_COMPAT__ 1
-#include <SDL3/SDL.h>
-#define SDL_MAIN_HANDLED 1
-#include <SDL3/SDL_main.h>
 
+#include <SDL3/SDL.h>
 #if !SDL_VERSION_ATLEAST(3,0,0)
 #error You need to compile against SDL >= 3.0.0 headers.
 #endif
 
+#define SDL_MAIN_HANDLED 1
+#include <SDL3/SDL_main.h>
 #include <SDL3/SDL_syswm.h>
 #include <SDL3/SDL_vulkan.h>
 
@@ -951,6 +953,7 @@
 #undef CreateSemaphore
 #undef CreateMutex
 #endif  /* _WIN32 */
+
 
 #ifdef SDL_AddEventWatch
 #undef SDL_AddEventWatch
@@ -4538,6 +4541,10 @@
 
 #ifdef SDL_WriteS64BE
 #undef SDL_WriteS64BE
+#endif
+
+#ifdef SDL_GDKGetDefaultUser
+#undef SDL_GDKGetDefaultUser
 #endif
 
 /* undefine these macros too: */
