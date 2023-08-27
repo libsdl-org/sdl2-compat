@@ -3792,7 +3792,7 @@ static int PrepareAudiospec(const SDL2_AudioSpec *orig2, SDL2_AudioSpec *prepare
     return 1;
 }
 
-static void SDLCALL SDL2AudioDeviceQueueingCallback(SDL_AudioStream *stream3, int approx_request, void *userdata)
+static void SDLCALL SDL2AudioDeviceQueueingCallback(void *userdata, SDL_AudioStream *stream3, int approx_amount)
 {
     SDL2_AudioStream *stream2 = (SDL2_AudioStream *) userdata;
     Uint8 *buffer;
@@ -3801,22 +3801,22 @@ static void SDLCALL SDL2AudioDeviceQueueingCallback(SDL_AudioStream *stream3, in
     SDL_assert(stream3 == stream2->stream3);
     SDL_assert(stream2->dataqueue3 != NULL);
 
-    if (approx_request == 0) {
+    if (approx_amount == 0) {
         return;  /* nothing to do right now. */
     }
 
-    buffer = (Uint8 *) SDL3_malloc(approx_request);
+    buffer = (Uint8 *) SDL3_malloc(approx_amount);
     if (!buffer) {
         return;  /* oh well */
     }
 
     if (stream2->iscapture) {
-        const int br = SDL_AudioStreamGet(stream2, buffer, approx_request);
+        const int br = SDL_AudioStreamGet(stream2, buffer, approx_amount);
         if (br > 0) {
             SDL3_PutAudioStreamData(stream2->dataqueue3, buffer, br);
         }
     } else {
-        const int br = SDL3_GetAudioStreamData(stream2->dataqueue3, buffer, approx_request);
+        const int br = SDL3_GetAudioStreamData(stream2->dataqueue3, buffer, approx_amount);
         if (br > 0) {
             SDL_AudioStreamPut(stream2, buffer, br);
         }
@@ -3825,12 +3825,12 @@ static void SDLCALL SDL2AudioDeviceQueueingCallback(SDL_AudioStream *stream3, in
     SDL3_free(buffer);
 }
 
-static void SDLCALL SDL2AudioDeviceCallbackBridge(SDL_AudioStream *stream3, int approx_request, void *userdata)
+static void SDLCALL SDL2AudioDeviceCallbackBridge(void *userdata, SDL_AudioStream *stream3, int approx_amount)
 {
     SDL2_AudioStream *stream2 = (SDL2_AudioStream *) userdata;
     Uint8 *buffer;
 
-    if (approx_request == 0) {
+    if (approx_amount == 0) {
         return;  /* nothing to do right now. */
     }
 
@@ -3838,17 +3838,17 @@ static void SDLCALL SDL2AudioDeviceCallbackBridge(SDL_AudioStream *stream3, int 
     SDL_assert(stream3 == stream2->stream3);
     SDL_assert(stream2->dataqueue3 == NULL);
 
-    buffer = (Uint8 *) SDL3_malloc(approx_request);
+    buffer = (Uint8 *) SDL3_malloc(approx_amount);
     if (!buffer) {
         return;  /* oh well */
     }
 
     if (stream2->iscapture) {
-        const int br = SDL_AudioStreamGet(stream2, buffer, approx_request);
+        const int br = SDL_AudioStreamGet(stream2, buffer, approx_amount);
         stream2->callback2(stream2->callback2_userdata, buffer, br);
     } else {
-        stream2->callback2(stream2->callback2_userdata, buffer, approx_request);
-        SDL_AudioStreamPut(stream2, buffer, approx_request);
+        stream2->callback2(stream2->callback2_userdata, buffer, approx_amount);
+        SDL_AudioStreamPut(stream2, buffer, approx_amount);
     }
 
     SDL3_free(buffer);

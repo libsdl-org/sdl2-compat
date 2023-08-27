@@ -811,7 +811,7 @@ SDL3_SYM_PASSTHROUGH(ID3D12Device*,RenderGetD3D12Device,(SDL_Renderer *a),(a),re
 #endif
 SDL3_SYM_PASSTHROUGH(size_t,utf8strnlen,(const char *a, size_t b),(a,b),return)
 
-#if defined(__GDK__)
+#ifdef __GDK__
 SDL3_SYM_PASSTHROUGH(int,GDKGetTaskQueue,(XTaskQueueHandle *a),(a),return)
 #endif
 SDL3_SYM_PASSTHROUGH(void,GetOriginalMemoryFunctions,(SDL_malloc_func *a, SDL_calloc_func *b, SDL_realloc_func *c, SDL_free_func *d),(a,b,c,d),)
@@ -890,8 +890,8 @@ SDL3_SYM(int,FlushAudioStream,(SDL_AudioStream *a),(a),return)
 SDL3_SYM(int,ClearAudioStream,(SDL_AudioStream *a),(a),return)
 SDL3_SYM(int,LockAudioStream,(SDL_AudioStream *a),(a),return)
 SDL3_SYM(int,UnlockAudioStream,(SDL_AudioStream *a),(a),return)
-SDL3_SYM(int,SetAudioStreamGetCallback,(SDL_AudioStream *a, SDL_AudioStreamRequestCallback b, void *c),(a,b,c),return)
-SDL3_SYM(int,SetAudioStreamPutCallback,(SDL_AudioStream *a, SDL_AudioStreamRequestCallback b, void *c),(a,b,c),return)
+SDL3_SYM(int,SetAudioStreamGetCallback,(SDL_AudioStream *a, SDL_AudioStreamCallback b, void *c),(a,b,c),return)
+SDL3_SYM(int,SetAudioStreamPutCallback,(SDL_AudioStream *a, SDL_AudioStreamCallback b, void *c),(a,b,c),return)
 SDL3_SYM(void,DestroyAudioStream,(SDL_AudioStream *a),(a),)
 SDL3_SYM(int,LoadWAV_RW,(SDL_RWops *a, SDL_bool b, SDL_AudioSpec *c, Uint8 **d, Uint32 *e),(a,b,c,d,e),return)
 SDL3_SYM(int,MixAudioFormat,(Uint8 *a, const Uint8 *b, SDL_AudioFormat c, Uint32 d, int e),(a,b,c,d,e),return)
@@ -900,7 +900,7 @@ SDL3_SYM(int,PauseAudioDevice,(SDL_AudioDeviceID a),(a),return)
 SDL3_SYM(int,ResumeAudioDevice,(SDL_AudioDeviceID a),(a),return)
 SDL3_SYM(SDL_bool,IsAudioDevicePaused,(SDL_AudioDeviceID a),(a),return)
 SDL3_SYM(SDL_AudioDeviceID,GetAudioStreamDevice,(SDL_AudioStream *a),(a),return)
-#if defined(__GDK__)
+#ifdef __GDK__
 SDL3_SYM_PASSTHROUGH(int,GDKGetDefaultUser,(XUserHandle *a),(a),return)
 #endif
 
