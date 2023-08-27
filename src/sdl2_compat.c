@@ -4291,7 +4291,7 @@ SDL_PauseAudioDevice(SDL_AudioDeviceID dev, int pause_on)
 {
     SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
     if (stream2) {
-        const SDL_AudioDeviceID device3 = SDL3_GetAudioStreamBinding(stream2->stream3);
+        const SDL_AudioDeviceID device3 = SDL3_GetAudioStreamDevice(stream2->stream3);
         SDL3_ClearAudioStream(stream2->stream3);
         if (device3) {
             if (pause_on) {
@@ -4309,7 +4309,7 @@ SDL_GetAudioDeviceStatus(SDL_AudioDeviceID dev)
     SDL2_AudioStatus retval = SDL2_AUDIO_STOPPED;
     SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
     if (stream2) {
-        const SDL_AudioDeviceID device3 = SDL3_GetAudioStreamBinding(stream2->stream3);
+        const SDL_AudioDeviceID device3 = SDL3_GetAudioStreamDevice(stream2->stream3);
         if (device3) {
             retval = SDL3_IsAudioDevicePaused(device3) ? SDL2_AUDIO_PAUSED : SDL2_AUDIO_PLAYING;
         }
@@ -4340,7 +4340,7 @@ SDL_CloseAudioDevice(SDL_AudioDeviceID dev)
 {
     SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
     if (stream2) {
-        SDL3_CloseAudioDevice(SDL3_GetAudioStreamBinding(stream2->stream3));
+        SDL3_CloseAudioDevice(SDL3_GetAudioStreamDevice(stream2->stream3));
         SDL_FreeAudioStream(stream2);
         AudioOpenDevices[dev - 1] = NULL;  /* this doesn't hold a lock in SDL2, either; the lock only prevents two racing opens from getting the same id. We can NULL it whenever, though. */
     }

@@ -901,7 +901,7 @@
 #define SDL_SetAudioStreamGetCallback IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamGetCallback
 #define SDL_SetAudioStreamPutCallback IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamPutCallback
 #define SDL_DestroyAudioStream IGNORE_THIS_VERSION_OF_SDL_DestroyAudioStream
-#define SDL_CreateAndBindAudioStream IGNORE_THIS_VERSION_OF_SDL_CreateAndBindAudioStream
+#define SDL_OpenAudioDeviceStream IGNORE_THIS_VERSION_OF_SDL_OpenAudioDeviceStream
 #define SDL_LoadWAV_RW IGNORE_THIS_VERSION_OF_SDL_LoadWAV_RW
 #define SDL_LoadWAV IGNORE_THIS_VERSION_OF_SDL_LoadWAV
 #define SDL_MixAudioFormat IGNORE_THIS_VERSION_OF_SDL_MixAudioFormat
@@ -911,7 +911,7 @@
 #define SDL_PauseAudioDevice IGNORE_THIS_VERSION_OF_SDL_PauseAudioDevice
 #define SDL_ResumeAudioDevice IGNORE_THIS_VERSION_OF_SDL_ResumeAudioDevice
 #define SDL_IsAudioDevicePaused IGNORE_THIS_VERSION_OF_SDL_IsAudioDevicePaused
-#define SDL_GetAudioStreamBinding IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamBinding
+#define SDL_GetAudioStreamDevice IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamDevice
 #define SDL_ShowWindowSystemMenu IGNORE_THIS_VERSION_OF_SDL_ShowWindowSystemMenu
 #define SDL_ReadS16LE IGNORE_THIS_VERSION_OF_SDL_ReadS16LE
 #define SDL_ReadS16BE IGNORE_THIS_VERSION_OF_SDL_ReadS16BE
@@ -4447,8 +4447,8 @@
 #undef SDL_DestroyAudioStream
 #endif
 
-#ifdef SDL_CreateAndBindAudioStream
-#undef SDL_CreateAndBindAudioStream
+#ifdef SDL_OpenAudioDeviceStream
+#undef SDL_OpenAudioDeviceStream
 #endif
 
 #ifdef SDL_LoadWAV_RW
@@ -4487,8 +4487,8 @@
 #undef SDL_IsAudioDevicePaused
 #endif
 
-#ifdef SDL_GetAudioStreamBinding
-#undef SDL_GetAudioStreamBinding
+#ifdef SDL_GetAudioStreamDevice
+#undef SDL_GetAudioStreamDevice
 #endif
 
 #ifdef SDL_ShowWindowSystemMenu
