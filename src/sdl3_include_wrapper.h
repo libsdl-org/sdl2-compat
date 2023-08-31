@@ -926,6 +926,7 @@
 #define SDL_WriteS64LE IGNORE_THIS_VERSION_OF_SDL_WriteS64LE
 #define SDL_WriteS64BE IGNORE_THIS_VERSION_OF_SDL_WriteS64BE
 #define SDL_GDKGetDefaultUser IGNORE_THIS_VERSION_OF_SDL_GDKGetDefaultUser
+#define SDL_SetWindowFocusable IGNORE_THIS_VERSION_OF_SDL_SetWindowFocusable
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -4545,6 +4546,10 @@
 
 #ifdef SDL_GDKGetDefaultUser
 #undef SDL_GDKGetDefaultUser
+#endif
+
+#ifdef SDL_SetWindowFocusable
+#undef SDL_SetWindowFocusable
 #endif
 
 /* undefine these macros too: */
