@@ -927,6 +927,8 @@
 #define SDL_WriteS64BE IGNORE_THIS_VERSION_OF_SDL_WriteS64BE
 #define SDL_GDKGetDefaultUser IGNORE_THIS_VERSION_OF_SDL_GDKGetDefaultUser
 #define SDL_SetWindowFocusable IGNORE_THIS_VERSION_OF_SDL_SetWindowFocusable
+#define SDL_GetAudioStreamFrequencyRatio IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamFrequencyRatio
+#define SDL_SetAudioStreamFrequencyRatio IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamFrequencyRatio
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -4550,6 +4552,14 @@
 
 #ifdef SDL_SetWindowFocusable
 #undef SDL_SetWindowFocusable
+#endif
+
+#ifdef SDL_GetAudioStreamFrequencyRatio
+#undef SDL_GetAudioStreamFrequencyRatio
+#endif
+
+#ifdef SDL_SetAudioStreamFrequencyRatio
+#undef SDL_SetAudioStreamFrequencyRatio
 #endif
 
 /* undefine these macros too: */
