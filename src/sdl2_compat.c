@@ -3705,28 +3705,26 @@ SDL_GetDefaultAudioInfo(char **name, SDL2_AudioSpec *spec2, int iscapture)
 static SDL_AudioFormat ParseAudioFormat(const char *string)
 {
 #define CHECK_FMT_STRING(x) if (SDL3_strcmp(string, #x) == 0) { return SDL_AUDIO_##x; }
+#define CHECK_FMT_STRING2(x, y) if (SDL3_strcmp(string, #x) == 0) { return y; }
     CHECK_FMT_STRING(U8);
     CHECK_FMT_STRING(S8);
-    CHECK_FMT_STRING(S16LSB);
-    CHECK_FMT_STRING(S16MSB);
-    CHECK_FMT_STRING(S16SYS);
-    CHECK_FMT_STRING(S16);
-    CHECK_FMT_STRING(S32LSB);
-    CHECK_FMT_STRING(S32MSB);
-    CHECK_FMT_STRING(S32SYS);
-    CHECK_FMT_STRING(S32);
-    CHECK_FMT_STRING(F32LSB);
-    CHECK_FMT_STRING(F32MSB);
-    CHECK_FMT_STRING(F32SYS);
-    CHECK_FMT_STRING(F32);
+    CHECK_FMT_STRING2(S16LE, SDL_AUDIO_S16LE);
+    CHECK_FMT_STRING2(S16BE, SDL_AUDIO_S16BE);
+    CHECK_FMT_STRING2(S16SYS, SDL_AUDIO_S16);
+    CHECK_FMT_STRING2(S16, SDL_AUDIO_S16LE);
+    CHECK_FMT_STRING2(U16LE, SDL_AUDIO_S16LE & ~SDL_AUDIO_MASK_SIGNED);
+    CHECK_FMT_STRING2(U16BE, SDL_AUDIO_S16BE & ~SDL_AUDIO_MASK_SIGNED);
+    CHECK_FMT_STRING2(U16SYS, SDL_AUDIO_S16 & ~SDL_AUDIO_MASK_SIGNED);
+    CHECK_FMT_STRING2(U16, SDL_AUDIO_S16LE & ~SDL_AUDIO_MASK_SIGNED);
+    CHECK_FMT_STRING2(S32LE, SDL_AUDIO_S32LE);
+    CHECK_FMT_STRING2(S32BE, SDL_AUDIO_S32BE);
+    CHECK_FMT_STRING2(S32SYS, SDL_AUDIO_S32);
+    CHECK_FMT_STRING2(S32, SDL_AUDIO_S32LE);
+    CHECK_FMT_STRING2(F32LE, SDL_AUDIO_F32LE);
+    CHECK_FMT_STRING2(F32BE, SDL_AUDIO_F32BE);
+    CHECK_FMT_STRING2(F32SYS, SDL_AUDIO_F32);
+    CHECK_FMT_STRING2(F32, SDL_AUDIO_F32LE);
 #undef CHECK_FMT_STRING
-
-    /* removed U16 support in SDL3... */
-    if (SDL3_strcmp(string, "U16LSB") == 0) { return SDL_AUDIO_S16LSB & ~SDL_AUDIO_MASK_SIGNED; }
-    if (SDL3_strcmp(string, "U16MSB") == 0) { return SDL_AUDIO_S16MSB & ~SDL_AUDIO_MASK_SIGNED; }
-    if (SDL3_strcmp(string, "U16SYS") == 0) { return SDL_AUDIO_S16SYS & ~SDL_AUDIO_MASK_SIGNED; }
-    if (SDL3_strcmp(string, "U16") == 0) { return SDL_AUDIO_S16 & ~SDL_AUDIO_MASK_SIGNED; }
-
     return 0;
 }
 
@@ -3779,7 +3777,7 @@ static int PrepareAudiospec(const SDL2_AudioSpec *orig2, SDL2_AudioSpec *prepare
     }
 
     /* Calculate the silence and size of the audio specification */
-    if ((prepared2->format == SDL_AUDIO_U8) || (prepared2->format == (SDL_AUDIO_S16LSB & ~SDL_AUDIO_MASK_SIGNED)) || (prepared2->format == (SDL_AUDIO_S16MSB & ~SDL_AUDIO_MASK_SIGNED))) {
+    if ((prepared2->format == SDL_AUDIO_U8) || (prepared2->format == (SDL_AUDIO_S16LE & ~SDL_AUDIO_MASK_SIGNED)) || (prepared2->format == (SDL_AUDIO_S16BE & ~SDL_AUDIO_MASK_SIGNED))) {
         prepared2->silence = 0x80;
     } else {
         prepared2->silence = 0x00;
@@ -3912,9 +3910,9 @@ static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devicename, int iscap
 
     /* Don't try to open the SDL3 audio device with the (abandoned) U16 formats... */
     if (spec3.format == SDL2_AUDIO_U16LSB) {
-        spec3.format = SDL_AUDIO_S16LSB;
+        spec3.format = SDL_AUDIO_S16LE;
     } else if (spec3.format == SDL2_AUDIO_U16MSB) {
-        spec3.format = SDL_AUDIO_S16MSB;
+        spec3.format = SDL_AUDIO_S16BE;
     }
 
     device3 = SDL3_OpenAudioDevice(device3, &spec3);
@@ -4098,10 +4096,10 @@ SDL_NewAudioStream(const SDL_AudioFormat real_src_format, const Uint8 src_channe
 
     /* SDL3 removed U16 audio formats. Convert to S16SYS. */
     if ((src_format == SDL2_AUDIO_U16LSB) || (src_format == SDL2_AUDIO_U16MSB)) {
-        src_format = SDL_AUDIO_S16SYS;
+        src_format = SDL_AUDIO_S16;
     }
     if ((dst_format == SDL2_AUDIO_U16LSB) || (dst_format == SDL2_AUDIO_U16MSB)) {
-        dst_format = SDL_AUDIO_S16SYS;
+        dst_format = SDL_AUDIO_S16;
     }
 
     srcspec3.format = src_format;
@@ -4210,7 +4208,7 @@ SDL_MixAudioFormat(Uint8 *dst, const Uint8 *src, SDL_AudioFormat format, Uint32 
             } else if (format == SDL2_AUDIO_U16MSB) {
                 AudioUi16MSBToSi16Sys(tmpbuf, (const Uint16 *) src, tmpsamples);
             }
-            SDL3_MixAudioFormat(dst, (const Uint8 *) tmpbuf, SDL_AUDIO_S16SYS, tmpsamples * sizeof (Sint16), volume);
+            SDL3_MixAudioFormat(dst, (const Uint8 *) tmpbuf, SDL_AUDIO_S16, tmpsamples * sizeof (Sint16), volume);
             SDL3_free(tmpbuf);
         }
     } else {
@@ -6232,13 +6230,13 @@ SDL_IsSupportedAudioFormat(const SDL_AudioFormat fmt)
     case SDL_AUDIO_U8:
     case SDL_AUDIO_S8:
     case SDL2_AUDIO_U16LSB:
-    case SDL_AUDIO_S16LSB:
+    case SDL_AUDIO_S16LE:
     case SDL2_AUDIO_U16MSB:
-    case SDL_AUDIO_S16MSB:
-    case SDL_AUDIO_S32LSB:
-    case SDL_AUDIO_S32MSB:
-    case SDL_AUDIO_F32LSB:
-    case SDL_AUDIO_F32MSB:
+    case SDL_AUDIO_S16BE:
+    case SDL_AUDIO_S32LE:
+    case SDL_AUDIO_S32BE:
+    case SDL_AUDIO_F32LE:
+    case SDL_AUDIO_F32BE:
         return SDL_TRUE; /* supported. */
 
     default:
