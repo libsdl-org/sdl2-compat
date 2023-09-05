@@ -10,6 +10,8 @@ jobs:
   Build:
     name: '${{ matrix.platform.name }}'
     runs-on: '${{ matrix.platform.os }}'
+    # The scheduled event should only run on libsdl-org/sdl2-compat
+    if: ${{ (github.event_name == 'schedule' && github.repository == 'libsdl-org/sdl2-compat') || (github.event_name != 'schedule') }}
     strategy:
       fail-fast: false
       matrix:
