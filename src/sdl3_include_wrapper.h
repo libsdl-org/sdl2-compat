@@ -910,7 +910,7 @@
 #define SDL_LoadWAV IGNORE_THIS_VERSION_OF_SDL_LoadWAV
 #define SDL_PauseAudioDevice IGNORE_THIS_VERSION_OF_SDL_PauseAudioDevice
 #define SDL_ResumeAudioDevice IGNORE_THIS_VERSION_OF_SDL_ResumeAudioDevice
-#define SDL_IsAudioDevicePaused IGNORE_THIS_VERSION_OF_SDL_IsAudioDevicePaused
+#define SDL_AudioDevicePaused IGNORE_THIS_VERSION_OF_SDL_AudioDevicePaused
 #define SDL_GetAudioStreamDevice IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamDevice
 #define SDL_ShowWindowSystemMenu IGNORE_THIS_VERSION_OF_SDL_ShowWindowSystemMenu
 #define SDL_ReadS16LE IGNORE_THIS_VERSION_OF_SDL_ReadS16LE
@@ -4487,8 +4487,8 @@
 #undef SDL_ResumeAudioDevice
 #endif
 
-#ifdef SDL_IsAudioDevicePaused
-#undef SDL_IsAudioDevicePaused
+#ifdef SDL_AudioDevicePaused
+#undef SDL_AudioDevicePaused
 #endif
 
 #ifdef SDL_GetAudioStreamDevice

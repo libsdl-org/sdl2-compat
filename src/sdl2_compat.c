@@ -597,13 +597,13 @@ LoadSDL3(void)
 #include "x86_msvc.h"
 #endif
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__WATCOMC__)
 /* NOLINTNEXTLINE(readability-redundant-declaration) */
 extern void *memcpy(void *dst, const void *src, size_t len);
 /* NOLINTNEXTLINE(readability-redundant-declaration) */
 extern void *memset(void *dst, int c, size_t len);
-#if defined(_MSC_VER)
-#if !defined(__INTEL_LLVM_COMPILER)
+#ifdef _MSC_VER
+#ifndef __INTEL_LLVM_COMPILER
 #pragma intrinsic(memcpy)
 #pragma intrinsic(memset)
 #endif
@@ -4309,7 +4309,7 @@ SDL_GetAudioDeviceStatus(SDL_AudioDeviceID dev)
     if (stream2) {
         const SDL_AudioDeviceID device3 = SDL3_GetAudioStreamDevice(stream2->stream3);
         if (device3) {
-            retval = SDL3_IsAudioDevicePaused(device3) ? SDL2_AUDIO_PAUSED : SDL2_AUDIO_PLAYING;
+            retval = SDL3_AudioDevicePaused(device3) ? SDL2_AUDIO_PAUSED : SDL2_AUDIO_PLAYING;
         }
     }
     return retval;
