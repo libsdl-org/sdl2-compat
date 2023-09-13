@@ -3658,7 +3658,7 @@ SDL_GetAudioDeviceSpec(int idx, int iscapture, SDL2_AudioSpec *spec2)
     if ((idx < 0) || (idx >= list->num_devices)) {
         SDL3_InvalidParamError("index");
     } else {
-        retval = SDL3_GetAudioDeviceFormat(list->devices[idx].devid, &spec3);
+        retval = SDL3_GetAudioDeviceFormat(list->devices[idx].devid, &spec3, NULL);
     }
     SDL3_UnlockMutex(AudioDeviceLock);
 
@@ -3684,7 +3684,7 @@ SDL_GetDefaultAudioInfo(char **name, SDL2_AudioSpec *spec2, int iscapture)
         return SDL3_SetError("Audio subsystem is not initialized");
     }
 
-    retval = SDL3_GetAudioDeviceFormat(iscapture ? SDL_AUDIO_DEVICE_DEFAULT_CAPTURE : SDL_AUDIO_DEVICE_DEFAULT_OUTPUT, &spec3);
+    retval = SDL3_GetAudioDeviceFormat(iscapture ? SDL_AUDIO_DEVICE_DEFAULT_CAPTURE : SDL_AUDIO_DEVICE_DEFAULT_OUTPUT, &spec3, NULL);
     if (retval == 0) {
         if (name) {
             *name = SDL3_strdup("System default");  /* the default device can change to different physical hardware on-the-fly in SDL3, so we don't provide a name for it. */
@@ -3790,7 +3790,7 @@ static int PrepareAudiospec(const SDL2_AudioSpec *orig2, SDL2_AudioSpec *prepare
     return 1;
 }
 
-static void SDLCALL SDL2AudioDeviceQueueingCallback(void *userdata, SDL_AudioStream *stream3, int approx_amount)
+static void SDLCALL SDL2AudioDeviceQueueingCallback(void *userdata, SDL_AudioStream *stream3, int approx_amount, int total_amount)
 {
     SDL2_AudioStream *stream2 = (SDL2_AudioStream *) userdata;
     Uint8 *buffer;
@@ -3823,7 +3823,7 @@ static void SDLCALL SDL2AudioDeviceQueueingCallback(void *userdata, SDL_AudioStr
     SDL3_free(buffer);
 }
 
-static void SDLCALL SDL2AudioDeviceCallbackBridge(void *userdata, SDL_AudioStream *stream3, int approx_amount)
+static void SDLCALL SDL2AudioDeviceCallbackBridge(void *userdata, SDL_AudioStream *stream3, int approx_amount, int total_amount)
 {
     SDL2_AudioStream *stream2 = (SDL2_AudioStream *) userdata;
     Uint8 *buffer;
@@ -3921,7 +3921,7 @@ static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devicename, int iscap
     }
 
     SDL3_PauseAudioDevice(device3);  /* they start paused in SDL2 */
-    SDL3_GetAudioDeviceFormat(device3, &spec3);
+    SDL3_GetAudioDeviceFormat(device3, &spec3, NULL);
 
     if ((spec3.format != obtained2->format) && (allowed_changes & SDL2_AUDIO_ALLOW_FORMAT_CHANGE)) {
         obtained2->format = spec3.format;
