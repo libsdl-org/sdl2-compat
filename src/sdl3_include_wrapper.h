@@ -198,6 +198,7 @@
 #define SDL_GetGamepadAppleSFSymbolsNameForButton IGNORE_THIS_VERSION_OF_SDL_GetGamepadAppleSFSymbolsNameForButton
 #define SDL_GetGamepadAxis IGNORE_THIS_VERSION_OF_SDL_GetGamepadAxis
 #define SDL_GetGamepadAxisFromString IGNORE_THIS_VERSION_OF_SDL_GetGamepadAxisFromString
+#define SDL_GetGamepadBindings IGNORE_THIS_VERSION_OF_SDL_GetGamepadBindings
 #define SDL_GetGamepadButton IGNORE_THIS_VERSION_OF_SDL_GetGamepadButton
 #define SDL_GetGamepadButtonFromString IGNORE_THIS_VERSION_OF_SDL_GetGamepadButtonFromString
 #define SDL_GetGamepadFirmwareVersion IGNORE_THIS_VERSION_OF_SDL_GetGamepadFirmwareVersion
@@ -1637,6 +1638,10 @@
 
 #ifdef SDL_GetGamepadAxisFromString
 #undef SDL_GetGamepadAxisFromString
+#endif
+
+#ifdef SDL_GetGamepadBindings
+#undef SDL_GetGamepadBindings
 #endif
 
 #ifdef SDL_GetGamepadButton
