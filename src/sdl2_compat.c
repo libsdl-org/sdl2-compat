@@ -6021,10 +6021,33 @@ SDL_GameControllerGetBindForAxis(SDL_GameController *controller,
                                  SDL_GameControllerAxis axis)
 {
     SDL_GameControllerButtonBind bind;
-    /* FIXME */
-    (void) controller;
-    (void) axis;
+
     SDL3_zero(bind);
+
+    if (axis != SDL_GAMEPAD_AXIS_INVALID) {
+        SDL_GamepadBinding **bindings = SDL3_GetGamepadBindings(controller, NULL);
+        if (bindings) {
+            int i;
+            for (i = 0; bindings[i]; ++i) {
+                SDL_GamepadBinding *binding = bindings[i];
+                if (binding->outputType == SDL_CONTROLLER_BINDTYPE_AXIS && binding->output.axis.axis == axis) {
+                    bind.bindType = binding->inputType;
+                    if (binding->inputType == SDL_CONTROLLER_BINDTYPE_AXIS) {
+                        /* FIXME: There might be multiple axes bound now that we have axis ranges... */
+                        bind.value.axis = binding->input.axis.axis;
+                    } else if (binding->inputType == SDL_CONTROLLER_BINDTYPE_BUTTON) {
+                        bind.value.button = binding->input.button;
+                    } else if (binding->inputType == SDL_CONTROLLER_BINDTYPE_HAT) {
+                        bind.value.hat.hat = binding->input.hat.hat;
+                        bind.value.hat.hat_mask = binding->input.hat.hat_mask;
+                    }
+                    break;
+                }
+            }
+            SDL_free(bindings);
+        }
+    }
+
     return bind;
 }
 
@@ -6033,10 +6056,32 @@ SDL_GameControllerGetBindForButton(SDL_GameController *controller,
                                    SDL_GameControllerButton button)
 {
     SDL_GameControllerButtonBind bind;
-    /* FIXME */
-    (void) controller;
-    (void) button;
+
     SDL3_zero(bind);
+
+    if (button != SDL_GAMEPAD_BUTTON_INVALID) {
+        SDL_GamepadBinding **bindings = SDL3_GetGamepadBindings(controller, NULL);
+        if (bindings) {
+            int i;
+            for (i = 0; bindings[i]; ++i) {
+                SDL_GamepadBinding *binding = bindings[i];
+                if (binding->outputType == SDL_CONTROLLER_BINDTYPE_BUTTON && binding->output.button == button) {
+                    bind.bindType = binding->inputType;
+                    if (binding->inputType == SDL_CONTROLLER_BINDTYPE_AXIS) {
+                        bind.value.axis = binding->input.axis.axis;
+                    } else if (binding->inputType == SDL_CONTROLLER_BINDTYPE_BUTTON) {
+                        bind.value.button = binding->input.button;
+                    } else if (binding->inputType == SDL_CONTROLLER_BINDTYPE_HAT) {
+                        bind.value.hat.hat = binding->input.hat.hat;
+                        bind.value.hat.hat_mask = binding->input.hat.hat_mask;
+                    }
+                    break;
+                }
+            }
+            SDL_free(bindings);
+        }
+    }
+
     return bind;
 }
 
