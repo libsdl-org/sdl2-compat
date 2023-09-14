@@ -30,13 +30,7 @@ typedef SDL_Condition SDL_cond;
 typedef SDL_Mutex SDL_mutex;
 typedef SDL_Semaphore SDL_sem;
 
-typedef enum
-{
-    SDL_CONTROLLER_BINDTYPE_NONE = 0,
-    SDL_CONTROLLER_BINDTYPE_BUTTON,
-    SDL_CONTROLLER_BINDTYPE_AXIS,
-    SDL_CONTROLLER_BINDTYPE_HAT
-} SDL_GameControllerBindType;
+typedef SDL_GamepadBindingType SDL_GameControllerBindType;
 
 typedef struct SDL_GameControllerButtonBind
 {
