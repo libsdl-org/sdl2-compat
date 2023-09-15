@@ -592,24 +592,21 @@ LoadSDL3(void)
     return okay;
 }
 
-#ifndef SDL_BUILDING_WINRT
-#if defined(_MSC_VER) && defined(_M_IX86)
+#if defined(_MSC_VER) && !defined(SDL_BUILDING_WINRT)
+#ifdef _M_IX86
 #include "x86_msvc.h"
 #endif
 
-#if defined(_WIN32) && !defined(__WATCOMC__)
 /* NOLINTNEXTLINE(readability-redundant-declaration) */
 extern void *memcpy(void *dst, const void *src, size_t len);
 /* NOLINTNEXTLINE(readability-redundant-declaration) */
 extern void *memset(void *dst, int c, size_t len);
-#ifdef _MSC_VER
 #ifndef __INTEL_LLVM_COMPILER
 #pragma intrinsic(memcpy)
 #pragma intrinsic(memset)
 #endif
 #pragma function(memcpy)
 #pragma function(memset)
-#endif
 
 /* NOLINTNEXTLINE(readability-inconsistent-declaration-parameter-name) */
 void *memcpy(void *dst, const void *src, size_t len)
@@ -622,8 +619,21 @@ void *memset(void *dst, int c, size_t len)
 {
     return SDL3_memset(dst, c, len);
 }
+#endif  /* MSVC && !WINRT */
+
+#if defined(__ICL) && defined(_WIN32)
+/* The classic Intel compiler generates calls to _intel_fast_memcpy
+ * and _intel_fast_memset when building an optimized SDL library */
+void *_intel_fast_memcpy(void *dst, const void *src, size_t len)
+{
+    return SDL3_memcpy(dst, src, len);
+}
+
+void *_intel_fast_memset(void *dst, int c, size_t len)
+{
+    return SDL3_memset(dst, c, len);
+}
 #endif
-#endif  /* ! WINRT */
 
 #ifdef SDL_BUILDING_WINRT
 EXTERN_C void error_dialog(const char *errorMsg);
