@@ -931,6 +931,7 @@
 #define SDL_GetAudioStreamFrequencyRatio IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamFrequencyRatio
 #define SDL_SetAudioStreamFrequencyRatio IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamFrequencyRatio
 #define SDL_SetAudioPostmixCallback IGNORE_THIS_VERSION_OF_SDL_SetAudioPostmixCallback
+#define SDL_GetAudioStreamQueued IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamQueued
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -4570,6 +4571,10 @@
 
 #ifdef SDL_SetAudioPostmixCallback
 #undef SDL_SetAudioPostmixCallback
+#endif
+
+#ifdef SDL_GetAudioStreamQueued
+#undef SDL_GetAudioStreamQueued
 #endif
 
 /* undefine these macros too: */
