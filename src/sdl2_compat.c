@@ -714,7 +714,7 @@ BOOL WINAPI _DllMainCRTStartup(HANDLE dllhandle, DWORD reason, LPVOID reserved)
 
 /* removed in SDL3 (which only uses SDL_WINDOW_HIDDEN now). */
 #define SDL2_WINDOW_SHOWN 0x000000004
-#define SDL2_WINDOW_FULLSCREEN_DESKTOP 0x00001000
+#define SDL2_WINDOW_FULLSCREEN_DESKTOP (0x00001000 | SDL_WINDOW_FULLSCREEN)
 #define SDL2_WINDOW_SKIP_TASKBAR 0x00010000
 
 /* removed in SDL3 (APIs like this were split into getter/setter functions). */
@@ -4529,6 +4529,37 @@ Display_IDToIndex(SDL_DisplayID displayID)
     return displayIndex;
 }
 
+static const SDL_DisplayMode** SDL_GetDisplayModeList(SDL_DisplayID displayID, int *count)
+{
+    int c = 0;
+    const SDL_DisplayMode **modes = SDL3_GetFullscreenDisplayModes(displayID, &c);
+
+    if (!modes) {
+        return NULL;
+    }
+
+    if (c) {
+        if (count) {
+            *count = c;
+        }
+        return modes;
+    }
+
+    /* Return the desktop mode, if no exclusive fullscreen modes are available. */
+    SDL3_free((void *)modes);
+    modes = (const SDL_DisplayMode **)SDL3_calloc(sizeof(SDL_DisplayMode *), 2);
+    if (modes) {
+        modes[0] = SDL3_GetDesktopDisplayMode(displayID);
+        if (count) {
+            *count = 1;
+        }
+    } else {
+        SDL3_OutOfMemory();
+    }
+
+    return modes;
+}
+
 DECLSPEC const char * SDLCALL
 SDL_GetDisplayName(int displayIndex)
 {
@@ -4549,7 +4580,7 @@ SDL_GetNumDisplayModes(int displayIndex)
     SDL_DisplayID displayID = Display_IndexToID(displayIndex);
     int count = 0;
     const SDL_DisplayMode **list;
-    list = SDL3_GetFullscreenDisplayModes(displayID, &count);
+    list = SDL_GetDisplayModeList(displayID, &count);
     if (list) {
         SDL3_free((void*)list);
         return count;
@@ -4609,7 +4640,7 @@ SDL_GetDisplayMode(int displayIndex, int modeIndex, SDL2_DisplayMode *mode)
     const SDL_DisplayMode **list;
     int count = 0;
     int ret = -1;
-    list = SDL3_GetFullscreenDisplayModes(displayID, &count);
+    list = SDL_GetDisplayModeList(displayID, &count);
     if (modeIndex >= 0 && modeIndex < count) {
         if (mode) {
             DisplayMode_3to2(list[modeIndex], mode);
@@ -4661,154 +4692,56 @@ SDL_GetWindowDisplayMode(SDL_Window *window, SDL2_DisplayMode *mode)
     }
 
     dp = SDL3_GetWindowFullscreenMode(window);
-    if (dp == NULL) {
+    if (dp) {
+        DisplayMode_3to2(dp, mode);
+    } else {
         /* Desktop mode */
         /* FIXME: is this correct ? */
         dp = SDL3_GetDesktopDisplayMode(SDL3_GetPrimaryDisplay());
         if (dp == NULL) {
             return -1;
         }
+        DisplayMode_3to2(dp, mode);
+
+        /* When returning the desktop mode, make sure the refresh is some nonzero value. */
+        if (mode->refresh_rate == 0) {
+            mode->refresh_rate = 60;
+        }
     }
-    DisplayMode_3to2(dp, mode);
+
     return 0;
-}
-
-static SDL_DisplayMode *
-SDL_GetClosestDisplayModeForDisplay(SDL_DisplayID displayID,
-                                    const SDL_DisplayMode *mode,
-                                    SDL_DisplayMode *closest)
-{
-    Uint32 target_format;
-    float target_refresh_rate;
-    int i;
-    const SDL_DisplayMode *current, *match;
-    const SDL_DisplayMode **list;
-    int count = 0;
-
-    /* Default to the desktop format */
-    if (mode->format) {
-        target_format = mode->format;
-    } else {
-/* FIXME: Desktop mode ?
-        target_format = display->desktop_mode.format;*/
-        target_format = mode->format;
-    }
-
-    /* Default to the desktop refresh rate */
-    if (mode->refresh_rate > 0.0f) {
-        target_refresh_rate = mode->refresh_rate;
-    } else {
-/* FIXME: Desktop mode ?
-        target_refresh_rate = display->desktop_mode.refresh_rate;*/
-        target_refresh_rate = mode->refresh_rate;
-    }
-
-    match = NULL;
-    list = SDL3_GetFullscreenDisplayModes(displayID, &count);
-    for (i = 0; i < count; ++i) {
-        current = list[i];
-
-        if (current->w && (current->w < mode->w)) {
-            /* Out of sorted modes large enough here */
-            break;
-        }
-        if (current->h && (current->h < mode->h)) {
-            if (current->w && (current->w == mode->w)) {
-                /* Out of sorted modes large enough here */
-                break;
-            }
-            /* Wider, but not tall enough, due to a different
-               aspect ratio. This mode must be skipped, but closer
-               modes may still follow. */
-            continue;
-        }
-        if (match == NULL || current->w < match->w || current->h < match->h) {
-            match = current;
-            continue;
-        }
-        if (current->format != match->format) {
-            /* Sorted highest depth to lowest */
-            if (current->format == target_format ||
-                (SDL_BITSPERPIXEL(current->format) >=
-                     SDL_BITSPERPIXEL(target_format) &&
-                 SDL_PIXELTYPE(current->format) ==
-                     SDL_PIXELTYPE(target_format))) {
-                match = current;
-            }
-            continue;
-        }
-        if (current->refresh_rate != match->refresh_rate) {
-            /* Sorted highest refresh to lowest */
-            if (current->refresh_rate >= target_refresh_rate) {
-                match = current;
-                continue;
-            }
-        }
-    }
-
-    if (match) {
-        SDL3_zerop(closest);
-        if (match->format) {
-            closest->format = match->format;
-        } else {
-            closest->format = mode->format;
-        }
-        if (match->w && match->h) {
-            closest->w = match->w;
-            closest->h = match->h;
-        } else {
-            closest->w = mode->w;
-            closest->h = mode->h;
-        }
-        if (match->refresh_rate > 0.0f) {
-            closest->refresh_rate = match->refresh_rate;
-        } else {
-            closest->refresh_rate = mode->refresh_rate;
-        }
-        closest->driverdata = match->driverdata;
-
-        /* Pick some reasonable defaults if the app and driver don't care */
-        if (!closest->format) {
-            closest->format = SDL_PIXELFORMAT_XRGB8888;
-        }
-        if (!closest->w) {
-            closest->w = 640;
-        }
-        if (!closest->h) {
-            closest->h = 480;
-        }
-        SDL3_free((void *)list);
-        return closest;
-    }
-
-    SDL3_free((void *)list);
-    return NULL;
 }
 
 DECLSPEC SDL2_DisplayMode * SDLCALL
 SDL_GetClosestDisplayMode(int displayIndex, const SDL2_DisplayMode *mode, SDL2_DisplayMode *closest)
 {
-    SDL_DisplayMode mode3;
-    SDL_DisplayMode closest3;
-    SDL_DisplayMode *ret3;
+    const SDL_DisplayMode *ret3;
+    const SDL_DisplayID displayID = Display_IndexToID(displayIndex);
 
     if (mode == NULL || closest == NULL) {
         SDL3_InvalidParamError("mode/closest");
         return NULL;
     }
 
-    /* silence compiler */
-    SDL3_zero(mode3);
-    SDL3_zero(closest3);
-
-    DisplayMode_2to3(closest, &closest3);
-    DisplayMode_2to3(mode, &mode3);
-    ret3 = SDL_GetClosestDisplayModeForDisplay(Display_IndexToID(displayIndex), &mode3, &closest3);
+    ret3 = SDL3_GetClosestFullscreenDisplayMode(displayID, mode->w, mode->h, (float)mode->refresh_rate, SDL_FALSE);
     if (ret3 == NULL) {
-        return NULL;
+        /* Try the desktop mode */
+        ret3 = SDL3_GetDesktopDisplayMode(displayID);
+
+        if (ret3->w < mode->w || ret3->h < mode->h) {
+            return NULL;
+        }
     }
 
     DisplayMode_3to2(ret3, closest);
+
+    /* Make sure the returned refresh rate and format are something valid */
+    if (!closest->refresh_rate) {
+        closest->refresh_rate = mode->refresh_rate ? mode->refresh_rate : 60;
+    }
+    if (!closest->format) {
+        closest->format = SDL_PIXELFORMAT_XRGB8888;
+    }
     return closest;
 }
 
@@ -4828,6 +4761,9 @@ SDL_SetWindowDisplayMode(SDL_Window *window, const SDL2_DisplayMode *mode)
         list = SDL3_GetFullscreenDisplayModes(SDL3_GetPrimaryDisplay(), &count);
         if (list && count) {
             ret = SDL3_SetWindowFullscreenMode(window, list[0]);
+        } else {
+            /* If no exclusive modes, use the fullscreen desktop mode. */
+            ret = SDL3_SetWindowFullscreenMode(window, NULL);
         }
         SDL3_free((void *)list);
         return ret;
@@ -5402,9 +5338,6 @@ SDL_SetWindowFullscreen(SDL_Window *window, Uint32 flags)
     SDL_bool flags3 = SDL_FALSE;
 
     if (flags & SDL2_WINDOW_FULLSCREEN_DESKTOP) {
-        flags3 = SDL_TRUE;
-    }
-    if (flags & SDL_WINDOW_FULLSCREEN) {
         flags3 = SDL_TRUE;
     }
 
