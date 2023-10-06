@@ -5302,7 +5302,7 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
     }
     if (window) {
         if (!SDL_WINDOWPOS_ISUNDEFINED(x) || !SDL_WINDOWPOS_ISUNDEFINED(y)) {
-            SDL3_SetWindowPosition(window, x, y);
+            SDL_SetWindowPosition(window, x, y);
         }
         if (!hidden) {
             SDL3_ShowWindow(window);
@@ -5486,6 +5486,19 @@ SDL_SetWindowPosition(SDL_Window *window, int x, int y)
             y -= y_off;
 
             parent = (SDL_Window *) SDL3_GetWindowData(parent, POPUP_PARENT_PROP_STR);
+        }
+    } else {
+        if (SDL_WINDOWPOS_ISUNDEFINED(x) || SDL_WINDOWPOS_ISCENTERED(x)) {
+            const int displayIndex = x & 0xFFFF;
+            const SDL_DisplayID displayID = Display_IndexToID(displayIndex);
+
+            x = (x & 0xFFFF0000) | (0xFFFF & displayID);
+        }
+        if (SDL_WINDOWPOS_ISUNDEFINED(y) || SDL_WINDOWPOS_ISCENTERED(y)) {
+            const int displayIndex = y & 0xFFFF;
+            const SDL_DisplayID displayID = Display_IndexToID(displayIndex);
+
+            y = (y & 0xFFFF0000) | (0xFFFF & displayID);
         }
     }
 
