@@ -307,15 +307,12 @@ endif()
 
 # !!! FIXME: what needs to be done for sdl2-compat? Look into this.
 ## SDL2main library...
-#if(APPLE)
-#    add_library(SDL2main STATIC src/SDLmain/macosx/SDLMain.m)
-#    set_source_files_properties(src/SDLmain/macosx/SDLMain.m PROPERTIES LANGUAGE C)
-#elseif(WIN32)
-#    add_library(SDL2main STATIC src/SDLmain/win32/SDL_win32_main.c)
-#    set_target_properties(SDL2main PROPERTIES COMPILE_DEFINITIONS "_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE")  # !!! FIXME: don't use C runtime? We fixed this in SDL2.
-#else()
+if(WIN32)
+    add_library(SDL2main STATIC src/SDLmain/windows/SDL_windows_main.c)
+    target_link_libraries(SDL2main PRIVATE shell32)
+else()
     add_library(SDL2main STATIC src/SDLmain/dummy/SDL_dummy_main.c)
-#endif()
+endif()
 add_library(SDL2::SDL2main ALIAS SDL2main)
 target_include_directories(SDL2main
     PRIVATE
@@ -667,7 +664,7 @@ if(SDL2COMPAT_DEVEL)
     if(WIN32)
       set(SDL_CFLAGS "")
       set(SDL_RLD_FLAGS "")
-      set(SDL_LIBS "-lmingw32 -lSDL2main -lSDL2 -mwindows")
+      set(SDL_LIBS "-lmingw32 -lSDL2main -lshell32 -lSDL2 -mwindows")
       set(SDL_STATIC_LIBS "")
     elseif(APPLE)
       set(SDL_CFLAGS "-D_THREAD_SAFE")
