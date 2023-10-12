@@ -1030,6 +1030,8 @@ run_test(void)
 
 #else /* !(HAVE_LIBUDEV_H || defined(SDL_JOYSTICK_LINUX)) */
 
+#include "SDL.h"
+
 static int
 run_test(void)
 {
