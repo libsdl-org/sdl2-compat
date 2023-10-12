@@ -11,8 +11,10 @@ if(POLICY CMP0074)
 endif()
 
 if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
+  set(SDL2COMPAT_MAINPROJECT ON)
   set(SDL2COMPAT_SUBPROJECT OFF)
 else()
+  set(SDL2COMPAT_MAINPROJECT OFF)
   set(SDL2COMPAT_SUBPROJECT ON)
 endif()
 
@@ -31,6 +33,20 @@ set(SDL_MAJOR_VERSION ${sdl2_compat_VERSION_MAJOR})
 set(SDL_MINOR_VERSION ${sdl2_compat_VERSION_MINOR})
 set(SDL_MICRO_VERSION ${sdl2_compat_VERSION_PATCH})
 set(SDL_VERSION "${SDL_MAJOR_VERSION}.${SDL_MINOR_VERSION}.${SDL_MICRO_VERSION}")
+
+include(CheckCSourceCompiles)
+include(CheckIncludeFile)
+include(CheckCCompilerFlag)
+include(CheckLanguage)
+include(CMakeDependentOption)
+include(CMakePackageConfigHelpers)
+include(CMakeParseArguments)
+include(CMakePushCheckState)
+include(GNUInstallDirs)
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/CheckCPUArchitecture.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/sdlchecks.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/sdlcompilers.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/sdlplatform.cmake")
 
 # Calculate libtool-compatible SO version
 set(SDL_SO_VERSION_MAJOR "0")
@@ -64,27 +80,16 @@ set(SDL_DYLIB_COMPAT_VERSION "${SDL_DYLIB_COMPAT_VERSION_MAJOR}.${SDL_DYLIB_COMP
 
 option(SDL2COMPAT_TESTS "Enable to build SDL2 test programs" ON)
 option(SDL2COMPAT_INSTALL "Enable installating SDL2-compat" ON)
+cmake_dependent_option(SDL2COMPAT_INSTALL_CPACK "Create binary SDL2_compat archive using CPack" ${SDL2COMPAT_MAINPROJECT} "SDL2COMPAT_INSTALL" OFF)
 option(SDL2COMPAT_STATIC "Enable building static SDL2 link library" OFF)
 option(SDL2COMPAT_WERROR "Treat warnings as errors" OFF)
 set(SDL2COMPAT_VENDOR_INFO "" CACHE STRING "Vendor name and/or version to add to SDL_REVISION")
+set(SDL2COMPAT_FRAMEWORK FALSE)
 #FIXME: should SDL2-compat modify vendor_info/revision information?
 
 if(SDL2COMPAT_STATIC AND NOT (CMAKE_SYSTEM_NAME MATCHES "Linux"))
   message(FATAL_ERROR "Static builds are only supported on Linux.")
 endif()
-
-include(CheckCSourceCompiles)
-include(CheckIncludeFile)
-include(CheckCCompilerFlag)
-include(CheckLanguage)
-include(CMakePackageConfigHelpers)
-include(CMakeParseArguments)
-include(CMakePushCheckState)
-include(GNUInstallDirs)
-include("${CMAKE_CURRENT_LIST_DIR}/cmake/CheckCPUArchitecture.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/cmake/sdlchecks.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/cmake/sdlcompilers.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/cmake/sdlplatform.cmake")
 
 SDL_DetectCompiler()
 SDL_DetectCPUArchitecture()
@@ -610,13 +615,13 @@ endif()
 
 if(SDL2COMPAT_INSTALL)
   if(WIN32 AND NOT MINGW)
-    set(SDL23COMPAT_INSTALL_CMAKEDIR_DEFAULT "cmake")
+    set(SDL2COMPAT_INSTALL_CMAKEDIR_DEFAULT "cmake")
     set(LICENSES_PREFIX "licenses/SDL2")
   else()
-    set(SDL23COMPAT_INSTALL_CMAKEDIR_DEFAULT "${CMAKE_INSTALL_LIBDIR}/cmake/SDL2")
+    set(SDL2COMPAT_INSTALL_CMAKEDIR_DEFAULT "${CMAKE_INSTALL_LIBDIR}/cmake/SDL2")
     set(LICENSES_PREFIX "${CMAKE_INSTALL_DATAROOTDIR}/licenses/SDL2")
   endif()
-  set(SDL23COMPAT_INSTALL_CMAKEDIR "${SDL23COMPAT_INSTALL_CMAKEDIR_DEFAULT}" CACHE STRING "Location where to install SDL2Config.cmake")
+  set(SDL2COMPAT_INSTALL_CMAKEDIR "${SDL2COMPAT_INSTALL_CMAKEDIR_DEFAULT}" CACHE STRING "Location where to install SDL2Config.cmake")
 
   list(APPEND installed_targets SDL2main SDL2_test)
   foreach(target ${installed_targets})
@@ -628,12 +633,15 @@ if(SDL2COMPAT_INSTALL)
     install(EXPORT ${target}Targets
       FILE ${target}Targets.cmake
       NAMESPACE SDL2::
-      DESTINATION "${SDL23COMPAT_INSTALL_CMAKEDIR}"
+      DESTINATION "${SDL2COMPAT_INSTALL_CMAKEDIR}"
     )
   endforeach()
+  if(MSVC)
+    install(FILES $<TARGET_PDB_FILE:SDL2> DESTINATION "${CMAKE_INSTALL_BINDIR}" OPTIONAL)
+  endif()
   configure_package_config_file(SDL2Config.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/SDL2Config.cmake"
     PATH_VARS CMAKE_INSTALL_PREFIX CMAKE_INSTALL_FULL_BINDIR CMAKE_INSTALL_FULL_INCLUDEDIR CMAKE_INSTALL_FULL_LIBDIR
-    INSTALL_DESTINATION "${SDL23COMPAT_INSTALL_CMAKEDIR}"
+    INSTALL_DESTINATION "${SDL2COMPAT_INSTALL_CMAKEDIR}"
   )
   write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/SDL2ConfigVersion.cmake"
     VERSION ${SDL_VERSION}
@@ -643,7 +651,7 @@ if(SDL2COMPAT_INSTALL)
     FILES
       ${CMAKE_CURRENT_BINARY_DIR}/SDL2Config.cmake
       ${CMAKE_CURRENT_BINARY_DIR}/SDL2ConfigVersion.cmake
-    DESTINATION "${SDL23COMPAT_INSTALL_CMAKEDIR}"
+    DESTINATION "${SDL2COMPAT_INSTALL_CMAKEDIR}"
   )
 
   file(GLOB SDL2_INCLUDE_FILES ${PROJECT_SOURCE_DIR}/include/SDL2/*.h)
@@ -698,10 +706,10 @@ if(SDL2COMPAT_INSTALL)
     configure_file(sdl2_compat.pc.in sdl2_compat.pc @ONLY)
     install(FILES ${CMAKE_BINARY_DIR}/sdl2_compat.pc
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
-        )
+      )
 
     configure_file("${CMAKE_SOURCE_DIR}/sdl2-config.in" "${CMAKE_BINARY_DIR}/sdl2-config" @ONLY)
-    install(PROGRAMS "${CMAKE_BINARY_DIR}/sdl2-config" DESTINATION bin)
+    install(PROGRAMS "${CMAKE_BINARY_DIR}/sdl2-config" DESTINATION "${CMAKE_INSTALL_BINDIR}")
   endif()
 
   set(SOEXT ${CMAKE_SHARED_LIBRARY_SUFFIX})
@@ -715,4 +723,20 @@ if(SDL2COMPAT_INSTALL)
   endif()
 
   install(FILES "${PROJECT_SOURCE_DIR}/sdl2.m4" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/aclocal")
+
+  if(SDL2COMPAT_INSTALL_CPACK)
+    if(SDL2COMPAT_FRAMEWORK)
+      set(CPACK_GENERATOR "DragNDrop")
+    elseif(MSVC)
+      set(CPACK_GENERATOR "ZIP")
+    else()
+      set(CPACK_GENERATOR "TGZ")
+    endif()
+    configure_file(cmake/CPackProjectConfig.cmake.in CPackProjectConfig.cmake @ONLY)
+    set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/CPackProjectConfig.cmake")
+    # CPACK_SOURCE_PACKAGE_FILE_NAME must end with "-src" (so we can block creating a source archive)
+    set(CPACK_SOURCE_PACKAGE_FILE_NAME "SDL${PROJECT_VERSION_MAJOR}-${PROJECT_VERSION}-src")
+    set(CPACK_PACKAGE_DIRECTORY "${CMAKE_BINARY_DIR}/dist")
+    include(CPack)
+  endif()
 endif()

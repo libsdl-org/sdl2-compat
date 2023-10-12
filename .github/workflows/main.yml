@@ -16,16 +16,16 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-        - { name: 'Linux',                    os: ubuntu-latest,  shell: sh }
-        - { name: 'MacOS',                    os: macos-latest,   shell: sh }
-        - { name: 'Windows msys2 (mingw32)',  os: windows-latest, shell: 'msys2 {0}', msystem: mingw32, msys-env: mingw-w64-i686 }
-        - { name: 'Windows msys2 (mingw64)',  os: windows-latest, shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64 }
-        - { name: 'Windows msys2 (clang32)',  os: windows-latest, shell: 'msys2 {0}', msystem: clang32, msys-env: mingw-w64-clang-i686 }
-        - { name: 'Windows msys2 (clang64)',  os: windows-latest, shell: 'msys2 {0}', msystem: clang64, msys-env: mingw-w64-clang-x86_64 }
-        - { name: 'Windows MSVC (x86)',       os: windows-latest, shell: sh, msvc: true, msvc-arch: x86 }
-        - { name: 'Windows MSVC (x64)',       os: windows-latest, shell: sh, msvc: true, msvc-arch: x64 }
-        - { name: 'Windows MSVC (arm32)',     os: windows-latest, shell: sh, msvc: true, msvc-arch: amd64_arm, cross: true }
-        - { name: 'Windows MSVC (arm64)',     os: windows-latest, shell: sh, msvc: true, msvc-arch: amd64_arm64, cross: true }
+        - { name: 'Linux',                    os: ubuntu-latest,  artifact: 'SDL2_compat-ubuntu',   shell: sh, static: true }
+        - { name: 'MacOS',                    os: macos-latest,   artifact: 'SDL2_compat-macos',    shell: sh }
+        - { name: 'Windows msys2 (mingw32)',  os: windows-latest, artifact: 'SDL2_compat-mingw32',  shell: 'msys2 {0}', msystem: mingw32, msys-env: mingw-w64-i686 }
+        - { name: 'Windows msys2 (mingw64)',  os: windows-latest, artifact: 'SDL2_compat-mingw64',  shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64 }
+        - { name: 'Windows msys2 (clang32)',  os: windows-latest, artifact: 'SDL2_compat-clang32',  shell: 'msys2 {0}', msystem: clang32, msys-env: mingw-w64-clang-i686 }
+        - { name: 'Windows msys2 (clang64)',  os: windows-latest, artifact: 'SDL2_compat-clang64',  shell: 'msys2 {0}', msystem: clang64, msys-env: mingw-w64-clang-x86_64 }
+        - { name: 'Windows MSVC (x86)',       os: windows-latest, artifact: 'SDL2_compat-VC-x86',   shell: sh, msvc: true, msvc-arch: x86 }
+        - { name: 'Windows MSVC (x64)',       os: windows-latest, artifact: 'SDL2_compat-VC-x64',   shell: sh, msvc: true, msvc-arch: x64 }
+        - { name: 'Windows MSVC (arm32)',     os: windows-latest, artifact: 'SDL2_compat-VC-arm32', shell: sh, msvc: true, msvc-arch: amd64_arm, cross: true }
+        - { name: 'Windows MSVC (arm64)',     os: windows-latest, artifact: 'SDL2_compat-VC-arm64', shell: sh, msvc: true, msvc-arch: amd64_arm64, cross: true }
     defaults:
       run:
         shell: ${{ matrix.platform.shell }}
@@ -65,11 +65,30 @@ jobs:
         sudo apt-get install -y libgl1-mesa-dev libglu1-mesa-dev
     - name: Configure (CMake)
       run: |
-        cmake -B build -GNinja \
-          -DSDL2COMPAT_WERROR=ON
+        cmake -S . -B build \
+          -DSDL2COMPAT_STATIC=${{ matrix.platform.static }} \
+          -DSDL2COMPAT_INSTALL=TRUE \
+          -DCMAKE_INSTALL_LIBDIR=lib \
+          -DSDL2COMPAT_INSTALL_CPACK=TRUE \
+          -DCMAKE_INSTALL_PREFIX=prefix \
+          -DSDL2COMPAT_WERROR=ON \
+          -DCMAKE_POLICY_DEFAULT_CMP0141="NEW" \
+          -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT="ProgramDatabase" \
+          -DCMAKE_EXE_LINKER_FLAGS="${{ matrix.platform.msvc && '-DEBUG' }}" \
+          -DCMAKE_SHARED_LINKER_FLAGS="${{ matrix.platform.msvc && '-DEBUG' }}" \
+          -GNinja
     - name: Build (CMake)
+      id: build
       run: |
         cmake --build build/ --verbose
+    - name: Install (CMake)
+      run: |
+        cmake --install build/
+        echo "SDL2_ROOT=$(pwd)/prefix" >>$GITHUB_ENV
+    - name: Package (CPack)
+      if: ${{ always() && steps.build.outcome == 'success' }}
+      run: |
+        cmake --build build/ --target package
     - name: Run build-time tests (CMake)
       if: ${{ false && !matrix.platform.cross }} # FIXME: enable build-time tests on CI
       run: |
@@ -93,3 +112,27 @@ jobs:
       if: ${{ runner.os == 'Linux' }}
       run: |
         ./build-scripts/test-versioning.sh
+    - name: Verify CMake configuration files
+      run: |
+        cmake -S cmake/test -B cmake_config_build \
+          -DTEST_SHARED=TRUE \
+          -DTEST_STATIC=${{ matrix.platform.static || 'false' }} \
+          -DCMAKE_BUILD_TYPE=Release \
+          -GNinja
+        cmake --build cmake_config_build --verbose
+    - name: Verify sdl2-config
+      if: ${{ !matrix.platform.msvc }}
+      run: |
+        export PATH=${{ env.SDL2_ROOT }}/bin:$PATH
+        cmake/test/test_sdlconfig.sh ${{ !matrix.platform.static && '--no-static' }}
+    - name: Verify sdl2.pc
+      if: ${{ !matrix.platform.msvc }}
+      run: |
+        export PKG_CONFIG_PATH=${{ env.SDL2_ROOT }}/lib/pkgconfig
+        cmake/test/test_pkgconfig.sh ${{ !matrix.platform.static && '--no-static' }}
+    - uses: actions/upload-artifact@v3
+      if: ${{ always() && steps.build.outcome == 'success' }}
+      with:
+        if-no-files-found: error
+        name: ${{ matrix.platform.artifact }}
+        path: build/dist/SDL2_compat*

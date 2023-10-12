@@ -20,7 +20,7 @@ BEGIN
             VALUE "FileVersion", "2, 28, 50, 0\0"
             VALUE "InternalName", "SDL\0"
             VALUE "LegalCopyright", "Copyright (C) 2023 Sam Lantinga\0"
-            VALUE "OriginalFilename", "SDL.dll\0"
+            VALUE "OriginalFilename", "SDL2.dll\0"
             VALUE "ProductName", "Simple DirectMedia Layer 2.0 wrapper\0"
             VALUE "ProductVersion", "2, 28, 50, 0\0"
         END
