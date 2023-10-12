@@ -299,7 +299,6 @@
 #define SDL_GetPreferredLocales IGNORE_THIS_VERSION_OF_SDL_GetPreferredLocales
 #define SDL_GetPrimaryDisplay IGNORE_THIS_VERSION_OF_SDL_GetPrimaryDisplay
 #define SDL_GetPrimarySelectionText IGNORE_THIS_VERSION_OF_SDL_GetPrimarySelectionText
-#define SDL_GetProperty IGNORE_THIS_VERSION_OF_SDL_GetProperty
 #define SDL_GetRGB IGNORE_THIS_VERSION_OF_SDL_GetRGB
 #define SDL_GetRGBA IGNORE_THIS_VERSION_OF_SDL_GetRGBA
 #define SDL_GetRectAndLineIntersection IGNORE_THIS_VERSION_OF_SDL_GetRectAndLineIntersection
@@ -356,7 +355,6 @@
 #define SDL_GetTextureAlphaMod IGNORE_THIS_VERSION_OF_SDL_GetTextureAlphaMod
 #define SDL_GetTextureBlendMode IGNORE_THIS_VERSION_OF_SDL_GetTextureBlendMode
 #define SDL_GetTextureColorMod IGNORE_THIS_VERSION_OF_SDL_GetTextureColorMod
-#define SDL_GetTextureProperties IGNORE_THIS_VERSION_OF_SDL_GetProperties
 #define SDL_GetTextureScaleMode IGNORE_THIS_VERSION_OF_SDL_GetTextureScaleMode
 #define SDL_GetThreadID IGNORE_THIS_VERSION_OF_SDL_GetThreadID
 #define SDL_GetThreadName IGNORE_THIS_VERSION_OF_SDL_GetThreadName
@@ -386,7 +384,6 @@
 #define SDL_GetWindowPixelDensity IGNORE_THIS_VERSION_OF_SDL_GetWindowPixelDensity
 #define SDL_GetWindowPixelFormat IGNORE_THIS_VERSION_OF_SDL_GetWindowPixelFormat
 #define SDL_GetWindowPosition IGNORE_THIS_VERSION_OF_SDL_GetWindowPosition
-#define SDL_GetWindowProperties IGNORE_THIS_VERSION_OF_SDL_GetWindowProperties
 #define SDL_GetWindowSize IGNORE_THIS_VERSION_OF_SDL_GetWindowSize
 #define SDL_GetWindowSizeInPixels IGNORE_THIS_VERSION_OF_SDL_GetWindowSizeInPixels
 #define SDL_GetWindowSurface IGNORE_THIS_VERSION_OF_SDL_GetWindowSurface
@@ -605,7 +602,6 @@
 #define SDL_SetPaletteColors IGNORE_THIS_VERSION_OF_SDL_SetPaletteColors
 #define SDL_SetPixelFormatPalette IGNORE_THIS_VERSION_OF_SDL_SetPixelFormatPalette
 #define SDL_SetPrimarySelectionText IGNORE_THIS_VERSION_OF_SDL_SetPrimarySelectionText
-#define SDL_SetProperty IGNORE_THIS_VERSION_OF_SDL_SetProperty
 #define SDL_SetRelativeMouseMode IGNORE_THIS_VERSION_OF_SDL_SetRelativeMouseMode
 #define SDL_SetRenderClipRect IGNORE_THIS_VERSION_OF_SDL_SetRenderClipRect
 #define SDL_SetRenderDrawBlendMode IGNORE_THIS_VERSION_OF_SDL_SetRenderDrawBlendMode
@@ -933,6 +929,22 @@
 #define SDL_SetAudioPostmixCallback IGNORE_THIS_VERSION_OF_SDL_SetAudioPostmixCallback
 #define SDL_GetAudioStreamQueued IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamQueued
 #define SDL_GetTextureDXGIResource IGNORE_THIS_VERSION_OF_SDL_GetTextureDXGIResource
+#define SDL_CreateProperties IGNORE_THIS_VERSION_OF_SDL_CreateProperties
+#define SDL_LockProperties IGNORE_THIS_VERSION_OF_SDL_LockProperties
+#define SDL_UnlockProperties IGNORE_THIS_VERSION_OF_SDL_UnlockProperties
+#define SDL_SetProperty IGNORE_THIS_VERSION_OF_SDL_SetProperty
+#define SDL_GetProperty IGNORE_THIS_VERSION_OF_SDL_GetProperty
+#define SDL_DestroyProperties IGNORE_THIS_VERSION_OF_SDL_DestroyProperties
+#define SDL_GetAudioStreamProperties IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamProperties
+#define SDL_GetGamepadProperties IGNORE_THIS_VERSION_OF_SDL_GetGamepadProperties
+#define SDL_GetJoystickProperties IGNORE_THIS_VERSION_OF_SDL_GetJoystickProperties
+#define SDL_GetRendererProperties IGNORE_THIS_VERSION_OF_SDL_GetRendererProperties
+#define SDL_GetTextureProperties IGNORE_THIS_VERSION_OF_SDL_GetTextureProperties
+#define SDL_GetRWProperties IGNORE_THIS_VERSION_OF_SDL_GetRWProperties
+#define SDL_GetSensorProperties IGNORE_THIS_VERSION_OF_SDL_GetSensorProperties
+#define SDL_GetSurfaceProperties IGNORE_THIS_VERSION_OF_SDL_GetSurfaceProperties
+#define SDL_GetWindowProperties IGNORE_THIS_VERSION_OF_SDL_GetWindowProperties
+#define SDL_ClearProperty IGNORE_THIS_VERSION_OF_SDL_ClearProperty
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -2046,10 +2058,6 @@
 #undef SDL_GetPrimarySelectionText
 #endif
 
-#ifdef SDL_GetProperty
-#undef SDL_GetProperty
-#endif
-
 #ifdef SDL_GetRGB
 #undef SDL_GetRGB
 #endif
@@ -2274,10 +2282,6 @@
 #undef SDL_GetTextureColorMod
 #endif
 
-#ifdef SDL_GetTextureProperties
-#undef SDL_GetTextureProperties
-#endif
-
 #ifdef SDL_GetTextureScaleMode
 #undef SDL_GetTextureScaleMode
 #endif
@@ -2392,10 +2396,6 @@
 
 #ifdef SDL_GetWindowPosition
 #undef SDL_GetWindowPosition
-#endif
-
-#ifdef SDL_GetWindowProperties
-#undef SDL_GetWindowProperties
 #endif
 
 #ifdef SDL_GetWindowSize
@@ -3268,10 +3268,6 @@
 
 #ifdef SDL_SetPrimarySelectionText
 #undef SDL_SetPrimarySelectionText
-#endif
-
-#ifdef SDL_SetProperty
-#undef SDL_SetProperty
 #endif
 
 #ifdef SDL_SetRelativeMouseMode
@@ -4582,6 +4578,70 @@
 #undef SDL_GetTextureDXGIResource
 #endif
 
+#ifdef SDL_CreateProperties
+#undef SDL_CreateProperties
+#endif
+
+#ifdef SDL_LockProperties
+#undef SDL_LockProperties
+#endif
+
+#ifdef SDL_UnlockProperties
+#undef SDL_UnlockProperties
+#endif
+
+#ifdef SDL_SetProperty
+#undef SDL_SetProperty
+#endif
+
+#ifdef SDL_GetProperty
+#undef SDL_GetProperty
+#endif
+
+#ifdef SDL_DestroyProperties
+#undef SDL_DestroyProperties
+#endif
+
+#ifdef SDL_GetAudioStreamProperties
+#undef SDL_GetAudioStreamProperties
+#endif
+
+#ifdef SDL_GetGamepadProperties
+#undef SDL_GetGamepadProperties
+#endif
+
+#ifdef SDL_GetJoystickProperties
+#undef SDL_GetJoystickProperties
+#endif
+
+#ifdef SDL_GetRendererProperties
+#undef SDL_GetRendererProperties
+#endif
+
+#ifdef SDL_GetTextureProperties
+#undef SDL_GetTextureProperties
+#endif
+
+#ifdef SDL_GetRWProperties
+#undef SDL_GetRWProperties
+#endif
+
+#ifdef SDL_GetSensorProperties
+#undef SDL_GetSensorProperties
+#endif
+
+#ifdef SDL_GetSurfaceProperties
+#undef SDL_GetSurfaceProperties
+#endif
+
+#ifdef SDL_GetWindowProperties
+#undef SDL_GetWindowProperties
+#endif
+
+#ifdef SDL_ClearProperty
+#undef SDL_ClearProperty
+#endif
+
 /* undefine these macros too: */
 /* redefine as SDL3_xxx, if needed. */
 
@@ -4673,4 +4733,4 @@
 #undef SDL_iOSSetEventPump
 #endif
 
-#endif /*  INCL_SDL3_INCLUDE_WRAPPER_H */
+#endif /* INCL_SDL3_INCLUDE_WRAPPER_H */
