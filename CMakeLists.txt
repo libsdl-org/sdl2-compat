@@ -63,13 +63,13 @@ set(SDL_DYLIB_CURRENT_VERSION "${SDL_DYLIB_CURRENT_VERSION_MAJOR}.${SDL_DYLIB_CU
 set(SDL_DYLIB_COMPAT_VERSION "${SDL_DYLIB_COMPAT_VERSION_MAJOR}.${SDL_DYLIB_COMPAT_VERSION_MINOR}.${SDL_DYLIB_COMPAT_VERSION_MICRO}")
 
 option(SDL2COMPAT_TESTS "Enable to build SDL2 test programs" ON)
-option(SDL2COMPAT_DEVEL "Enable installing SDL2 development headers" ON)
-option(SDL2COMPAT_STATICDEVEL "Enable installing static link library" OFF)
+option(SDL2COMPAT_INSTALL "Enable installating SDL2-compat" ON)
+option(SDL2COMPAT_STATIC "Enable building static SDL2 link library" OFF)
 option(SDL2COMPAT_WERROR "Treat warnings as errors" OFF)
 set(SDL2COMPAT_VENDOR_INFO "" CACHE STRING "Vendor name and/or version to add to SDL_REVISION")
 #FIXME: should SDL2-compat modify vendor_info/revision information?
 
-if(SDL2COMPAT_STATICDEVEL AND NOT (CMAKE_SYSTEM_NAME MATCHES "Linux"))
+if(SDL2COMPAT_STATIC AND NOT (CMAKE_SYSTEM_NAME MATCHES "Linux"))
   message(FATAL_ERROR "Static builds are only supported on Linux.")
 endif()
 
@@ -578,7 +578,7 @@ endif()
 
 set(installed_targets SDL2)
 
-if(SDL2COMPAT_STATICDEVEL AND SDL2COMPAT_DEVEL)
+if(SDL2COMPAT_STATIC)
   add_library(SDL2-static STATIC ${SDL2COMPAT_SRCS})
   add_library(SDL2::SDL2-static ALIAS SDL2-static)
   SDL_AddCommonCompilerFlags(SDL2-static WERROR "${SDL2COMPAT_WERROR}")
@@ -608,7 +608,7 @@ if(SDL2COMPAT_STATICDEVEL AND SDL2COMPAT_DEVEL)
   list(APPEND installed_targets SDL2-static)
 endif()
 
-if(SDL2COMPAT_DEVEL)
+if(SDL2COMPAT_INSTALL)
   if(WIN32 AND NOT MINGW)
     set(SDL23COMPAT_INSTALL_CMAKEDIR_DEFAULT "cmake")
     set(LICENSES_PREFIX "licenses/SDL2")
@@ -679,13 +679,13 @@ if(SDL2COMPAT_DEVEL)
       foreach(lib ${CMAKE_DL_LIBS})
         set(SDL_STATIC_LIBS "-l${lib}")
       endforeach()
-      if(NOT SDL2COMPAT_STATICDEVEL)
+      if(NOT SDL2COMPAT_STATIC)
         set(SDL_STATIC_LIBS "")
       endif()
     endif()
 
     # !!! FIXME: do we _want_ static builds?
-    if(SDL2COMPAT_STATICDEVEL)
+    if(SDL2COMPAT_STATIC)
       set(ENABLE_STATIC_TRUE "")
       set(ENABLE_STATIC_FALSE "#")
     else()
