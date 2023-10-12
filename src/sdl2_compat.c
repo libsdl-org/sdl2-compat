@@ -5269,6 +5269,54 @@ SDL_GetWindowFlags(SDL_Window *window)
 
 #define POPUP_PARENT_PROP_STR "__SDL3_parentWnd"
 
+DECLSPEC void* SDLCALL
+SDL_GetWindowData(SDL_Window * window, const char *name)
+{
+    if (!window) {
+        SDL_SetError("Invalid window");
+        return NULL;
+    }
+
+    if (name == NULL || name[0] == '\0') {
+        SDL3_InvalidParamError("name");
+        return NULL;
+    }
+
+    return SDL3_GetProperty(SDL3_GetWindowProperties(window), name);
+}
+
+DECLSPEC void* SDLCALL
+SDL_SetWindowData(SDL_Window * window, const char *name, void *userdata)
+{
+    void *prev;
+
+    if (!window) {
+        SDL_SetError("Invalid window");
+        return NULL;
+    }
+
+    if (name == NULL || name[0] == '\0') {
+        SDL3_InvalidParamError("name");
+        return NULL;
+    }
+
+    prev = SDL_GetWindowData(window, name);
+    SDL3_SetProperty(SDL3_GetWindowProperties(window), name, userdata, NULL, NULL);
+    return prev;
+}
+
+DECLSPEC int SDLCALL
+SDL_SetTextureUserData(SDL_Texture * texture, void *userdata)
+{
+    return SDL3_SetProperty(SDL3_GetTextureProperties(texture), "userdata", userdata, NULL, NULL);
+}
+
+DECLSPEC void * SDLCALL
+SDL_GetTextureUserData(SDL_Texture * texture)
+{
+    return SDL3_GetProperty(SDL3_GetTextureProperties(texture), "userdata");
+}
+
 DECLSPEC SDL_Window * SDLCALL
 SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
 {
@@ -5297,7 +5345,7 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
 
         if (parent) {
             window = SDL3_CreatePopupWindow(parent, x, y, w, h, flags);
-            SDL3_SetWindowData(window, POPUP_PARENT_PROP_STR, parent);
+            SDL_SetWindowData(window, POPUP_PARENT_PROP_STR, parent);
         }
     }
     if (window) {
@@ -5476,7 +5524,7 @@ SDL_SetWindowPosition(SDL_Window *window, int x, int y)
 {
     /* Popup windows need to be transformed from global to relative coordinates. */
     if (SDL3_GetWindowFlags(window) & (SDL_WINDOW_TOOLTIP | SDL_WINDOW_POPUP_MENU)) {
-        SDL_Window *parent = (SDL_Window *) SDL3_GetWindowData(window, POPUP_PARENT_PROP_STR);
+        SDL_Window *parent = (SDL_Window *) SDL_GetWindowData(window, POPUP_PARENT_PROP_STR);
 
         while (parent) {
             int x_off, y_off;
@@ -5485,7 +5533,7 @@ SDL_SetWindowPosition(SDL_Window *window, int x, int y)
             x -= x_off;
             y -= y_off;
 
-            parent = (SDL_Window *) SDL3_GetWindowData(parent, POPUP_PARENT_PROP_STR);
+            parent = (SDL_Window *) SDL_GetWindowData(parent, POPUP_PARENT_PROP_STR);
         }
     } else {
         if (SDL_WINDOWPOS_ISUNDEFINED(x) || SDL_WINDOWPOS_ISCENTERED(x)) {
@@ -5512,7 +5560,7 @@ SDL_GetWindowPosition(SDL_Window *window, int *x, int *y)
 
     /* Popup windows need to be transformed from relative to global coordinates. */
     if (SDL3_GetWindowFlags(window) & (SDL_WINDOW_TOOLTIP | SDL_WINDOW_POPUP_MENU)) {
-        SDL_Window *parent = (SDL_Window *) SDL3_GetWindowData(window, POPUP_PARENT_PROP_STR);
+        SDL_Window *parent = (SDL_Window *) SDL_GetWindowData(window, POPUP_PARENT_PROP_STR);
 
         while (parent) {
             int x_off, y_off;
@@ -5521,7 +5569,7 @@ SDL_GetWindowPosition(SDL_Window *window, int *x, int *y)
             *x += x_off;
             *y += y_off;
 
-            parent = (SDL_Window *) SDL3_GetWindowData(parent, POPUP_PARENT_PROP_STR);
+            parent = (SDL_Window *) SDL_GetWindowData(parent, POPUP_PARENT_PROP_STR);
         }
     }
 }

@@ -463,8 +463,6 @@ SDL3_SYM(Uint32,GetWindowFlags,(SDL_Window *a),(a),return)
 SDL3_SYM_PASSTHROUGH(const char*,GetWindowTitle,(SDL_Window *a),(a),return)
 SDL3_SYM(int,SetWindowTitle,(SDL_Window *a, const char *b),(a,b),return)
 SDL3_SYM(int,SetWindowIcon,(SDL_Window *a, SDL_Surface *b),(a,b),return)
-SDL3_SYM_PASSTHROUGH(void*,SetWindowData,(SDL_Window *a, const char *b, void *c),(a,b,c),return)
-SDL3_SYM_PASSTHROUGH(void*,GetWindowData,(SDL_Window *a, const char *b),(a,b),return)
 SDL3_SYM(int,SetWindowPosition,(SDL_Window *a, int b, int c),(a,b,c),return)
 SDL3_SYM(int,GetWindowPosition,(SDL_Window *a, int *b, int *c),(a,b,c),return)
 SDL3_SYM(int,GetWindowSize,(SDL_Window *a, int *b, int *c),(a,b,c),return)
@@ -745,8 +743,6 @@ SDL3_SYM_PASSTHROUGH(int,FlashWindow,(SDL_Window *a, SDL_FlashOperation b),(a,b)
 SDL3_SYM_RENAMED(int,GameControllerSendEffect,SendGamepadEffect,(SDL_GameController *a, const void *b, int c),(a,b,c),return)
 SDL3_SYM_RENAMED(int,JoystickSendEffect,SendJoystickEffect,(SDL_Joystick *a, const void *b, int c),(a,b,c),return)
 SDL3_SYM_RENAMED(float,GameControllerGetSensorDataRate,GetGamepadSensorDataRate,(SDL_GameController *a, SDL_SensorType b),(a,b),return)
-SDL3_SYM_PASSTHROUGH(int,SetTextureUserData,(SDL_Texture *a, void *b),(a,b),return)
-SDL3_SYM_PASSTHROUGH(void*,GetTextureUserData,(SDL_Texture *a),(a),return)
 SDL3_SYM_PASSTHROUGH(int,RenderGeometry,(SDL_Renderer *a, SDL_Texture *b, const SDL_Vertex *c, int d, const int *e, int f),(a,b,c,d,e,f),return)
 SDL3_SYM_PASSTHROUGH(int,RenderGeometryRaw,(SDL_Renderer *a, SDL_Texture *b, const float *c, int d, const SDL_Color *e, int f, const float *g, int h, int i, const void *j, int k, int l),(a,b,c,d,e,f,g,h,i,j,k,l),return)
 SDL3_SYM_RENAMED(int,RenderSetVSync,SetRenderVSync,(SDL_Renderer *a, int b),(a,b),return)
@@ -905,6 +901,10 @@ SDL3_SYM(SDL_GamepadBinding **,GetGamepadBindings,(SDL_Gamepad *a, int *b),(a,b)
 #ifdef __GDK__
 SDL3_SYM_PASSTHROUGH(int,GDKGetDefaultUser,(XUserHandle *a),(a),return)
 #endif
+SDL3_SYM(int,SetProperty,(SDL_PropertiesID a, const char *b, void *c, void (SDLCALL *d)(void *userdata, void *value), void *e),(a,b,c,d,e),return)
+SDL3_SYM(void*,GetProperty,(SDL_PropertiesID a, const char *b),(a,b),return)
+SDL3_SYM(SDL_PropertiesID,GetWindowProperties,(SDL_Window *a),(a),return)
+SDL3_SYM(SDL_PropertiesID,GetTextureProperties,(SDL_Texture *a),(a),return)
 
 #undef SDL3_SYM
 #undef SDL3_SYM_PASSTHROUGH

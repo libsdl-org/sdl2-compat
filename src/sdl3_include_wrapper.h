@@ -299,6 +299,7 @@
 #define SDL_GetPreferredLocales IGNORE_THIS_VERSION_OF_SDL_GetPreferredLocales
 #define SDL_GetPrimaryDisplay IGNORE_THIS_VERSION_OF_SDL_GetPrimaryDisplay
 #define SDL_GetPrimarySelectionText IGNORE_THIS_VERSION_OF_SDL_GetPrimarySelectionText
+#define SDL_GetProperty IGNORE_THIS_VERSION_OF_SDL_GetProperty
 #define SDL_GetRGB IGNORE_THIS_VERSION_OF_SDL_GetRGB
 #define SDL_GetRGBA IGNORE_THIS_VERSION_OF_SDL_GetRGBA
 #define SDL_GetRectAndLineIntersection IGNORE_THIS_VERSION_OF_SDL_GetRectAndLineIntersection
@@ -355,8 +356,8 @@
 #define SDL_GetTextureAlphaMod IGNORE_THIS_VERSION_OF_SDL_GetTextureAlphaMod
 #define SDL_GetTextureBlendMode IGNORE_THIS_VERSION_OF_SDL_GetTextureBlendMode
 #define SDL_GetTextureColorMod IGNORE_THIS_VERSION_OF_SDL_GetTextureColorMod
+#define SDL_GetTextureProperties IGNORE_THIS_VERSION_OF_SDL_GetProperties
 #define SDL_GetTextureScaleMode IGNORE_THIS_VERSION_OF_SDL_GetTextureScaleMode
-#define SDL_GetTextureUserData IGNORE_THIS_VERSION_OF_SDL_GetTextureUserData
 #define SDL_GetThreadID IGNORE_THIS_VERSION_OF_SDL_GetThreadID
 #define SDL_GetThreadName IGNORE_THIS_VERSION_OF_SDL_GetThreadName
 #define SDL_GetTicks IGNORE_THIS_VERSION_OF_SDL_GetTicks
@@ -368,7 +369,6 @@
 #define SDL_GetVersion IGNORE_THIS_VERSION_OF_SDL_GetVersion
 #define SDL_GetVideoDriver IGNORE_THIS_VERSION_OF_SDL_GetVideoDriver
 #define SDL_GetWindowBordersSize IGNORE_THIS_VERSION_OF_SDL_GetWindowBordersSize
-#define SDL_GetWindowData IGNORE_THIS_VERSION_OF_SDL_GetWindowData
 #define SDL_GetWindowDisplayScale IGNORE_THIS_VERSION_OF_SDL_GetWindowDisplayScale
 #define SDL_GetWindowFlags IGNORE_THIS_VERSION_OF_SDL_GetWindowFlags
 #define SDL_GetWindowFromID IGNORE_THIS_VERSION_OF_SDL_GetWindowFromID
@@ -386,6 +386,7 @@
 #define SDL_GetWindowPixelDensity IGNORE_THIS_VERSION_OF_SDL_GetWindowPixelDensity
 #define SDL_GetWindowPixelFormat IGNORE_THIS_VERSION_OF_SDL_GetWindowPixelFormat
 #define SDL_GetWindowPosition IGNORE_THIS_VERSION_OF_SDL_GetWindowPosition
+#define SDL_GetWindowProperties IGNORE_THIS_VERSION_OF_SDL_GetWindowProperties
 #define SDL_GetWindowSize IGNORE_THIS_VERSION_OF_SDL_GetWindowSize
 #define SDL_GetWindowSizeInPixels IGNORE_THIS_VERSION_OF_SDL_GetWindowSizeInPixels
 #define SDL_GetWindowSurface IGNORE_THIS_VERSION_OF_SDL_GetWindowSurface
@@ -604,6 +605,7 @@
 #define SDL_SetPaletteColors IGNORE_THIS_VERSION_OF_SDL_SetPaletteColors
 #define SDL_SetPixelFormatPalette IGNORE_THIS_VERSION_OF_SDL_SetPixelFormatPalette
 #define SDL_SetPrimarySelectionText IGNORE_THIS_VERSION_OF_SDL_SetPrimarySelectionText
+#define SDL_SetProperty IGNORE_THIS_VERSION_OF_SDL_SetProperty
 #define SDL_SetRelativeMouseMode IGNORE_THIS_VERSION_OF_SDL_SetRelativeMouseMode
 #define SDL_SetRenderClipRect IGNORE_THIS_VERSION_OF_SDL_SetRenderClipRect
 #define SDL_SetRenderDrawBlendMode IGNORE_THIS_VERSION_OF_SDL_SetRenderDrawBlendMode
@@ -626,11 +628,9 @@
 #define SDL_SetTextureBlendMode IGNORE_THIS_VERSION_OF_SDL_SetTextureBlendMode
 #define SDL_SetTextureColorMod IGNORE_THIS_VERSION_OF_SDL_SetTextureColorMod
 #define SDL_SetTextureScaleMode IGNORE_THIS_VERSION_OF_SDL_SetTextureScaleMode
-#define SDL_SetTextureUserData IGNORE_THIS_VERSION_OF_SDL_SetTextureUserData
 #define SDL_SetThreadPriority IGNORE_THIS_VERSION_OF_SDL_SetThreadPriority
 #define SDL_SetWindowAlwaysOnTop IGNORE_THIS_VERSION_OF_SDL_SetWindowAlwaysOnTop
 #define SDL_SetWindowBordered IGNORE_THIS_VERSION_OF_SDL_SetWindowBordered
-#define SDL_SetWindowData IGNORE_THIS_VERSION_OF_SDL_SetWindowData
 #define SDL_SetWindowFullscreen IGNORE_THIS_VERSION_OF_SDL_SetWindowFullscreen
 #define SDL_SetWindowFullscreenMode IGNORE_THIS_VERSION_OF_SDL_SetWindowFullscreenMode
 #define SDL_SetWindowGrab IGNORE_THIS_VERSION_OF_SDL_SetWindowGrab
@@ -2046,6 +2046,10 @@
 #undef SDL_GetPrimarySelectionText
 #endif
 
+#ifdef SDL_GetProperty
+#undef SDL_GetProperty
+#endif
+
 #ifdef SDL_GetRGB
 #undef SDL_GetRGB
 #endif
@@ -2270,12 +2274,12 @@
 #undef SDL_GetTextureColorMod
 #endif
 
-#ifdef SDL_GetTextureScaleMode
-#undef SDL_GetTextureScaleMode
+#ifdef SDL_GetTextureProperties
+#undef SDL_GetTextureProperties
 #endif
 
-#ifdef SDL_GetTextureUserData
-#undef SDL_GetTextureUserData
+#ifdef SDL_GetTextureScaleMode
+#undef SDL_GetTextureScaleMode
 #endif
 
 #ifdef SDL_GetThreadID
@@ -2320,10 +2324,6 @@
 
 #ifdef SDL_GetWindowBordersSize
 #undef SDL_GetWindowBordersSize
-#endif
-
-#ifdef SDL_GetWindowData
-#undef SDL_GetWindowData
 #endif
 
 #ifdef SDL_GetWindowDisplayScale
@@ -2392,6 +2392,10 @@
 
 #ifdef SDL_GetWindowPosition
 #undef SDL_GetWindowPosition
+#endif
+
+#ifdef SDL_GetWindowProperties
+#undef SDL_GetWindowProperties
 #endif
 
 #ifdef SDL_GetWindowSize
@@ -3266,6 +3270,10 @@
 #undef SDL_SetPrimarySelectionText
 #endif
 
+#ifdef SDL_SetProperty
+#undef SDL_SetProperty
+#endif
+
 #ifdef SDL_SetRelativeMouseMode
 #undef SDL_SetRelativeMouseMode
 #endif
@@ -3354,10 +3362,6 @@
 #undef SDL_SetTextureScaleMode
 #endif
 
-#ifdef SDL_SetTextureUserData
-#undef SDL_SetTextureUserData
-#endif
-
 #ifdef SDL_SetThreadPriority
 #undef SDL_SetThreadPriority
 #endif
@@ -3368,10 +3372,6 @@
 
 #ifdef SDL_SetWindowBordered
 #undef SDL_SetWindowBordered
-#endif
-
-#ifdef SDL_SetWindowData
-#undef SDL_SetWindowData
 #endif
 
 #ifdef SDL_SetWindowFullscreen
