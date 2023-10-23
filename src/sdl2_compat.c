@@ -1532,8 +1532,8 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
 
         /* display events moved to the top level in SDL3. */
         case SDL_EVENT_DISPLAY_ORIENTATION:
-        case SDL_EVENT_DISPLAY_CONNECTED:
-        case SDL_EVENT_DISPLAY_DISCONNECTED:
+        case SDL_EVENT_DISPLAY_ADDED:
+        case SDL_EVENT_DISPLAY_REMOVED:
             if (SDL3_EventEnabled(SDL2_DISPLAYEVENT)) {
                 event2.display.type = SDL2_DISPLAYEVENT;
                 event2.display.timestamp = (Uint32) SDL_NS_TO_MS(event3->display.timestamp);
