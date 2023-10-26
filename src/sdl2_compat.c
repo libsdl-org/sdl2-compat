@@ -3439,6 +3439,22 @@ SDL_RenderGetIntegerScale(SDL_Renderer *renderer)
     return SDL_FALSE;
 }
 
+
+DECLSPEC int SDLCALL
+SDL_LockMutex(SDL_Mutex *a)
+{
+    SDL3_LockMutex(a);
+    return 0;
+}
+
+DECLSPEC int SDLCALL
+SDL_UnlockMutex(SDL_Mutex *a)
+{
+    SDL3_UnlockMutex(a);
+    return 0;
+}
+
+
 DECLSPEC int SDLCALL
 SDL_AudioInit(const char *driver_name)
 {
