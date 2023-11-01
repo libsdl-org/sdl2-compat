@@ -945,6 +945,7 @@
 #define SDL_GetSurfaceProperties IGNORE_THIS_VERSION_OF_SDL_GetSurfaceProperties
 #define SDL_GetWindowProperties IGNORE_THIS_VERSION_OF_SDL_GetWindowProperties
 #define SDL_ClearProperty IGNORE_THIS_VERSION_OF_SDL_ClearProperty
+#define SDL_EnterAppMainCallbacks IGNORE_THIS_VERSION_OF_SDL_EnterAppMainCallbacks
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -4640,6 +4641,10 @@
 
 #ifdef SDL_ClearProperty
 #undef SDL_ClearProperty
+#endif
+
+#ifdef SDL_EnterAppMainCallbacks
+#undef SDL_EnterAppMainCallbacks
 #endif
 
 /* undefine these macros too: */
