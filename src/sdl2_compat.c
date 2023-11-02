@@ -5056,12 +5056,49 @@ SDL_RenderCopyExF(SDL_Renderer *renderer, SDL_Texture *texture,
     return SDL3_RenderTextureRotated(renderer, texture, psrcfrect, dstrect, angle, center, flip);
 }
 
-/* SDL3 removed window parameter from SDL_Vulkan_GetInstanceExtensions() */
-DECLSPEC SDL_bool SDLCALL
-SDL_Vulkan_GetInstanceExtensions(SDL_Window *window, unsigned int *pCount, const char **pNames)
+/* this came out of SDL2 directly. */
+static SDL_bool SDL_Vulkan_GetInstanceExtensions_Helper(unsigned int *userCount,
+                                                 const char **userNames,
+                                                 unsigned int nameCount,
+                                                 const char *const *names)
 {
-    (void) window;
-    return SDL3_Vulkan_GetInstanceExtensions(pCount, pNames);
+    if (userNames) {
+        unsigned i;
+
+        if (*userCount < nameCount) {
+            SDL_SetError("Output array for SDL_Vulkan_GetInstanceExtensions needs to be at least %d big", nameCount);
+            return SDL_FALSE;
+        }
+
+        for (i = 0; i < nameCount; i++) {
+            userNames[i] = names[i];
+        }
+    }
+    *userCount = nameCount;
+    return SDL_TRUE;
+}
+
+
+/* SDL3 simplified SDL_Vulkan_GetInstanceExtensions() extensively. */
+DECLSPEC SDL_bool SDLCALL
+SDL_Vulkan_GetInstanceExtensions(SDL_Window *window, unsigned int *puiCount, const char **pNames)
+{
+    Uint32 ui32count = 0;
+    char const* const* extensions = NULL;
+
+    (void) window;  /* Strictly speaking, SDL2 would report failure if this window was invalid, but we'll just go on until someone complains. */
+
+    if (puiCount == NULL) {
+        SDL3_InvalidParamError("count");
+        return SDL_FALSE;
+    }
+
+    extensions = SDL3_Vulkan_GetInstanceExtensions(&ui32count);
+    if (!extensions) {
+        return SDL_FALSE;
+    }
+
+    return SDL_Vulkan_GetInstanceExtensions_Helper(puiCount, pNames, (unsigned int) ui32count, extensions);
 }
 
 
