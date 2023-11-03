@@ -399,7 +399,7 @@ SDL2Compat_GetHintBoolean(const char *name, SDL_bool default_value)
         return default_value;
     }
 
-    return (SDL3_atoi(val) != 0) ? SDL_TRUE : SDL_FALSE;
+    return (SDL3_atoi(val) != 0);
 }
 
 
@@ -2188,7 +2188,7 @@ SDL_LoadFile_RW(SDL2_RWops *rwops2, size_t *datasize, int freesrc)
     void *retval = NULL;
     SDL_RWops *rwops3 = RWops2to3(rwops2);
     if (rwops3) {
-        retval = SDL3_LoadFile_RW(rwops3, datasize, freesrc ? SDL_TRUE : SDL_FALSE);
+        retval = SDL3_LoadFile_RW(rwops3, datasize, freesrc != 0);
         if (!freesrc) {
             SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }
@@ -2211,7 +2211,7 @@ SDL_LoadWAV_RW(SDL2_RWops *rwops2, int freesrc, SDL2_AudioSpec *spec2, Uint8 **a
         SDL_RWops *rwops3 = RWops2to3(rwops2);
         if (rwops3) {
             SDL_AudioSpec spec3;
-            const int rc = SDL3_LoadWAV_RW(rwops3, freesrc ? SDL_TRUE : SDL_FALSE, &spec3, audio_buf, audio_len);
+            const int rc = SDL3_LoadWAV_RW(rwops3, freesrc != 0, &spec3, audio_buf, audio_len);
             SDL3_zerop(spec2);
             if (rc == 0) {
                 spec2->format = spec3.format;
@@ -2242,7 +2242,7 @@ SDL_LoadBMP_RW(SDL2_RWops *rwops2, int freesrc)
     SDL_Surface *retval = NULL;
     SDL_RWops *rwops3 = RWops2to3(rwops2);
     if (rwops3) {
-        retval = SDL3_LoadBMP_RW(rwops3, freesrc ? SDL_TRUE : SDL_FALSE);
+        retval = SDL3_LoadBMP_RW(rwops3, freesrc != 0);
         if (!freesrc) {
             SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }
@@ -2260,7 +2260,7 @@ SDL_SaveBMP_RW(SDL_Surface *surface, SDL2_RWops *rwops2, int freedst)
     int retval = -1;
     SDL_RWops *rwops3 = RWops2to3(rwops2);
     if (rwops3) {
-        retval = SDL3_SaveBMP_RW(surface, rwops3, freedst ? SDL_TRUE : SDL_FALSE);
+        retval = SDL3_SaveBMP_RW(surface, rwops3, freedst != 0);
         if (!freedst) {
             SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }
@@ -2278,7 +2278,7 @@ SDL_GameControllerAddMappingsFromRW(SDL2_RWops *rwops2, int freerw)
     int retval = -1;
     SDL_RWops *rwops3 = RWops2to3(rwops2);
     if (rwops3) {
-        retval = SDL3_AddGamepadMappingsFromRW(rwops3, freerw ? SDL_TRUE : SDL_FALSE);
+        retval = SDL3_AddGamepadMappingsFromRW(rwops3, freerw != 0);
         if (!freerw) {
             SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }
@@ -3999,7 +3999,7 @@ static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devicename, int iscap
         return 0;
     }
 
-    stream2->iscapture = iscapture ? SDL_TRUE : SDL_FALSE;
+    stream2->iscapture = iscapture;
     AudioOpenDevices[id] = stream2;
 
     return id + 1;
@@ -5374,7 +5374,7 @@ DECLSPEC SDL_Window * SDLCALL
 SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
 {
     SDL_Window *window = NULL;
-    SDL_bool hidden = (flags & SDL_WINDOW_HIDDEN) ? SDL_TRUE : SDL_FALSE;
+    const SDL_bool hidden = (flags & SDL_WINDOW_HIDDEN) != 0;
     const Uint32 is_popup = flags & (SDL_WINDOW_POPUP_MENU | SDL_WINDOW_TOOLTIP);
 
     flags &= ~SDL2_WINDOW_SHOWN;
@@ -5436,13 +5436,7 @@ SDL_CreateShapedWindow(const char *title, unsigned int x, unsigned int y, unsign
 DECLSPEC int SDLCALL
 SDL_SetWindowFullscreen(SDL_Window *window, Uint32 flags)
 {
-    SDL_bool flags3 = SDL_FALSE;
-
-    if (flags & SDL2_WINDOW_FULLSCREEN_DESKTOP) {
-        flags3 = SDL_TRUE;
-    }
-
-    return SDL3_SetWindowFullscreen(window, flags3);
+    return SDL3_SetWindowFullscreen(window, (flags & SDL2_WINDOW_FULLSCREEN_DESKTOP) != 0);
 }
 
 DECLSPEC void SDLCALL
@@ -6352,7 +6346,7 @@ SDL_IsSupportedAudioFormat(const SDL_AudioFormat fmt)
 
 static SDL_bool SDL_IsSupportedChannelCount(const int channels)
 {
-    return ((channels >= 1) && (channels <= 8)) ? SDL_TRUE : SDL_FALSE;
+    return ((channels >= 1) && (channels <= 8));
 }
 
 
