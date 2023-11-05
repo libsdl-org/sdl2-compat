@@ -904,7 +904,6 @@
 #define SDL_MixAudioFormat IGNORE_THIS_VERSION_OF_SDL_MixAudioFormat
 #define SDL_ConvertAudioSamples IGNORE_THIS_VERSION_OF_SDL_ConvertAudioSamples
 #define SDL_GetSilenceValueForFormat IGNORE_THIS_VERSION_OF_SDL_GetSilenceValueForFormat
-#define SDL_LoadWAV IGNORE_THIS_VERSION_OF_SDL_LoadWAV
 #define SDL_PauseAudioDevice IGNORE_THIS_VERSION_OF_SDL_PauseAudioDevice
 #define SDL_ResumeAudioDevice IGNORE_THIS_VERSION_OF_SDL_ResumeAudioDevice
 #define SDL_AudioDevicePaused IGNORE_THIS_VERSION_OF_SDL_AudioDevicePaused
@@ -946,6 +945,9 @@
 #define SDL_GetWindowProperties IGNORE_THIS_VERSION_OF_SDL_GetWindowProperties
 #define SDL_ClearProperty IGNORE_THIS_VERSION_OF_SDL_ClearProperty
 #define SDL_EnterAppMainCallbacks IGNORE_THIS_VERSION_OF_SDL_EnterAppMainCallbacks
+#define SDL_RWprintf IGNORE_THIS_VERSION_OF_SDL_RWprintf
+#define SDL_RWvprintf IGNORE_THIS_VERSION_OF_SDL_RWvprintf
+#define SDL_AllocateEventMemory IGNORE_THIS_VERSION_OF_SDL_AllocateEventMemory
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -4479,10 +4481,6 @@
 #undef SDL_GetSilenceValueForFormat
 #endif
 
-#ifdef SDL_LoadWAV
-#undef SDL_LoadWAV
-#endif
-
 #ifdef SDL_PauseAudioDevice
 #undef SDL_PauseAudioDevice
 #endif
@@ -4647,6 +4645,18 @@
 #undef SDL_EnterAppMainCallbacks
 #endif
 
+#ifdef SDL_RWprintf
+#undef SDL_RWprintf
+#endif
+
+#ifdef SDL_RWvprintf
+#undef SDL_RWvprintf
+#endif
+
+#ifdef SDL_AllocateEventMemory
+#undef SDL_AllocateEventMemory
+#endif
+
 /* undefine these macros too: */
 /* redefine as SDL3_xxx, if needed. */
 
@@ -4712,10 +4722,6 @@
 
 #ifdef SDL_iconv_wchar_utf8
 #undef SDL_iconv_wchar_utf8
-#endif
-
-#ifdef SDL_LoadWAV
-#undef SDL_LoadWAV
 #endif
 
 #ifdef SDL_GDKRunApp
