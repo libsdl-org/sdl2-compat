@@ -5146,6 +5146,13 @@ SDL_Vulkan_GetInstanceExtensions(SDL_Window *window, unsigned int *puiCount, con
     return SDL_Vulkan_GetInstanceExtensions_Helper(puiCount, pNames, (unsigned int) ui32count, extensions);
 }
 
+/* SDL3 added a VkAllocationCallbacks* argument; SDL2 always uses the default (NULL) allocator */
+DECLSPEC SDL_bool SDLCALL
+SDL_Vulkan_CreateSurface(SDL_Window *window, VkInstance vkinst, VkSurfaceKHR *psurf)
+{
+    return SDL3_Vulkan_CreateSurface(window, vkinst, NULL, psurf);
+}
+
 
 /* SDL3 doesn't have 3dNow or RDTSC. */
 static int
