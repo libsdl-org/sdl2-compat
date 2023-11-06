@@ -793,6 +793,7 @@ typedef struct SDL2_TextEditingEvent
     Sint32 length;
 } SDL2_TextEditingEvent;
 
+#define SDL2_TEXTEDITING_EXT 0x305
 typedef struct SDL2_TextEditingExtEvent
 {
     Uint32 type;
@@ -1388,6 +1389,32 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     SDL3_memcpy((&event2->common) + 1, (&event3->common) + 1, sizeof (SDL2_Event) - sizeof (SDL2_CommonEvent));
     /* mouse coords became floats in SDL3: */
     switch (event3->type) {
+    case SDL_EVENT_TEXT_INPUT:
+        SDL3_strlcpy(event2->text.text, event3->text.text, sizeof(event2->text.text));
+        break;
+    case SDL_EVENT_TEXT_EDITING:
+        if (SDL3_GetHintBoolean("SDL_IME_SUPPORT_EXTENDED_TEXT", SDL_FALSE) &&
+            SDL3_strlen(event3->edit.text) >= sizeof(event2->edit.text)) {
+            /* From events/SDL_keyboard.c::SDL_SendEditingText() of SDL2 */
+            event2->editExt.type = SDL2_TEXTEDITING_EXT;
+            event2->editExt.windowID = event3->edit.windowID;
+            event2->editExt.text = SDL3_strdup(event3->edit.text);
+            event2->editExt.start = event3->edit.start;
+            event2->editExt.length = event3->edit.length;
+        } else {
+            SDL3_strlcpy(event2->edit.text, event3->edit.text, sizeof(event2->edit.text));
+            event2->edit.start = event3->edit.start;
+            event2->edit.length = event3->edit.length;
+        }
+        break;
+    case SDL_EVENT_DROP_FILE:
+    case SDL_EVENT_DROP_TEXT:
+        event2->drop.file = SDL3_strdup(event3->drop.data);
+        SDL_FALLTHROUGH;
+    case SDL_EVENT_DROP_BEGIN:
+    case SDL_EVENT_DROP_COMPLETE:
+        event2->drop.windowID = event3->drop.windowID;
+        break;
     case SDL_EVENT_MOUSE_MOTION:
         renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->motion.windowID));
         if (renderer) {
@@ -1461,6 +1488,24 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
     SDL3_memcpy((&event3->common) + 1, (&event2->common) + 1, sizeof (SDL2_Event) - sizeof (SDL2_CommonEvent));
     /* mouse coords became floats in SDL3: */
     switch (event2->type) {
+    case SDL_EVENT_TEXT_INPUT: {
+        const size_t len = SDL3_strlen(event2->text.text) + 1;
+        event3->text.text = (char *)SDL3_AllocateEventMemory(len);
+        SDL3_memcpy(event3->text.text, event3->text.text, len);
+        break;
+    }
+    #if 0 /* FIXME: Can this ever happen? */
+    case SDL_EVENT_TEXT_EDITING: {
+        const size_t len = SDL3_strlen(event2->edit.text) + 1;
+        event3->edit.type = SDL_EVENT_TEXT_EDITING;
+        event3->edit.windowID = event2->edit.windowID;
+        event3->edit.start = event2->edit.start;
+        event3->edit.length = event2->edit.length;
+        event3->edit.text = (char *)SDL3_AllocateEventMemory(len);
+        SDL3_memcpy(event3->edit.text, event2->edit.text, len);
+        break;
+    }
+    #endif
     case SDL_EVENT_MOUSE_MOTION:
         event3->motion.x = (float)event2->motion.x;
         event3->motion.y = (float)event2->motion.y;
