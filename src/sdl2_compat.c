@@ -2491,63 +2491,51 @@ SDL_GetTicks64(void)
     return SDL3_GetTicks();
 }
 
-static SDL_bool
-SysWMInfo3to2(SDL_SysWMinfo *wminfo3, SDL2_SysWMinfo *wminfo2)
+DECLSPEC SDL_bool SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWMinfo *info)
 {
-    switch (wminfo3->subsystem) {
-#if defined(SDL_ENABLE_SYSWM_ANDROID)
-    case SDL_SYSWM_ANDROID:
-        wminfo2->subsystem = SDL2_SYSWM_ANDROID;
-        wminfo2->info.android.window = wminfo3->info.android.window;
-        wminfo2->info.android.surface = wminfo3->info.android.surface;
-        break;
-#endif
-#if defined(SDL_ENABLE_SYSWM_COCOA)
-    case SDL_SYSWM_COCOA:
-        wminfo2->subsystem = SDL2_SYSWM_COCOA;
-        wminfo2->info.cocoa.window = wminfo3->info.cocoa.window;
-        break;
-#endif
-#if defined(SDL_ENABLE_SYSWM_DIRECTFB)
-    case SDL_SYSWM_DIRECTFB:
-        wminfo2->info.dfb.dfb = wminfo3->info.dfb.dfb;
-        wminfo2->info.dfb.window = wminfo3->info.dfb.window;
-        wminfo2->info.dfb.surface = wminfo3->info.dfb.surface;
-        break;
-#endif
-#if defined(SDL_ENABLE_SYSWM_KMSDRM)
-    case SDL_SYSWM_KMSDRM:
-        wminfo2->subsystem = SDL2_SYSWM_KMSDRM;
-        wminfo2->info.kmsdrm.dev_index = wminfo3->info.kmsdrm.dev_index;
-        wminfo2->info.kmsdrm.drm_fd = wminfo3->info.kmsdrm.drm_fd;
-        wminfo2->info.kmsdrm.gbm_dev = wminfo3->info.kmsdrm.gbm_dev;
-        break;
-#endif
-#if defined(SDL_ENABLE_SYSWM_OS2)
-    case SDL_SYSWM_OS2:
-        wminfo2->subsystem = SDL2_SYSWM_OS2;
-        wminfo2->info.os2.hwnd = wminfo3->info.os2.hwnd;
-        wminfo2->info.os2.hwndFrame = wminfo3->info.os2.hwndFrame;
-        break;
-#endif
-#if defined(SDL_ENABLE_SYSWM_UIKIT)
-    case SDL_SYSWM_COCOA:
-        wminfo2->subsystem = SDL2_SYSWM_UIKIT;
-        wminfo2->info.uikit.window = wminfo3->info.uikit.window;
-        break;
-#endif
-#if defined(SDL_ENABLE_SYSWM_VIVANTE)
-    case SDL_SYSWM_VIVANTE:
-        wminfo2->subsystem = SDL2_SYSWM_VIVANTE;
-        wminfo2->info.vivante.display = wminfo3->info.vivante.display;
-        wminfo2->info.vivante.window = wminfo3->info.vivante.window;
-        break;
-#endif
-#if defined(SDL_ENABLE_SYSWM_WAYLAND)
-    case SDL_SYSWM_WAYLAND: {
-        Uint32 version2 = SDL_VERSIONNUM((Uint32)wminfo2->version.major,
-                                         (Uint32)wminfo2->version.minor,
-                                         (Uint32)wminfo2->version.patch);
+    const char *driver = SDL3_GetCurrentVideoDriver();
+    SDL_PropertiesID props;
+
+    if (!driver) {
+        return SDL_FALSE;
+    }
+    if (!window) {
+        SDL3_InvalidParamError("window");
+        return SDL_FALSE;
+    }
+    if (!info) {
+        SDL3_InvalidParamError("info");
+        return SDL_FALSE;
+    }
+
+    props = SDL3_GetWindowProperties(window);
+
+    if (SDL_strcmp(driver, "Android") == 0) {
+        info->subsystem = SDL2_SYSWM_ANDROID;
+        info->info.android.window = SDL3_GetProperty(props, "SDL.window.android.window");
+        info->info.android.surface = SDL3_GetProperty(props, "SDL.window.android.surface");
+    } else if (SDL_strcmp(driver, "cocoa") == 0) {
+        info->subsystem = SDL2_SYSWM_COCOA;
+        info->info.cocoa.window = (NSWindow *)SDL3_GetProperty(props, "SDL.window.cocoa.window");
+    } else if (SDL_strcmp(driver, "kmsdrm") == 0) {
+        info->subsystem = SDL2_SYSWM_KMSDRM;
+        info->info.kmsdrm.dev_index = (int)(intptr_t)SDL3_GetProperty(props, "SDL.window.kmsdrm.dev_index");
+        info->info.kmsdrm.drm_fd = (int)(intptr_t)SDL3_GetProperty(props, "SDL.window.kmsdrm.drm_fd");
+        info->info.kmsdrm.gbm_dev = SDL3_GetProperty(props, "SDL.window.kmsdrm.gbm_dev");
+    } else if (SDL_strcmp(driver, "uikit") == 0) {
+        info->subsystem = SDL2_SYSWM_UIKIT;
+        info->info.uikit.window = (UIWindow *)SDL3_GetProperty(props, "SDL.window.uikit.window");
+        info->info.uikit.colorbuffer = 0;
+        info->info.uikit.framebuffer = 0;
+        info->info.uikit.resolveFramebuffer = 0;
+    } else if (SDL_strcmp(driver, "vivante") == 0) {
+        info->subsystem = SDL2_SYSWM_VIVANTE;
+        info->info.vivante.display = SDL3_GetProperty(props, "SDL.window.vivante.display");
+        info->info.vivante.window = SDL3_GetProperty(props, "SDL.window.vivante.window");
+    } else if (SDL_strcmp(driver, "wayland") == 0) {
+        Uint32 version2 = SDL_VERSIONNUM((Uint32)info->version.major,
+                                         (Uint32)info->version.minor,
+                                         (Uint32)info->version.patch);
 
         /* Before 2.0.6, it was possible to build an SDL with Wayland support
          * (SDL_SysWMinfo will be large enough to hold Wayland info), but build
@@ -2561,70 +2549,46 @@ SysWMInfo3to2(SDL_SysWMinfo *wminfo3, SDL2_SysWMinfo *wminfo2)
          * maybe by forcing SDL_VIDEODRIVER=x11.
          */
         if (version2 < SDL_VERSIONNUM(2, 0, 6)) {
-            wminfo2->subsystem = SDL2_SYSWM_UNKNOWN;
-            SDL_SetError("Version must be 2.0.6 or newer");
+            info->subsystem = SDL2_SYSWM_UNKNOWN;
+            SDL3_SetError("Version must be 2.0.6 or newer");
             return SDL_FALSE;
         }
 
-        wminfo2->subsystem = SDL2_SYSWM_WAYLAND;
-        wminfo2->info.wl.display = wminfo3->info.wl.display;
-        wminfo2->info.wl.surface = wminfo3->info.wl.surface;
-        wminfo2->info.wl.shell_surface = NULL; /* Deprecated */
+        info->subsystem = SDL2_SYSWM_WAYLAND;
+        info->info.wl.display = SDL3_GetProperty(props, "SDL.window.wayland.display");
+        info->info.wl.surface = SDL3_GetProperty(props, "SDL.window.wayland.surface");
+        info->info.wl.shell_surface = NULL; /* Deprecated */
 
         if (version2 >= SDL_VERSIONNUM(2, 0, 15)) {
-            wminfo2->info.wl.egl_window = wminfo3->info.wl.egl_window;
-            wminfo2->info.wl.xdg_surface = wminfo3->info.wl.xdg_surface;
+            info->info.wl.egl_window = SDL3_GetProperty(props, "SDL.window.wayland.egl_window");
+            info->info.wl.xdg_surface = SDL3_GetProperty(props, "SDL.window.wayland.xdg_surface");
             if (version2 >= SDL_VERSIONNUM(2, 0, 17)) {
-                wminfo2->info.wl.xdg_toplevel = wminfo3->info.wl.xdg_toplevel;
+                info->info.wl.xdg_toplevel = SDL3_GetProperty(props, "SDL.window.wayland.xdg_toplevel");
                 if (version2 >= SDL_VERSIONNUM(2, 0, 22)) {
-                    wminfo2->info.wl.xdg_popup = wminfo3->info.wl.xdg_popup;
-                    wminfo2->info.wl.xdg_positioner =
-                        wminfo3->info.wl.xdg_positioner;
+                    info->info.wl.xdg_popup = SDL3_GetProperty(props, "SDL.window.wayland.xdg_popup");
+                    info->info.wl.xdg_positioner = SDL3_GetProperty(props, "SDL.window.wayland.xdg_positioner");
                 }
             }
         }
-    } break;
-#endif
-#if defined(SDL_ENABLE_SYSWM_WINDOWS)
-    case SDL_SYSWM_WINDOWS:
-        wminfo2->subsystem = SDL2_SYSWM_WINDOWS;
-        wminfo2->info.win.window = wminfo3->info.win.window;
-        wminfo2->info.win.hdc = wminfo3->info.win.hdc;
-        wminfo2->info.win.hinstance = wminfo3->info.win.hinstance;
-        break;
-#endif
-#if defined(SDL_ENABLE_SYSWM_WINRT)
-    case SDL_SYSWM_WINRT:
-        wminfo2->subsystem = SDL2_SYSWM_WINRT;
-        wminfo2->info.winrt.window = wminfo3->info.winrt.window;
-        break;
-#endif
-#if defined(SDL_ENABLE_SYSWM_X11)
-    case SDL_SYSWM_X11:
-        wminfo2->subsystem = SDL2_SYSWM_X11;
-        wminfo2->info.x11.display = wminfo3->info.x11.display;
-        wminfo2->info.x11.window = wminfo3->info.x11.window;
-        break;
-#endif
-    default:
-        wminfo2->subsystem = SDL2_SYSWM_UNKNOWN;
+    } else if (SDL_strcmp(driver, "windows") == 0) {
+        info->subsystem = SDL2_SYSWM_WINDOWS;
+        info->info.win.window = SDL3_GetProperty(props, "SDL.window.win32.hwnd");
+        info->info.win.hdc = SDL3_GetProperty(props, "SDL.window.win32.hdc");
+        info->info.win.hinstance = SDL3_GetProperty(props, "SDL.window.win32.hinstance");
+    } else if (SDL_strcmp(driver, "winrt") == 0) {
+        info->subsystem = SDL2_SYSWM_WINRT;
+        info->info.winrt.window = SDL3_GetProperty(props, "SDL.window.winrt.window");
+    } else if (SDL_strcmp(driver, "x11") == 0) {
+        info->subsystem = SDL2_SYSWM_X11;
+        info->info.x11.display = SDL3_GetProperty(props, "SDL.window.x11.display");
+        info->info.x11.window = (unsigned long)(uintptr_t)SDL3_GetProperty(props, "SDL.window.x11.window");
+    } else {
+        SDL3_SetError("Video driver '%s' has no mapping to SDL_SysWMinfo", driver);
+        info->subsystem = SDL2_SYSWM_UNKNOWN;
         return SDL_FALSE;
     }
 
     return SDL_TRUE;
-}
-
-DECLSPEC SDL_bool SDLCALL
-SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWMinfo *wminfo)
-{
-    SDL_SysWMinfo wminfo3;
-    SDL3_zero(wminfo3);
-
-    if (SDL3_GetWindowWMInfo(window, &wminfo3, SDL_VERSIONNUM(3, 0, 0)) == 0) {
-        return SysWMInfo3to2(&wminfo3, (SDL2_SysWMinfo*)wminfo);
-    }
-
-    return SDL_FALSE;
 }
 
 /* this API was removed from SDL3 since nothing supported it. Just report 0. */
@@ -5406,14 +5370,14 @@ SDL_SetWindowData(SDL_Window * window, const char *name, void *userdata)
     }
 
     prev = SDL_GetWindowData(window, name);
-    SDL3_SetProperty(SDL3_GetWindowProperties(window), name, userdata, NULL, NULL);
+    SDL3_SetProperty(SDL3_GetWindowProperties(window), name, userdata);
     return prev;
 }
 
 DECLSPEC int SDLCALL
 SDL_SetTextureUserData(SDL_Texture * texture, void *userdata)
 {
-    return SDL3_SetProperty(SDL3_GetTextureProperties(texture), "userdata", userdata, NULL, NULL);
+    return SDL3_SetProperty(SDL3_GetTextureProperties(texture), "userdata", userdata);
 }
 
 DECLSPEC void * SDLCALL
@@ -6695,6 +6659,24 @@ DECLSPEC SDL_bool SDLCALL
 SDL_DXGIGetOutputInfo(int displayIndex, int *adapterIndex, int *outputIndex)
 {
     return SDL3_DXGIGetOutputInfo((SDL_DisplayID)displayIndex, adapterIndex, outputIndex);
+}
+
+DECLSPEC IDirect3DDevice9* SDLCALL SDL_RenderGetD3D9Device(SDL_Renderer *renderer)
+{
+    return (IDirect3DDevice9 *)SDL3_GetProperty(SDL3_GetRendererProperties(renderer),
+                                                "SDL.renderer.d3d9.device");
+}
+
+DECLSPEC ID3D11Device* SDLCALL SDL_RenderGetD3D11Device(SDL_Renderer *renderer)
+{
+    return (ID3D11Device *)SDL3_GetProperty(SDL3_GetRendererProperties(renderer),
+                                            "SDL.renderer.d3d11.device");
+}
+
+DECLSPEC ID3D12Device* SDLCALL SDL_RenderGetD3D12Device(SDL_Renderer *renderer)
+{
+    return (ID3D12Device *)SDL3_GetProperty(SDL3_GetRendererProperties(renderer),
+                                            "SDL.renderer.d3d12.device");
 }
 #endif
 

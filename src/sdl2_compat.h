@@ -175,6 +175,14 @@ typedef struct SDL2_AudioStream
 #define SDL2_AUDIO_ALLOW_SAMPLES_CHANGE      0x00000008
 #define SDL2_AUDIO_ALLOW_ANY_CHANGE          (SDL2_AUDIO_ALLOW_FREQUENCY_CHANGE|SDL2_AUDIO_ALLOW_FORMAT_CHANGE|SDL2_AUDIO_ALLOW_CHANNELS_CHANGE|SDL2_AUDIO_ALLOW_SAMPLES_CHANGE)
 
+/* Prototypes for D3D devices */
+#if defined(__WIN32__) || defined(__WINGDK__)
+typedef struct IDirect3DDevice9 IDirect3DDevice9;
+typedef struct ID3D11Device ID3D11Device;
+typedef struct ID3D12Device ID3D12Device;
+#endif
+
+/* SDL2 SysWM mapping */
 typedef enum
 {
   SDL2_SYSWM_UNKNOWN,
@@ -194,118 +202,93 @@ typedef enum
   SDL2_SYSWM_RISCOS
 } SDL2_SYSWM_TYPE;
 
-struct SDL2_SysWMinfo
+#ifdef __OBJC__
+@class NSWindow;
+@class UIWindow;
+#else
+typedef struct _NSWindow NSWindow;
+typedef struct _UIWindow UIWindow;
+#endif
+
+struct SDL_SysWMinfo
 {
     SDL_version version;
     SDL2_SYSWM_TYPE subsystem;
     union
     {
-#if defined(SDL_ENABLE_SYSWM_WINDOWS)
       struct
       {
-        HWND window;                /**< The window handle */
-        HDC hdc;                    /**< The window device context */
-        HINSTANCE hinstance;        /**< The instance handle */
+        void *window;
+        void *hdc;
+        void *hinstance;
       } win;
-#endif
-#if defined(SDL_ENABLE_SYSWM_WINRT)
+
       struct
       {
-        IInspectable * window;      /**< The WinRT CoreWindow */
+        void *window;
       } winrt;
-#endif
-#if defined(SDL_ENABLE_SYSWM_X11)
+
       struct
       {
-        Display *display;           /**< The X11 display */
-        Window window;              /**< The X11 window */
+        void *display;
+        unsigned long window;
       } x11;
-#endif
-#if defined(SDL_ENABLE_SYSWM_DIRECTFB)
-      struct
-      {
-        IDirectFB *dfb;             /**< The directfb main interface */
-        IDirectFBWindow *window;    /**< The directfb window handle */
-        IDirectFBSurface *surface;  /**< The directfb client surface */
-      } dfb;
-#endif
-#if defined(SDL_ENABLE_SYSWM_COCOA)
+
       struct
       {
 #if defined(__OBJC__) && defined(__has_feature)
 #if __has_feature(objc_arc)
-        NSWindow __unsafe_unretained *window; /**< The Cocoa window */
-#else
-        NSWindow *window;                     /**< The Cocoa window */
+        NSWindow __unsafe_unretained *window;
 #endif
 #else
-        NSWindow *window;                     /**< The Cocoa window */
+        NSWindow *window;
 #endif
       } cocoa;
-#endif
-#if defined(SDL_ENABLE_SYSWM_UIKIT)
+
       struct
       {
 #if defined(__OBJC__) && defined(__has_feature)
 #if __has_feature(objc_arc)
-        UIWindow __unsafe_unretained *window; /**< The UIKit window */
-#else
-        UIWindow *window;                     /**< The UIKit window */
+        UIWindow __unsafe_unretained *window;
 #endif
 #else
-        UIWindow *window;                     /**< The UIKit window */
+        UIWindow *window;
 #endif
-        GLuint framebuffer; /**< The GL view's Framebuffer Object. It must be bound when rendering to the screen using GL. */
-        GLuint colorbuffer; /**< The GL view's color Renderbuffer Object. It must be bound when SDL_GL_SwapWindow is called. */
-        GLuint resolveFramebuffer; /**< The Framebuffer Object which holds the resolve color Renderbuffer, when MSAA is used. */
+        Uint32 framebuffer;
+        Uint32 colorbuffer;
+        Uint32 resolveFramebuffer;
       } uikit;
-#endif
-#if defined(SDL_ENABLE_SYSWM_WAYLAND)
+
       struct
       {
-        struct wl_display *display;             /**< Wayland display */
-        struct wl_surface *surface;             /**< Wayland surface */
-        void *shell_surface;                    /**< DEPRECATED Wayland shell_surface (window manager handle) */
-        struct wl_egl_window *egl_window;       /**< Wayland EGL window (native window) */
-        struct xdg_surface *xdg_surface;        /**< Wayland xdg surface (window manager handle) */
-        struct xdg_toplevel *xdg_toplevel;      /**< Wayland xdg toplevel role */
-        struct xdg_popup *xdg_popup;            /**< Wayland xdg popup role */
-        struct xdg_positioner *xdg_positioner;  /**< Wayland xdg positioner, for popup */
+        void *display;
+        void *surface;
+        void *shell_surface;
+        void *egl_window;
+        void *xdg_surface;
+        void *xdg_toplevel;
+        void *xdg_popup;
+        void *xdg_positioner;
       } wl;
-#endif
 
-#if defined(SDL_ENABLE_SYSWM_ANDROID)
       struct
       {
-        ANativeWindow *window;
-        EGLSurface surface;
+        void *window;
+        void *surface;
       } android;
-#endif
 
-#if defined(SDL_ENABLE_SYSWM_OS2)
       struct
       {
-        HWND hwnd;                  /**< The window handle */
-        HWND hwndFrame;             /**< The frame window handle */
-      } os2;
-#endif
-
-#if defined(SDL_ENABLE_SYSWM_VIVANTE)
-      struct
-      {
-        EGLNativeDisplayType display;
-        EGLNativeWindowType window;
+        void *display;
+        void *window;
       } vivante;
-#endif
 
-#if defined(SDL_ENABLE_SYSWM_KMSDRM)
       struct
       {
-        int dev_index;               /**< Device index (ex: the X in /dev/dri/cardX) */
-        int drm_fd;                  /**< DRM FD (unavailable on Vulkan windows) */
-        struct gbm_device *gbm_dev;  /**< GBM device (unavailable on Vulkan windows) */
+        int dev_index;
+        int drm_fd;
+        void *gbm_dev;
       } kmsdrm;
-#endif
 
       /* Make sure this union is always 64 bytes (8 64-bit pointers). */
       /* Be careful not to overflow this if you add a new target! */
@@ -313,6 +296,6 @@ struct SDL2_SysWMinfo
     } info;
 };
 
-typedef struct SDL2_SysWMinfo SDL2_SysWMinfo;
+typedef struct SDL_SysWMinfo SDL_SysWMinfo;
 
 #endif /* sdl2_compat_h */

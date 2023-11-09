@@ -312,8 +312,6 @@
 #define SDL_GetRelativeMouseMode IGNORE_THIS_VERSION_OF_SDL_GetRelativeMouseMode
 #define SDL_GetRelativeMouseState IGNORE_THIS_VERSION_OF_SDL_GetRelativeMouseState
 #define SDL_GetRenderClipRect IGNORE_THIS_VERSION_OF_SDL_GetRenderClipRect
-#define SDL_GetRenderD3D11Device IGNORE_THIS_VERSION_OF_SDL_GetRenderD3D11Device
-#define SDL_GetRenderD3D9Device IGNORE_THIS_VERSION_OF_SDL_GetRenderD3D9Device
 #define SDL_GetRenderDrawBlendMode IGNORE_THIS_VERSION_OF_SDL_GetRenderDrawBlendMode
 #define SDL_GetRenderDrawColor IGNORE_THIS_VERSION_OF_SDL_GetRenderDrawColor
 #define SDL_GetRenderDriver IGNORE_THIS_VERSION_OF_SDL_GetRenderDriver
@@ -388,7 +386,6 @@
 #define SDL_GetWindowSizeInPixels IGNORE_THIS_VERSION_OF_SDL_GetWindowSizeInPixels
 #define SDL_GetWindowSurface IGNORE_THIS_VERSION_OF_SDL_GetWindowSurface
 #define SDL_GetWindowTitle IGNORE_THIS_VERSION_OF_SDL_GetWindowTitle
-#define SDL_GetWindowWMInfo IGNORE_THIS_VERSION_OF_SDL_GetWindowWMInfo
 #define SDL_GetYUVConversionMode IGNORE_THIS_VERSION_OF_SDL_GetYUVConversionMode
 #define SDL_GetYUVConversionModeForResolution IGNORE_THIS_VERSION_OF_SDL_GetYUVConversionModeForResolution
 #define SDL_HapticClose IGNORE_THIS_VERSION_OF_SDL_HapticClose
@@ -548,7 +545,6 @@
 #define SDL_RenderFlush IGNORE_THIS_VERSION_OF_SDL_RenderFlush
 #define SDL_RenderGeometry IGNORE_THIS_VERSION_OF_SDL_RenderGeometry
 #define SDL_RenderGeometryRaw IGNORE_THIS_VERSION_OF_SDL_RenderGeometryRaw
-#define SDL_RenderGetD3D12Device IGNORE_THIS_VERSION_OF_SDL_RenderGetD3D12Device
 #define SDL_RenderLine IGNORE_THIS_VERSION_OF_SDL_RenderLine
 #define SDL_RenderLines IGNORE_THIS_VERSION_OF_SDL_RenderLines
 #define SDL_RenderPoint IGNORE_THIS_VERSION_OF_SDL_RenderPoint
@@ -948,6 +944,10 @@
 #define SDL_RWprintf IGNORE_THIS_VERSION_OF_SDL_RWprintf
 #define SDL_RWvprintf IGNORE_THIS_VERSION_OF_SDL_RWvprintf
 #define SDL_AllocateEventMemory IGNORE_THIS_VERSION_OF_SDL_AllocateEventMemory
+#define SDL_GetDisplayProperties IGNORE_THIS_VERSION_OF_SDL_GetDisplayProperties
+#define SDL_SetPropertyWithCleanup IGNORE_THIS_VERSION_OF_SDL_SetPropertyWithCleanup
+#define SDL_SetX11EventHook IGNORE_THIS_VERSION_OF_SDL_SetX11EventHook
+#define SDL_GetGlobalProperties IGNORE_THIS_VERSION_OF_SDL_GetGlobalProperties
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -961,7 +961,6 @@
 
 #define SDL_MAIN_HANDLED 1
 #include <SDL3/SDL_main.h>
-#include <SDL3/SDL_syswm.h>
 #include <SDL3/SDL_vulkan.h>
 
 #ifdef _WIN32
@@ -2113,14 +2112,6 @@
 #undef SDL_GetRenderClipRect
 #endif
 
-#ifdef SDL_GetRenderD3D11Device
-#undef SDL_GetRenderD3D11Device
-#endif
-
-#ifdef SDL_GetRenderD3D9Device
-#undef SDL_GetRenderD3D9Device
-#endif
-
 #ifdef SDL_GetRenderDrawBlendMode
 #undef SDL_GetRenderDrawBlendMode
 #endif
@@ -2415,10 +2406,6 @@
 
 #ifdef SDL_GetWindowTitle
 #undef SDL_GetWindowTitle
-#endif
-
-#ifdef SDL_GetWindowWMInfo
-#undef SDL_GetWindowWMInfo
 #endif
 
 #ifdef SDL_GetYUVConversionMode
@@ -3055,10 +3042,6 @@
 
 #ifdef SDL_RenderGeometryRaw
 #undef SDL_RenderGeometryRaw
-#endif
-
-#ifdef SDL_RenderGetD3D12Device
-#undef SDL_RenderGetD3D12Device
 #endif
 
 #ifdef SDL_RenderLine
@@ -4655,6 +4638,22 @@
 
 #ifdef SDL_AllocateEventMemory
 #undef SDL_AllocateEventMemory
+#endif
+
+#ifdef SDL_GetDisplayProperties
+#undef SDL_GetDisplayProperties
+#endif
+
+#ifdef SDL_SetPropertyWithCleanup
+#undef SDL_SetPropertyWithCleanup
+#endif
+
+#ifdef SDL_SetX11EventHook
+#undef SDL_SetX11EventHook
+#endif
+
+#ifdef SDL_GetGlobalProperties
+#undef SDL_GetGlobalProperties
 #endif
 
 /* undefine these macros too: */
