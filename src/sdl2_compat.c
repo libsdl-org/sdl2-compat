@@ -5336,7 +5336,7 @@ SDL_GetWindowFlags(SDL_Window *window)
     return flags;
 }
 
-#define POPUP_PARENT_PROP_STR "SDL.internal.parentWnd"
+#define POPUP_PARENT_PROP_STR "sdl2-compat.window.parent"
 
 DECLSPEC void* SDLCALL
 SDL_GetWindowData(SDL_Window * window, const char *name)
