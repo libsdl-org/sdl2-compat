@@ -203,6 +203,9 @@ target_include_directories(SDL2
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SDL2>"
 )
 target_compile_definitions(SDL2 PRIVATE "SDL2COMPAT_REVISION=\"${SDL_REVISION}\"")
+if(TARGET SDL3::SDL3-shared)
+  set_property(TARGET SDL2 PROPERTY BUILD_RPATH $<TARGET_FILE_DIR:SDL3::SDL3-shared>)
+endif()
 
 set(EXTRA_CFLAGS )
 if(CMAKE_C_COMPILER_ID MATCHES "Clang|GNU")
