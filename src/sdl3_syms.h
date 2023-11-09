@@ -62,7 +62,6 @@ SDL3_SYM_PASSTHROUGH(void,UnregisterApp,(void),(),)
 
 #if defined(__WIN32__) || defined(__WINGDK__)
 SDL3_SYM(int,Direct3D9GetAdapterIndex,(SDL_DisplayID a),(a),return)
-SDL3_SYM_RENAMED(IDirect3DDevice9*,RenderGetD3D9Device,GetRenderD3D9Device,(SDL_Renderer *a),(a),return)
 #endif
 
 #ifdef __IOS__
@@ -418,7 +417,6 @@ SDL3_SYM(int,BlitSurfaceUnchecked,(SDL_Surface *a, const SDL_Rect *b, SDL_Surfac
 SDL3_SYM_PASSTHROUGH(int,SoftStretch,(SDL_Surface *a, const SDL_Rect *b, SDL_Surface *c, const SDL_Rect *d),(a,b,c,d),return)
 SDL3_SYM_RENAMED(int,UpperBlitScaled,BlitSurfaceScaled,(SDL_Surface *a, const SDL_Rect *b, SDL_Surface *c, SDL_Rect *d),(a,b,c,d),return)
 SDL3_SYM(int,BlitSurfaceUncheckedScaled,(SDL_Surface *a, const SDL_Rect *b, SDL_Surface *c, const SDL_Rect *d),(a,b,c,d),return)
-SDL3_SYM(int,GetWindowWMInfo,(SDL_Window *a, SDL_SysWMinfo *b, Uint32 c),(a,b,c),return)
 SDL3_SYM_PASSTHROUGH(const char*,GetThreadName,(SDL_Thread *a),(a),return)
 SDL3_SYM_PASSTHROUGH(SDL_threadID,ThreadID,(void),(),return)
 SDL3_SYM_PASSTHROUGH(SDL_threadID,GetThreadID,(SDL_Thread *a),(a),return)
@@ -714,9 +712,6 @@ SDL3_SYM_PASSTHROUGH(float,roundf,(float a),(a),return)
 SDL3_SYM_PASSTHROUGH(long,lround,(double a),(a),return)
 SDL3_SYM_PASSTHROUGH(long,lroundf,(float a),(a),return)
 SDL3_SYM_PASSTHROUGH(int,SoftStretchLinear,(SDL_Surface *a, const SDL_Rect *b, SDL_Surface *c, const SDL_Rect *d),(a,b,c,d),return)
-#if defined(__WIN32__) || defined(__WINGDK__)
-SDL3_SYM_RENAMED(ID3D11Device*,RenderGetD3D11Device,GetRenderD3D11Device,(SDL_Renderer *a),(a),return)
-#endif
 SDL3_SYM_PASSTHROUGH(int,UpdateNVTexture,(SDL_Texture *a, const SDL_Rect *b, const Uint8 *c, int d, const Uint8 *e, int f),(a,b,c,d,e,f),return)
 SDL3_SYM(int,SetWindowKeyboardGrab,(SDL_Window *a, SDL_bool b),(a,b),return)
 SDL3_SYM(int,SetWindowMouseGrab,(SDL_Window *a, SDL_bool b),(a,b),return)
@@ -799,9 +794,6 @@ SDL3_SYM(int,GUIDToString,(SDL_GUID a, char *b, int c),(a,b,c),return)
 SDL3_SYM_PASSTHROUGH(SDL_GUID,GUIDFromString,(const char *a),(a),return)
 SDL3_SYM_PASSTHROUGH(SDL_bool,HasLSX,(void),(),return)
 SDL3_SYM_PASSTHROUGH(SDL_bool,HasLASX,(void),(),return)
-#if defined(__WIN32__) || defined(__GDK__)
-SDL3_SYM_PASSTHROUGH(ID3D12Device*,RenderGetD3D12Device,(SDL_Renderer *a),(a),return)
-#endif
 SDL3_SYM_PASSTHROUGH(size_t,utf8strnlen,(const char *a, size_t b),(a,b),return)
 
 #ifdef __GDK__
@@ -897,10 +889,11 @@ SDL3_SYM(SDL_GamepadBinding **,GetGamepadBindings,(SDL_Gamepad *a, int *b),(a,b)
 #ifdef __GDK__
 SDL3_SYM_PASSTHROUGH(int,GDKGetDefaultUser,(XUserHandle *a),(a),return)
 #endif
-SDL3_SYM(int,SetProperty,(SDL_PropertiesID a, const char *b, void *c, void (SDLCALL *d)(void *userdata, void *value), void *e),(a,b,c,d,e),return)
+SDL3_SYM(int,SetProperty,(SDL_PropertiesID a, const char *b, void *c),(a,b,c),return)
 SDL3_SYM(void*,GetProperty,(SDL_PropertiesID a, const char *b),(a,b),return)
 SDL3_SYM(SDL_PropertiesID,GetWindowProperties,(SDL_Window *a),(a),return)
 SDL3_SYM(SDL_PropertiesID,GetTextureProperties,(SDL_Texture *a),(a),return)
+SDL3_SYM(SDL_PropertiesID,GetRendererProperties,(SDL_Renderer *a),(a),return)
 
 #undef SDL3_SYM
 #undef SDL3_SYM_PASSTHROUGH
