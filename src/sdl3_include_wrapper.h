@@ -948,6 +948,22 @@
 #define SDL_SetPropertyWithCleanup IGNORE_THIS_VERSION_OF_SDL_SetPropertyWithCleanup
 #define SDL_SetX11EventHook IGNORE_THIS_VERSION_OF_SDL_SetX11EventHook
 #define SDL_GetGlobalProperties IGNORE_THIS_VERSION_OF_SDL_GetGlobalProperties
+#define SDL_OpenVideoCapture IGNORE_THIS_VERSION_OF_SDL_OpenVideoCapture
+#define SDL_SetVideoCaptureSpec IGNORE_THIS_VERSION_OF_SDL_SetVideoCaptureSpec
+#define SDL_OpenVideoCaptureWithSpec IGNORE_THIS_VERSION_OF_SDL_OpenVideoCaptureWithSpec
+#define SDL_GetVideoCaptureDeviceName IGNORE_THIS_VERSION_OF_SDL_GetVideoCaptureDeviceName
+#define SDL_GetVideoCaptureSpec IGNORE_THIS_VERSION_OF_SDL_GetVideoCaptureSpec
+#define SDL_GetVideoCaptureFormat IGNORE_THIS_VERSION_OF_SDL_GetVideoCaptureFormat
+#define SDL_GetNumVideoCaptureFormats IGNORE_THIS_VERSION_OF_SDL_GetNumVideoCaptureFormats
+#define SDL_GetVideoCaptureFrameSize IGNORE_THIS_VERSION_OF_SDL_GetVideoCaptureFrameSize
+#define SDL_GetNumVideoCaptureFrameSizes IGNORE_THIS_VERSION_OF_SDL_GetNumVideoCaptureFrameSizes
+#define SDL_GetVideoCaptureStatus IGNORE_THIS_VERSION_OF_SDL_GetVideoCaptureStatus
+#define SDL_StartVideoCapture IGNORE_THIS_VERSION_OF_SDL_StartVideoCapture
+#define SDL_AcquireVideoCaptureFrame IGNORE_THIS_VERSION_OF_SDL_AcquireVideoCaptureFrame
+#define SDL_ReleaseVideoCaptureFrame IGNORE_THIS_VERSION_OF_SDL_ReleaseVideoCaptureFrame
+#define SDL_StopVideoCapture IGNORE_THIS_VERSION_OF_SDL_StopVideoCapture
+#define SDL_CloseVideoCapture IGNORE_THIS_VERSION_OF_SDL_CloseVideoCapture
+#define SDL_GetVideoCaptureDevices IGNORE_THIS_VERSION_OF_SDL_GetVideoCaptureDevices
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -4654,6 +4670,70 @@
 
 #ifdef SDL_GetGlobalProperties
 #undef SDL_GetGlobalProperties
+#endif
+
+#ifdef SDL_OpenVideoCapture
+#undef SDL_OpenVideoCapture
+#endif
+
+#ifdef SDL_SetVideoCaptureSpec
+#undef SDL_SetVideoCaptureSpec
+#endif
+
+#ifdef SDL_OpenVideoCaptureWithSpec
+#undef SDL_OpenVideoCaptureWithSpec
+#endif
+
+#ifdef SDL_GetVideoCaptureDeviceName
+#undef SDL_GetVideoCaptureDeviceName
+#endif
+
+#ifdef SDL_GetVideoCaptureSpec
+#undef SDL_GetVideoCaptureSpec
+#endif
+
+#ifdef SDL_GetVideoCaptureFormat
+#undef SDL_GetVideoCaptureFormat
+#endif
+
+#ifdef SDL_GetNumVideoCaptureFormats
+#undef SDL_GetNumVideoCaptureFormats
+#endif
+
+#ifdef SDL_GetVideoCaptureFrameSize
+#undef SDL_GetVideoCaptureFrameSize
+#endif
+
+#ifdef SDL_GetNumVideoCaptureFrameSizes
+#undef SDL_GetNumVideoCaptureFrameSizes
+#endif
+
+#ifdef SDL_GetVideoCaptureStatus
+#undef SDL_GetVideoCaptureStatus
+#endif
+
+#ifdef SDL_StartVideoCapture
+#undef SDL_StartVideoCapture
+#endif
+
+#ifdef SDL_AcquireVideoCaptureFrame
+#undef SDL_AcquireVideoCaptureFrame
+#endif
+
+#ifdef SDL_ReleaseVideoCaptureFrame
+#undef SDL_ReleaseVideoCaptureFrame
+#endif
+
+#ifdef SDL_StopVideoCapture
+#undef SDL_StopVideoCapture
+#endif
+
+#ifdef SDL_CloseVideoCapture
+#undef SDL_CloseVideoCapture
+#endif
+
+#ifdef SDL_GetVideoCaptureDevices
+#undef SDL_GetVideoCaptureDevices
 #endif
 
 /* undefine these macros too: */

@@ -515,6 +515,7 @@ if(SDL2COMPAT_TESTS)
       "test/testautomation_math.c"
       "test/testautomation_rect.c"
       "test/testautomation_stdlib.c"
+      "test/testautomation_subsystems.c"
       "test/testautomation_timer.c"
       "test/testautomation_clipboard.c"
       "test/testautomation_joystick.c"
