@@ -138,7 +138,7 @@ SDL3_SYM_RENAMED(const char*,GameControllerGetStringForAxis,GetGamepadStringForA
 SDL3_SYM_RENAMED(Sint16,GameControllerGetAxis,GetGamepadAxis,(SDL_GameController *a, SDL_GameControllerAxis b),(a,b),return)
 SDL3_SYM_RENAMED(SDL_GameControllerButton,GameControllerGetButtonFromString,GetGamepadButtonFromString,(const char *a),(a),return)
 SDL3_SYM_RENAMED(const char*,GameControllerGetStringForButton,GetGamepadStringForButton,(SDL_GameControllerButton a),(a),return)
-SDL3_SYM_RENAMED(Uint8,GameControllerGetButton,GetGamepadButton,(SDL_GameController *a, SDL_GameControllerButton b),(a,b),return)
+SDL3_SYM(Uint8,GetGamepadButton,(SDL_Gamepad *a, SDL_GamepadButton b),(a,b),return)
 SDL3_SYM_RENAMED(void,GameControllerClose,CloseGamepad,(SDL_GameController *a),(a),)
 SDL3_SYM_PASSTHROUGH(int,NumHaptics,(void),(),return)
 SDL3_SYM_PASSTHROUGH(const char*,HapticName,(int a),(a),return)
@@ -894,6 +894,8 @@ SDL3_SYM(void*,GetProperty,(SDL_PropertiesID a, const char *b),(a,b),return)
 SDL3_SYM(SDL_PropertiesID,GetWindowProperties,(SDL_Window *a),(a),return)
 SDL3_SYM(SDL_PropertiesID,GetTextureProperties,(SDL_Texture *a),(a),return)
 SDL3_SYM(SDL_PropertiesID,GetRendererProperties,(SDL_Renderer *a),(a),return)
+SDL3_SYM(SDL_GamepadButtonLabel,GetGamepadButtonLabelForType,(SDL_GamepadType a, SDL_GamepadButton b),(a,b),return)
+SDL3_SYM(SDL_GamepadButtonLabel,GetGamepadButtonLabel,(SDL_Gamepad *a, SDL_GamepadButton b),(a,b),return)
 
 #undef SDL3_SYM
 #undef SDL3_SYM_PASSTHROUGH
