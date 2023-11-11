@@ -1352,8 +1352,6 @@ SDL_LOG_IMPL(Error, ERROR)
 SDL_LOG_IMPL(Critical, CRITICAL)
 #undef SDL_LOG_IMPL
 
-/* !!! FIXME: when we override SDL_Quit(), we need to free/reset gamepad_button_swap_list */
-
 static void UpdateGamepadButtonSwap(SDL_Gamepad *gamepad)
 {
     int i;
@@ -3624,6 +3622,25 @@ SDL_Quit(void)
     if (SDL3_WasInit(SDL_INIT_VIDEO)) {
         GestureQuit();
     }
+
+    if (joystick_list) {
+        SDL3_free(joystick_list);
+        joystick_list = NULL;
+    }
+    num_joysticks = 0;
+
+    if (sensor_list) {
+        SDL3_free(sensor_list);
+        sensor_list = NULL;
+    }
+    num_sensors = 0;
+
+    if (gamepad_button_swap_list) {
+        SDL3_free(gamepad_button_swap_list);
+        gamepad_button_swap_list = NULL;
+    }
+    num_gamepad_button_swap_list = 0;
+
     SDL3_Quit();
 }
 
@@ -5938,7 +5955,6 @@ GetJoystickInstanceFromIndex(int idx)
     return joystick_list[idx];
 }
 
-/* !!! FIXME: when we override SDL_Quit(), we need to free/reset joystick_list and friends*/
 /* !!! FIXME: put a mutex on the joystick and sensor lists. Strictly speaking, this will break if you multithread it, but it doesn't have to crash. */
 
 DECLSPEC int SDLCALL
@@ -6272,8 +6288,6 @@ SDL_JoystickDetachVirtual(int device_index)
     return jid ? SDL3_DetachVirtualJoystick(jid) : -1;
 }
 
-
-/* !!! FIXME: when we override SDL_Quit(), we need to free/reset sensor_list */
 
 static SDL_SensorID
 GetSensorInstanceFromIndex(int idx)
