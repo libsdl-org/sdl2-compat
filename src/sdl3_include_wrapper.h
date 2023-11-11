@@ -964,6 +964,8 @@
 #define SDL_StopVideoCapture IGNORE_THIS_VERSION_OF_SDL_StopVideoCapture
 #define SDL_CloseVideoCapture IGNORE_THIS_VERSION_OF_SDL_CloseVideoCapture
 #define SDL_GetVideoCaptureDevices IGNORE_THIS_VERSION_OF_SDL_GetVideoCaptureDevices
+#define SDL_GetGamepadButtonLabelForType IGNORE_THIS_VERSION_OF_SDL_GetGamepadButtonLabelForType
+#define SDL_GetGamepadButtonLabel IGNORE_THIS_VERSION_OF_SDL_GetGamepadButtonLabel
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -4734,6 +4736,14 @@
 
 #ifdef SDL_GetVideoCaptureDevices
 #undef SDL_GetVideoCaptureDevices
+#endif
+
+#ifdef SDL_GetGamepadButtonLabelForType
+#undef SDL_GetGamepadButtonLabelForType
+#endif
+
+#ifdef SDL_GetGamepadButtonLabel
+#undef SDL_GetGamepadButtonLabel
 #endif
 
 /* undefine these macros too: */

@@ -1162,6 +1162,8 @@ static SDL_mutex *EventWatchListMutex = NULL;
 static EventFilterWrapperData *EventWatchers2 = NULL;
 static SDL_JoystickID *joystick_list = NULL;
 static int num_joysticks = 0;
+static SDL_JoystickID *gamepad_button_swap_list = NULL;
+static int num_gamepad_button_swap_list = 0;
 static SDL_SensorID *sensor_list = NULL;
 static int num_sensors = 0;
 
@@ -1350,6 +1352,79 @@ SDL_LOG_IMPL(Error, ERROR)
 SDL_LOG_IMPL(Critical, CRITICAL)
 #undef SDL_LOG_IMPL
 
+/* !!! FIXME: when we override SDL_Quit(), we need to free/reset gamepad_button_swap_list */
+
+static void UpdateGamepadButtonSwap(SDL_Gamepad *gamepad)
+{
+    int i;
+    SDL_JoystickID instance_id = SDL3_GetGamepadInstanceID(gamepad);
+    SDL_bool swap_buttons = SDL_FALSE;
+
+    if (SDL3_GetHintBoolean("SDL_GAMECONTROLLER_USE_BUTTON_LABELS", SDL_TRUE)) {
+        if (SDL3_GetGamepadButtonLabel(gamepad, SDL_GAMEPAD_BUTTON_SOUTH) == SDL_GAMEPAD_BUTTON_LABEL_B) {
+            swap_buttons = SDL_TRUE;
+        }
+    }
+
+    if (swap_buttons) {
+        SDL_bool has_gamepad = SDL_FALSE;
+
+        for (i = 0; i < num_gamepad_button_swap_list; ++i) {
+            if (gamepad_button_swap_list[i] == instance_id) {
+                has_gamepad = SDL_TRUE;
+                break;
+            }
+        }
+
+        if (!has_gamepad) {
+            int new_count = num_gamepad_button_swap_list + 1;
+            SDL_JoystickID *new_list = (SDL_JoystickID *)SDL3_realloc(gamepad_button_swap_list, new_count * sizeof(*new_list));
+            if (new_list) {
+                new_list[num_gamepad_button_swap_list] = instance_id;
+                gamepad_button_swap_list = new_list;
+                ++num_gamepad_button_swap_list;
+            }
+        }
+    } else {
+        for (i = 0; i < num_gamepad_button_swap_list; ++i) {
+            if (gamepad_button_swap_list[i] == instance_id) {
+                if (i < (num_gamepad_button_swap_list - 1)) {
+                    SDL3_memmove(&gamepad_button_swap_list[i], &gamepad_button_swap_list[i+1], (num_gamepad_button_swap_list - i - 1) * sizeof(gamepad_button_swap_list[i]));
+                }
+                --num_gamepad_button_swap_list;
+                break;
+            }
+        }
+    }
+}
+
+static SDL_bool ShouldSwapGamepadButtons(SDL_JoystickID instance_id)
+{
+    int i;
+
+    for (i = 0; i < num_gamepad_button_swap_list; ++i) {
+        if (gamepad_button_swap_list[i] == instance_id) {
+            return SDL_TRUE;
+        }
+    }
+    return SDL_FALSE;
+}
+
+static Uint8 SwapGamepadButton(Uint8 button)
+{
+    switch (button) {
+    case SDL_GAMEPAD_BUTTON_SOUTH:
+        return SDL_GAMEPAD_BUTTON_EAST;
+    case SDL_GAMEPAD_BUTTON_EAST:
+        return SDL_GAMEPAD_BUTTON_SOUTH;
+    case SDL_GAMEPAD_BUTTON_WEST:
+        return SDL_GAMEPAD_BUTTON_NORTH;
+    case SDL_GAMEPAD_BUTTON_NORTH:
+        return SDL_GAMEPAD_BUTTON_WEST;
+    default:
+        return button;
+    }
+}
 
 /* (current) strategy for SDL_Events:
    in sdl12-compat, we built our own event queue, so when the SDL2 queue is pumped, we
@@ -1451,6 +1526,12 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
         event2->wheel.preciseY = event3->wheel.y;
         event2->wheel.mouseX = (Sint32)event3->wheel.mouseX;
         event2->wheel.mouseY = (Sint32)event3->wheel.mouseY;
+        break;
+    case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+    case SDL_EVENT_GAMEPAD_BUTTON_UP:
+        if (ShouldSwapGamepadButtons(event2->cbutton.which)) {
+            event2->cbutton.button = SwapGamepadButton(event2->cbutton.button);
+        }
         break;
     /* sensor timestamps are in nanosecond in SDL3 */
     case SDL_EVENT_GAMEPAD_SENSOR_UPDATE:
@@ -6018,7 +6099,11 @@ DECLSPEC SDL_GameController* SDLCALL
 SDL_GameControllerOpen(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_OpenGamepad(jid) : NULL;
+    SDL_GameController *gamepad = jid ? SDL3_OpenGamepad(jid) : NULL;
+    if (gamepad) {
+        UpdateGamepadButtonSwap(gamepad);
+    }
+    return gamepad;
 }
 
 static SDL_GameControllerType SDLCALL
@@ -6081,6 +6166,16 @@ SDL_GameControllerPathForIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
     return jid ? SDL3_GetGamepadInstancePath(jid) : NULL;
+}
+
+DECLSPEC Uint8 SDLCALL SDL_GameControllerGetButton(SDL_GameController *controller, SDL_GameControllerButton button)
+{
+    SDL_JoystickID instance_id = SDL3_GetGamepadInstanceID(controller);
+
+    if (ShouldSwapGamepadButtons(instance_id)) {
+        button = (SDL_GameControllerButton)SwapGamepadButton(button);
+    }
+    return SDL3_GetGamepadButton(controller, button);
 }
 
 DECLSPEC SDL_GameControllerButtonBind SDLCALL
