@@ -923,7 +923,6 @@
 #define SDL_SetAudioStreamFrequencyRatio IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamFrequencyRatio
 #define SDL_SetAudioPostmixCallback IGNORE_THIS_VERSION_OF_SDL_SetAudioPostmixCallback
 #define SDL_GetAudioStreamQueued IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamQueued
-#define SDL_GetTextureDXGIResource IGNORE_THIS_VERSION_OF_SDL_GetTextureDXGIResource
 #define SDL_CreateProperties IGNORE_THIS_VERSION_OF_SDL_CreateProperties
 #define SDL_LockProperties IGNORE_THIS_VERSION_OF_SDL_LockProperties
 #define SDL_UnlockProperties IGNORE_THIS_VERSION_OF_SDL_UnlockProperties
@@ -966,6 +965,30 @@
 #define SDL_GetVideoCaptureDevices IGNORE_THIS_VERSION_OF_SDL_GetVideoCaptureDevices
 #define SDL_GetGamepadButtonLabelForType IGNORE_THIS_VERSION_OF_SDL_GetGamepadButtonLabelForType
 #define SDL_GetGamepadButtonLabel IGNORE_THIS_VERSION_OF_SDL_GetGamepadButtonLabel
+#define SDL_GetPens IGNORE_THIS_VERSION_OF_SDL_GetPens
+#define SDL_GetPenStatus IGNORE_THIS_VERSION_OF_SDL_GetPenStatus
+#define SDL_GetPenFromGUID IGNORE_THIS_VERSION_OF_SDL_GetPenFromGUID
+#define SDL_GetPenGUID IGNORE_THIS_VERSION_OF_SDL_GetPenGUID
+#define SDL_PenConnected IGNORE_THIS_VERSION_OF_SDL_PenConnected
+#define SDL_GetPenName IGNORE_THIS_VERSION_OF_SDL_GetPenName
+#define SDL_GetPenCapabilities IGNORE_THIS_VERSION_OF_SDL_GetPenCapabilities
+#define SDL_GetPenType IGNORE_THIS_VERSION_OF_SDL_GetPenType
+#define SDL_GetPens IGNORE_THIS_VERSION_OF_SDL_GetPens
+#define SDL_GetPenStatus IGNORE_THIS_VERSION_OF_SDL_GetPenStatus
+#define SDL_GetPenFromGUID IGNORE_THIS_VERSION_OF_SDL_GetPenFromGUID
+#define SDL_GetPenGUID IGNORE_THIS_VERSION_OF_SDL_GetPenGUID
+#define SDL_PenConnected IGNORE_THIS_VERSION_OF_SDL_PenConnected
+#define SDL_GetPenName IGNORE_THIS_VERSION_OF_SDL_GetPenName
+#define SDL_GetPenCapabilities IGNORE_THIS_VERSION_OF_SDL_GetPenCapabilities
+#define SDL_GetPenType IGNORE_THIS_VERSION_OF_SDL_GetPenType
+#define SDL_SetStringProperty IGNORE_THIS_VERSION_OF_SDL_SetStringProperty
+#define SDL_SetNumberProperty IGNORE_THIS_VERSION_OF_SDL_SetNumberProperty
+#define SDL_SetFloatProperty IGNORE_THIS_VERSION_OF_SDL_SetFloatProperty
+#define SDL_GetPropertyType IGNORE_THIS_VERSION_OF_SDL_GetPropertyType
+#define SDL_GetStringProperty IGNORE_THIS_VERSION_OF_SDL_GetStringProperty
+#define SDL_GetNumberProperty IGNORE_THIS_VERSION_OF_SDL_GetNumberProperty
+#define SDL_GetFloatProperty IGNORE_THIS_VERSION_OF_SDL_GetFloatProperty
+#define SDL_EnumerateProperties IGNORE_THIS_VERSION_OF_SDL_EnumerateProperties
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -4574,10 +4597,6 @@
 #undef SDL_GetAudioStreamQueued
 #endif
 
-#ifdef SDL_GetTextureDXGIResource
-#undef SDL_GetTextureDXGIResource
-#endif
-
 #ifdef SDL_CreateProperties
 #undef SDL_CreateProperties
 #endif
@@ -4744,6 +4763,102 @@
 
 #ifdef SDL_GetGamepadButtonLabel
 #undef SDL_GetGamepadButtonLabel
+#endif
+
+#ifdef SDL_GetPens
+#undef SDL_GetPens
+#endif
+
+#ifdef SDL_GetPenStatus
+#undef SDL_GetPenStatus
+#endif
+
+#ifdef SDL_GetPenFromGUID
+#undef SDL_GetPenFromGUID
+#endif
+
+#ifdef SDL_GetPenGUID
+#undef SDL_GetPenGUID
+#endif
+
+#ifdef SDL_PenConnected
+#undef SDL_PenConnected
+#endif
+
+#ifdef SDL_GetPenName
+#undef SDL_GetPenName
+#endif
+
+#ifdef SDL_GetPenCapabilities
+#undef SDL_GetPenCapabilities
+#endif
+
+#ifdef SDL_GetPenType
+#undef SDL_GetPenType
+#endif
+
+#ifdef SDL_GetPens
+#undef SDL_GetPens
+#endif
+
+#ifdef SDL_GetPenStatus
+#undef SDL_GetPenStatus
+#endif
+
+#ifdef SDL_GetPenFromGUID
+#undef SDL_GetPenFromGUID
+#endif
+
+#ifdef SDL_GetPenGUID
+#undef SDL_GetPenGUID
+#endif
+
+#ifdef SDL_PenConnected
+#undef SDL_PenConnected
+#endif
+
+#ifdef SDL_GetPenName
+#undef SDL_GetPenName
+#endif
+
+#ifdef SDL_GetPenCapabilities
+#undef SDL_GetPenCapabilities
+#endif
+
+#ifdef SDL_GetPenType
+#undef SDL_GetPenType
+#endif
+
+#ifdef SDL_SetStringProperty
+#undef SDL_SetStringProperty
+#endif
+
+#ifdef SDL_SetNumberProperty
+#undef SDL_SetNumberProperty
+#endif
+
+#ifdef SDL_SetFloatProperty
+#undef SDL_SetFloatProperty
+#endif
+
+#ifdef SDL_GetPropertyType
+#undef SDL_GetPropertyType
+#endif
+
+#ifdef SDL_GetStringProperty
+#undef SDL_GetStringProperty
+#endif
+
+#ifdef SDL_GetNumberProperty
+#undef SDL_GetNumberProperty
+#endif
+
+#ifdef SDL_GetFloatProperty
+#undef SDL_GetFloatProperty
+#endif
+
+#ifdef SDL_EnumerateProperties
+#undef SDL_EnumerateProperties
 #endif
 
 /* undefine these macros too: */
