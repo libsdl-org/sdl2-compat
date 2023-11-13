@@ -5527,6 +5527,40 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
 }
 
 DECLSPEC SDL_Window * SDLCALL
+SDL_CreateWindowFrom(const void *data)
+{
+    SDL_Window *window;
+    const char *hint;
+    SDL_PropertiesID props = SDL3_CreateProperties();
+    if (!props) {
+        return NULL;
+    }
+
+    hint = SDL3_GetHint("SDL_VIDEO_WINDOW_SHARE_PIXEL_FORMAT");
+    if (hint) {
+        /* This hint is a pointer (in string form) of the address of
+           the window to share a pixel format with
+        */
+        SDL_Window *otherWindow = NULL;
+        (void)SDL3_sscanf(hint, "%p", (void **)&otherWindow);
+        SDL3_SetProperty(props, "win32.pixel_format_hwnd", SDL3_GetProperty(SDL3_GetWindowProperties(otherWindow), "SDL.window.win32.hwnd", NULL));
+        SDL3_SetBooleanProperty(props, "opengl", SDL_TRUE);
+    }
+
+    if (SDL3_GetHintBoolean("SDL_VIDEO_FOREIGN_WINDOW_OPENGL", SDL_FALSE)) {
+        SDL3_SetBooleanProperty(props, "opengl", SDL_TRUE);
+    }
+    if (SDL3_GetHintBoolean("SDL_VIDEO_FOREIGN_WINDOW_VULKAN", SDL_FALSE)) {
+        SDL3_SetBooleanProperty(props, "vulkan", SDL_TRUE);
+    }
+
+    SDL3_SetProperty(props, "data", (void *)data);
+    window = SDL3_CreateWindowFrom(props);
+    SDL3_DestroyProperties(props);
+    return window;
+}
+
+DECLSPEC SDL_Window * SDLCALL
 SDL_CreateShapedWindow(const char *title, unsigned int x, unsigned int y, unsigned int w, unsigned int h, Uint32 flags)
 {
     SDL_Window *window;
