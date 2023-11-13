@@ -989,6 +989,8 @@
 #define SDL_GetNumberProperty IGNORE_THIS_VERSION_OF_SDL_GetNumberProperty
 #define SDL_GetFloatProperty IGNORE_THIS_VERSION_OF_SDL_GetFloatProperty
 #define SDL_EnumerateProperties IGNORE_THIS_VERSION_OF_SDL_EnumerateProperties
+#define SDL_SetBooleanProperty IGNORE_THIS_VERSION_OF_SDL_SetBooleanProperty
+#define SDL_GetBooleanProperty IGNORE_THIS_VERSION_OF_SDL_GetBooleanProperty
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -4859,6 +4861,14 @@
 
 #ifdef SDL_EnumerateProperties
 #undef SDL_EnumerateProperties
+#endif
+
+#ifdef SDL_SetBooleanProperty
+#undef SDL_SetBooleanProperty
+#endif
+
+#ifdef SDL_GetBooleanProperty
+#undef SDL_GetBooleanProperty
 #endif
 
 /* undefine these macros too: */
