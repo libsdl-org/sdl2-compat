@@ -95,8 +95,7 @@
 #define SDL_CreateThreadWithStackSize IGNORE_THIS_VERSION_OF_SDL_CreateThreadWithStackSize
 #define SDL_CreateWindow IGNORE_THIS_VERSION_OF_SDL_CreateWindow
 #define SDL_CreateWindowAndRenderer IGNORE_THIS_VERSION_OF_SDL_CreateWindowAndRenderer
-#define SDL_CreateWindowFrom IGNORE_THIS_VERSION_OF_SDL_CreateWindowFrom
-#define SDL_CreateWindowWithPosition IGNORE_THIS_VERSION_OF_SDL_CreateWindowWithPosition
+#define SDL_CreateWindowWithProperties IGNORE_THIS_VERSION_OF_SDL_CreateWindowWithProperties
 #define SDL_CursorVisible IGNORE_THIS_VERSION_OF_SDL_CursorVisible
 #define SDL_DXGIGetOutputInfo IGNORE_THIS_VERSION_OF_SDL_DXGIGetOutputInfo
 #define SDL_DelEventWatch IGNORE_THIS_VERSION_OF_SDL_DelEventWatch
@@ -1287,12 +1286,8 @@
 #undef SDL_CreateWindowAndRenderer
 #endif
 
-#ifdef SDL_CreateWindowFrom
-#undef SDL_CreateWindowFrom
-#endif
-
-#ifdef SDL_CreateWindowWithPosition
-#undef SDL_CreateWindowWithPosition
+#ifdef SDL_CreateWindowWithProperties
+#undef SDL_CreateWindowWithProperties
 #endif
 
 #ifdef SDL_CursorVisible

@@ -5554,8 +5554,8 @@ SDL_CreateWindowFrom(const void *data)
         SDL3_SetBooleanProperty(props, "vulkan", SDL_TRUE);
     }
 
-    SDL3_SetProperty(props, "data", (void *)data);
-    window = SDL3_CreateWindowFrom(props);
+    SDL3_SetProperty(props, "sdl2-compat.external_window", (void *)data);
+    window = SDL3_CreateWindowWithProperties(props);
     SDL3_DestroyProperties(props);
     return window;
 }
