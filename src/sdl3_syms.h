@@ -450,7 +450,6 @@ SDL3_SYM(int,SetWindowFullscreenMode,(SDL_Window *a, const SDL_DisplayMode *b),(
 SDL3_SYM_PASSTHROUGH(Uint32,GetWindowPixelFormat,(SDL_Window *a),(a),return)
 SDL3_SYM(SDL_Window*,CreateWindow,(const char *a, int b, int c, Uint32 d),(a,b,c,d),return)
 SDL3_SYM(SDL_Window*,CreatePopupWindow,(SDL_Window *a, int b, int c, int d, int e, Uint32 f),(a,b,c,d,e,f),return)
-SDL3_SYM(SDL_Window*,CreateWindowFrom,(SDL_PropertiesID a),(a),return)
 SDL3_SYM_PASSTHROUGH(Uint32,GetWindowID,(SDL_Window *a),(a),return)
 SDL3_SYM_PASSTHROUGH(SDL_Window*,GetWindowFromID,(Uint32 a),(a),return)
 SDL3_SYM(Uint32,GetWindowFlags,(SDL_Window *a),(a),return)
@@ -900,6 +899,7 @@ SDL3_SYM(Sint64,GetNumberProperty,(SDL_PropertiesID a, const char *b, Sint64 c),
 SDL3_SYM(SDL_PropertiesID,CreateProperties,(void),(),return)
 SDL3_SYM(int,SetBooleanProperty,(SDL_PropertiesID a, const char *b, SDL_bool c),(a,b,c),return)
 SDL3_SYM(void,DestroyProperties,(SDL_PropertiesID a),(a),)
+SDL3_SYM(SDL_Window*,CreateWindowWithProperties,(SDL_PropertiesID a),(a),return)
 
 #undef SDL3_SYM
 #undef SDL3_SYM_PASSTHROUGH
