@@ -49,7 +49,7 @@
 
 /* Comment this if you want to build without any C library requirements */
 #cmakedefine HAVE_LIBC 1
-#if HAVE_LIBC
+#ifdef HAVE_LIBC
 
 /* Useful headers */
 #cmakedefine STDC_HEADERS 1
@@ -259,8 +259,7 @@
 #cmakedefine HAVE_ROAPI_H @HAVE_ROAPI_H@
 #cmakedefine HAVE_SHELLSCALINGAPI_H @HAVE_SHELLSCALINGAPI_H@
 
-#cmakedefine HAVE_XINPUT_GAMEPAD_EX @HAVE_XINPUT_GAMEPAD_EX@
-#cmakedefine HAVE_XINPUT_STATE_EX @HAVE_XINPUT_STATE_EX@
+#cmakedefine USE_POSIX_SPAWN @USE_POSIX_SPAWN@
 
 /* SDL internal assertion support */
 #if @SDL_DEFAULT_ASSERT_LEVEL_CONFIGURED@

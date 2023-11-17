@@ -966,6 +966,24 @@ extern "C" {
 #define SDL_HINT_JOYSTICK_HIDAPI_XBOX_ONE_HOME_LED "SDL_JOYSTICK_HIDAPI_XBOX_ONE_HOME_LED"
 
 /**
+  *  A variable controlling whether IOKit should be used for controller handling.
+  *
+  *  This variable can be set to the following values:
+  *    "0"       - IOKit is not used
+  *    "1"       - IOKit is used (the default)
+  */
+#define SDL_HINT_JOYSTICK_IOKIT "SDL_JOYSTICK_IOKIT"
+
+/**
+  *  A variable controlling whether GCController should be used for controller handling.
+  *
+  *  This variable can be set to the following values:
+  *    "0"       - GCController is not used
+  *    "1"       - GCController is used (the default)
+  */
+#define SDL_HINT_JOYSTICK_MFI "SDL_JOYSTICK_MFI"
+
+/**
   *  \brief  A variable controlling whether the RAWINPUT joystick drivers should be used for better handling XInput-capable devices.
   *
   *  This variable can be set to the following values:
@@ -1473,6 +1491,17 @@ extern "C" {
  *  By default SDL does not sync screen surface updates with vertical refresh.
  */
 #define SDL_HINT_RENDER_VSYNC               "SDL_RENDER_VSYNC"
+
+/**
+ *  \brief  A variable controlling whether the Metal render driver select low power device over default one
+ *
+ *  This variable can be set to the following values:
+ *    "0"       - Use the prefered OS device
+ *    "1"       - Select a low power one
+ *
+ *  By default the prefered OS device is used.
+ */
+#define SDL_HINT_RENDER_METAL_PREFER_LOW_POWER_DEVICE "SDL_RENDER_METAL_PREFER_LOW_POWER_DEVICE"
 
 /**
  *  \brief  A variable controlling if VSYNC is automatically disable if doesn't reach the enough FPS
