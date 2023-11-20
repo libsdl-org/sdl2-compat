@@ -68,7 +68,7 @@ static GLES2_Context ctx;
 
 static int LoadContext(GLES2_Context *data)
 {
-#if defined(SDL_VIDEO_DRIVER_UIKIT)
+#ifdef SDL_VIDEO_DRIVER_UIKIT
 #define __SDL_NOGETPROCADDR__
 #elif defined(SDL_VIDEO_DRIVER_ANDROID)
 #define __SDL_NOGETPROCADDR__
@@ -76,7 +76,7 @@ static int LoadContext(GLES2_Context *data)
 #define __SDL_NOGETPROCADDR__
 #endif
 
-#if defined(__SDL_NOGETPROCADDR__)
+#if defined __SDL_NOGETPROCADDR__
 #define SDL_PROC(ret, func, params) data->func = func;
 #else
 #define SDL_PROC(ret, func, params)                                                            \

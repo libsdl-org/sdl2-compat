@@ -1121,7 +1121,7 @@ SDL_bool SDLTest_CommonInit(SDLTest_CommonState *state)
             SDL_DisplayMode mode;
             int bpp;
             Uint32 Rmask, Gmask, Bmask, Amask;
-#if defined(SDL_VIDEO_DRIVER_WINDOWS)
+#ifdef SDL_VIDEO_DRIVER_WINDOWS
             int adapterIndex = 0;
             int outputIndex = 0;
 #endif

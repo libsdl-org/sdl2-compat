@@ -69,7 +69,7 @@ static GLES2_Context ctx;
 
 static int LoadContext(GLES2_Context *data)
 {
-#if defined(SDL_VIDEO_DRIVER_UIKIT)
+#ifdef SDL_VIDEO_DRIVER_UIKIT
 #define __SDL_NOGETPROCADDR__
 #elif defined(SDL_VIDEO_DRIVER_ANDROID)
 #define __SDL_NOGETPROCADDR__
@@ -77,7 +77,7 @@ static int LoadContext(GLES2_Context *data)
 #define __SDL_NOGETPROCADDR__
 #endif
 
-#if defined(__SDL_NOGETPROCADDR__)
+#if defined __SDL_NOGETPROCADDR__
 #define SDL_PROC(ret, func, params) data->func = func;
 #else
 #define SDL_PROC(ret, func, params)                                                            \
@@ -901,9 +901,9 @@ int main(int argc, char *argv[])
         SDL_Log("%2.2f frames per second\n",
                 ((double)frames * 1000) / (now - then));
     }
-#if !defined(__ANDROID__) && !defined(__NACL__)  
+#if !defined(__ANDROID__) && !defined(__NACL__)
     quit(0);
-#endif    
+#endif
     return 0;
 }
 
