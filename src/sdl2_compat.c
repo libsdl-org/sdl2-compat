@@ -85,6 +85,9 @@ This breaks the build when creating SDL_ ## DisableScreenSaver
 #include <string.h>
 #define HAVE_STDIO_H 1
 #endif
+#ifdef __ANDROID__
+#include <android/log.h>
+#endif
 
 /* mingw headers may define these ... */
 #undef strtod
@@ -644,6 +647,11 @@ static void error_dialog(const char *errorMsg)
 }
 #elif defined(__APPLE__)
 extern void error_dialog(const char *errorMsg);
+#elif defined(__ANDROID__)
+static void error_dialog(const char *errorMsg)
+{
+    __android_log_print(ANDROID_LOG_FATAL, "SDL2COMPAT", "%s\n", errorMsg);
+}
 #else
 static void error_dialog(const char *errorMsg)
 {
