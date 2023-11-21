@@ -990,6 +990,8 @@
 #define SDL_EnumerateProperties IGNORE_THIS_VERSION_OF_SDL_EnumerateProperties
 #define SDL_SetBooleanProperty IGNORE_THIS_VERSION_OF_SDL_SetBooleanProperty
 #define SDL_GetBooleanProperty IGNORE_THIS_VERSION_OF_SDL_GetBooleanProperty
+#define SDL_CreateTextureWithProperties IGNORE_THIS_VERSION_OF_SDL_CreateTextureWithProperties
+#define SDL_CreateRendererWithProperties IGNORE_THIS_VERSION_OF_SDL_CreateRendererWithProperties
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -4864,6 +4866,14 @@
 
 #ifdef SDL_GetBooleanProperty
 #undef SDL_GetBooleanProperty
+#endif
+
+#ifdef SDL_CreateTextureWithProperties
+#undef SDL_CreateTextureWithProperties
+#endif
+
+#ifdef SDL_CreateRendererWithProperties
+#undef SDL_CreateRendererWithProperties
 #endif
 
 /* undefine these macros too: */
