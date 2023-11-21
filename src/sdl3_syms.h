@@ -49,24 +49,45 @@ SDL3_SYM_VARARGS(void,LogMessage,(int a, SDL_LogPriority b, SDL_PRINTF_FORMAT_ST
 SDL3_SYM_VARARGS(int,sscanf,(const char *a, SDL_SCANF_FORMAT_STRING const char *b, ...))
 SDL3_SYM_VARARGS(int,snprintf,(SDL_OUT_Z_CAP(b) char *a, size_t b, SDL_PRINTF_FORMAT_STRING const char *c, ...))
 
-#if defined(__WIN32__) || defined(__GDK__)
+#if (defined(__WIN32__) || defined(__GDK__)) && !defined(__WINRT__)
 SDL3_SYM_PASSTHROUGH(SDL_Thread*,CreateThread,(SDL_ThreadFunction a, const char *b, void *c, pfnSDL_CurrentBeginThread d, pfnSDL_CurrentEndThread e),(a,b,c,d,e),return)
+SDL3_SYM_PASSTHROUGH(SDL_Thread*,CreateThreadWithStackSize,(SDL_ThreadFunction a, const char *b, const size_t c, void *d, pfnSDL_CurrentBeginThread e, pfnSDL_CurrentEndThread f),(a,b,c,d,e,f),return)
 #else
 SDL3_SYM_PASSTHROUGH(SDL_Thread*,CreateThread,(SDL_ThreadFunction a, const char *b, void *c),(a,b,c),return)
+SDL3_SYM_PASSTHROUGH(SDL_Thread*,CreateThreadWithStackSize,(SDL_ThreadFunction a, const char *b, const size_t c, void *d),(a,b,c,d),return)
 #endif
 
 #if defined(__WIN32__) || defined(__GDK__)
 SDL3_SYM_PASSTHROUGH(int,RegisterApp,(const char *a, Uint32 b, void *c),(a,b,c),return)
 SDL3_SYM_PASSTHROUGH(void,UnregisterApp,(void),(),)
+SDL3_SYM_PASSTHROUGH(void,SetWindowsMessageHook,(SDL_WindowsMessageHook a, void *b),(a,b),)
 #endif
 
 #if defined(__WIN32__) || defined(__WINGDK__)
 SDL3_SYM(int,Direct3D9GetAdapterIndex,(SDL_DisplayID a),(a),return)
+SDL3_SYM(SDL_bool,DXGIGetOutputInfo,(SDL_DisplayID a,int *b, int *c),(a,b,c),return)
+#endif
+
+#ifdef __GDK__
+SDL3_SYM_PASSTHROUGH(int,GDKGetTaskQueue,(XTaskQueueHandle *a),(a),return)
+SDL3_SYM_PASSTHROUGH(int,GDKGetDefaultUser,(XUserHandle *a),(a),return)
+#endif
+
+#ifdef __WINRT__
+SDL3_SYM_PASSTHROUGH(const wchar_t*,WinRTGetFSPathUNICODE,(SDL_WinRT_Path a),(a),return)
+SDL3_SYM_PASSTHROUGH(const char*,WinRTGetFSPathUTF8,(SDL_WinRT_Path a),(a),return)
+SDL3_SYM_PASSTHROUGH(SDL_WinRT_DeviceFamily,WinRTGetDeviceFamily,(void),(),return)
 #endif
 
 #ifdef __IOS__
 SDL3_SYM_PASSTHROUGH(int,iPhoneSetAnimationCallback,(SDL_Window *a, int b, void (SDLCALL *c)(void *), void *d),(a,b,c,d),return)
 SDL3_SYM_PASSTHROUGH(void,iPhoneSetEventPump,(SDL_bool a),(a),)
+SDL3_SYM_PASSTHROUGH(void,OnApplicationDidChangeStatusBarOrientation,(void),(),)
+#endif
+
+#ifdef __LINUX__
+SDL3_SYM_PASSTHROUGH(int,LinuxSetThreadPriority,(Sint64 a, int b),(a,b),return)
+SDL3_SYM_PASSTHROUGH(int,LinuxSetThreadPriorityAndPolicy,(Sint64 a, int b, int c),(a,b,c),return)
 #endif
 
 #ifdef __ANDROID__
@@ -75,13 +96,21 @@ SDL3_SYM_PASSTHROUGH(void*,AndroidGetActivity,(void),(),return)
 SDL3_SYM_PASSTHROUGH(const char*,AndroidGetInternalStoragePath,(void),(),return)
 SDL3_SYM(int,AndroidGetExternalStorageState,(Uint32 *a),(a),return)
 SDL3_SYM_PASSTHROUGH(const char*,AndroidGetExternalStoragePath,(void),(),return)
+SDL3_SYM_PASSTHROUGH(int,AndroidSendMessage,(Uint32 a, int b),(a,b),return)
+SDL3_SYM_PASSTHROUGH(SDL_bool,IsAndroidTV,(void),(),return)
+SDL3_SYM_PASSTHROUGH(SDL_bool,IsChromebook,(void),(),return)
+SDL3_SYM_PASSTHROUGH(SDL_bool,IsDeXMode,(void),(),return)
+SDL3_SYM_PASSTHROUGH(void,AndroidBackButton,(void),(),)
+SDL3_SYM_PASSTHROUGH(SDL_bool,AndroidRequestPermission,(const char *a),(a),return)
+SDL3_SYM_PASSTHROUGH(int,AndroidShowToast,(const char *a, int b, int c, int d, int e),(a,b,c,d,e),return)
+SDL3_SYM_PASSTHROUGH(int,GetAndroidSDKVersion,(void),(),return)
 #endif
 
 SDL3_SYM(int,Init,(Uint32 a),(a),return)
 SDL3_SYM(int,InitSubSystem,(Uint32 a),(a),return)
 SDL3_SYM(void,QuitSubSystem,(Uint32 a),(a),)
-SDL3_SYM_PASSTHROUGH(Uint32,WasInit,(Uint32 a),(a),return)
 SDL3_SYM(void,Quit,(void),(),)
+SDL3_SYM_PASSTHROUGH(Uint32,WasInit,(Uint32 a),(a),return)
 SDL3_SYM_PASSTHROUGH(SDL_AssertState,ReportAssertion,(SDL_AssertData *a, const char *b, const char *c, int d),(a,b,c,d),return)
 SDL3_SYM_PASSTHROUGH(void,SetAssertionHandler,(SDL_AssertionHandler a, void *b),(a,b),)
 SDL3_SYM_PASSTHROUGH(const SDL_AssertData*,GetAssertionReport,(void),(),return)
@@ -108,6 +137,13 @@ SDL3_SYM_PASSTHROUGH(SDL_bool,HasSSE2,(void),(),return)
 SDL3_SYM_PASSTHROUGH(SDL_bool,HasSSE3,(void),(),return)
 SDL3_SYM_PASSTHROUGH(SDL_bool,HasSSE41,(void),(),return)
 SDL3_SYM_PASSTHROUGH(SDL_bool,HasSSE42,(void),(),return)
+SDL3_SYM_PASSTHROUGH(SDL_bool,HasAVX,(void),(),return)
+SDL3_SYM_PASSTHROUGH(SDL_bool,HasAVX2,(void),(),return)
+SDL3_SYM_PASSTHROUGH(SDL_bool,HasAVX512F,(void),(),return)
+SDL3_SYM_PASSTHROUGH(SDL_bool,HasNEON,(void),(),return)
+SDL3_SYM_PASSTHROUGH(SDL_bool,HasARMSIMD,(void),(),return)
+SDL3_SYM_PASSTHROUGH(SDL_bool,HasLSX,(void),(),return)
+SDL3_SYM_PASSTHROUGH(SDL_bool,HasLASX,(void),(),return)
 SDL3_SYM_PASSTHROUGH(int,GetSystemRAM,(void),(),return)
 SDL3_SYM_PASSTHROUGH(const char*,GetError,(void),(),return)
 SDL3_SYM_PASSTHROUGH(void,ClearError,(void),(),)
@@ -498,17 +534,9 @@ SDL3_SYM(int,GL_DeleteContext,(SDL_GLContext a),(a),return)
 SDL3_SYM_PASSTHROUGH(int,vsscanf,(const char *a, const char *b, va_list c),(a,b,c),return)
 SDL3_SYM(int,AddGamepadMappingsFromRW,(SDL_RWops *a, SDL_bool b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(void,GL_ResetAttributes,(void),(),)
-SDL3_SYM_PASSTHROUGH(SDL_bool,HasAVX,(void),(),return)
 SDL3_SYM_PASSTHROUGH(SDL_AssertionHandler,GetDefaultAssertionHandler,(void),(),return)
 SDL3_SYM_PASSTHROUGH(SDL_AssertionHandler,GetAssertionHandler,(void **a),(a),return)
-#if defined(__WIN32__) || defined(__WINGDK__)
-SDL3_SYM(SDL_bool,DXGIGetOutputInfo,(SDL_DisplayID a,int *b, int *c),(a,b,c),return)
-#endif
 SDL3_SYM_RENAMED(SDL_bool,RenderIsClipEnabled,RenderClipEnabled,(SDL_Renderer *a),(a),return)
-#ifdef __WINRT__
-SDL3_SYM_PASSTHROUGH(const wchar_t*,WinRTGetFSPathUNICODE,(SDL_WinRT_Path a),(a),return)
-SDL3_SYM_PASSTHROUGH(const char*,WinRTGetFSPathUTF8,(SDL_WinRT_Path a),(a),return)
-#endif
 SDL3_SYM(int,WarpMouseGlobal,(float a, float b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(float,sqrtf,(float a),(a),return)
 SDL3_SYM_PASSTHROUGH(double,tan,(double a),(a),return)
@@ -516,11 +544,7 @@ SDL3_SYM_PASSTHROUGH(float,tanf,(float a),(a),return)
 SDL3_SYM_PASSTHROUGH(int,CaptureMouse,(SDL_bool a),(a),return)
 SDL3_SYM_PASSTHROUGH(int,SetWindowHitTest,(SDL_Window *a, SDL_HitTest b, void *c),(a,b,c),return)
 SDL3_SYM(Uint32,GetGlobalMouseState,(float *a, float *b),(a,b),return)
-SDL3_SYM_PASSTHROUGH(SDL_bool,HasAVX2,(void),(),return)
 SDL3_SYM_PASSTHROUGH(SDL_Window*,GetGrabbedWindow,(void),(),return)
-#if defined(__WIN32__) || defined(__GDK__)
-SDL3_SYM_PASSTHROUGH(void,SetWindowsMessageHook,(SDL_WindowsMessageHook a, void *b),(a,b),)
-#endif
 SDL3_SYM_RENAMED(SDL_JoystickPowerLevel,JoystickCurrentPowerLevel,GetJoystickPowerLevel,(SDL_Joystick *a),(a),return)
 SDL3_SYM(SDL_GameController*,GetGamepadFromInstanceID,(SDL_JoystickID a),(a),return)
 SDL3_SYM(SDL_Joystick*,GetJoystickFromInstanceID,(SDL_JoystickID a),(a),return)
@@ -538,7 +562,6 @@ SDL3_SYM_RENAMED(Uint16,JoystickGetProductVersion,GetJoystickProductVersion,(SDL
 SDL3_SYM_RENAMED(Uint16,GameControllerGetVendor,GetGamepadVendor,(SDL_GameController *a),(a),return)
 SDL3_SYM_RENAMED(Uint16,GameControllerGetProduct,GetGamepadProduct,(SDL_GameController *a),(a),return)
 SDL3_SYM_RENAMED(Uint16,GameControllerGetProductVersion,GetGamepadProductVersion,(SDL_GameController *a),(a),return)
-SDL3_SYM_PASSTHROUGH(SDL_bool,HasNEON,(void),(),return)
 SDL3_SYM_RENAMED(int,GameControllerNumMappings,GetNumGamepadMappings,(void),(),return)
 SDL3_SYM_RENAMED(char*,GameControllerMappingForIndex,GetGamepadMappingForIndex,(int a),(a),return)
 SDL3_SYM_RENAMED(SDL_bool,JoystickGetAxisInitialState,GetJoystickAxisInitialState,(SDL_Joystick *a, int b, Sint16 *c),(a,b,c),return)
@@ -557,6 +580,7 @@ SDL3_SYM(char const* const* ,Vulkan_GetInstanceExtensions,(Uint32 *a),(a),return
 SDL3_SYM(SDL_bool,Vulkan_CreateSurface,(SDL_Window *a, VkInstance b, const struct VkAllocationCallbacks *c, VkSurfaceKHR *d),(a,b,c,d),return)
 SDL3_SYM_PASSTHROUGH(void,GetMemoryFunctions,(SDL_malloc_func *a, SDL_calloc_func *b, SDL_realloc_func *c, SDL_free_func *d),(a,b,c,d),)
 SDL3_SYM_PASSTHROUGH(int,SetMemoryFunctions,(SDL_malloc_func a, SDL_calloc_func b, SDL_realloc_func c, SDL_free_func d),(a,b,c,d),return)
+SDL3_SYM_PASSTHROUGH(void,GetOriginalMemoryFunctions,(SDL_malloc_func *a, SDL_calloc_func *b, SDL_realloc_func *c, SDL_free_func *d),(a,b,c,d),)
 SDL3_SYM_PASSTHROUGH(int,GetNumAllocations,(void),(),return)
 SDL3_SYM_PASSTHROUGH(float,acosf,(float a),(a),return)
 SDL3_SYM_PASSTHROUGH(float,asinf,(float a),(a),return)
@@ -576,23 +600,8 @@ SDL3_SYM_PASSTHROUGH(SDL_YUV_CONVERSION_MODE,GetYUVConversionMode,(void),(),retu
 SDL3_SYM_PASSTHROUGH(SDL_YUV_CONVERSION_MODE,GetYUVConversionModeForResolution,(int a, int b),(a,b),return)
 SDL3_SYM_RENAMED(void*,RenderGetMetalLayer,GetRenderMetalLayer,(SDL_Renderer *a),(a),return)
 SDL3_SYM_RENAMED(void*,RenderGetMetalCommandEncoder,GetRenderMetalCommandEncoder,(SDL_Renderer *a),(a),return)
-#ifdef __WINRT__
-SDL3_SYM_PASSTHROUGH(SDL_WinRT_DeviceFamily,WinRTGetDeviceFamily,(void),(),return)
-#endif
-#ifdef __ANDROID__
-SDL3_SYM_PASSTHROUGH(SDL_bool,IsAndroidTV,(void),(),return)
-#endif
 SDL3_SYM_PASSTHROUGH(double,log10,(double a),(a),return)
 SDL3_SYM_PASSTHROUGH(float,log10f,(float a),(a),return)
-#ifdef __LINUX__
-SDL3_SYM_PASSTHROUGH(int,LinuxSetThreadPriority,(Sint64 a, int b),(a,b),return)
-#endif
-SDL3_SYM_PASSTHROUGH(SDL_bool,HasAVX512F,(void),(),return)
-#ifdef __ANDROID__
-SDL3_SYM_PASSTHROUGH(SDL_bool,IsChromebook,(void),(),return)
-SDL3_SYM_PASSTHROUGH(SDL_bool,IsDeXMode,(void),(),return)
-SDL3_SYM_PASSTHROUGH(void,AndroidBackButton,(void),(),)
-#endif
 SDL3_SYM_PASSTHROUGH(double,exp,(double a),(a),return)
 SDL3_SYM_PASSTHROUGH(float,expf,(float a),(a),return)
 SDL3_SYM_PASSTHROUGH(wchar_t*,wcsdup,(const wchar_t *a),(a),return)
@@ -609,15 +618,6 @@ SDL3_SYM_RENAMED(void,SensorUpdate,UpdateSensors,(void),(),)
 SDL3_SYM_PASSTHROUGH(SDL_bool,IsTablet,(void),(),return)
 SDL3_SYM(SDL_DisplayOrientation,GetCurrentDisplayOrientation,(SDL_DisplayID a),(a),return)
 SDL3_SYM_RENAMED(SDL_bool,HasColorKey,SurfaceHasColorKey,(SDL_Surface *a),(a),return)
-
-#if (defined(__WIN32__) || defined(__GDK__)) && !defined(__WINRT__)
-SDL3_SYM_PASSTHROUGH(SDL_Thread*,CreateThreadWithStackSize,(SDL_ThreadFunction a, const char *b, const size_t c, void *d, pfnSDL_CurrentBeginThread e, pfnSDL_CurrentEndThread f),(a,b,c,d,e,f),return)
-#else
-SDL3_SYM_PASSTHROUGH(SDL_Thread*,CreateThreadWithStackSize,(SDL_ThreadFunction a, const char *b, const size_t c, void *d),(a,b,c,d),return)
-#endif
-
-SDL3_SYM_RENAMED(int,JoystickGetPlayerIndex,GetJoystickPlayerIndex,(SDL_Joystick *a),(a),return)
-SDL3_SYM_RENAMED(int,GameControllerGetPlayerIndex,GetGamepadPlayerIndex,(SDL_GameController *a),(a),return)
 SDL3_SYM_PASSTHROUGH(int,RenderFlush,(SDL_Renderer *a),(a),return)
 SDL3_SYM_RENAMED(int,RenderDrawPointF,RenderPoint,(SDL_Renderer *a, float b, float c),(a,b,c),return)
 SDL3_SYM_RENAMED(int,RenderDrawPointsF,RenderPoints,(SDL_Renderer *a, const SDL_FPoint *b, int c),(a,b,c),return)
@@ -643,7 +643,6 @@ SDL3_SYM_PASSTHROUGH(void*,LoadFile,(const char *a, size_t *b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(SDL_MetalView,Metal_CreateView,(SDL_Window *a),(a),return)
 SDL3_SYM_PASSTHROUGH(void,Metal_DestroyView,(SDL_MetalView a),(a),)
 SDL3_SYM_PASSTHROUGH(int,LockTextureToSurface,(SDL_Texture *a, const SDL_Rect *b, SDL_Surface **c),(a,b,c),return)
-SDL3_SYM_PASSTHROUGH(SDL_bool,HasARMSIMD,(void),(),return)
 SDL3_SYM_RENAMED(char*,strtokr,strtok_r,(char *a, const char *b, char **c),(a,b,c),return)
 SDL3_SYM_PASSTHROUGH(wchar_t*,wcsstr,(const wchar_t *a, const wchar_t *b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(int,wcsncmp,(const wchar_t *a, const wchar_t *b, size_t c),(a,b,c),return)
@@ -660,19 +659,13 @@ SDL3_SYM_PASSTHROUGH(void,OnApplicationWillResignActive,(void),(),)
 SDL3_SYM_PASSTHROUGH(void,OnApplicationDidEnterBackground,(void),(),)
 SDL3_SYM_PASSTHROUGH(void,OnApplicationWillEnterForeground,(void),(),)
 SDL3_SYM_PASSTHROUGH(void,OnApplicationDidBecomeActive,(void),(),)
-#ifdef __IOS__
-SDL3_SYM_PASSTHROUGH(void,OnApplicationDidChangeStatusBarOrientation,(void),(),)
-#endif
-#ifdef __ANDROID__
-SDL3_SYM_PASSTHROUGH(int,GetAndroidSDKVersion,(void),(),return)
-#endif
 SDL3_SYM_PASSTHROUGH(int,isupper,(int a),(a),return)
 SDL3_SYM_PASSTHROUGH(int,islower,(int a),(a),return)
-
+SDL3_SYM_RENAMED(int,JoystickGetPlayerIndex,GetJoystickPlayerIndex,(SDL_Joystick *a),(a),return)
+SDL3_SYM_RENAMED(int,GameControllerGetPlayerIndex,GetGamepadPlayerIndex,(SDL_GameController *a),(a),return)
 SDL3_SYM(SDL_JoystickID,AttachVirtualJoystick,(SDL_JoystickType a, int b, int c, int d),(a,b,c,d),return)
 SDL3_SYM(int,DetachVirtualJoystick,(SDL_JoystickID a),(a),return)
 SDL3_SYM(SDL_JoystickID,AttachVirtualJoystickEx,(const SDL_VirtualJoystickDesc *a),(a),return)
-
 SDL3_SYM_RENAMED(int,JoystickSetVirtualAxis,SetJoystickVirtualAxis,(SDL_Joystick *a, int b, Sint16 c),(a,b,c),return)
 SDL3_SYM_RENAMED(int,JoystickSetVirtualButton,SetJoystickVirtualButton,(SDL_Joystick *a, int b, Uint8 c),(a,b,c),return)
 SDL3_SYM_RENAMED(int,JoystickSetVirtualHat,SetJoystickVirtualHat,(SDL_Joystick *a, int b, Uint8 c),(a,b,c),return)
@@ -681,9 +674,6 @@ SDL3_SYM_PASSTHROUGH(void*,Metal_GetLayer,(SDL_MetalView a),(a),return)
 SDL3_SYM_PASSTHROUGH(double,trunc,(double a),(a),return)
 SDL3_SYM_PASSTHROUGH(float,truncf,(float a),(a),return)
 SDL3_SYM_PASSTHROUGH(SDL_Locale *,GetPreferredLocales,(void),(),return)
-#ifdef __ANDROID__
-SDL3_SYM_PASSTHROUGH(SDL_bool,AndroidRequestPermission,(const char *a),(a),return)
-#endif
 SDL3_SYM_PASSTHROUGH(int,OpenURL,(const char *a),(a),return)
 SDL3_SYM_RENAMED(SDL_bool,HasSurfaceRLE,SurfaceHasRLE,(SDL_Surface *a),(a),return)
 SDL3_SYM_RENAMED(SDL_bool,GameControllerHasLED,GamepadHasLED,(SDL_GameController *a),(a),return)
@@ -724,9 +714,6 @@ SDL3_SYM_PASSTHROUGH(int,isxdigit,(int a),(a),return)
 SDL3_SYM_PASSTHROUGH(int,ispunct,(int a),(a),return)
 SDL3_SYM_PASSTHROUGH(int,isprint,(int a),(a),return)
 SDL3_SYM_PASSTHROUGH(int,isgraph,(int a),(a),return)
-#ifdef __ANDROID__
-SDL3_SYM_PASSTHROUGH(int,AndroidShowToast,(const char *a, int b, int c, int d, int e),(a,b,c,d,e),return)
-#endif
 SDL3_SYM_RENAMED(void,TLSCleanup,CleanupTLS,(void),(),)
 SDL3_SYM(int,SetWindowAlwaysOnTop,(SDL_Window *a, SDL_bool b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(int,FlashWindow,(SDL_Window *a, SDL_FlashOperation b),(a,b),return)
@@ -739,9 +726,6 @@ SDL3_SYM_RENAMED(int,RenderSetVSync,SetRenderVSync,(SDL_Renderer *a, int b),(a,b
 SDL3_SYM_VARARGS(int,asprintf,(char **a, SDL_PRINTF_FORMAT_STRING const char *b, ...))
 SDL3_SYM_PASSTHROUGH(int,vasprintf,(char **a, const char *b, va_list c),(a,b,c),return)
 SDL3_SYM_PASSTHROUGH(void*,GetWindowICCProfile,(SDL_Window *a, size_t *b),(a,b),return)
-#ifdef __LINUX__
-SDL3_SYM_PASSTHROUGH(int,LinuxSetThreadPriorityAndPolicy,(Sint64 a, int b, int c),(a,b,c),return)
-#endif
 SDL3_SYM_RENAMED(const char*,GameControllerGetAppleSFSymbolsNameForButton,GetGamepadAppleSFSymbolsNameForButton,(SDL_GameController *a, SDL_GameControllerButton b),(a,b),return)
 SDL3_SYM_RENAMED(const char*,GameControllerGetAppleSFSymbolsNameForAxis,GetGamepadAppleSFSymbolsNameForAxis,(SDL_GameController *a, SDL_GameControllerAxis b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(int,hid_init,(void),(),return)
@@ -772,9 +756,6 @@ SDL3_SYM_RENAMED(SDL_bool,GameControllerHasRumble,GamepadHasRumble,(SDL_GameCont
 SDL3_SYM_RENAMED(SDL_bool,GameControllerHasRumbleTriggers,GamepadHasRumbleTriggers,(SDL_GameController *a),(a),return)
 SDL3_SYM_PASSTHROUGH(void,hid_ble_scan,(SDL_bool a),(a),)
 SDL3_SYM_PASSTHROUGH(int,PremultiplyAlpha,(int a, int b, Uint32 c, const void *d, int e, Uint32 f, void *g, int h),(a,b,c,d,e,f,g,h),return)
-#ifdef __ANDROID__
-SDL3_SYM_PASSTHROUGH(int,AndroidSendMessage,(Uint32 a, int b),(a,b),return)
-#endif
 SDL3_SYM_PASSTHROUGH(const char*,GetTouchName,(int a),(a),return)
 SDL3_SYM_PASSTHROUGH(void,ClearComposition,(void),(),)
 SDL3_SYM_RENAMED(SDL_bool,IsTextInputShown,TextInputShown,(void),(),return)
@@ -791,14 +772,7 @@ SDL3_SYM_RENAMED(Uint16,GameControllerGetFirmwareVersion,GetGamepadFirmwareVersi
 SDL3_SYM_RENAMED(Uint16,JoystickGetFirmwareVersion,GetJoystickFirmwareVersion,(SDL_Joystick *a),(a),return)
 SDL3_SYM(int,GUIDToString,(SDL_GUID a, char *b, int c),(a,b,c),return)
 SDL3_SYM_PASSTHROUGH(SDL_GUID,GUIDFromString,(const char *a),(a),return)
-SDL3_SYM_PASSTHROUGH(SDL_bool,HasLSX,(void),(),return)
-SDL3_SYM_PASSTHROUGH(SDL_bool,HasLASX,(void),(),return)
 SDL3_SYM_PASSTHROUGH(size_t,utf8strnlen,(const char *a, size_t b),(a,b),return)
-
-#ifdef __GDK__
-SDL3_SYM_PASSTHROUGH(int,GDKGetTaskQueue,(XTaskQueueHandle *a),(a),return)
-#endif
-SDL3_SYM_PASSTHROUGH(void,GetOriginalMemoryFunctions,(SDL_malloc_func *a, SDL_calloc_func *b, SDL_realloc_func *c, SDL_free_func *d),(a,b,c,d),)
 SDL3_SYM_PASSTHROUGH(void,ResetKeyboard,(void),(),)
 SDL3_SYM(SDL_bool,ResetHint,(const char *a),(a),return)
 SDL3_SYM_PASSTHROUGH(Uint16,crc16,(Uint16 a, const void *b, size_t c),(a,b,c),return)
@@ -885,15 +859,11 @@ SDL3_SYM(int,ResumeAudioDevice,(SDL_AudioDeviceID a),(a),return)
 SDL3_SYM(SDL_bool,AudioDevicePaused,(SDL_AudioDeviceID a),(a),return)
 SDL3_SYM(SDL_AudioDeviceID,GetAudioStreamDevice,(SDL_AudioStream *a),(a),return)
 SDL3_SYM(SDL_GamepadBinding **,GetGamepadBindings,(SDL_Gamepad *a, int *b),(a,b),return)
-#ifdef __GDK__
-SDL3_SYM_PASSTHROUGH(int,GDKGetDefaultUser,(XUserHandle *a),(a),return)
-#endif
 SDL3_SYM(int,SetProperty,(SDL_PropertiesID a, const char *b, void *c),(a,b,c),return)
 SDL3_SYM(void*,GetProperty,(SDL_PropertiesID a, const char *b, void *c),(a,b,c),return)
 SDL3_SYM(SDL_PropertiesID,GetWindowProperties,(SDL_Window *a),(a),return)
 SDL3_SYM(SDL_PropertiesID,GetTextureProperties,(SDL_Texture *a),(a),return)
 SDL3_SYM(SDL_PropertiesID,GetRendererProperties,(SDL_Renderer *a),(a),return)
-SDL3_SYM(SDL_GamepadButtonLabel,GetGamepadButtonLabelForType,(SDL_GamepadType a, SDL_GamepadButton b),(a,b),return)
 SDL3_SYM(SDL_GamepadButtonLabel,GetGamepadButtonLabel,(SDL_Gamepad *a, SDL_GamepadButton b),(a,b),return)
 SDL3_SYM(Sint64,GetNumberProperty,(SDL_PropertiesID a, const char *b, Sint64 c),(a,b,c),return)
 SDL3_SYM(SDL_PropertiesID,CreateProperties,(void),(),return)
