@@ -16,20 +16,27 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-        - { name: 'Linux',                    os: ubuntu-latest,  artifact: 'SDL2_compat-ubuntu',   shell: sh, static: true }
-        - { name: 'MacOS',                    os: macos-latest,   artifact: 'SDL2_compat-macos',    shell: sh }
-        - { name: 'Windows msys2 (mingw32)',  os: windows-latest, artifact: 'SDL2_compat-mingw32',  shell: 'msys2 {0}', msystem: mingw32, msys-env: mingw-w64-i686 }
-        - { name: 'Windows msys2 (mingw64)',  os: windows-latest, artifact: 'SDL2_compat-mingw64',  shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64 }
-        - { name: 'Windows msys2 (clang32)',  os: windows-latest, artifact: 'SDL2_compat-clang32',  shell: 'msys2 {0}', msystem: clang32, msys-env: mingw-w64-clang-i686 }
-        - { name: 'Windows msys2 (clang64)',  os: windows-latest, artifact: 'SDL2_compat-clang64',  shell: 'msys2 {0}', msystem: clang64, msys-env: mingw-w64-clang-x86_64 }
-        - { name: 'Windows MSVC (x86)',       os: windows-latest, artifact: 'SDL2_compat-VC-x86',   shell: sh, msvc: true, msvc-arch: x86 }
-        - { name: 'Windows MSVC (x64)',       os: windows-latest, artifact: 'SDL2_compat-VC-x64',   shell: sh, msvc: true, msvc-arch: x64 }
-        - { name: 'Windows MSVC (arm32)',     os: windows-latest, artifact: 'SDL2_compat-VC-arm32', shell: sh, msvc: true, msvc-arch: amd64_arm, cross: true }
-        - { name: 'Windows MSVC (arm64)',     os: windows-latest, artifact: 'SDL2_compat-VC-arm64', shell: sh, msvc: true, msvc-arch: amd64_arm64, cross: true }
+        - { name: 'Linux',                    os: ubuntu-latest,  artifact: 'SDL2_compat-ubuntu',           shell: sh, linux: true, static: true }
+        - { name: 'MacOS',                    os: macos-latest,   artifact: 'SDL2_compat-macos',            shell: sh }
+        - { name: 'Windows msys2 (mingw32)',  os: windows-latest, artifact: 'SDL2_compat-mingw32',          shell: 'msys2 {0}', msystem: mingw32, msys-env: mingw-w64-i686 }
+        - { name: 'Windows msys2 (mingw64)',  os: windows-latest, artifact: 'SDL2_compat-mingw64',          shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64 }
+        - { name: 'Windows msys2 (clang32)',  os: windows-latest, artifact: 'SDL2_compat-clang32',          shell: 'msys2 {0}', msystem: clang32, msys-env: mingw-w64-clang-i686 }
+        - { name: 'Windows msys2 (clang64)',  os: windows-latest, artifact: 'SDL2_compat-clang64',          shell: 'msys2 {0}', msystem: clang64, msys-env: mingw-w64-clang-x86_64 }
+        - { name: 'Windows MSVC (x86)',       os: windows-latest, artifact: 'SDL2_compat-VC-x86',           shell: sh, no-test-pc: true, msvc: true, msvc-arch: x86 }
+        - { name: 'Windows MSVC (x64)',       os: windows-latest, artifact: 'SDL2_compat-VC-x64',           shell: sh, no-test-pc: true, msvc: true, msvc-arch: x64 }
+        - { name: 'Windows MSVC (arm32)',     os: windows-latest, artifact: 'SDL2_compat-VC-arm32',         shell: sh, no-test-pc: true, msvc: true, msvc-arch: amd64_arm, cross: true }
+        - { name: 'Windows MSVC (arm64)',     os: windows-latest, artifact: 'SDL2_compat-VC-arm64',         shell: sh, no-test-pc: true, msvc: true, msvc-arch: amd64_arm64, cross: true }
+        # - { name: 'Android',                  os: ubuntu-latest,  artifact: 'SDL2_compat-android-aarch64',  shell: sh, no-test-pc: true, android: true,  android-abi: "arm64-v8a", android-platform: 23, ndk-version: r21e, cross: true, cmake-extra: }
     defaults:
       run:
         shell: ${{ matrix.platform.shell }}
     steps:
+    - uses: nttld/setup-ndk@v1
+      if: ${{ matrix.platform.android }}
+      id: setup-ndk
+      with:
+        local-cache: true
+        ndk-version: ${{ matrix.platform.ndk-version }}
     - uses: ilammy/msvc-dev-cmd@v1
       if: ${{ matrix.platform.msvc }}
       with:
@@ -49,17 +56,30 @@ jobs:
     - name: Install Ninja
       if: ${{ !contains(matrix.platform.shell, 'msys2') }}
       uses: turtlesec-no/get-ninja@main
+    - name: Calculate extra arguments
+      id: calculate-arguments
+      run: |
+        CMAKE_ARGUMENTS=
+        if test "x${{ matrix.platform.android }}" != x; then
+          CMAKE_ARGUMENTS="-DCMAKE_TOOLCHAIN_FILE=${{ steps.setup-ndk.outputs.ndk-path }}/build/cmake/android.toolchain.cmake"
+          CMAKE_ARGUMENTS="$CMAKE_ARGUMENTS -DANDROID_PLATFORM=${{ matrix.platform.android-platform }}"
+          CMAKE_ARGUMENTS="$CMAKE_ARGUMENTS -DANDROID_ABI=${{ matrix.platform.android-abi }}"
+          CMAKE_ARGUMENTS="$CMAKE_ARGUMENTS -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH"
+        fi
+        echo "CMAKE_ARGUMENTS=${CMAKE_ARGUMENTS}"
+        echo "cmake-arguments=${CMAKE_ARGUMENTS}" >>$GITHUB_OUTPUT
     - name: Set up SDL3
       uses: libsdl-org/setup-sdl@main
       id: sdl
       with:
+        cmake-arguments: ${{ steps.calculate-arguments.outputs.cmake-arguments }}
         cmake-generator: Ninja
         version: 3-head
         sdl-test: true
         shell: ${{ matrix.platform.shell }}
         add-to-environment: true
     - name: Set up Linux dependencies
-      if: ${{ runner.os == 'Linux' }}
+      if: ${{ matrix.platform.linux }}
       run: |
         sudo apt-get update -y
         sudo apt-get install -y libgl1-mesa-dev libglu1-mesa-dev
@@ -76,6 +96,8 @@ jobs:
           -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT="ProgramDatabase" \
           -DCMAKE_EXE_LINKER_FLAGS="${{ matrix.platform.msvc && '-DEBUG' }}" \
           -DCMAKE_SHARED_LINKER_FLAGS="${{ matrix.platform.msvc && '-DEBUG' }}" \
+          ${{ steps.calculate-arguments.outputs.cmake-arguments }}\
+          -DCMAKE_POLICY_DEFAULT_CMP0074=NEW \
           -GNinja
     - name: Build (CMake)
       id: build
@@ -118,15 +140,16 @@ jobs:
           -DTEST_SHARED=TRUE \
           -DTEST_STATIC=${{ matrix.platform.static || 'false' }} \
           -DCMAKE_BUILD_TYPE=Release \
+          ${{ steps.calculate-arguments.outputs.cmake-arguments }}\
           -GNinja
         cmake --build cmake_config_build --verbose
     - name: Verify sdl2-config
-      if: ${{ !matrix.platform.msvc }}
+      if: ${{ !matrix.platform.no-test-pc }}
       run: |
         export PATH=${{ env.SDL2_ROOT }}/bin:$PATH
         cmake/test/test_sdlconfig.sh ${{ !matrix.platform.static && '--no-static' }}
     - name: Verify sdl2.pc
-      if: ${{ !matrix.platform.msvc }}
+      if: ${{ !matrix.platform.no-test-pc }}
       run: |
         export PKG_CONFIG_PATH=${{ env.SDL2_ROOT }}/lib/pkgconfig
         cmake/test/test_pkgconfig.sh ${{ !matrix.platform.static && '--no-static' }}
