@@ -298,4 +298,27 @@ struct SDL_SysWMinfo
 
 typedef struct SDL_SysWMinfo SDL_SysWMinfo;
 
+
+#define SDL_NONSHAPEABLE_WINDOW -1
+#define SDL_INVALID_SHAPE_ARGUMENT -2
+#define SDL_WINDOW_LACKS_SHAPE -3
+
+typedef enum {
+    ShapeModeDefault,
+    ShapeModeBinarizeAlpha,
+    ShapeModeReverseBinarizeAlpha,
+    ShapeModeColorKey
+} WindowShapeMode;
+
+#define SDL_SHAPEMODEALPHA(mode) (mode == ShapeModeDefault || mode == ShapeModeBinarizeAlpha || mode == ShapeModeReverseBinarizeAlpha)
+typedef union {
+    Uint8 binarizationCutoff;
+    SDL_Color colorKey;
+} SDL_WindowShapeParams;
+
+typedef struct SDL_WindowShapeMode {
+    WindowShapeMode mode;
+    SDL_WindowShapeParams parameters;
+} SDL_WindowShapeMode;
+
 #endif /* sdl2_compat_h */
