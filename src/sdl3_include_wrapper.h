@@ -83,7 +83,6 @@
 #define SDL_CreateRWLock IGNORE_THIS_VERSION_OF_SDL_CreateRWLock
 #define SDL_CreateRenderer IGNORE_THIS_VERSION_OF_SDL_CreateRenderer
 #define SDL_CreateSemaphore IGNORE_THIS_VERSION_OF_SDL_CreateSemaphore
-#define SDL_CreateShapedWindow IGNORE_THIS_VERSION_OF_SDL_CreateShapedWindow
 #define SDL_CreateSoftwareRenderer IGNORE_THIS_VERSION_OF_SDL_CreateSoftwareRenderer
 #define SDL_CreateSurface IGNORE_THIS_VERSION_OF_SDL_CreateSurface
 #define SDL_CreateSurfaceFrom IGNORE_THIS_VERSION_OF_SDL_CreateSurfaceFrom
@@ -340,7 +339,6 @@
 #define SDL_GetSensorNonPortableType IGNORE_THIS_VERSION_OF_SDL_GetSensorNonPortableType
 #define SDL_GetSensorType IGNORE_THIS_VERSION_OF_SDL_GetSensorType
 #define SDL_GetSensors IGNORE_THIS_VERSION_OF_SDL_GetSensors
-#define SDL_GetShapedWindowMode IGNORE_THIS_VERSION_OF_SDL_GetShapedWindowMode
 #define SDL_GetSurfaceAlphaMod IGNORE_THIS_VERSION_OF_SDL_GetSurfaceAlphaMod
 #define SDL_GetSurfaceBlendMode IGNORE_THIS_VERSION_OF_SDL_GetSurfaceBlendMode
 #define SDL_GetSurfaceClipRect IGNORE_THIS_VERSION_OF_SDL_GetSurfaceClipRect
@@ -446,7 +444,6 @@
 #define SDL_IsDeXMode IGNORE_THIS_VERSION_OF_SDL_IsDeXMode
 #define SDL_IsGamepad IGNORE_THIS_VERSION_OF_SDL_IsGamepad
 #define SDL_IsJoystickVirtual IGNORE_THIS_VERSION_OF_SDL_IsJoystickVirtual
-#define SDL_IsShapedWindow IGNORE_THIS_VERSION_OF_SDL_IsShapedWindow
 #define SDL_IsTablet IGNORE_THIS_VERSION_OF_SDL_IsTablet
 #define SDL_JoystickConnected IGNORE_THIS_VERSION_OF_SDL_JoystickConnected
 #define SDL_JoystickEventsEnabled IGNORE_THIS_VERSION_OF_SDL_JoystickEventsEnabled
@@ -637,7 +634,6 @@
 #define SDL_SetWindowOpacity IGNORE_THIS_VERSION_OF_SDL_SetWindowOpacity
 #define SDL_SetWindowPosition IGNORE_THIS_VERSION_OF_SDL_SetWindowPosition
 #define SDL_SetWindowResizable IGNORE_THIS_VERSION_OF_SDL_SetWindowResizable
-#define SDL_SetWindowShape IGNORE_THIS_VERSION_OF_SDL_SetWindowShape
 #define SDL_SetWindowSize IGNORE_THIS_VERSION_OF_SDL_SetWindowSize
 #define SDL_SetWindowTitle IGNORE_THIS_VERSION_OF_SDL_SetWindowTitle
 #define SDL_SetWindowsMessageHook IGNORE_THIS_VERSION_OF_SDL_SetWindowsMessageHook
@@ -1238,10 +1234,6 @@
 
 #ifdef SDL_CreateSemaphore
 #undef SDL_CreateSemaphore
-#endif
-
-#ifdef SDL_CreateShapedWindow
-#undef SDL_CreateShapedWindow
 #endif
 
 #ifdef SDL_CreateSoftwareRenderer
@@ -2268,10 +2260,6 @@
 #undef SDL_GetSensors
 #endif
 
-#ifdef SDL_GetShapedWindowMode
-#undef SDL_GetShapedWindowMode
-#endif
-
 #ifdef SDL_GetSurfaceAlphaMod
 #undef SDL_GetSurfaceAlphaMod
 #endif
@@ -2690,10 +2678,6 @@
 
 #ifdef SDL_IsJoystickVirtual
 #undef SDL_IsJoystickVirtual
-#endif
-
-#ifdef SDL_IsShapedWindow
-#undef SDL_IsShapedWindow
 #endif
 
 #ifdef SDL_IsTablet
@@ -3454,10 +3438,6 @@
 
 #ifdef SDL_SetWindowResizable
 #undef SDL_SetWindowResizable
-#endif
-
-#ifdef SDL_SetWindowShape
-#undef SDL_SetWindowShape
 #endif
 
 #ifdef SDL_SetWindowSize

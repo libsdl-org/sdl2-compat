@@ -5568,16 +5568,116 @@ SDL_CreateWindowFrom(const void *data)
     return window;
 }
 
+static SDL_Window *g_shaped_window = NULL;
+static SDL_WindowShapeMode g_shape_mode;
+static Uint8 *g_bitmap = NULL;
+static int g_bitmap_w = 0, g_bitmap_h = 0;
+static SDL_Surface *g_shape_surface = NULL;
+static SDL_Texture *g_shape_texture = NULL;
+
+static void shaped_window_cleanup(void)
+{
+    g_shaped_window = NULL;
+    SDL3_zero(g_shape_mode);
+    if (g_bitmap) {
+        SDL3_free(g_bitmap);
+        g_bitmap = NULL;
+    }
+    g_bitmap_w = 0;
+    g_bitmap_h = 0;
+
+    if (g_shape_surface) {
+        SDL3_DestroySurface(g_shape_surface);
+        g_shape_surface = NULL;
+    }
+
+    if (g_shape_texture) {
+        SDL3_DestroyTexture(g_shape_texture);
+        g_shape_texture = NULL;
+    }
+}
+
+/* REQUIRES that bitmap point to a w-by-h bitmap with ppb pixels-per-byte. */
+static void SDL_CalculateShapeBitmap(SDL_WindowShapeMode mode, SDL_Surface *shape, Uint8 *bitmap, Uint8 ppb)
+{
+    int x = 0;
+    int y = 0;
+    Uint8 r = 0, g = 0, b = 0, alpha = 0;
+    Uint8 *pixel = NULL;
+    Uint32 pixel_value = 0, mask_value = 0;
+    size_t bytes_per_scanline = (size_t)(shape->w + (ppb - 1)) / ppb;
+    Uint8 *bitmap_scanline;
+    SDL_Color key;
+
+    if (SDL_MUSTLOCK(shape)) {
+        SDL_LockSurface(shape);
+    }
+
+    SDL_memset(bitmap, 0, shape->h * bytes_per_scanline);
+
+    for (y = 0; y < shape->h; y++) {
+        bitmap_scanline = bitmap + y * bytes_per_scanline;
+        for (x = 0; x < shape->w; x++) {
+            alpha = 0;
+            pixel_value = 0;
+            pixel = (Uint8 *)(shape->pixels) + (y * shape->pitch) + (x * shape->format->BytesPerPixel);
+            switch (shape->format->BytesPerPixel) {
+            case (1):
+                pixel_value = *pixel;
+                break;
+            case (2):
+                pixel_value = *(Uint16 *)pixel;
+                break;
+            case (3):
+                pixel_value = *(Uint32 *)pixel & (~shape->format->Amask);
+                break;
+            case (4):
+                pixel_value = *(Uint32 *)pixel;
+                break;
+            }
+            SDL_GetRGBA(pixel_value, shape->format, &r, &g, &b, &alpha);
+            switch (mode.mode) {
+            case (ShapeModeDefault):
+                mask_value = (alpha >= 1 ? 1 : 0);
+                break;
+            case (ShapeModeBinarizeAlpha):
+                mask_value = (alpha >= mode.parameters.binarizationCutoff ? 1 : 0);
+                break;
+            case (ShapeModeReverseBinarizeAlpha):
+                mask_value = (alpha <= mode.parameters.binarizationCutoff ? 1 : 0);
+                break;
+            case (ShapeModeColorKey):
+                key = mode.parameters.colorKey;
+                mask_value = ((key.r != r || key.g != g || key.b != b) ? 1 : 0);
+                break;
+            }
+            bitmap_scanline[x / ppb] |= mask_value << (x % ppb);
+        }
+    }
+
+    if (SDL_MUSTLOCK(shape)) {
+        SDL_UnlockSurface(shape);
+    }
+}
+
+
+
 DECLSPEC SDL_Window * SDLCALL
 SDL_CreateShapedWindow(const char *title, unsigned int x, unsigned int y, unsigned int w, unsigned int h, Uint32 flags)
 {
     SDL_Window *window;
     int hidden = flags & SDL_WINDOW_HIDDEN;
 
+    if (g_shaped_window != NULL) {
+        SDL3_SetError("only 1 shaped window");
+        return NULL;
+    }
+
     flags &= ~SDL2_WINDOW_SHOWN;
     flags |= SDL_WINDOW_HIDDEN;
+    flags |= SDL_WINDOW_TRANSPARENT;
 
-    window = SDL3_CreateShapedWindow(title, (int)w, (int)h, flags);
+    window = SDL3_CreateWindow(title, (int)w, (int)h, flags);
     if (window) {
         if (!SDL_WINDOWPOS_ISUNDEFINED(x) || !SDL_WINDOWPOS_ISUNDEFINED(y)) {
             SDL3_SetWindowPosition(window, (int)x, (int)y);
@@ -5586,7 +5686,93 @@ SDL_CreateShapedWindow(const char *title, unsigned int x, unsigned int y, unsign
             SDL3_ShowWindow(window);
         }
     }
+
+    shaped_window_cleanup();
+    g_shaped_window = window;
+
     return window;
+}
+
+DECLSPEC SDL_bool SDLCALL
+SDL_IsShapedWindow(const SDL_Window *window)
+{
+    if (window == NULL) {
+        return SDL_FALSE;
+    }
+    if (window == g_shaped_window) {
+        return SDL_TRUE;
+    }
+    return SDL_FALSE;
+}
+
+DECLSPEC int SDLCALL
+SDL_SetWindowShape(SDL_Window *window,SDL_Surface *shape, SDL_WindowShapeMode *shape_mode)
+{
+    if (window == NULL) {
+        return SDL_NONSHAPEABLE_WINDOW;
+    }
+
+    if (window != g_shaped_window) {
+        return SDL_NONSHAPEABLE_WINDOW;
+    }
+
+    if (shape == NULL) {
+        return SDL_INVALID_SHAPE_ARGUMENT;
+    }
+
+    if (shape_mode == NULL) {
+        return SDL_INVALID_SHAPE_ARGUMENT;
+    }
+
+    shaped_window_cleanup();
+    g_shaped_window = window;
+    g_shape_mode = *shape_mode;
+
+    g_bitmap_w = shape->w;
+    g_bitmap_h = shape->h;
+    g_bitmap = (Uint8*) SDL_malloc(shape->w * shape->h);
+    if (g_bitmap == NULL) {
+        shaped_window_cleanup();
+        g_shaped_window = window;
+        return SDL3_OutOfMemory();
+    }
+
+    SDL_CalculateShapeBitmap(*shape_mode, shape, g_bitmap, 1);
+
+    g_shape_surface = SDL3_CreateSurface(g_bitmap_w, g_bitmap_h, SDL_PIXELFORMAT_ABGR8888);
+    if (g_shape_surface) {
+        int x, y, i = 0;
+        Uint32 *ptr = (Uint32 *)g_shape_surface->pixels;
+        for (y = 0; y < g_bitmap_h; y++) {
+            for (x = 0; x < g_bitmap_w; x++) {
+                Uint8 val = g_bitmap[i++];
+                if (val == 0) {
+                    ptr[x] = 0;
+                } else {
+                    ptr[x] = 0xffffffff;
+                }
+            }
+            ptr = (Uint32 *)((Uint8 *)ptr + g_shape_surface->pitch);
+        }
+    }
+
+    return 0;
+}
+
+DECLSPEC int SDLCALL
+SDL_GetShapedWindowMode(SDL_Window *window, SDL_WindowShapeMode *shape_mode)
+{
+    if (window == NULL) {
+        return SDL_NONSHAPEABLE_WINDOW;
+    }
+    if (window != g_shaped_window) {
+        return SDL_NONSHAPEABLE_WINDOW;
+    }
+
+    if (shape_mode) {
+        *shape_mode = g_shape_mode;
+    }
+    return 0;
 }
 
 DECLSPEC int SDLCALL
@@ -5707,6 +5893,44 @@ SDL_UnionFRect(const SDL_FRect *A, const SDL_FRect *B, SDL_FRect *result)
 DECLSPEC void SDLCALL
 SDL_RenderPresent(SDL_Renderer *renderer)
 {
+    /* Apply the shape */
+    if (g_shape_surface && g_shaped_window == SDL3_GetRenderWindow(renderer)) {
+        SDL_RendererInfo info;
+        SDL3_GetRendererInfo(renderer, &info);
+
+        if (info.flags & SDL_RENDERER_SOFTWARE) {
+            if (g_bitmap) {
+                int x, y, i = 0;
+                Uint8 r, g, b, a;
+                SDL3_GetRenderDrawColor(renderer, &r, &g, &b, &a);
+                SDL3_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+                for (y = 0; y < g_bitmap_h; y++) {
+                    for (x = 0; x < g_bitmap_w; x++) {
+                        Uint8 val = g_bitmap[i++];
+                        if (val == 0) {
+                            SDL3_RenderPoint(renderer, (float)x, (float)y);
+                        }
+                    }
+                }
+                SDL3_SetRenderDrawColor(renderer, r, g, b, a);
+            }
+        } else {
+            if (g_shape_texture == NULL) {
+                SDL_BlendMode bm;
+
+                g_shape_texture = SDL3_CreateTextureFromSurface(renderer, g_shape_surface);
+
+                /* if Alpha is 0, set all to 0, else leave unchanged. */
+                bm = SDL3_ComposeCustomBlendMode(
+                        SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_SRC_ALPHA, SDL_BLENDOPERATION_ADD,
+                        SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_SRC_ALPHA, SDL_BLENDOPERATION_ADD);
+
+                SDL3_SetTextureBlendMode(g_shape_texture, bm);
+            }
+            SDL3_RenderTexture(renderer, g_shape_texture, NULL, NULL);
+        }
+    }
+
     SDL3_RenderPresent(renderer);
 }
 
@@ -5876,6 +6100,11 @@ SDL_SetWindowMouseGrab(SDL_Window *window, SDL_bool grabbed)
 DECLSPEC void SDLCALL
 SDL_DestroyWindow(SDL_Window *window)
 {
+    if (window == g_shaped_window) {
+        shaped_window_cleanup();
+        g_shaped_window = NULL;
+    }
+
     SDL3_DestroyWindow(window);
 }
 
