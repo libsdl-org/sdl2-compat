@@ -5610,10 +5610,10 @@ static void SDL_CalculateShapeBitmap(SDL_WindowShapeMode mode, SDL_Surface *shap
     SDL_Color key;
 
     if (SDL_MUSTLOCK(shape)) {
-        SDL_LockSurface(shape);
+        SDL3_LockSurface(shape);
     }
 
-    SDL_memset(bitmap, 0, shape->h * bytes_per_scanline);
+    SDL3_memset(bitmap, 0, shape->h * bytes_per_scanline);
 
     for (y = 0; y < shape->h; y++) {
         bitmap_scanline = bitmap + y * bytes_per_scanline;
@@ -5635,7 +5635,7 @@ static void SDL_CalculateShapeBitmap(SDL_WindowShapeMode mode, SDL_Surface *shap
                 pixel_value = *(Uint32 *)pixel;
                 break;
             }
-            SDL_GetRGBA(pixel_value, shape->format, &r, &g, &b, &alpha);
+            SDL3_GetRGBA(pixel_value, shape->format, &r, &g, &b, &alpha);
             switch (mode.mode) {
             case (ShapeModeDefault):
                 mask_value = (alpha >= 1 ? 1 : 0);
@@ -5656,7 +5656,7 @@ static void SDL_CalculateShapeBitmap(SDL_WindowShapeMode mode, SDL_Surface *shap
     }
 
     if (SDL_MUSTLOCK(shape)) {
-        SDL_UnlockSurface(shape);
+        SDL3_UnlockSurface(shape);
     }
 }
 
@@ -5730,7 +5730,7 @@ SDL_SetWindowShape(SDL_Window *window,SDL_Surface *shape, SDL_WindowShapeMode *s
 
     g_bitmap_w = shape->w;
     g_bitmap_h = shape->h;
-    g_bitmap = (Uint8*) SDL_malloc(shape->w * shape->h);
+    g_bitmap = (Uint8 *) SDL3_malloc(shape->w * shape->h);
     if (g_bitmap == NULL) {
         shaped_window_cleanup();
         g_shaped_window = window;
