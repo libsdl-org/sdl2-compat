@@ -337,6 +337,7 @@ typedef struct QuirkEntryType
 
 static QuirkEntryType quirks[] = {
     /* TODO: Add any quirks needed for various systems. */
+    /*{"my_game_name", "SDL_RENDER_BATCHING", "0"},*/
     {"", "", "0"} /* A dummy entry to keep compilers happy. */
 };
 
@@ -1893,44 +1894,6 @@ SDL_WarpMouseGlobal(int x, int y)
     return SDL3_WarpMouseGlobal((float)x, (float)y);
 }
 
-DECLSPEC void SDLCALL
-SDL_RenderGetViewport(SDL_Renderer *renderer, SDL_Rect *rect)
-{
-    SDL3_GetRenderViewport(renderer, rect);
-}
-
-DECLSPEC void SDLCALL
-SDL_RenderGetClipRect(SDL_Renderer *renderer, SDL_Rect *rect)
-{
-    SDL3_GetRenderClipRect(renderer, rect);
-}
-
-DECLSPEC void SDLCALL
-SDL_RenderGetScale(SDL_Renderer *renderer, float *scaleX, float *scaleY)
-{
-    SDL3_GetRenderScale(renderer, scaleX, scaleY);
-}
-
-DECLSPEC void SDLCALL
-SDL_RenderWindowToLogical(SDL_Renderer *renderer,
-                          int windowX, int windowY,
-                          float *logicalX, float *logicalY)
-{
-    SDL3_RenderCoordinatesFromWindow(renderer, (float)windowX, (float)windowY, logicalX, logicalY);
-}
-
-DECLSPEC void SDLCALL
-SDL_RenderLogicalToWindow(SDL_Renderer *renderer,
-                          float logicalX, float logicalY,
-                          int *windowX, int *windowY)
-{
-    float x, y;
-    SDL3_RenderCoordinatesToWindow(renderer, logicalX, logicalY, &x, &y);
-    if (windowX) *windowX = (int)x;
-    if (windowY) *windowY = (int)y;
-}
-
-
 /* The SDL3 version of SDL_RWops changed, so we need to convert when necessary. */
 
 struct SDL2_RWops
@@ -3373,6 +3336,214 @@ GestureProcessEvent(const SDL_Event *event3)
 }
 
 
+static SDL_Window *g_shaped_window = NULL;
+static SDL_WindowShapeMode g_shape_mode;
+static Uint8 *g_bitmap = NULL;
+static int g_bitmap_w = 0, g_bitmap_h = 0;
+static SDL_Surface *g_shape_surface = NULL;
+static SDL_Texture *g_shape_texture = NULL;
+
+static void shaped_window_cleanup(void)
+{
+    g_shaped_window = NULL;
+    SDL3_zero(g_shape_mode);
+    if (g_bitmap) {
+        SDL3_free(g_bitmap);
+        g_bitmap = NULL;
+    }
+    g_bitmap_w = 0;
+    g_bitmap_h = 0;
+
+    if (g_shape_surface) {
+        SDL3_DestroySurface(g_shape_surface);
+        g_shape_surface = NULL;
+    }
+
+    if (g_shape_texture) {
+        SDL3_DestroyTexture(g_shape_texture);
+        g_shape_texture = NULL;
+    }
+}
+
+/* REQUIRES that bitmap point to a w-by-h bitmap with ppb pixels-per-byte. */
+static void SDL_CalculateShapeBitmap(SDL_WindowShapeMode mode, SDL_Surface *shape, Uint8 *bitmap, Uint8 ppb)
+{
+    int x = 0;
+    int y = 0;
+    Uint8 r = 0, g = 0, b = 0, alpha = 0;
+    Uint8 *pixel = NULL;
+    Uint32 pixel_value = 0, mask_value = 0;
+    size_t bytes_per_scanline = (size_t)(shape->w + (ppb - 1)) / ppb;
+    Uint8 *bitmap_scanline;
+    SDL_Color key;
+
+    if (SDL_MUSTLOCK(shape)) {
+        SDL3_LockSurface(shape);
+    }
+
+    SDL3_memset(bitmap, 0, shape->h * bytes_per_scanline);
+
+    for (y = 0; y < shape->h; y++) {
+        bitmap_scanline = bitmap + y * bytes_per_scanline;
+        for (x = 0; x < shape->w; x++) {
+            alpha = 0;
+            pixel_value = 0;
+            pixel = (Uint8 *)(shape->pixels) + (y * shape->pitch) + (x * shape->format->BytesPerPixel);
+            switch (shape->format->BytesPerPixel) {
+            case (1):
+                pixel_value = *pixel;
+                break;
+            case (2):
+                pixel_value = *(Uint16 *)pixel;
+                break;
+            case (3):
+                pixel_value = *(Uint32 *)pixel & (~shape->format->Amask);
+                break;
+            case (4):
+                pixel_value = *(Uint32 *)pixel;
+                break;
+            }
+            SDL3_GetRGBA(pixel_value, shape->format, &r, &g, &b, &alpha);
+            switch (mode.mode) {
+            case (ShapeModeDefault):
+                mask_value = (alpha >= 1 ? 1 : 0);
+                break;
+            case (ShapeModeBinarizeAlpha):
+                mask_value = (alpha >= mode.parameters.binarizationCutoff ? 1 : 0);
+                break;
+            case (ShapeModeReverseBinarizeAlpha):
+                mask_value = (alpha <= mode.parameters.binarizationCutoff ? 1 : 0);
+                break;
+            case (ShapeModeColorKey):
+                key = mode.parameters.colorKey;
+                mask_value = ((key.r != r || key.g != g || key.b != b) ? 1 : 0);
+                break;
+            }
+            bitmap_scanline[x / ppb] |= mask_value << (x % ppb);
+        }
+    }
+
+    if (SDL_MUSTLOCK(shape)) {
+        SDL3_UnlockSurface(shape);
+    }
+}
+
+
+
+DECLSPEC SDL_Window * SDLCALL
+SDL_CreateShapedWindow(const char *title, unsigned int x, unsigned int y, unsigned int w, unsigned int h, Uint32 flags)
+{
+    SDL_Window *window;
+    int hidden = flags & SDL_WINDOW_HIDDEN;
+
+    if (g_shaped_window != NULL) {
+        SDL3_SetError("only 1 shaped window");
+        return NULL;
+    }
+
+    flags &= ~SDL2_WINDOW_SHOWN;
+    flags |= SDL_WINDOW_HIDDEN;
+    flags |= SDL_WINDOW_TRANSPARENT;
+
+    window = SDL3_CreateWindow(title, (int)w, (int)h, flags);
+    if (window) {
+        if (!SDL_WINDOWPOS_ISUNDEFINED(x) || !SDL_WINDOWPOS_ISUNDEFINED(y)) {
+            SDL3_SetWindowPosition(window, (int)x, (int)y);
+        }
+        if (!hidden) {
+            SDL3_ShowWindow(window);
+        }
+    }
+
+    shaped_window_cleanup();
+    g_shaped_window = window;
+
+    return window;
+}
+
+DECLSPEC SDL_bool SDLCALL
+SDL_IsShapedWindow(const SDL_Window *window)
+{
+    if (window == NULL) {
+        return SDL_FALSE;
+    }
+    if (window == g_shaped_window) {
+        return SDL_TRUE;
+    }
+    return SDL_FALSE;
+}
+
+DECLSPEC int SDLCALL
+SDL_SetWindowShape(SDL_Window *window,SDL_Surface *shape, SDL_WindowShapeMode *shape_mode)
+{
+    if (window == NULL) {
+        return SDL_NONSHAPEABLE_WINDOW;
+    }
+
+    if (window != g_shaped_window) {
+        return SDL_NONSHAPEABLE_WINDOW;
+    }
+
+    if (shape == NULL) {
+        return SDL_INVALID_SHAPE_ARGUMENT;
+    }
+
+    if (shape_mode == NULL) {
+        return SDL_INVALID_SHAPE_ARGUMENT;
+    }
+
+    shaped_window_cleanup();
+    g_shaped_window = window;
+    g_shape_mode = *shape_mode;
+
+    g_bitmap_w = shape->w;
+    g_bitmap_h = shape->h;
+    g_bitmap = (Uint8 *) SDL3_malloc(shape->w * shape->h);
+    if (g_bitmap == NULL) {
+        shaped_window_cleanup();
+        g_shaped_window = window;
+        return SDL3_OutOfMemory();
+    }
+
+    SDL_CalculateShapeBitmap(*shape_mode, shape, g_bitmap, 1);
+
+    g_shape_surface = SDL3_CreateSurface(g_bitmap_w, g_bitmap_h, SDL_PIXELFORMAT_ABGR8888);
+    if (g_shape_surface) {
+        int x, y, i = 0;
+        Uint32 *ptr = (Uint32 *)g_shape_surface->pixels;
+        for (y = 0; y < g_bitmap_h; y++) {
+            for (x = 0; x < g_bitmap_w; x++) {
+                Uint8 val = g_bitmap[i++];
+                if (val == 0) {
+                    ptr[x] = 0;
+                } else {
+                    ptr[x] = 0xffffffff;
+                }
+            }
+            ptr = (Uint32 *)((Uint8 *)ptr + g_shape_surface->pitch);
+        }
+    }
+
+    return 0;
+}
+
+DECLSPEC int SDLCALL
+SDL_GetShapedWindowMode(SDL_Window *window, SDL_WindowShapeMode *shape_mode)
+{
+    if (window == NULL) {
+        return SDL_NONSHAPEABLE_WINDOW;
+    }
+    if (window != g_shaped_window) {
+        return SDL_NONSHAPEABLE_WINDOW;
+    }
+
+    if (shape_mode) {
+        *shape_mode = g_shape_mode;
+    }
+    return 0;
+}
+
+
 DECLSPEC int SDLCALL
 SDL_GetRenderDriverInfo(int idx, SDL_RendererInfo *info)
 {
@@ -3439,10 +3610,22 @@ SDL_GetRenderDriverInfo(int idx, SDL_RendererInfo *info)
     return 0;
 }
 
+#define RENDERER_BATCHING_PROP "sdl2-compat.renderer.batching"
+static int FlushRendererIfNotBatching(SDL_Renderer *renderer)
+{
+    const SDL_PropertiesID props = SDL3_GetRendererProperties(renderer);
+    if (!SDL3_GetBooleanProperty(props, RENDERER_BATCHING_PROP, SDL_FALSE)) {
+        return SDL3_RenderFlush(renderer);
+    }
+    return 0;
+}
+
+
 /* Second parameter changed from an index to a string in SDL3. */
 DECLSPEC SDL_Renderer *SDLCALL
 SDL_CreateRenderer(SDL_Window *window, int idx, Uint32 flags)
 {
+    SDL_PropertiesID props;
     SDL_Renderer *renderer = NULL;
     const char *name = NULL;
     int want_targettexture = flags & SDL2_RENDERER_TARGETTEXTURE;
@@ -3461,6 +3644,12 @@ SDL_CreateRenderer(SDL_Window *window, int idx, Uint32 flags)
         SDL_SetError("Couldn't find render driver with SDL_RENDERER_TARGETTEXTURE flags");
         return NULL;
     }
+
+    props = SDL3_GetRendererProperties(renderer);
+    if (props) {
+        SDL3_SetBooleanProperty(props, RENDERER_BATCHING_PROP, SDL2Compat_GetHintBoolean("SDL_RENDER_BATCHING", SDL_FALSE));
+    }
+
     return renderer;
 }
 
@@ -3481,13 +3670,53 @@ SDL_RenderTargetSupported(SDL_Renderer *renderer)
     return SDL_FALSE;
 }
 
+DECLSPEC void SDLCALL
+SDL_RenderGetViewport(SDL_Renderer *renderer, SDL_Rect *rect)
+{
+    SDL3_GetRenderViewport(renderer, rect);
+}
+
+DECLSPEC void SDLCALL
+SDL_RenderGetClipRect(SDL_Renderer *renderer, SDL_Rect *rect)
+{
+    SDL3_GetRenderClipRect(renderer, rect);
+}
+
+DECLSPEC void SDLCALL
+SDL_RenderGetScale(SDL_Renderer *renderer, float *scaleX, float *scaleY)
+{
+    SDL3_GetRenderScale(renderer, scaleX, scaleY);
+}
+
+DECLSPEC void SDLCALL
+SDL_RenderWindowToLogical(SDL_Renderer *renderer,
+                          int windowX, int windowY,
+                          float *logicalX, float *logicalY)
+{
+    SDL3_RenderCoordinatesFromWindow(renderer, (float)windowX, (float)windowY, logicalX, logicalY);
+}
+
+DECLSPEC void SDLCALL
+SDL_RenderLogicalToWindow(SDL_Renderer *renderer,
+                          float logicalX, float logicalY,
+                          int *windowX, int *windowY)
+{
+    float x, y;
+    SDL3_RenderCoordinatesToWindow(renderer, logicalX, logicalY, &x, &y);
+    if (windowX) *windowX = (int)x;
+    if (windowY) *windowY = (int)y;
+}
+
 DECLSPEC int SDLCALL
 SDL_RenderSetLogicalSize(SDL_Renderer *renderer, int w, int h)
 {
+    int retval;
     if (w == 0 && h == 0) {
-        return SDL3_SetRenderLogicalPresentation(renderer, 0, 0, SDL_LOGICAL_PRESENTATION_DISABLED, SDL_SCALEMODE_NEAREST);
+        retval = SDL3_SetRenderLogicalPresentation(renderer, 0, 0, SDL_LOGICAL_PRESENTATION_DISABLED, SDL_SCALEMODE_NEAREST);
+    } else {
+        retval = SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_LETTERBOX, SDL_SCALEMODE_LINEAR);
     }
-    return SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_LETTERBOX, SDL_SCALEMODE_LINEAR);
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
 DECLSPEC void SDLCALL
@@ -3502,11 +3731,11 @@ SDL_RenderSetIntegerScale(SDL_Renderer *renderer, SDL_bool enable)
     SDL_ScaleMode scale_mode;
     SDL_RendererLogicalPresentation mode;
     int w, h;
-    int ret;
+    int retval;
 
-    ret = SDL3_GetRenderLogicalPresentation(renderer, &w, &h, &mode, &scale_mode);
-    if (ret < 0) {
-        return ret;
+    retval = SDL3_GetRenderLogicalPresentation(renderer, &w, &h, &mode, &scale_mode);
+    if (retval < 0) {
+        return retval;
     }
 
     if (enable && mode == SDL_LOGICAL_PRESENTATION_INTEGER_SCALE) {
@@ -3518,9 +3747,11 @@ SDL_RenderSetIntegerScale(SDL_Renderer *renderer, SDL_bool enable)
     }
 
     if (enable) {
-        return SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE, scale_mode);
+        retval = SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE, scale_mode);
+    } else {
+        retval = SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_DISABLED, scale_mode);
     }
-    return SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_DISABLED, scale_mode);
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
 DECLSPEC SDL_bool SDLCALL
@@ -3533,6 +3764,426 @@ SDL_RenderGetIntegerScale(SDL_Renderer *renderer)
         }
     }
     return SDL_FALSE;
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderSetViewport(SDL_Renderer *renderer, const SDL_Rect *rect)
+{
+    const int retval = SDL3_SetRenderViewport(renderer, rect);
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderSetClipRect(SDL_Renderer *renderer, const SDL_Rect *rect)
+{
+    const int retval = SDL3_SetRenderClipRect(renderer, rect);
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderClear(SDL_Renderer *renderer)
+{
+    const int retval = SDL3_RenderClear(renderer);
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderDrawPointF(SDL_Renderer *renderer, float x, float y)
+{
+    int retval;
+    SDL_FPoint fpoint;
+    fpoint.x = x;
+    fpoint.y = y;
+    retval = SDL3_RenderPoints(renderer, &fpoint, 1);
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderDrawPoint(SDL_Renderer *renderer, int x, int y)
+{
+    return SDL_RenderDrawPointF(renderer, (float) x, (float) y);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderDrawPoints(SDL_Renderer *renderer,
+                     const SDL_Point *points, int count)
+{
+    SDL_FPoint *fpoints;
+    int i;
+    int retval;
+
+    if (points == NULL) {
+        return SDL3_InvalidParamError("points");
+    }
+
+    fpoints = (SDL_FPoint *) SDL3_malloc(sizeof (SDL_FPoint) * count);
+    if (fpoints == NULL) {
+        return SDL3_OutOfMemory();
+    }
+
+    for (i = 0; i < count; ++i) {
+        fpoints[i].x = (float)points[i].x;
+        fpoints[i].y = (float)points[i].y;
+    }
+
+    retval = SDL3_RenderPoints(renderer, fpoints, count);
+
+    SDL3_free(fpoints);
+
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderDrawPointsF(SDL_Renderer *renderer, const SDL_FPoint *points, int count)
+{
+    const int retval = SDL3_RenderPoints(renderer, points, count);
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderDrawLineF(SDL_Renderer *renderer, float x1, float y1, float x2, float y2)
+{
+    int retval;
+    SDL_FPoint points[2];
+    points[0].x = (float)x1;
+    points[0].y = (float)y1;
+    points[1].x = (float)x2;
+    points[1].y = (float)y2;
+    retval = SDL3_RenderLines(renderer, points, 2);
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderDrawLine(SDL_Renderer *renderer, int x1, int y1, int x2, int y2)
+{
+    return SDL_RenderDrawLineF(renderer, (float) x1, (float) y1, (float) x2, (float) y2);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderDrawLines(SDL_Renderer *renderer, const SDL_Point *points, int count)
+{
+    SDL_FPoint *fpoints;
+    int i;
+    int retval;
+
+    if (points == NULL) {
+        return SDL3_InvalidParamError("points");
+    }
+    if (count < 2) {
+        return 0;
+    }
+
+    fpoints = (SDL_FPoint *) SDL3_malloc(sizeof (SDL_FPoint) * count);
+    if (fpoints == NULL) {
+        return SDL3_OutOfMemory();
+    }
+
+    for (i = 0; i < count; ++i) {
+        fpoints[i].x = (float)points[i].x;
+        fpoints[i].y = (float)points[i].y;
+    }
+
+    retval = SDL3_RenderLines(renderer, fpoints, count);
+
+    SDL3_free(fpoints);
+
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderDrawLinesF(SDL_Renderer *renderer, const SDL_FPoint *points, int count)
+{
+    const int retval = SDL3_RenderLines(renderer, points, count);
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderDrawRect(SDL_Renderer *renderer, const SDL_Rect *rect)
+{
+    int retval;
+    SDL_FRect frect;
+    SDL_FRect *prect = NULL;
+
+    if (rect) {
+        frect.x = (float)rect->x;
+        frect.y = (float)rect->y;
+        frect.w = (float)rect->w;
+        frect.h = (float)rect->h;
+        prect = &frect;
+    }
+
+    retval = SDL3_RenderRect(renderer, prect);
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderDrawRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
+{
+    int i;
+
+    if (rects == NULL) {
+        return SDL3_InvalidParamError("rects");
+    }
+    if (count < 1) {
+        return 0;
+    }
+
+    for (i = 0; i < count; ++i) {
+        if (SDL_RenderDrawRect(renderer, &rects[i]) < 0) {
+            return -1;
+        }
+    }
+    return 0;
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderDrawRectF(SDL_Renderer *renderer, const SDL_FRect *rect)
+{
+    const int retval = SDL3_RenderRect(renderer, rect);
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderDrawRectsF(SDL_Renderer *renderer, const SDL_FRect *rects, int count)
+{
+    const int retval = SDL3_RenderRects(renderer, rects, count);
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderFillRect(SDL_Renderer *renderer, const SDL_Rect *rect)
+{
+    int retval;
+    SDL_FRect frect;
+    if (rect) {
+        frect.x = (float)rect->x;
+        frect.y = (float)rect->y;
+        frect.w = (float)rect->w;
+        frect.h = (float)rect->h;
+        return SDL3_RenderFillRect(renderer, &frect);
+    }
+    retval = SDL3_RenderFillRect(renderer, NULL);
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderFillRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
+{
+    SDL_FRect *frects;
+    int i;
+    int retval;
+
+    if (rects == NULL) {
+        return SDL3_InvalidParamError("rects");
+    }
+    if (count < 1) {
+        return 0;
+    }
+
+    frects = (SDL_FRect *) SDL3_malloc(sizeof (SDL_FRect) * count);
+    if (frects == NULL) {
+        return SDL3_OutOfMemory();
+    }
+
+    for (i = 0; i < count; ++i) {
+        frects[i].x = (float)rects[i].x;
+        frects[i].y = (float)rects[i].y;
+        frects[i].w = (float)rects[i].w;
+        frects[i].h = (float)rects[i].h;
+    }
+
+    retval = SDL3_RenderFillRects(renderer, frects, count);
+
+    SDL3_free(frects);
+
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderFillRectF(SDL_Renderer *renderer, const SDL_FRect *rect)
+{
+    const int retval = SDL3_RenderFillRect(renderer, rect);
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderFillRectsF(SDL_Renderer *renderer, const SDL_FRect *rects, int count)
+{
+    const int retval = SDL3_RenderFillRects(renderer, rects, count);
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderCopy(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect *srcrect, const SDL_Rect *dstrect)
+{
+    int retval;
+    SDL_FRect srcfrect;
+    SDL_FRect *psrcfrect = NULL;
+    SDL_FRect dstfrect;
+    SDL_FRect *pdstfrect = NULL;
+    if (srcrect) {
+        srcfrect.x = (float)srcrect->x;
+        srcfrect.y = (float)srcrect->y;
+        srcfrect.w = (float)srcrect->w;
+        srcfrect.h = (float)srcrect->h;
+        psrcfrect = &srcfrect;
+    }
+    if (dstrect) {
+        dstfrect.x = (float)dstrect->x;
+        dstfrect.y = (float)dstrect->y;
+        dstfrect.w = (float)dstrect->w;
+        dstfrect.h = (float)dstrect->h;
+        pdstfrect = &dstfrect;
+    }
+    retval = SDL3_RenderTexture(renderer, texture, psrcfrect, pdstfrect);
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderCopyF(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect *srcrect, const SDL_FRect *dstrect)
+{
+    int retval;
+    SDL_FRect srcfrect;
+    SDL_FRect *psrcfrect = NULL;
+    if (srcrect) {
+        srcfrect.x = (float)srcrect->x;
+        srcfrect.y = (float)srcrect->y;
+        srcfrect.w = (float)srcrect->w;
+        srcfrect.h = (float)srcrect->h;
+        psrcfrect = &srcfrect;
+    }
+    retval = SDL3_RenderTexture(renderer, texture, psrcfrect, dstrect);
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderCopyEx(SDL_Renderer *renderer, SDL_Texture *texture,
+                 const SDL_Rect *srcrect, const SDL_Rect *dstrect,
+                 const double angle, const SDL_Point *center, const SDL_RendererFlip flip)
+{
+    int retval;
+    SDL_FRect srcfrect;
+    SDL_FRect *psrcfrect = NULL;
+    SDL_FRect dstfrect;
+    SDL_FRect *pdstfrect = NULL;
+    SDL_FPoint fcenter;
+    SDL_FPoint *pfcenter = NULL;
+
+    if (srcrect) {
+        srcfrect.x = (float)srcrect->x;
+        srcfrect.y = (float)srcrect->y;
+        srcfrect.w = (float)srcrect->w;
+        srcfrect.h = (float)srcrect->h;
+        psrcfrect = &srcfrect;
+    }
+
+    if (dstrect) {
+        dstfrect.x = (float)dstrect->x;
+        dstfrect.y = (float)dstrect->y;
+        dstfrect.w = (float)dstrect->w;
+        dstfrect.h = (float)dstrect->h;
+        pdstfrect = &dstfrect;
+    }
+
+    if (center) {
+        fcenter.x = (float)center->x;
+        fcenter.y = (float)center->y;
+        pfcenter = &fcenter;
+    }
+
+    retval = SDL3_RenderTextureRotated(renderer, texture, psrcfrect, pdstfrect, angle, pfcenter, flip);
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderCopyExF(SDL_Renderer *renderer, SDL_Texture *texture,
+                  const SDL_Rect *srcrect, const SDL_FRect *dstrect,
+                  const double angle, const SDL_FPoint *center, const SDL_RendererFlip flip)
+{
+    int retval;
+    SDL_FRect srcfrect;
+    SDL_FRect *psrcfrect = NULL;
+
+    if (srcrect) {
+        srcfrect.x = (float)srcrect->x;
+        srcfrect.y = (float)srcrect->y;
+        srcfrect.w = (float)srcrect->w;
+        srcfrect.h = (float)srcrect->h;
+        psrcfrect = &srcfrect;
+    }
+
+    retval = SDL3_RenderTextureRotated(renderer, texture, psrcfrect, dstrect, angle, center, flip);
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderGeometry(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Vertex *vertices, int num_vertices, const int *indices, int num_indices)
+{
+    const int retval = SDL3_RenderGeometry(renderer, texture, vertices, num_vertices, indices, num_indices);
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+}
+
+DECLSPEC int SDLCALL
+SDL_RenderGeometryRaw(SDL_Renderer *renderer, SDL_Texture *texture, const float *xy, int xy_stride, const SDL_Color *color, int color_stride, const float *uv, int uv_stride, int num_vertices, const void *indices, int num_indices, int size_indices)
+{
+    const int retval = SDL3_RenderGeometryRaw(renderer, texture, xy, xy_stride, color, color_stride, uv, uv_stride, num_vertices, indices, num_indices, size_indices);
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+}
+
+DECLSPEC void SDLCALL
+SDL_RenderPresent(SDL_Renderer *renderer)
+{
+    /* Apply the shape */
+    if (g_shape_surface && g_shaped_window == SDL3_GetRenderWindow(renderer)) {
+        SDL_RendererInfo info;
+        SDL3_GetRendererInfo(renderer, &info);
+
+        if (info.flags & SDL_RENDERER_SOFTWARE) {
+            if (g_bitmap) {
+                int x, y, i = 0;
+                Uint8 r, g, b, a;
+                SDL3_GetRenderDrawColor(renderer, &r, &g, &b, &a);
+                SDL3_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+                for (y = 0; y < g_bitmap_h; y++) {
+                    for (x = 0; x < g_bitmap_w; x++) {
+                        Uint8 val = g_bitmap[i++];
+                        if (val == 0) {
+                            SDL3_RenderPoint(renderer, (float)x, (float)y);
+                        }
+                    }
+                }
+                SDL3_SetRenderDrawColor(renderer, r, g, b, a);
+            }
+        } else {
+            if (g_shape_texture == NULL) {
+                SDL_BlendMode bm;
+
+                g_shape_texture = SDL3_CreateTextureFromSurface(renderer, g_shape_surface);
+
+                /* if Alpha is 0, set all to 0, else leave unchanged. */
+                bm = SDL3_ComposeCustomBlendMode(
+                        SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_SRC_ALPHA, SDL_BLENDOPERATION_ADD,
+                        SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_SRC_ALPHA, SDL_BLENDOPERATION_ADD);
+
+                SDL3_SetTextureBlendMode(g_shape_texture, bm);
+            }
+            SDL3_RenderTexture(renderer, g_shape_texture, NULL, NULL);
+        }
+    }
+
+    SDL3_RenderPresent(renderer);
+}
+
+DECLSPEC void SDLCALL
+SDL_DestroyTexture(SDL_Texture *texture)
+{
+    SDL3_DestroyTexture(texture);
+}
+
+DECLSPEC void SDLCALL
+SDL_DestroyRenderer(SDL_Renderer *renderer)
+{
+    SDL3_DestroyRenderer(renderer);
 }
 
 
@@ -4901,275 +5552,6 @@ SDL_SetWindowDisplayMode(SDL_Window *window, const SDL2_DisplayMode *mode)
     }
 }
 
-DECLSPEC int SDLCALL
-SDL_RenderDrawPoint(SDL_Renderer *renderer, int x, int y)
-{
-    SDL_FPoint fpoint;
-    fpoint.x = (float)x;
-    fpoint.y = (float)y;
-    return SDL3_RenderPoints(renderer, &fpoint, 1);
-}
-
-DECLSPEC int SDLCALL
-SDL_RenderDrawPoints(SDL_Renderer *renderer,
-                     const SDL_Point *points, int count)
-{
-    SDL_FPoint *fpoints;
-    int i;
-    int retval;
-
-    if (points == NULL) {
-        return SDL3_InvalidParamError("SDL_RenderPoints(): points");
-    }
-
-    fpoints = (SDL_FPoint *) SDL3_malloc(sizeof (SDL_FPoint) * count);
-    if (fpoints == NULL) {
-        return SDL3_OutOfMemory();
-    }
-
-    for (i = 0; i < count; ++i) {
-        fpoints[i].x = (float)points[i].x;
-        fpoints[i].y = (float)points[i].y;
-    }
-
-    retval = SDL3_RenderPoints(renderer, fpoints, count);
-
-    SDL3_free(fpoints);
-
-    return retval;
-}
-
-DECLSPEC int SDLCALL
-SDL_RenderLine(SDL_Renderer *renderer, float x1, float y1, float x2, float y2)
-{
-    SDL_FPoint points[2];
-    points[0].x = (float)x1;
-    points[0].y = (float)y1;
-    points[1].x = (float)x2;
-    points[1].y = (float)y2;
-    return SDL3_RenderLines(renderer, points, 2);
-}
-
-DECLSPEC int SDLCALL
-SDL_RenderDrawLine(SDL_Renderer *renderer, int x1, int y1, int x2, int y2)
-{
-    SDL_FPoint points[2];
-    points[0].x = (float)x1;
-    points[0].y = (float)y1;
-    points[1].x = (float)x2;
-    points[1].y = (float)y2;
-    return SDL3_RenderLines(renderer, points, 2);
-}
-
-DECLSPEC int SDLCALL
-SDL_RenderDrawLines(SDL_Renderer *renderer, const SDL_Point *points, int count)
-{
-    SDL_FPoint *fpoints;
-    int i;
-    int retval;
-
-    if (points == NULL) {
-        return SDL3_InvalidParamError("SDL_RenderLines(): points");
-    }
-    if (count < 2) {
-        return 0;
-    }
-
-    fpoints = (SDL_FPoint *) SDL3_malloc(sizeof (SDL_FPoint) * count);
-    if (fpoints == NULL) {
-        return SDL3_OutOfMemory();
-    }
-
-    for (i = 0; i < count; ++i) {
-        fpoints[i].x = (float)points[i].x;
-        fpoints[i].y = (float)points[i].y;
-    }
-
-    retval = SDL3_RenderLines(renderer, fpoints, count);
-
-    SDL3_free(fpoints);
-
-    return retval;
-}
-
-DECLSPEC int SDLCALL
-SDL_RenderDrawRect(SDL_Renderer *renderer, const SDL_Rect *rect)
-{
-    SDL_FRect frect;
-    SDL_FRect *prect = NULL;
-
-    if (rect) {
-        frect.x = (float)rect->x;
-        frect.y = (float)rect->y;
-        frect.w = (float)rect->w;
-        frect.h = (float)rect->h;
-        prect = &frect;
-    }
-
-    return SDL3_RenderRect(renderer, prect);
-}
-
-DECLSPEC int SDLCALL
-SDL_RenderDrawRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
-{
-    int i;
-
-    if (rects == NULL) {
-        return SDL3_InvalidParamError("SDL_RenderRectsFloat(): rects");
-    }
-    if (count < 1) {
-        return 0;
-    }
-
-    for (i = 0; i < count; ++i) {
-        if (SDL_RenderDrawRect(renderer, &rects[i]) < 0) {
-            return -1;
-        }
-    }
-    return 0;
-}
-
-DECLSPEC int SDLCALL
-SDL_RenderFillRect(SDL_Renderer *renderer, const SDL_Rect *rect)
-{
-    SDL_FRect frect;
-    if (rect) {
-        frect.x = (float)rect->x;
-        frect.y = (float)rect->y;
-        frect.w = (float)rect->w;
-        frect.h = (float)rect->h;
-        return SDL3_RenderFillRect(renderer, &frect);
-    }
-    return SDL3_RenderFillRect(renderer, NULL);
-}
-
-DECLSPEC int SDLCALL
-SDL_RenderFillRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
-{
-    SDL_FRect *frects;
-    int i;
-    int retval;
-
-    if (rects == NULL) {
-        return SDL3_InvalidParamError("SDL_RenderFillRectsFloat(): rects");
-    }
-    if (count < 1) {
-        return 0;
-    }
-
-    frects = (SDL_FRect *) SDL3_malloc(sizeof (SDL_FRect) * count);
-    if (frects == NULL) {
-        return SDL3_OutOfMemory();
-    }
-
-    for (i = 0; i < count; ++i) {
-        frects[i].x = (float)rects[i].x;
-        frects[i].y = (float)rects[i].y;
-        frects[i].w = (float)rects[i].w;
-        frects[i].h = (float)rects[i].h;
-    }
-
-    retval = SDL3_RenderFillRects(renderer, frects, count);
-
-    SDL3_free(frects);
-
-    return retval;
-}
-
-DECLSPEC int SDLCALL
-SDL_RenderCopy(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect *srcrect, const SDL_Rect *dstrect)
-{
-    SDL_FRect srcfrect;
-    SDL_FRect *psrcfrect = NULL;
-    SDL_FRect dstfrect;
-    SDL_FRect *pdstfrect = NULL;
-    if (srcrect) {
-        srcfrect.x = (float)srcrect->x;
-        srcfrect.y = (float)srcrect->y;
-        srcfrect.w = (float)srcrect->w;
-        srcfrect.h = (float)srcrect->h;
-        psrcfrect = &srcfrect;
-    }
-    if (dstrect) {
-        dstfrect.x = (float)dstrect->x;
-        dstfrect.y = (float)dstrect->y;
-        dstfrect.w = (float)dstrect->w;
-        dstfrect.h = (float)dstrect->h;
-        pdstfrect = &dstfrect;
-    }
-    return SDL3_RenderTexture(renderer, texture, psrcfrect, pdstfrect);
-}
-
-DECLSPEC int SDLCALL
-SDL_RenderCopyF(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect *srcrect, const SDL_FRect *dstrect)
-{
-    SDL_FRect srcfrect;
-    SDL_FRect *psrcfrect = NULL;
-    if (srcrect) {
-        srcfrect.x = (float)srcrect->x;
-        srcfrect.y = (float)srcrect->y;
-        srcfrect.w = (float)srcrect->w;
-        srcfrect.h = (float)srcrect->h;
-        psrcfrect = &srcfrect;
-    }
-    return SDL3_RenderTexture(renderer, texture, psrcfrect, dstrect);
-}
-
-DECLSPEC int SDLCALL
-SDL_RenderCopyEx(SDL_Renderer *renderer, SDL_Texture *texture,
-                 const SDL_Rect *srcrect, const SDL_Rect *dstrect,
-                 const double angle, const SDL_Point *center, const SDL_RendererFlip flip)
-{
-    SDL_FRect srcfrect;
-    SDL_FRect *psrcfrect = NULL;
-    SDL_FRect dstfrect;
-    SDL_FRect *pdstfrect = NULL;
-    SDL_FPoint fcenter;
-    SDL_FPoint *pfcenter = NULL;
-
-    if (srcrect) {
-        srcfrect.x = (float)srcrect->x;
-        srcfrect.y = (float)srcrect->y;
-        srcfrect.w = (float)srcrect->w;
-        srcfrect.h = (float)srcrect->h;
-        psrcfrect = &srcfrect;
-    }
-
-    if (dstrect) {
-        dstfrect.x = (float)dstrect->x;
-        dstfrect.y = (float)dstrect->y;
-        dstfrect.w = (float)dstrect->w;
-        dstfrect.h = (float)dstrect->h;
-        pdstfrect = &dstfrect;
-    }
-
-    if (center) {
-        fcenter.x = (float)center->x;
-        fcenter.y = (float)center->y;
-        pfcenter = &fcenter;
-    }
-
-    return SDL3_RenderTextureRotated(renderer, texture, psrcfrect, pdstfrect, angle, pfcenter, flip);
-}
-
-DECLSPEC int SDLCALL
-SDL_RenderCopyExF(SDL_Renderer *renderer, SDL_Texture *texture,
-                  const SDL_Rect *srcrect, const SDL_FRect *dstrect,
-                  const double angle, const SDL_FPoint *center, const SDL_RendererFlip flip)
-{
-    SDL_FRect srcfrect;
-    SDL_FRect *psrcfrect = NULL;
-
-    if (srcrect) {
-        srcfrect.x = (float)srcrect->x;
-        srcfrect.y = (float)srcrect->y;
-        srcfrect.w = (float)srcrect->w;
-        srcfrect.h = (float)srcrect->h;
-        psrcfrect = &srcfrect;
-    }
-
-    return SDL3_RenderTextureRotated(renderer, texture, psrcfrect, dstrect, angle, center, flip);
-}
 
 /* this came out of SDL2 directly. */
 static SDL_bool SDL_Vulkan_GetInstanceExtensions_Helper(unsigned int *userCount,
@@ -5568,213 +5950,6 @@ SDL_CreateWindowFrom(const void *data)
     return window;
 }
 
-static SDL_Window *g_shaped_window = NULL;
-static SDL_WindowShapeMode g_shape_mode;
-static Uint8 *g_bitmap = NULL;
-static int g_bitmap_w = 0, g_bitmap_h = 0;
-static SDL_Surface *g_shape_surface = NULL;
-static SDL_Texture *g_shape_texture = NULL;
-
-static void shaped_window_cleanup(void)
-{
-    g_shaped_window = NULL;
-    SDL3_zero(g_shape_mode);
-    if (g_bitmap) {
-        SDL3_free(g_bitmap);
-        g_bitmap = NULL;
-    }
-    g_bitmap_w = 0;
-    g_bitmap_h = 0;
-
-    if (g_shape_surface) {
-        SDL3_DestroySurface(g_shape_surface);
-        g_shape_surface = NULL;
-    }
-
-    if (g_shape_texture) {
-        SDL3_DestroyTexture(g_shape_texture);
-        g_shape_texture = NULL;
-    }
-}
-
-/* REQUIRES that bitmap point to a w-by-h bitmap with ppb pixels-per-byte. */
-static void SDL_CalculateShapeBitmap(SDL_WindowShapeMode mode, SDL_Surface *shape, Uint8 *bitmap, Uint8 ppb)
-{
-    int x = 0;
-    int y = 0;
-    Uint8 r = 0, g = 0, b = 0, alpha = 0;
-    Uint8 *pixel = NULL;
-    Uint32 pixel_value = 0, mask_value = 0;
-    size_t bytes_per_scanline = (size_t)(shape->w + (ppb - 1)) / ppb;
-    Uint8 *bitmap_scanline;
-    SDL_Color key;
-
-    if (SDL_MUSTLOCK(shape)) {
-        SDL3_LockSurface(shape);
-    }
-
-    SDL3_memset(bitmap, 0, shape->h * bytes_per_scanline);
-
-    for (y = 0; y < shape->h; y++) {
-        bitmap_scanline = bitmap + y * bytes_per_scanline;
-        for (x = 0; x < shape->w; x++) {
-            alpha = 0;
-            pixel_value = 0;
-            pixel = (Uint8 *)(shape->pixels) + (y * shape->pitch) + (x * shape->format->BytesPerPixel);
-            switch (shape->format->BytesPerPixel) {
-            case (1):
-                pixel_value = *pixel;
-                break;
-            case (2):
-                pixel_value = *(Uint16 *)pixel;
-                break;
-            case (3):
-                pixel_value = *(Uint32 *)pixel & (~shape->format->Amask);
-                break;
-            case (4):
-                pixel_value = *(Uint32 *)pixel;
-                break;
-            }
-            SDL3_GetRGBA(pixel_value, shape->format, &r, &g, &b, &alpha);
-            switch (mode.mode) {
-            case (ShapeModeDefault):
-                mask_value = (alpha >= 1 ? 1 : 0);
-                break;
-            case (ShapeModeBinarizeAlpha):
-                mask_value = (alpha >= mode.parameters.binarizationCutoff ? 1 : 0);
-                break;
-            case (ShapeModeReverseBinarizeAlpha):
-                mask_value = (alpha <= mode.parameters.binarizationCutoff ? 1 : 0);
-                break;
-            case (ShapeModeColorKey):
-                key = mode.parameters.colorKey;
-                mask_value = ((key.r != r || key.g != g || key.b != b) ? 1 : 0);
-                break;
-            }
-            bitmap_scanline[x / ppb] |= mask_value << (x % ppb);
-        }
-    }
-
-    if (SDL_MUSTLOCK(shape)) {
-        SDL3_UnlockSurface(shape);
-    }
-}
-
-
-
-DECLSPEC SDL_Window * SDLCALL
-SDL_CreateShapedWindow(const char *title, unsigned int x, unsigned int y, unsigned int w, unsigned int h, Uint32 flags)
-{
-    SDL_Window *window;
-    int hidden = flags & SDL_WINDOW_HIDDEN;
-
-    if (g_shaped_window != NULL) {
-        SDL3_SetError("only 1 shaped window");
-        return NULL;
-    }
-
-    flags &= ~SDL2_WINDOW_SHOWN;
-    flags |= SDL_WINDOW_HIDDEN;
-    flags |= SDL_WINDOW_TRANSPARENT;
-
-    window = SDL3_CreateWindow(title, (int)w, (int)h, flags);
-    if (window) {
-        if (!SDL_WINDOWPOS_ISUNDEFINED(x) || !SDL_WINDOWPOS_ISUNDEFINED(y)) {
-            SDL3_SetWindowPosition(window, (int)x, (int)y);
-        }
-        if (!hidden) {
-            SDL3_ShowWindow(window);
-        }
-    }
-
-    shaped_window_cleanup();
-    g_shaped_window = window;
-
-    return window;
-}
-
-DECLSPEC SDL_bool SDLCALL
-SDL_IsShapedWindow(const SDL_Window *window)
-{
-    if (window == NULL) {
-        return SDL_FALSE;
-    }
-    if (window == g_shaped_window) {
-        return SDL_TRUE;
-    }
-    return SDL_FALSE;
-}
-
-DECLSPEC int SDLCALL
-SDL_SetWindowShape(SDL_Window *window,SDL_Surface *shape, SDL_WindowShapeMode *shape_mode)
-{
-    if (window == NULL) {
-        return SDL_NONSHAPEABLE_WINDOW;
-    }
-
-    if (window != g_shaped_window) {
-        return SDL_NONSHAPEABLE_WINDOW;
-    }
-
-    if (shape == NULL) {
-        return SDL_INVALID_SHAPE_ARGUMENT;
-    }
-
-    if (shape_mode == NULL) {
-        return SDL_INVALID_SHAPE_ARGUMENT;
-    }
-
-    shaped_window_cleanup();
-    g_shaped_window = window;
-    g_shape_mode = *shape_mode;
-
-    g_bitmap_w = shape->w;
-    g_bitmap_h = shape->h;
-    g_bitmap = (Uint8 *) SDL3_malloc(shape->w * shape->h);
-    if (g_bitmap == NULL) {
-        shaped_window_cleanup();
-        g_shaped_window = window;
-        return SDL3_OutOfMemory();
-    }
-
-    SDL_CalculateShapeBitmap(*shape_mode, shape, g_bitmap, 1);
-
-    g_shape_surface = SDL3_CreateSurface(g_bitmap_w, g_bitmap_h, SDL_PIXELFORMAT_ABGR8888);
-    if (g_shape_surface) {
-        int x, y, i = 0;
-        Uint32 *ptr = (Uint32 *)g_shape_surface->pixels;
-        for (y = 0; y < g_bitmap_h; y++) {
-            for (x = 0; x < g_bitmap_w; x++) {
-                Uint8 val = g_bitmap[i++];
-                if (val == 0) {
-                    ptr[x] = 0;
-                } else {
-                    ptr[x] = 0xffffffff;
-                }
-            }
-            ptr = (Uint32 *)((Uint8 *)ptr + g_shape_surface->pitch);
-        }
-    }
-
-    return 0;
-}
-
-DECLSPEC int SDLCALL
-SDL_GetShapedWindowMode(SDL_Window *window, SDL_WindowShapeMode *shape_mode)
-{
-    if (window == NULL) {
-        return SDL_NONSHAPEABLE_WINDOW;
-    }
-    if (window != g_shaped_window) {
-        return SDL_NONSHAPEABLE_WINDOW;
-    }
-
-    if (shape_mode) {
-        *shape_mode = g_shape_mode;
-    }
-    return 0;
-}
-
 DECLSPEC int SDLCALL
 SDL_SetWindowFullscreen(SDL_Window *window, Uint32 flags)
 {
@@ -5888,62 +6063,6 @@ DECLSPEC void SDLCALL
 SDL_UnionFRect(const SDL_FRect *A, const SDL_FRect *B, SDL_FRect *result)
 {
     SDL3_GetRectUnionFloat(A, B, result);
-}
-
-DECLSPEC void SDLCALL
-SDL_RenderPresent(SDL_Renderer *renderer)
-{
-    /* Apply the shape */
-    if (g_shape_surface && g_shaped_window == SDL3_GetRenderWindow(renderer)) {
-        SDL_RendererInfo info;
-        SDL3_GetRendererInfo(renderer, &info);
-
-        if (info.flags & SDL_RENDERER_SOFTWARE) {
-            if (g_bitmap) {
-                int x, y, i = 0;
-                Uint8 r, g, b, a;
-                SDL3_GetRenderDrawColor(renderer, &r, &g, &b, &a);
-                SDL3_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-                for (y = 0; y < g_bitmap_h; y++) {
-                    for (x = 0; x < g_bitmap_w; x++) {
-                        Uint8 val = g_bitmap[i++];
-                        if (val == 0) {
-                            SDL3_RenderPoint(renderer, (float)x, (float)y);
-                        }
-                    }
-                }
-                SDL3_SetRenderDrawColor(renderer, r, g, b, a);
-            }
-        } else {
-            if (g_shape_texture == NULL) {
-                SDL_BlendMode bm;
-
-                g_shape_texture = SDL3_CreateTextureFromSurface(renderer, g_shape_surface);
-
-                /* if Alpha is 0, set all to 0, else leave unchanged. */
-                bm = SDL3_ComposeCustomBlendMode(
-                        SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_SRC_ALPHA, SDL_BLENDOPERATION_ADD,
-                        SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_SRC_ALPHA, SDL_BLENDOPERATION_ADD);
-
-                SDL3_SetTextureBlendMode(g_shape_texture, bm);
-            }
-            SDL3_RenderTexture(renderer, g_shape_texture, NULL, NULL);
-        }
-    }
-
-    SDL3_RenderPresent(renderer);
-}
-
-DECLSPEC void SDLCALL
-SDL_DestroyTexture(SDL_Texture *texture)
-{
-    SDL3_DestroyTexture(texture);
-}
-
-DECLSPEC void SDLCALL
-SDL_DestroyRenderer(SDL_Renderer *renderer)
-{
-    SDL3_DestroyRenderer(renderer);
 }
 
 DECLSPEC void SDLCALL
