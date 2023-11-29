@@ -1184,6 +1184,11 @@ static SDL2_AudioStream *AudioOpenDevices[16];  /* SDL2 had a limit of 16 simult
 static AudioDeviceList AudioSDL3OutputDevices;
 static AudioDeviceList AudioSDL3CaptureDevices;
 
+static char **GamepadMappings = NULL;
+static int NumGamepadMappings = 0;
+
+static SDL_TouchID *TouchDevices = NULL;
+static int NumTouchDevices = 0;
 
 /* Functions! */
 
@@ -2676,6 +2681,31 @@ SDL_SensorGetDataWithTimestamp(SDL_Sensor *sensor, Uint64 *timestamp, float *dat
     return SDL3_Unsupported();  /* !!! FIXME: maybe try to track this from SDL3 events if something needs this? I can't imagine this was widely used. */
 }
 
+DECLSPEC int SDLCALL
+SDL_GetNumTouchDevices(void)
+{
+    SDL3_free(TouchDevices);
+    TouchDevices = SDL3_GetTouchDevices(&NumTouchDevices);
+    return NumTouchDevices;
+}
+
+DECLSPEC SDL_TouchID SDLCALL
+SDL_GetTouchDevice(int idx)
+{
+    if ((idx < 0) || (idx >= NumTouchDevices)) {
+        SDL3_SetError("Unknown touch device index %d", idx);
+        return 0;
+    }
+    return TouchDevices[idx];
+}
+
+DECLSPEC const char* SDLCALL
+SDL_GetTouchName(int idx)
+{
+    SDL_TouchID tid = SDL_GetTouchDevice(idx);
+    return tid ? SDL3_GetTouchDeviceName(tid) : NULL;
+}
+
 
 /* Touch gestures were removed from SDL3, so this is the SDL2 implementation copied in here, and tweaked a little. */
 
@@ -2743,18 +2773,22 @@ GestureGetTouch(const SDL_TouchID touchId)
 DECLSPEC int SDLCALL
 SDL_RecordGesture(SDL_TouchID touchId)
 {
-    const int numtouchdevs = SDL3_GetNumTouchDevices();
+    int numtouchdevs = 0;
+    SDL_TouchID *touchdevs = SDL3_GetTouchDevices(&numtouchdevs);
     int i;
 
     /* make sure we know about all the devices SDL3 knows about, since we aren't connected as tightly as we were in SDL2. */
     for (i = 0; i < numtouchdevs; i++) {
-        const SDL_TouchID thistouch = SDL3_GetTouchDevice(i);
+        const SDL_TouchID thistouch = touchdevs[i];
         if (!GestureGetTouch(thistouch)) {
             if (!GestureAddTouch(thistouch)) {
+                SDL3_free(touchdevs);
                 return 0;  /* uhoh, out of memory */
             }
         }
     }
+
+    SDL3_free(touchdevs);
 
     if (touchId < 0) {
         GestureRecordAll = SDL_TRUE;  /* !!! FIXME: this is never set back to SDL_FALSE anywhere, that's probably a bug. */
@@ -4299,6 +4333,14 @@ SDL_Quit(void)
     }
     num_gamepad_button_swap_list = 0;
 
+    SDL3_free(GamepadMappings);
+    GamepadMappings = NULL;
+    NumGamepadMappings = 0;
+
+    SDL3_free(TouchDevices);
+    TouchDevices = NULL;
+    NumTouchDevices = 0;
+
     SDL3_Quit();
 }
 
@@ -4308,6 +4350,9 @@ SDL_QuitSubSystem(Uint32 flags)
     if (flags & SDL_INIT_VIDEO) {
         GestureQuit();
     }
+
+    // !!! FIXME: there's cleanup in SDL_Quit that probably needs to be done here, too.
+
     SDL3_QuitSubSystem(flags);
 }
 
@@ -6498,6 +6543,26 @@ SDL_GameControllerNameForIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
     return jid ? SDL3_GetGamepadInstanceName(jid) : NULL;
+}
+
+DECLSPEC int SDLCALL
+SDL_GameControllerNumMappings(void)
+{
+    SDL3_free(GamepadMappings);
+    GamepadMappings = SDL3_GetGamepadMappings(&NumGamepadMappings);
+    return NumGamepadMappings;
+}
+
+DECLSPEC char* SDLCALL
+SDL_GameControllerMappingForIndex(int idx)
+{
+    char *retval = NULL;
+    if ((idx < 0) || (idx >= NumGamepadMappings)) {
+        SDL3_SetError("Mapping not available");
+    } else if ((retval = SDL3_strdup(GamepadMappings[idx])) == NULL) {
+        SDL3_OutOfMemory();
+    }
+    return retval;
 }
 
 DECLSPEC SDL_GameController* SDLCALL

@@ -214,6 +214,7 @@
 #define SDL_GetGamepadInstanceVendor IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstanceVendor
 #define SDL_GetGamepadJoystick IGNORE_THIS_VERSION_OF_SDL_GetGamepadJoystick
 #define SDL_GetGamepadMapping IGNORE_THIS_VERSION_OF_SDL_GetGamepadMapping
+#define SDL_GetGamepadMappings IGNORE_THIS_VERSION_OF_SDL_GetGamepadMappings
 #define SDL_GetGamepadMappingForGUID IGNORE_THIS_VERSION_OF_SDL_GetGamepadMappingForGUID
 #define SDL_GetGamepadMappingForIndex IGNORE_THIS_VERSION_OF_SDL_GetGamepadMappingForIndex
 #define SDL_GetGamepadName IGNORE_THIS_VERSION_OF_SDL_GetGamepadName
@@ -276,14 +277,12 @@
 #define SDL_GetMouseState IGNORE_THIS_VERSION_OF_SDL_GetMouseState
 #define SDL_GetNaturalDisplayOrientation IGNORE_THIS_VERSION_OF_SDL_GetNaturalDisplayOrientation
 #define SDL_GetNumAllocations IGNORE_THIS_VERSION_OF_SDL_GetNumAllocations
-#define SDL_GetNumGamepadMappings IGNORE_THIS_VERSION_OF_SDL_GetNumGamepadMappings
 #define SDL_GetNumGamepadTouchpadFingers IGNORE_THIS_VERSION_OF_SDL_GetNumGamepadTouchpadFingers
 #define SDL_GetNumGamepadTouchpads IGNORE_THIS_VERSION_OF_SDL_GetNumGamepadTouchpads
 #define SDL_GetNumJoystickAxes IGNORE_THIS_VERSION_OF_SDL_GetNumJoystickAxes
 #define SDL_GetNumJoystickButtons IGNORE_THIS_VERSION_OF_SDL_GetNumJoystickButtons
 #define SDL_GetNumJoystickHats IGNORE_THIS_VERSION_OF_SDL_GetNumJoystickHats
 #define SDL_GetNumRenderDrivers IGNORE_THIS_VERSION_OF_SDL_GetNumRenderDrivers
-#define SDL_GetNumTouchDevices IGNORE_THIS_VERSION_OF_SDL_GetNumTouchDevices
 #define SDL_GetNumTouchFingers IGNORE_THIS_VERSION_OF_SDL_GetNumTouchFingers
 #define SDL_GetNumVideoDrivers IGNORE_THIS_VERSION_OF_SDL_GetNumVideoDrivers
 #define SDL_GetOriginalMemoryFunctions IGNORE_THIS_VERSION_OF_SDL_GetOriginalMemoryFunctions
@@ -356,10 +355,10 @@
 #define SDL_GetThreadName IGNORE_THIS_VERSION_OF_SDL_GetThreadName
 #define SDL_GetTicks IGNORE_THIS_VERSION_OF_SDL_GetTicks
 #define SDL_GetTicksNS IGNORE_THIS_VERSION_OF_SDL_GetTicksNS
-#define SDL_GetTouchDevice IGNORE_THIS_VERSION_OF_SDL_GetTouchDevice
+#define SDL_GetTouchDevices IGNORE_THIS_VERSION_OF_SDL_GetTouchDevices
+#define SDL_GetTouchDeviceName IGNORE_THIS_VERSION_OF_SDL_GetTouchDeviceName
 #define SDL_GetTouchDeviceType IGNORE_THIS_VERSION_OF_SDL_GetTouchDeviceType
 #define SDL_GetTouchFinger IGNORE_THIS_VERSION_OF_SDL_GetTouchFinger
-#define SDL_GetTouchName IGNORE_THIS_VERSION_OF_SDL_GetTouchName
 #define SDL_GetVersion IGNORE_THIS_VERSION_OF_SDL_GetVersion
 #define SDL_GetVideoDriver IGNORE_THIS_VERSION_OF_SDL_GetVideoDriver
 #define SDL_GetWindowBordersSize IGNORE_THIS_VERSION_OF_SDL_GetWindowBordersSize
@@ -1760,6 +1759,10 @@
 #undef SDL_GetGamepadMapping
 #endif
 
+#ifdef SDL_GetGamepadMappings
+#undef SDL_GetGamepadMappings
+#endif
+
 #ifdef SDL_GetGamepadMappingForGUID
 #undef SDL_GetGamepadMappingForGUID
 #endif
@@ -2008,10 +2011,6 @@
 #undef SDL_GetNumAllocations
 #endif
 
-#ifdef SDL_GetNumGamepadMappings
-#undef SDL_GetNumGamepadMappings
-#endif
-
 #ifdef SDL_GetNumGamepadTouchpadFingers
 #undef SDL_GetNumGamepadTouchpadFingers
 #endif
@@ -2034,10 +2033,6 @@
 
 #ifdef SDL_GetNumRenderDrivers
 #undef SDL_GetNumRenderDrivers
-#endif
-
-#ifdef SDL_GetNumTouchDevices
-#undef SDL_GetNumTouchDevices
 #endif
 
 #ifdef SDL_GetNumTouchFingers
@@ -2328,8 +2323,12 @@
 #undef SDL_GetTicksNS
 #endif
 
-#ifdef SDL_GetTouchDevice
-#undef SDL_GetTouchDevice
+#ifdef SDL_GetTouchDevices
+#undef SDL_GetTouchDevices
+#endif
+
+#ifdef SDL_GetTouchDeviceName
+#undef SDL_GetTouchDeviceName
 #endif
 
 #ifdef SDL_GetTouchDeviceType
@@ -2338,10 +2337,6 @@
 
 #ifdef SDL_GetTouchFinger
 #undef SDL_GetTouchFinger
-#endif
-
-#ifdef SDL_GetTouchName
-#undef SDL_GetTouchName
 #endif
 
 #ifdef SDL_GetVersion
