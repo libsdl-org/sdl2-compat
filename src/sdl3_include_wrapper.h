@@ -133,6 +133,7 @@
 #define SDL_FlashWindow IGNORE_THIS_VERSION_OF_SDL_FlashWindow
 #define SDL_FlushEvent IGNORE_THIS_VERSION_OF_SDL_FlushEvent
 #define SDL_FlushEvents IGNORE_THIS_VERSION_OF_SDL_FlushEvents
+#define SDL_FlushRenderer IGNORE_THIS_VERSION_OF_SDL_FlushRenderer
 #define SDL_GDKGetTaskQueue IGNORE_THIS_VERSION_OF_SDL_GDKGetTaskQueue
 #define SDL_GDKSuspendComplete IGNORE_THIS_VERSION_OF_SDL_GDKSuspendComplete
 #define SDL_GL_BindTexture IGNORE_THIS_VERSION_OF_SDL_GL_BindTexture
@@ -538,7 +539,6 @@
 #define SDL_RenderCoordinatesToWindow IGNORE_THIS_VERSION_OF_SDL_RenderCoordinatesToWindow
 #define SDL_RenderFillRect IGNORE_THIS_VERSION_OF_SDL_RenderFillRect
 #define SDL_RenderFillRects IGNORE_THIS_VERSION_OF_SDL_RenderFillRects
-#define SDL_RenderFlush IGNORE_THIS_VERSION_OF_SDL_RenderFlush
 #define SDL_RenderGeometry IGNORE_THIS_VERSION_OF_SDL_RenderGeometry
 #define SDL_RenderGeometryRaw IGNORE_THIS_VERSION_OF_SDL_RenderGeometryRaw
 #define SDL_RenderLine IGNORE_THIS_VERSION_OF_SDL_RenderLine
@@ -1434,6 +1434,10 @@
 
 #ifdef SDL_FlushEvents
 #undef SDL_FlushEvents
+#endif
+
+#ifdef SDL_FlushRenderer
+#undef SDL_FlushRenderer
 #endif
 
 #ifdef SDL_GDKGetTaskQueue
@@ -3054,10 +3058,6 @@
 
 #ifdef SDL_RenderFillRects
 #undef SDL_RenderFillRects
-#endif
-
-#ifdef SDL_RenderFlush
-#undef SDL_RenderFlush
 #endif
 
 #ifdef SDL_RenderGeometry

@@ -3615,11 +3615,10 @@ static int FlushRendererIfNotBatching(SDL_Renderer *renderer)
 {
     const SDL_PropertiesID props = SDL3_GetRendererProperties(renderer);
     if (!SDL3_GetBooleanProperty(props, RENDERER_BATCHING_PROP, SDL_FALSE)) {
-        return SDL3_RenderFlush(renderer);
+        return SDL3_FlushRenderer(renderer);
     }
     return 0;
 }
-
 
 /* Second parameter changed from an index to a string in SDL3. */
 DECLSPEC SDL_Renderer *SDLCALL
