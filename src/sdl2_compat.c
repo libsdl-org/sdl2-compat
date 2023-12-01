@@ -1295,9 +1295,7 @@ SDL_SetError(const char *fmt, ...)
     va_end(ap);
 
     str = (char *) SDL3_malloc(len + 1);
-    if (!str) {
-        SDL3_OutOfMemory();
-    } else {
+    if (str) {
         va_start(ap, fmt);
         SDL3_vsnprintf(str, len + 1, fmt, ap);
         va_end(ap);
@@ -1764,7 +1762,7 @@ SDL_PeepEvents(SDL2_Event *events2, int numevents, SDL_eventaction action, Uint3
     int i;
 
     if (!events3) {
-        return SDL3_OutOfMemory();
+        return -1;
     }
     if (action == SDL_ADDEVENT) {
         for (i = 0; i < numevents; i++) {
@@ -1939,9 +1937,7 @@ DECLSPEC SDL2_RWops *SDLCALL
 SDL_AllocRW(void)
 {
     SDL2_RWops *area2 = (SDL2_RWops *)SDL3_malloc(sizeof *area2);
-    if (area2 == NULL) {
-        SDL3_OutOfMemory();
-    } else {
+    if (area2) {
         area2->type = SDL_RWOPS_UNKNOWN;
     }
     return area2;
@@ -2754,7 +2750,6 @@ GestureAddTouch(const SDL_TouchID touchId)
 {
     GestureTouch *gestureTouch = (GestureTouch *)SDL3_realloc(GestureTouches, (GestureNumTouches + 1) * sizeof(GestureTouch));
     if (gestureTouch == NULL) {
-        SDL3_OutOfMemory();
         return NULL;
     }
 
@@ -2910,7 +2905,7 @@ GestureAddDollar_one(GestureTouch *inTouch, SDL_FPoint *path)
     idx = inTouch->numDollarTemplates;
     dollarTemplate = (GestureDollarTemplate *)SDL3_realloc(inTouch->dollarTemplate, (idx + 1) * sizeof(GestureDollarTemplate));
     if (dollarTemplate == NULL) {
-        return SDL3_OutOfMemory();
+        return -1;
     }
     inTouch->dollarTemplate = dollarTemplate;
 
@@ -3543,7 +3538,7 @@ SDL_SetWindowShape(SDL_Window *window,SDL_Surface *shape, SDL_WindowShapeMode *s
     if (g_bitmap == NULL) {
         shaped_window_cleanup();
         g_shaped_window = window;
-        return SDL3_OutOfMemory();
+        return -1;
     }
 
     SDL_CalculateShapeBitmap(*shape_mode, shape, g_bitmap, 1);
@@ -3858,7 +3853,7 @@ SDL_RenderDrawPoints(SDL_Renderer *renderer,
 
     fpoints = (SDL_FPoint *) SDL3_malloc(sizeof (SDL_FPoint) * count);
     if (fpoints == NULL) {
-        return SDL3_OutOfMemory();
+        return -1;
     }
 
     for (i = 0; i < count; ++i) {
@@ -3915,7 +3910,7 @@ SDL_RenderDrawLines(SDL_Renderer *renderer, const SDL_Point *points, int count)
 
     fpoints = (SDL_FPoint *) SDL3_malloc(sizeof (SDL_FPoint) * count);
     if (fpoints == NULL) {
-        return SDL3_OutOfMemory();
+        return -1;
     }
 
     for (i = 0; i < count; ++i) {
@@ -4022,7 +4017,7 @@ SDL_RenderFillRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
 
     frects = (SDL_FRect *) SDL3_malloc(sizeof (SDL_FRect) * count);
     if (frects == NULL) {
-        return SDL3_OutOfMemory();
+        return -1;
     }
 
     for (i = 0; i < count; ++i) {
@@ -4426,7 +4421,6 @@ static int GetNumAudioDevices(int iscapture)
                 SDL3_free(devices);
                 SDL3_free(newname);
                 SDL3_free(fullname);
-                SDL3_OutOfMemory();
                 return list->num_devices;  /* just return the existing one for now. Oh well. */
             }
 
@@ -4532,7 +4526,7 @@ SDL_GetDefaultAudioInfo(char **name, SDL2_AudioSpec *spec2, int iscapture)
         if (name) {
             *name = SDL3_strdup("System default");  /* the default device can change to different physical hardware on-the-fly in SDL3, so we don't provide a name for it. */
             if (*name == NULL) {
-                return SDL3_OutOfMemory();
+                return -1;
             }
         }
 
@@ -4933,7 +4927,6 @@ SDL_NewAudioStream(const SDL_AudioFormat real_src_format, const Uint8 src_channe
     SDL_AudioSpec srcspec3, dstspec3;
 
     if (!retval) {
-        SDL3_OutOfMemory();
         return NULL;
     }
 
@@ -4972,7 +4965,7 @@ SDL_AudioStreamPut(SDL2_AudioStream *stream2, const void *buf, int len)
         const Uint32 tmpsamples = len / sizeof (Uint16);
         Sint16 *tmpbuf = (Sint16 *) SDL3_malloc(len);
         if (!tmpbuf) {
-            return SDL3_OutOfMemory();
+            return -1;
         }
         if (stream2->src_format == SDL2_AUDIO_U16LSB) {
             AudioUi16LSBToSi16Sys(tmpbuf, (const Uint16 *) buf, tmpsamples);
@@ -5386,8 +5379,6 @@ static const SDL_DisplayMode** SDL_GetDisplayModeList(SDL_DisplayID displayID, i
         if (count) {
             *count = 1;
         }
-    } else {
-        SDL3_OutOfMemory();
     }
 
     return modes;
@@ -6566,8 +6557,8 @@ SDL_GameControllerMappingForIndex(int idx)
     char *retval = NULL;
     if ((idx < 0) || (idx >= NumGamepadMappings)) {
         SDL3_SetError("Mapping not available");
-    } else if ((retval = SDL3_strdup(GamepadMappings[idx])) == NULL) {
-        SDL3_OutOfMemory();
+    } else {
+        retval = SDL3_strdup(GamepadMappings[idx]);
     }
     return retval;
 }
@@ -7188,7 +7179,6 @@ SDL_hid_enumerate(unsigned short vendor_id, unsigned short product_id)
                 SDL3_free(serial_number);
                 SDL3_free(manufacturer_string);
                 SDL3_free(product_string);
-                SDL3_OutOfMemory();
                 return NULL;
             }
             if (tail) {
