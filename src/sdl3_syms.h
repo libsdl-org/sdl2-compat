@@ -662,7 +662,6 @@ SDL3_SYM(SDL_JoystickID,AttachVirtualJoystickEx,(const SDL_VirtualJoystickDesc *
 SDL3_SYM_RENAMED(int,JoystickSetVirtualAxis,SetJoystickVirtualAxis,(SDL_Joystick *a, int b, Sint16 c),(a,b,c),return)
 SDL3_SYM_RENAMED(int,JoystickSetVirtualButton,SetJoystickVirtualButton,(SDL_Joystick *a, int b, Uint8 c),(a,b,c),return)
 SDL3_SYM_RENAMED(int,JoystickSetVirtualHat,SetJoystickVirtualHat,(SDL_Joystick *a, int b, Uint8 c),(a,b,c),return)
-SDL3_SYM_PASSTHROUGH(char*,GetErrorMsg,(char *a, int b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(void*,Metal_GetLayer,(SDL_MetalView a),(a),return)
 SDL3_SYM_PASSTHROUGH(double,trunc,(double a),(a),return)
 SDL3_SYM_PASSTHROUGH(float,truncf,(float a),(a),return)

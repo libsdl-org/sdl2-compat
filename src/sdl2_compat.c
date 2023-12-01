@@ -1275,6 +1275,13 @@ SDL_GetRevision(void)
     return SDL2COMPAT_REVISION;
 }
 
+DECLSPEC char * SDLCALL
+SDL_GetErrorMsg(char *errstr, int maxlen)
+{
+    SDL3_strlcpy(errstr, SDL3_GetError(), maxlen);
+    return errstr;
+}
+
 DECLSPEC int SDLCALL
 SDL_SetError(const char *fmt, ...)
 {

@@ -190,7 +190,6 @@
 #define SDL_GetDisplayUsableBounds IGNORE_THIS_VERSION_OF_SDL_GetDisplayUsableBounds
 #define SDL_GetDisplays IGNORE_THIS_VERSION_OF_SDL_GetDisplays
 #define SDL_GetError IGNORE_THIS_VERSION_OF_SDL_GetError
-#define SDL_GetErrorMsg IGNORE_THIS_VERSION_OF_SDL_GetErrorMsg
 #define SDL_GetEventFilter IGNORE_THIS_VERSION_OF_SDL_GetEventFilter
 #define SDL_GetFullscreenDisplayModes IGNORE_THIS_VERSION_OF_SDL_GetFullscreenDisplayModes
 #define SDL_GetGamepadAppleSFSymbolsNameForAxis IGNORE_THIS_VERSION_OF_SDL_GetGamepadAppleSFSymbolsNameForAxis
@@ -214,9 +213,7 @@
 #define SDL_GetGamepadInstanceVendor IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstanceVendor
 #define SDL_GetGamepadJoystick IGNORE_THIS_VERSION_OF_SDL_GetGamepadJoystick
 #define SDL_GetGamepadMapping IGNORE_THIS_VERSION_OF_SDL_GetGamepadMapping
-#define SDL_GetGamepadMappings IGNORE_THIS_VERSION_OF_SDL_GetGamepadMappings
 #define SDL_GetGamepadMappingForGUID IGNORE_THIS_VERSION_OF_SDL_GetGamepadMappingForGUID
-#define SDL_GetGamepadMappingForIndex IGNORE_THIS_VERSION_OF_SDL_GetGamepadMappingForIndex
 #define SDL_GetGamepadName IGNORE_THIS_VERSION_OF_SDL_GetGamepadName
 #define SDL_GetGamepadPath IGNORE_THIS_VERSION_OF_SDL_GetGamepadPath
 #define SDL_GetGamepadPlayerIndex IGNORE_THIS_VERSION_OF_SDL_GetGamepadPlayerIndex
@@ -355,8 +352,6 @@
 #define SDL_GetThreadName IGNORE_THIS_VERSION_OF_SDL_GetThreadName
 #define SDL_GetTicks IGNORE_THIS_VERSION_OF_SDL_GetTicks
 #define SDL_GetTicksNS IGNORE_THIS_VERSION_OF_SDL_GetTicksNS
-#define SDL_GetTouchDevices IGNORE_THIS_VERSION_OF_SDL_GetTouchDevices
-#define SDL_GetTouchDeviceName IGNORE_THIS_VERSION_OF_SDL_GetTouchDeviceName
 #define SDL_GetTouchDeviceType IGNORE_THIS_VERSION_OF_SDL_GetTouchDeviceType
 #define SDL_GetTouchFinger IGNORE_THIS_VERSION_OF_SDL_GetTouchFinger
 #define SDL_GetVersion IGNORE_THIS_VERSION_OF_SDL_GetVersion
@@ -987,6 +982,9 @@
 #define SDL_GetBooleanProperty IGNORE_THIS_VERSION_OF_SDL_GetBooleanProperty
 #define SDL_CreateTextureWithProperties IGNORE_THIS_VERSION_OF_SDL_CreateTextureWithProperties
 #define SDL_CreateRendererWithProperties IGNORE_THIS_VERSION_OF_SDL_CreateRendererWithProperties
+#define SDL_GetGamepadMappings IGNORE_THIS_VERSION_OF_SDL_GetGamepadMappings
+#define SDL_GetTouchDevices IGNORE_THIS_VERSION_OF_SDL_GetTouchDevices
+#define SDL_GetTouchDeviceName IGNORE_THIS_VERSION_OF_SDL_GetTouchDeviceName
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -1663,10 +1661,6 @@
 #undef SDL_GetError
 #endif
 
-#ifdef SDL_GetErrorMsg
-#undef SDL_GetErrorMsg
-#endif
-
 #ifdef SDL_GetEventFilter
 #undef SDL_GetEventFilter
 #endif
@@ -1759,16 +1753,8 @@
 #undef SDL_GetGamepadMapping
 #endif
 
-#ifdef SDL_GetGamepadMappings
-#undef SDL_GetGamepadMappings
-#endif
-
 #ifdef SDL_GetGamepadMappingForGUID
 #undef SDL_GetGamepadMappingForGUID
-#endif
-
-#ifdef SDL_GetGamepadMappingForIndex
-#undef SDL_GetGamepadMappingForIndex
 #endif
 
 #ifdef SDL_GetGamepadName
@@ -2321,14 +2307,6 @@
 
 #ifdef SDL_GetTicksNS
 #undef SDL_GetTicksNS
-#endif
-
-#ifdef SDL_GetTouchDevices
-#undef SDL_GetTouchDevices
-#endif
-
-#ifdef SDL_GetTouchDeviceName
-#undef SDL_GetTouchDeviceName
 #endif
 
 #ifdef SDL_GetTouchDeviceType
@@ -4849,6 +4827,18 @@
 
 #ifdef SDL_CreateRendererWithProperties
 #undef SDL_CreateRendererWithProperties
+#endif
+
+#ifdef SDL_GetGamepadMappings
+#undef SDL_GetGamepadMappings
+#endif
+
+#ifdef SDL_GetTouchDevices
+#undef SDL_GetTouchDevices
+#endif
+
+#ifdef SDL_GetTouchDeviceName
+#undef SDL_GetTouchDeviceName
 #endif
 
 /* undefine these macros too: */
