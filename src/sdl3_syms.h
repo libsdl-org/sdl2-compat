@@ -861,6 +861,8 @@ SDL3_SYM(Sint64,GetNumberProperty,(SDL_PropertiesID a, const char *b, Sint64 c),
 SDL3_SYM(SDL_bool,GetBooleanProperty,(SDL_PropertiesID a, const char *b, SDL_bool c),(a,b,c),return)
 SDL3_SYM(SDL_PropertiesID,CreateProperties,(void),(),return)
 SDL3_SYM(int,SetBooleanProperty,(SDL_PropertiesID a, const char *b, SDL_bool c),(a,b,c),return)
+SDL3_SYM(int,SetNumberProperty,(SDL_PropertiesID a, const char *b, Sint64 c),(a,b,c),return)
+SDL3_SYM(int,SetStringProperty,(SDL_PropertiesID a, const char *b, const char *c),(a,b,c),return)
 SDL3_SYM(void,DestroyProperties,(SDL_PropertiesID a),(a),)
 SDL3_SYM(SDL_Window*,CreateWindowWithProperties,(SDL_PropertiesID a),(a),return)
 SDL3_SYM(char **,GetGamepadMappings,(int *a),(a),return)
