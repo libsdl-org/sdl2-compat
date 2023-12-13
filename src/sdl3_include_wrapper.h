@@ -985,6 +985,9 @@
 #define SDL_GetGamepadMappings IGNORE_THIS_VERSION_OF_SDL_GetGamepadMappings
 #define SDL_GetTouchDevices IGNORE_THIS_VERSION_OF_SDL_GetTouchDevices
 #define SDL_GetTouchDeviceName IGNORE_THIS_VERSION_OF_SDL_GetTouchDeviceName
+#define SDL_strnstr IGNORE_THIS_VERSION_OF_SDL_strnstr
+#define SDL_wcsnstr IGNORE_THIS_VERSION_OF_SDL_wcsnstr
+#define SDL_SyncWindow IGNORE_THIS_VERSION_OF_SDL_SyncWindow
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -4841,8 +4844,19 @@
 #undef SDL_GetTouchDeviceName
 #endif
 
-/* undefine these macros too: */
-/* redefine as SDL3_xxx, if needed. */
+#ifdef SDL_strnstr
+#undef SDL_strnstr
+#endif
+
+#ifdef SDL_wcsnstr
+#undef SDL_wcsnstr
+#endif
+
+#ifdef SDL_SyncWindow
+#undef SDL_SyncWindow
+#endif
+
+/* undefine these macros, too: redefine as SDL3_xxx, if needed. */
 
 #ifdef SDL_enabled_assert
 #undef SDL_enabled_assert
