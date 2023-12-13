@@ -1438,7 +1438,6 @@ int video_getSetWindowSize(void *arg)
                 }
             }
 
-
             /* Get just width */
             currentW = desiredW + 1;
             SDL_GetWindowSize(window, &currentW, NULL);
