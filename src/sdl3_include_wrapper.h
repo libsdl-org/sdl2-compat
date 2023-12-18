@@ -4858,6 +4858,14 @@
 #undef SDL_SyncWindow
 #endif
 
+#ifdef SDL_SetSurfaceScaleMode
+#undef SDL_SetSurfaceScaleMode
+#endif
+
+#ifdef SDL_GetSurfaceScaleMode
+#undef SDL_GetSurfaceScaleMode
+#endif
+
 /* undefine these macros, too: redefine as SDL3_xxx, if needed. */
 
 #ifdef SDL_enabled_assert
@@ -4942,14 +4950,6 @@
 
 #ifdef SDL_iOSSetEventPump
 #undef SDL_iOSSetEventPump
-#endif
-
-#ifdef SDL_SetSurfaceScaleMode
-#undef SDL_SetSurfaceScaleMode
-#endif
-
-#ifdef SDL_GetSurfaceScaleMode
-#undef SDL_GetSurfaceScaleMode
 #endif
 
 #endif /* INCL_SDL3_INCLUDE_WRAPPER_H */
