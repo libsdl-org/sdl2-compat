@@ -7291,6 +7291,86 @@ SDL_AndroidGetExternalStorageState(void)
 }
 #endif
 
+static int SoftStretch(SDL_Surface * src,
+        const SDL_Rect * srcrect,
+        SDL_Surface * dst,
+        const SDL_Rect * dstrect, SDL_bool nearest)
+{
+    int ret;
+    int has_colorkey = 0;
+    Uint32 colorkey;
+    Uint8 r, g, b;
+    Uint8 alpha;
+    SDL_BlendMode blendMode;
+    SDL_Rect rect;
+    SDL_Rect *prect = NULL;
+
+    SDL3_zero(rect);
+
+    if (dstrect) {
+        prect = &rect;
+        *prect = *dstrect;
+    }
+
+    if (!src) {
+        return -1;
+    }
+
+    /* Save source infos */
+    if (src->format->palette) {
+        if (SDL_HasColorKey(src)) {
+            has_colorkey = 1;
+            SDL_GetColorKey(src, &colorkey);
+            SDL_SetColorKey(src, SDL_FALSE, 0);
+        }
+    }
+
+    SDL3_GetSurfaceColorMod(src, &r, &g, &b);
+    SDL3_GetSurfaceAlphaMod(src, &alpha);
+    SDL3_GetSurfaceBlendMode(src, &blendMode);
+
+    SDL3_SetSurfaceColorMod(src, 0xFF, 0xFF, 0xFF);
+    SDL3_SetSurfaceAlphaMod(src, 0xFF);
+    SDL3_SetSurfaceBlendMode(src, SDL_BLENDMODE_NONE);
+
+    if (nearest) {
+        SDL3_SetSurfaceScaleMode(src, SDL_SCALEMODE_NEAREST);
+    } else {
+        SDL3_SetSurfaceScaleMode(src, SDL_SCALEMODE_LINEAR);
+    }
+    ret = SDL3_BlitSurfaceScaled(src, srcrect, dst, prect);
+
+    SDL3_SetSurfaceColorMod(src, r, g, b);
+    SDL3_SetSurfaceAlphaMod(src, alpha);
+    SDL3_SetSurfaceBlendMode(src, blendMode);
+
+    if (src->format->palette) {
+        if (has_colorkey) {
+            SDL_SetColorKey(src, SDL_FALSE, colorkey);
+        }
+    }
+
+    return ret;
+}
+
+DECLSPEC int SDLCALL SDL_SoftStretch(SDL_Surface * src,
+        const SDL_Rect * srcrect,
+        SDL_Surface * dst,
+        const SDL_Rect * dstrect)
+{
+    return SoftStretch(src, srcrect, dst, dstrect, SDL_TRUE);
+}
+
+
+
+DECLSPEC int SDLCALL SDL_SoftStretchLinear(SDL_Surface * src,
+        const SDL_Rect * srcrect,
+        SDL_Surface * dst,
+        const SDL_Rect * dstrect)
+{
+    return SoftStretch(src, srcrect, dst, dstrect, SDL_FALSE);
+}
+
 #ifdef __cplusplus
 }
 #endif

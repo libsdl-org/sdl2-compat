@@ -446,7 +446,6 @@ SDL3_SYM_RENAMED(int,FillRect,FillSurfaceRect,(SDL_Surface *a, const SDL_Rect *b
 SDL3_SYM_RENAMED(int,FillRects,FillSurfaceRects,(SDL_Surface *a, const SDL_Rect *b, int c, Uint32 d),(a,b,c,d),return)
 SDL3_SYM_RENAMED(int,UpperBlit,BlitSurface,(SDL_Surface *a, const SDL_Rect *b, SDL_Surface *c, SDL_Rect *d),(a,b,c,d),return)
 SDL3_SYM(int,BlitSurfaceUnchecked,(SDL_Surface *a, const SDL_Rect *b, SDL_Surface *c, const SDL_Rect *d),(a,b,c,d),return)
-SDL3_SYM_PASSTHROUGH(int,SoftStretch,(SDL_Surface *a, const SDL_Rect *b, SDL_Surface *c, const SDL_Rect *d),(a,b,c,d),return)
 SDL3_SYM_RENAMED(int,UpperBlitScaled,BlitSurfaceScaled,(SDL_Surface *a, const SDL_Rect *b, SDL_Surface *c, SDL_Rect *d),(a,b,c,d),return)
 SDL3_SYM(int,BlitSurfaceUncheckedScaled,(SDL_Surface *a, const SDL_Rect *b, SDL_Surface *c, const SDL_Rect *d),(a,b,c,d),return)
 SDL3_SYM_PASSTHROUGH(const char*,GetThreadName,(SDL_Thread *a),(a),return)
@@ -692,7 +691,6 @@ SDL3_SYM_PASSTHROUGH(double,round,(double a),(a),return)
 SDL3_SYM_PASSTHROUGH(float,roundf,(float a),(a),return)
 SDL3_SYM_PASSTHROUGH(long,lround,(double a),(a),return)
 SDL3_SYM_PASSTHROUGH(long,lroundf,(float a),(a),return)
-SDL3_SYM_PASSTHROUGH(int,SoftStretchLinear,(SDL_Surface *a, const SDL_Rect *b, SDL_Surface *c, const SDL_Rect *d),(a,b,c,d),return)
 SDL3_SYM_PASSTHROUGH(int,UpdateNVTexture,(SDL_Texture *a, const SDL_Rect *b, const Uint8 *c, int d, const Uint8 *e, int f),(a,b,c,d,e,f),return)
 SDL3_SYM(int,SetWindowKeyboardGrab,(SDL_Window *a, SDL_bool b),(a,b),return)
 SDL3_SYM(int,SetWindowMouseGrab,(SDL_Window *a, SDL_bool b),(a,b),return)
@@ -866,6 +864,8 @@ SDL3_SYM(int,SetStringProperty,(SDL_PropertiesID a, const char *b, const char *c
 SDL3_SYM(void,DestroyProperties,(SDL_PropertiesID a),(a),)
 SDL3_SYM(SDL_Window*,CreateWindowWithProperties,(SDL_PropertiesID a),(a),return)
 SDL3_SYM(char **,GetGamepadMappings,(int *a),(a),return)
+SDL3_SYM(int,SetSurfaceScaleMode,(SDL_Surface *a, SDL_ScaleMode b),(a,b),return)
+SDL3_SYM(int,GetSurfaceScaleMode,(SDL_Surface *a, SDL_ScaleMode *b),(a,b),return)
 
 #undef SDL3_SYM
 #undef SDL3_SYM_PASSTHROUGH
