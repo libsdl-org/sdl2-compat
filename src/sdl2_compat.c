@@ -1905,6 +1905,76 @@ SDL_WarpMouseGlobal(int x, int y)
     return SDL3_WarpMouseGlobal((float)x, (float)y);
 }
 
+/* The SDL2 version of SDL_Surface changed, so we need to convert when necessary. */
+
+
+struct SDL2_Surface
+{
+    Uint32 flags;               /**< Read-only */
+    SDL_PixelFormat *format;    /**< Read-only */
+    int w, h;                   /**< Read-only */
+    int pitch;                  /**< Read-only */
+    void *pixels;               /**< Read-write */
+
+    /** Application data associated with the surface */
+    void *userdata;             /**< Read-write */
+
+    /** information needed for surfaces requiring locks */
+    int locked;                 /**< Read-only */
+
+    /** list of BlitMap that hold a reference to this surface */
+    void *list_blitmap;         /**< Private */
+
+    /** clipping information */
+    SDL_Rect clip_rect;         /**< Read-only */
+
+    /** info for fast blit mapping to other surfaces */
+    SDL_BlitMap *map;           /**< Private */
+
+    /** Reference count -- used when freeing surface */
+    int refcount;               /**< Read-mostly */
+};
+
+void Surface2to3_init(SDL2_Surface *s2, SDL_Surface *s3)
+{
+    if (!s2 || !s3) {
+        return;
+    }
+
+    s3->flags = s2->flags;
+    s3->format = s2->format;
+    s3->w = s2->w;
+    s3->h = s2->h;
+    s3->pitch = s2->pitch;
+    s3->pixels = s2->pixels;
+    // ignore user data?
+    s3->locked = s2->locked;
+    s3->list_blitmap = s2->list_blitmap;
+    s3->clip_rect = s2->clip_rect;
+    s3->map = s2->map;
+    s3->refcount = s2->refcount;
+}
+
+void Surface3to2_init(SDL_Surface *s3, SDL2_Surface *s2)
+{
+    if (!s2 || !s3) {
+        return;
+    }
+    s2->flags = s3->flags;
+    s2->format = s3->format;
+    s2->w = s3->w;
+    s2->h = s3->h;
+    s2->pitch = s3->pitch;
+    s2->pixels = s3->pixels;
+    // ignore user data?
+    s2->locked = s3->locked;
+    s2->list_blitmap = s3->list_blitmap;
+    s2->clip_rect = s3->clip_rect;
+    s2->map = s3->map;
+    s2->refcount = s3->refcount;
+}
+
+
 /* The SDL3 version of SDL_RWops changed, so we need to convert when necessary. */
 
 struct SDL2_RWops
@@ -2340,31 +2410,43 @@ SDL_LoadWAV_RW(SDL2_RWops *rwops2, int freesrc, SDL2_AudioSpec *spec2, Uint8 **a
     return retval;
 }
 
-DECLSPEC SDL_Surface *SDLCALL
+DECLSPEC SDL2_Surface *SDLCALL
 SDL_LoadBMP_RW(SDL2_RWops *rwops2, int freesrc)
 {
     SDL_Surface *retval = NULL;
+    SDL2_Surface *s2 = NULL;
     SDL_RWops *rwops3 = RWops2to3(rwops2);
     if (rwops3) {
         retval = SDL3_LoadBMP_RW(rwops3, freesrc != 0);
         if (!freesrc) {
             SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }
+
+        s2 = (SDL2_Surface *)SDL3_malloc(sizeof(*s2));
+        Surface3to2_init(retval, s2);
+        SDL3_free(retval);
+
     } else if (rwops2) {
         if (freesrc) {
             SDL_RWclose(rwops2);
         }
     }
-    return retval;
+
+    return s2;
 }
 
 DECLSPEC int SDLCALL
-SDL_SaveBMP_RW(SDL_Surface *surface, SDL2_RWops *rwops2, int freedst)
+SDL_SaveBMP_RW(SDL2_Surface *surface2, SDL2_RWops *rwops2, int freedst)
 {
     int retval = -1;
+    SDL_Surface s3;
     SDL_RWops *rwops3 = RWops2to3(rwops2);
+
+    SDL3_zero(s3);
+    Surface2to3_init(surface2, &s3);
+
     if (rwops3) {
-        retval = SDL3_SaveBMP_RW(surface, rwops3, freedst != 0);
+        retval = SDL3_SaveBMP_RW(&s3, rwops3, freedst != 0);
         if (!freedst) {
             SDL3_DestroyRW(rwops3);  /* don't close it because that'll close the SDL2_RWops. */
         }
@@ -2486,54 +2568,150 @@ SDL_GetWindowGammaRamp(SDL_Window *window, Uint16 *red, Uint16 *blue, Uint16 *gr
     return 0;
 }
 
-DECLSPEC SDL_Surface * SDLCALL
-SDL_ConvertSurface(SDL_Surface *src, const SDL_PixelFormat *fmt, Uint32 flags)
+DECLSPEC SDL2_Surface * SDLCALL
+SDL_ConvertSurface(SDL2_Surface *src2, const SDL_PixelFormat *fmt, Uint32 flags)
 {
+    SDL_Surface s3, *t3;
+    SDL2_Surface *s2;
     (void) flags; /* SDL3 removed the (unused) `flags` argument */
-    return SDL3_ConvertSurface(src, fmt);
+
+    SDL3_zero(s3);
+    Surface2to3_init(src2, &s3);
+
+    t3 = SDL3_ConvertSurface(&s3, fmt);
+
+    if (!t3) {
+        return NULL;
+    }
+
+    s2 = (SDL2_Surface *)SDL3_malloc(sizeof(*s2));
+    Surface3to2_init(t3, s2);
+    SDL3_free(t3);
+
+    return s2;
 }
 
-DECLSPEC SDL_Surface * SDLCALL
-SDL_ConvertSurfaceFormat(SDL_Surface * src, Uint32 pixel_format, Uint32 flags)
+DECLSPEC SDL2_Surface * SDLCALL
+SDL_ConvertSurfaceFormat(SDL2_Surface * src2, Uint32 pixel_format, Uint32 flags)
 {
+    SDL_Surface s3, *t3;
+    SDL2_Surface *s2;
     (void) flags; /* SDL3 removed the (unused) `flags` argument */
-    return SDL3_ConvertSurfaceFormat(src, pixel_format);
+
+    SDL3_zero(s3);
+    Surface2to3_init(src2, &s3);
+
+    t3 = SDL3_ConvertSurfaceFormat(&s3, pixel_format);
+
+    if (!t3) {
+        return NULL;
+    }
+
+    s2 = (SDL2_Surface *)SDL3_malloc(sizeof(*s2));
+    Surface3to2_init(t3, s2);
+    SDL3_free(t3);
+
+    return s2;
 }
 
-DECLSPEC SDL_Surface * SDLCALL
+DECLSPEC SDL2_Surface * SDLCALL
 SDL_CreateRGBSurface(Uint32 flags, int width, int height, int depth, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
 {
-    return SDL3_CreateSurface(width, height, SDL3_GetPixelFormatEnumForMasks(depth, Rmask, Gmask, Bmask, Amask));
+    SDL_Surface *s3;
+    SDL2_Surface *s2;
+
+    s3 = SDL3_CreateSurface(width, height, SDL3_GetPixelFormatEnumForMasks(depth, Rmask, Gmask, Bmask, Amask));
+
+    s2 = (SDL2_Surface *)SDL3_malloc(sizeof(*s2));
+    Surface3to2_init(s3, s2);
+    SDL3_free(s3);
+
+    return s2;
 }
 
-DECLSPEC SDL_Surface * SDLCALL
+DECLSPEC SDL2_Surface * SDLCALL
 SDL_CreateRGBSurfaceWithFormat(Uint32 flags, int width, int height, int depth, Uint32 format)
 {
-    return SDL3_CreateSurface(width, height, format);
+    SDL_Surface *s3;
+    SDL2_Surface *s2;
+
+    s3 = SDL3_CreateSurface(width, height, format);
+
+    s2 = (SDL2_Surface *)SDL3_malloc(sizeof(*s2));
+    Surface3to2_init(s3, s2);
+    SDL3_free(s3);
+
+    return s2;
 }
 
-DECLSPEC SDL_Surface * SDLCALL
+DECLSPEC SDL2_Surface * SDLCALL
 SDL_CreateRGBSurfaceFrom(void *pixels, int width, int height, int depth, int pitch, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
 {
-    return SDL3_CreateSurfaceFrom(pixels, width, height, pitch, SDL3_GetPixelFormatEnumForMasks(depth, Rmask, Gmask, Bmask, Amask));
+    SDL_Surface *s3;
+    SDL2_Surface *s2;
+
+    s3 = SDL3_CreateSurfaceFrom(pixels, width, height, pitch, SDL3_GetPixelFormatEnumForMasks(depth, Rmask, Gmask, Bmask, Amask));
+
+    s2 = (SDL2_Surface *)SDL3_malloc(sizeof(*s2));
+    Surface3to2_init(s3, s2);
+    SDL3_free(s3);
+
+    return s2;
 }
 
-DECLSPEC SDL_Surface * SDLCALL
+DECLSPEC SDL2_Surface * SDLCALL
 SDL_CreateRGBSurfaceWithFormatFrom(void *pixels, int width, int height, int depth, int pitch, Uint32 format)
 {
-    return SDL3_CreateSurfaceFrom(pixels, width, height, pitch, format);
+    SDL_Surface *s3;
+    SDL2_Surface *s2;
+
+    s3 = SDL3_CreateSurfaceFrom(pixels, width, height, pitch, format);
+
+    s2 = (SDL2_Surface *)SDL3_malloc(sizeof(*s2));
+    Surface3to2_init(s3, s2);
+    SDL3_free(s3);
+
+    return s2;
 }
 
 DECLSPEC int SDLCALL
-SDL_LowerBlit(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect)
+SDL_LowerBlit(SDL2_Surface *src2, SDL_Rect *srcrect, SDL2_Surface *dst2, SDL_Rect *dstrect)
 {
-    return SDL3_BlitSurfaceUnchecked(src, srcrect, dst, dstrect);
+    int ret;
+    SDL_Surface src3;
+    SDL_Surface dst3;
+
+    SDL3_zero(src3);
+    SDL3_zero(dst3);
+    Surface2to3_init(src2, &src3);
+    Surface2to3_init(dst2, &dst3);
+
+    ret = SDL3_BlitSurfaceUnchecked(&src3, srcrect, &dst3, dstrect);
+
+    Surface3to2_init(&src3, src2);
+    Surface3to2_init(&dst3, dst2);
+
+    return ret;
 }
 
 DECLSPEC int SDLCALL
-SDL_LowerBlitScaled(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect)
+SDL_LowerBlitScaled(SDL2_Surface *src2, SDL_Rect *srcrect, SDL2_Surface *dst2, SDL_Rect *dstrect)
 {
-    return SDL3_BlitSurfaceUncheckedScaled(src, srcrect, dst, dstrect);
+    int ret;
+    SDL_Surface src3;
+    SDL_Surface dst3;
+
+    SDL3_zero(src3);
+    SDL3_zero(dst3);
+    Surface2to3_init(src2, &src3);
+    Surface2to3_init(dst2, &dst3);
+
+    ret = SDL3_BlitSurfaceUncheckedScaled(&src3, srcrect, &dst3, dstrect);
+
+    Surface3to2_init(&src3, src2);
+    Surface3to2_init(&dst3, dst2);
+
+    return ret;
 }
 
 /* SDL_GetTicks is 64-bit in SDL3. Clamp it for SDL2. */
@@ -3511,8 +3689,12 @@ SDL_IsShapedWindow(const SDL_Window *window)
 }
 
 DECLSPEC int SDLCALL
-SDL_SetWindowShape(SDL_Window *window,SDL_Surface *shape, SDL_WindowShapeMode *shape_mode)
+SDL_SetWindowShape(SDL_Window *window, SDL2_Surface *shape, SDL_WindowShapeMode *shape_mode)
 {
+    SDL_Surface s3;
+    SDL3_zero(s3);
+    Surface2to3_init(shape, &s3);
+
     if (window == NULL) {
         return SDL_NONSHAPEABLE_WINDOW;
     }
@@ -3542,7 +3724,7 @@ SDL_SetWindowShape(SDL_Window *window,SDL_Surface *shape, SDL_WindowShapeMode *s
         return -1;
     }
 
-    SDL_CalculateShapeBitmap(*shape_mode, shape, g_bitmap, 1);
+    SDL_CalculateShapeBitmap(*shape_mode, &s3, g_bitmap, 1);
 
     g_shape_surface = SDL3_CreateSurface(g_bitmap_w, g_bitmap_h, SDL_PIXELFORMAT_ABGR8888);
     if (g_shape_surface) {
@@ -3696,7 +3878,7 @@ SDL_RenderTargetSupported(SDL_Renderer *renderer)
     SDL_RendererInfo info;
     ret = SDL_GetRendererInfo(renderer, &info);
     if (ret == 0) {
-        /* SDL_RENDERER_TARGETTEXTURE was removed in SDL3, check by name for 
+        /* SDL_RENDERER_TARGETTEXTURE was removed in SDL3, check by name for
          * renderer that does not support render target. */
         if (SDL3_strcmp(info.name, "opengles") == 0) {
             return SDL_FALSE;
@@ -5676,7 +5858,7 @@ CPU_haveCPUID(void)
     : "%eax", "%ecx"
     );
 #elif (defined(__GNUC__) || defined(__llvm__)) && defined(__x86_64__)
-/* Technically, if this is being compiled under __x86_64__ then it has 
+/* Technically, if this is being compiled under __x86_64__ then it has
    CPUid by definition.  But it's nice to be able to prove it.  :)      */
     __asm__ (
 "        pushfq                      # Get original EFLAGS             \n"
@@ -6032,9 +6214,12 @@ SDL_SetWindowTitle(SDL_Window *window, const char *title)
 }
 
 DECLSPEC void SDLCALL
-SDL_SetWindowIcon(SDL_Window *window, SDL_Surface *icon)
+SDL_SetWindowIcon(SDL_Window *window, SDL2_Surface *icon)
 {
-    SDL3_SetWindowIcon(window, icon);
+    SDL_Surface s3;
+    SDL3_zero(s3);
+    Surface2to3_init(icon, &s3);
+    SDL3_SetWindowIcon(window, &s3);
 }
 
 DECLSPEC void SDLCALL
@@ -6311,9 +6496,11 @@ SDL_GL_SwapWindow(SDL_Window *window)
 }
 
 DECLSPEC void SDLCALL
-SDL_GetClipRect(SDL_Surface *surface, SDL_Rect *rect)
+SDL_GetClipRect(SDL2_Surface *surface2, SDL_Rect *rect)
 {
-    SDL3_GetSurfaceClipRect(surface, rect);
+    SDL_Surface s3;
+    Surface2to3_init(surface2, &s3);
+    SDL3_GetSurfaceClipRect(&s3, rect);
 }
 
 DECLSPEC void SDLCALL
@@ -7290,6 +7477,347 @@ SDL_AndroidGetExternalStorageState(void)
     return state;
 }
 #endif
+
+
+DECLSPEC SDL_Cursor * SDLCALL SDL_CreateColorCursor(SDL2_Surface *s2, int b, int c)
+{
+    SDL_Surface s3;
+    SDL3_zero(s3);
+    Surface2to3_init(s2, &s3);
+    return SDL3_CreateColorCursor(&s3, b, c);
+}
+
+DECLSPEC SDL_Renderer * SDLCALL SDL_CreateSoftwareRenderer(SDL2_Surface *s2)
+{
+    SDL_Surface *s3;
+    s3 = (SDL_Surface *)SDL3_malloc(sizeof(*s3));
+    Surface2to3_init(s2, s3);
+    /* TODO: track s2-s3 ?  */
+    return SDL3_CreateSoftwareRenderer(s3);
+}
+
+DECLSPEC SDL_Texture * SDLCALL SDL_CreateTextureFromSurface(SDL_Renderer *a, SDL2_Surface *s2)
+{
+    SDL_Surface s3;
+    SDL3_zero(s3);
+    Surface2to3_init(s2, &s3);
+    return SDL3_CreateTextureFromSurface(a, &s3);
+}
+
+DECLSPEC int SDLCALL SDL_FillRect(SDL2_Surface *s2, const SDL_Rect *b, Uint32 c)
+{
+    SDL_Surface s3;
+    SDL3_zero(s3);
+    Surface2to3_init(s2, &s3);
+    return SDL3_FillSurfaceRect(&s3, b, c);
+}
+
+DECLSPEC int SDLCALL SDL_FillRects(SDL2_Surface *s2, const SDL_Rect *b, int c, Uint32 d)
+{
+    SDL_Surface s3;
+    SDL3_zero(s3);
+    Surface2to3_init(s2, &s3);
+    return SDL3_FillSurfaceRects(&s3, b, c, d);
+}
+
+DECLSPEC int SDLCALL SDL_UpperBlit(SDL2_Surface *s2, const SDL_Rect *b, SDL2_Surface *t2, SDL_Rect *d)
+{
+    int ret;
+    SDL_Surface s3;
+    SDL_Surface t3;
+
+    SDL3_zero(s3);
+    SDL3_zero(t3);
+    Surface2to3_init(s2, &s3);
+    Surface2to3_init(t2, &t3);
+
+    ret = SDL3_BlitSurface(&s3, b, &t3, d);
+
+    Surface3to2_init(&s3, s2);
+    Surface3to2_init(&t3, t2);
+
+    return ret;
+}
+
+
+DECLSPEC SDL2_Surface * SDLCALL SDL_GetWindowSurface(SDL_Window *a)
+{
+    SDL2_Surface *s2;
+    SDL_Surface *s3;
+    s3 = SDL3_GetWindowSurface(a);
+    if (!s3) {
+        return NULL;
+    }
+
+    s2 = (SDL2_Surface *)SDL3_malloc(sizeof(*s2));
+    Surface3to2_init(s3, s2);
+    /* TODO: track s2-s3 ?  */
+    return s2;
+}
+
+
+DECLSPEC SDL2_Surface * SDLCALL SDL_DuplicateSurface(SDL2_Surface *s2)
+{
+    SDL_Surface s3;
+    SDL_Surface *t3;
+    SDL2_Surface *t2;
+
+    SDL3_zero(s3);
+    Surface2to3_init(s2, &s3);
+
+    t3 = SDL3_DuplicateSurface(&s3);
+
+    if (!t3) {
+        return NULL;
+    }
+
+    t2 = (SDL2_Surface *)SDL3_malloc(sizeof(*t2));
+    Surface3to2_init(t3, t2);
+    SDL3_free(t3);
+
+    return t2;
+}
+
+DECLSPEC int SDLCALL SDL_SetSurfacePalette(SDL2_Surface *s2, SDL_Palette *b)
+{
+    int ret;
+    SDL_Surface s3;
+    SDL3_zero(s3);
+    Surface2to3_init(s2, &s3);
+    ret = SDL3_SetSurfacePalette(&s3, b);
+    Surface3to2_init(&s3, s2);
+    return ret;
+}
+
+DECLSPEC int SDLCALL SDL_LockSurface(SDL2_Surface *s2)
+{
+    int ret;
+    SDL_Surface s3;
+    SDL3_zero(s3);
+    Surface2to3_init(s2, &s3);
+    ret = SDL3_LockSurface(&s3);
+    Surface3to2_init(&s3, s2);
+    return ret;
+}
+
+DECLSPEC void SDLCALL SDL_UnlockSurface(SDL2_Surface *s2)
+{
+    SDL_Surface s3;
+    SDL3_zero(s3);
+    Surface2to3_init(s2, &s3);
+    SDL3_UnlockSurface(&s3);
+    Surface3to2_init(&s3, s2);
+}
+
+DECLSPEC int SDLCALL SDL_SetSurfaceRLE(SDL2_Surface *s2, int b)
+{
+    int ret;
+    SDL_Surface s3;
+    SDL3_zero(s3);
+    Surface2to3_init(s2, &s3);
+    ret = SDL3_SetSurfaceRLE(&s3, b);
+    Surface3to2_init(&s3, s2);
+    return ret;
+}
+
+DECLSPEC int SDLCALL SDL_SetSurfaceColorMod(SDL2_Surface *s2, Uint8 b, Uint8 c, Uint8 d)
+{
+    int ret;
+    SDL_Surface s3;
+    SDL3_zero(s3);
+    Surface2to3_init(s2, &s3);
+    ret = SDL3_SetSurfaceColorMod(&s3, b, c, d);
+    Surface3to2_init(&s3, s2);
+    return ret;
+}
+
+DECLSPEC int SDLCALL SDL_GetSurfaceColorMod(SDL2_Surface *s2, Uint8 *b, Uint8 *c, Uint8 *d)
+{
+    int ret;
+    SDL_Surface s3;
+    SDL3_zero(s3);
+    Surface2to3_init(s2, &s3);
+    ret = SDL3_GetSurfaceColorMod(&s3, b, c, d);
+    Surface3to2_init(&s3, s2);
+    return ret;
+}
+
+DECLSPEC int SDLCALL SDL_SetSurfaceAlphaMod(SDL2_Surface *s2, Uint8 b)
+{
+    int ret;
+    SDL_Surface s3;
+    SDL3_zero(s3);
+    Surface2to3_init(s2, &s3);
+    ret = SDL3_SetSurfaceAlphaMod(&s3, b);
+    Surface3to2_init(&s3, s2);
+    return ret;
+}
+
+DECLSPEC int SDLCALL SDL_GetSurfaceAlphaMod(SDL2_Surface *s2, Uint8 *b)
+{
+    int ret;
+    SDL_Surface s3;
+    SDL3_zero(s3);
+    Surface2to3_init(s2, &s3);
+    ret = SDL3_GetSurfaceAlphaMod(&s3, b);
+    Surface3to2_init(&s3, s2);
+    return ret;
+}
+
+DECLSPEC int SDLCALL SDL_SetSurfaceBlendMode(SDL2_Surface *s2, SDL_BlendMode b)
+{
+    int ret;
+    SDL_Surface s3;
+    SDL3_zero(s3);
+    Surface2to3_init(s2, &s3);
+    ret = SDL3_SetSurfaceBlendMode(&s3, b);
+    Surface3to2_init(&s3, s2);
+    return ret;
+}
+
+DECLSPEC int SDLCALL SDL_GetSurfaceBlendMode(SDL2_Surface *s2, SDL_BlendMode *b)
+{
+    int ret;
+    SDL_Surface s3;
+    SDL3_zero(s3);
+    Surface2to3_init(s2, &s3);
+    ret = SDL3_GetSurfaceBlendMode(&s3, b);
+    Surface3to2_init(&s3, s2);
+    return ret;
+}
+
+DECLSPEC int SDLCALL SDL_SoftStretch(SDL2_Surface *s2, const SDL_Rect *b, SDL2_Surface *t2, const SDL_Rect *d)
+{
+    int ret;
+    SDL_Surface s3;
+    SDL_Surface t3;
+    SDL3_zero(s3);
+    SDL3_zero(t3);
+    Surface2to3_init(s2, &s3);
+    Surface2to3_init(t2, &t3);
+    ret = SDL3_SoftStretch(&s3, b, &t3, d);
+    Surface3to2_init(&s3, s2);
+    Surface3to2_init(&t3, t2);
+    return ret;
+}
+
+DECLSPEC int SDLCALL SDL_SoftStretchLinear(SDL2_Surface *s2, const SDL_Rect *b, SDL2_Surface *t2, const SDL_Rect *d)
+{
+    int ret;
+    SDL_Surface s3;
+    SDL_Surface t3;
+    SDL3_zero(s3);
+    SDL3_zero(t3);
+    Surface2to3_init(s2, &s3);
+    Surface2to3_init(t2, &t3);
+    ret = SDL3_SoftStretchLinear(&s3, b, &t3, d);
+    Surface3to2_init(&s3, s2);
+    Surface3to2_init(&t3, t2);
+    return ret;
+}
+
+
+DECLSPEC int SDLCALL SDL_LockTextureToSurface(SDL_Texture *a, const SDL_Rect *b, SDL2_Surface **s2)
+{
+    int ret;
+    SDL_Surface *s3 = NULL;
+    SDL2_Surface *t2;
+
+    ret = SDL3_LockTextureToSurface(a, b, &s3);
+
+    t2 = (SDL2_Surface *)SDL3_malloc(sizeof(*t2));
+
+    Surface3to2_init(s3, t2);
+    *s2 = t2;
+
+    /* track t2 t3 */
+
+    return ret;
+}
+
+
+DECLSPEC void SDLCALL SDL_FreeSurface(SDL2_Surface *s2)
+{
+    SDL_Surface *s3;
+    if (!s2) {
+        return;
+    }
+    s3 = (SDL_Surface *)SDL3_malloc(sizeof(*s3));
+    Surface2to3_init(s2, s3);
+    SDL3_DestroySurface(s3);
+    SDL3_free(s2);
+}
+
+DECLSPEC int SDLCALL SDL_SetColorKey(SDL2_Surface *s2, int b, Uint32 c)
+{
+    int ret;
+    SDL_Surface s3;
+    SDL3_zero(s3);
+    Surface2to3_init(s2, &s3);
+    ret = SDL3_SetSurfaceColorKey(&s3, b, c);
+    Surface3to2_init(&s3, s2);
+    return ret;
+}
+DECLSPEC int SDLCALL SDL_GetColorKey(SDL2_Surface *s2, Uint32 *b)
+{
+    int ret;
+    SDL_Surface s3;
+    SDL3_zero(s3);
+    Surface2to3_init(s2, &s3);
+    ret = SDL3_GetSurfaceColorKey(&s3, b);
+    Surface3to2_init(&s3, s2);
+    return ret;
+}
+DECLSPEC SDL_bool SDLCALL SDL_SetClipRect(SDL2_Surface *s2, const SDL_Rect *b)
+{
+    SDL_bool ret;
+    SDL_Surface s3;
+    SDL3_zero(s3);
+    Surface2to3_init(s2, &s3);
+    ret = SDL3_SetSurfaceClipRect(&s3, b);
+    Surface3to2_init(&s3, s2);
+    return ret;
+}
+
+DECLSPEC int SDLCALL SDL_UpperBlitScaled(SDL2_Surface *src2, const SDL_Rect *srcrect, SDL2_Surface *dst2, SDL_Rect *dstrect)
+{
+    int ret;
+    SDL_Surface src3;
+    SDL_Surface dst3;
+
+    SDL3_zero(src3);
+    SDL3_zero(dst3);
+    Surface2to3_init(src2, &src3);
+    Surface2to3_init(dst2, &dst3);
+
+    ret = SDL3_BlitSurfaceScaled(&src3, srcrect, &dst3, dstrect);
+
+    Surface3to2_init(&src3, src2);
+    Surface3to2_init(&dst3, dst2);
+
+    return ret;
+}
+DECLSPEC SDL_bool SDLCALL SDL_HasColorKey(SDL2_Surface *s2)
+{
+    SDL_bool ret;
+    SDL_Surface s3;
+    SDL3_zero(s3);
+    Surface2to3_init(s2, &s3);
+    ret = SDL3_SurfaceHasColorKey(&s3);
+    return ret;
+}
+
+DECLSPEC SDL_bool SDLCALL SDL_HasSurfaceRLE(SDL2_Surface *s2)
+{
+    SDL_bool ret;
+    SDL_Surface s3;
+    SDL3_zero(s3);
+    Surface2to3_init(s2, &s3);
+    ret = SDL3_SurfaceHasRLE(&s3);
+    return ret;
+}
+
+
 
 #ifdef __cplusplus
 }
