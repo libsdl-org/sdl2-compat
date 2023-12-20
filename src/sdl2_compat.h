@@ -76,6 +76,7 @@ typedef Sint64 SDL2_GestureID;
 
 typedef struct SDL2_RWops SDL2_RWops;
 typedef struct SDL2_DisplayMode SDL2_DisplayMode;
+typedef struct SDL2_Surface SDL2_Surface;
 
 
 typedef struct SDL2_hid_device_info SDL2_hid_device_info;

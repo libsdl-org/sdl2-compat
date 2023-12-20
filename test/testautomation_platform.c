@@ -344,7 +344,7 @@ int platform_testGetSetClearError(void *arg)
 int platform_testSetErrorEmptyInput(void *arg)
 {
     int result;
-    const char *testError = "";
+    const char *testError = NULL;
     char *lastError;
     size_t len;
 
