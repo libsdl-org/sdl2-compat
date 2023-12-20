@@ -5575,6 +5575,7 @@ SDL_SetWindowDisplayMode(SDL_Window *window, const SDL2_DisplayMode *mode)
 {
     SDL_DisplayMode dp;
     DisplayMode_2to3(mode, &dp);
+    dp.displayID = SDL3_GetDisplayForWindow(window);
     if (SDL3_SetWindowFullscreenMode(window, mode ? &dp : NULL) == 0) {
         return 0;
     } else {
