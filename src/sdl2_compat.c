@@ -2535,7 +2535,13 @@ SDL_LowerBlit(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *d
 DECLSPEC int SDLCALL
 SDL_LowerBlitScaled(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect)
 {
-    return SDL3_BlitSurfaceUncheckedScaled(src, srcrect, dst, dstrect);
+    return SDL3_BlitSurfaceUncheckedScaled(src, srcrect, dst, dstrect, SDL_SCALEMODE_NEAREST);
+}
+
+DECLSPEC int SDLCALL
+SDL_UpperBlitScaled(SDL_Surface *src, const SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect)
+{
+    return SDL3_BlitSurfaceScaled(src, srcrect, dst, dstrect, SDL_SCALEMODE_NEAREST);
 }
 
 /* SDL_GetTicks is 64-bit in SDL3. Clamp it for SDL2. */
