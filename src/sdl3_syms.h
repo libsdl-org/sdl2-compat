@@ -866,6 +866,7 @@ SDL3_SYM(int,SetStringProperty,(SDL_PropertiesID a, const char *b, const char *c
 SDL3_SYM(void,DestroyProperties,(SDL_PropertiesID a),(a),)
 SDL3_SYM(SDL_Window*,CreateWindowWithProperties,(SDL_PropertiesID a),(a),return)
 SDL3_SYM(char **,GetGamepadMappings,(int *a),(a),return)
+SDL3_SYM_RENAMED(Uint64,GameControllerGetSteamHandle,GetGamepadSteamHandle,(SDL_GameController *a),(a),return)
 
 #undef SDL3_SYM
 #undef SDL3_SYM_PASSTHROUGH
