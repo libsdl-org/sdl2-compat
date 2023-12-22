@@ -988,8 +988,6 @@
 #define SDL_strnstr IGNORE_THIS_VERSION_OF_SDL_strnstr
 #define SDL_wcsnstr IGNORE_THIS_VERSION_OF_SDL_wcsnstr
 #define SDL_SyncWindow IGNORE_THIS_VERSION_OF_SDL_SyncWindow
-#define SDL_SetSurfaceScaleMode IGNORE_THIS_VERSION_OF_SDL_SetSurfaceScaleMode
-#define SDL_GetSurfaceScaleMode IGNORE_THIS_VERSION_OF_SDL_GetSurfaceScaleMode
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -4856,14 +4854,6 @@
 
 #ifdef SDL_SyncWindow
 #undef SDL_SyncWindow
-#endif
-
-#ifdef SDL_SetSurfaceScaleMode
-#undef SDL_SetSurfaceScaleMode
-#endif
-
-#ifdef SDL_GetSurfaceScaleMode
-#undef SDL_GetSurfaceScaleMode
 #endif
 
 /* undefine these macros, too: redefine as SDL3_xxx, if needed. */
