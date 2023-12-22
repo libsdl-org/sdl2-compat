@@ -966,6 +966,7 @@ SDL2_PROTO(int,DestroyWindowSurface,(SDL_Window *a))
 #if defined(__GDK__)
 SDL2_PROTO(int,GDKGetDefaultUser,(XUserHandle *a))
 #endif
+SDL2_PROTO(Uint64,GameControllerGetSteamHandle,(SDL_GameController *a))
 
 #undef SDL2_PROTO
 
