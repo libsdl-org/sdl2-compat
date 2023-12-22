@@ -638,7 +638,6 @@
 #define SDL_ShowWindow IGNORE_THIS_VERSION_OF_SDL_ShowWindow
 #define SDL_SignalCondition IGNORE_THIS_VERSION_OF_SDL_SignalCondition
 #define SDL_SoftStretch IGNORE_THIS_VERSION_OF_SDL_SoftStretch
-#define SDL_SoftStretchLinear IGNORE_THIS_VERSION_OF_SDL_SoftStretchLinear
 #define SDL_StartTextInput IGNORE_THIS_VERSION_OF_SDL_StartTextInput
 #define SDL_StopTextInput IGNORE_THIS_VERSION_OF_SDL_StopTextInput
 #define SDL_SurfaceHasColorKey IGNORE_THIS_VERSION_OF_SDL_SurfaceHasColorKey
@@ -3455,10 +3454,6 @@
 
 #ifdef SDL_SoftStretch
 #undef SDL_SoftStretch
-#endif
-
-#ifdef SDL_SoftStretchLinear
-#undef SDL_SoftStretchLinear
 #endif
 
 #ifdef SDL_StartTextInput

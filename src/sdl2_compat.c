@@ -2544,6 +2544,18 @@ SDL_UpperBlitScaled(SDL_Surface *src, const SDL_Rect *srcrect, SDL_Surface *dst,
     return SDL3_BlitSurfaceScaled(src, srcrect, dst, dstrect, SDL_SCALEMODE_NEAREST);
 }
 
+DECLSPEC int SDLCALL
+SDL_SoftStretch(SDL_Surface *src, const SDL_Rect *srcrect, SDL_Surface *dst, const SDL_Rect *dstrect)
+{
+    return SDL3_SoftStretch(src, srcrect, dst, dstrect, SDL_SCALEMODE_NEAREST);
+}
+
+DECLSPEC int SDLCALL
+SDL_SoftStretchLinear(SDL_Surface *src, const SDL_Rect *srcrect, SDL_Surface *dst, const SDL_Rect *dstrect)
+{
+    return SDL3_SoftStretch(src, srcrect, dst, dstrect, SDL_SCALEMODE_LINEAR);
+}
+
 /* SDL_GetTicks is 64-bit in SDL3. Clamp it for SDL2. */
 DECLSPEC Uint32 SDLCALL
 SDL_GetTicks(void)
