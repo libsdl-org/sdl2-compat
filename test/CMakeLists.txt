@@ -15,6 +15,9 @@ if(OPENGL_FOUND)
   endif()
 endif()
 
+set(RESOURCE_FILES)
+set(SDL2COMPAT_TEST_EXECUTABLES)
+
 function(test_program NAME)
   cmake_parse_arguments(args "NONINTERACTIVE" "TIMEOUT" "SRC" ${ARGN})
   if(ANDROID)
@@ -22,6 +25,8 @@ function(test_program NAME)
   else()
     add_executable(${NAME} ${args_SRC})
   endif()
+  list(APPEND SDL2COMPAT_TEST_EXECUTABLES ${NAME})
+  set(SDL2COMPAT_TEST_EXECUTABLES ${SDL2COMPAT_TEST_EXECUTABLES} PARENT_SCOPE)
   SDL_AddCommonCompilerFlags(${NAME} WERROR "${SDL2COMPAT_WERROR}")
   target_link_libraries(${NAME} PRIVATE SDL2::SDL2main SDL2::SDL2test SDL2::SDL2)
   # Turn off MSVC's aggressive C runtime warnings for the old test programs.
@@ -51,6 +56,15 @@ function(test_program NAME)
       ENVIRONMENT "SDL_AUDIODRIVER=dummy;SDL_VIDEODRIVER=dummy"
       TIMEOUT ${timeout}
     )
+    if(SDL2COMPAT_INSTALL_TESTS)
+      set(exe ${NAME})
+      set(installedtestsdir "${CMAKE_INSTALL_FULL_LIBEXECDIR}/installed-tests/SDL2_compat")
+      configure_file(template.test.in "${exe}.test" @ONLY)
+      install(
+        FILES "${CMAKE_CURRENT_BINARY_DIR}/${exe}.test"
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/installed-tests/SDL2_compat
+      )
+    endif()
   endif()
 endfunction()
 
@@ -190,8 +204,20 @@ foreach(fname
     "testyuv.bmp"
     "unifont-13.0.06.hex"
     "utf8.txt")
+  list(APPEND RESOURCE_FILES "${fname}")
   file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/${fname}" DESTINATION "${CMAKE_BINARY_DIR}")
 endforeach()
+
+if(SDL2COMPAT_INSTALL_TESTS)
+  install(
+    TARGETS ${SDL2COMPAT_TEST_EXECUTABLES}
+    DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/SDL2_compat
+  )
+  install(
+    FILES ${RESOURCE_FILES}
+    DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/SDL2_compat
+  )
+endif()
 
 check_c_compiler_flag(-Wformat HAVE_WFORMAT)
 if(HAVE_WFORMAT)
