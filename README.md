@@ -57,7 +57,7 @@ you might need to do (!!! FIXME: this won't work until SDL3 is further in
 development!) ...
 
 ```bash
-sudo apt-get install build-essential cmake libsdl3-3.0-0 libsdl3-dev libgl-dev
+sudo apt-get install build-essential cmake libsdl3-dev libgl-dev
 ```
 
 Now just point CMake at sdl2-compat's directory. Here's a command-line
