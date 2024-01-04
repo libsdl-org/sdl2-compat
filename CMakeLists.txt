@@ -80,7 +80,7 @@ set(SDL_DYLIB_CURRENT_VERSION "${SDL_DYLIB_CURRENT_VERSION_MAJOR}.${SDL_DYLIB_CU
 set(SDL_DYLIB_COMPAT_VERSION "${SDL_DYLIB_COMPAT_VERSION_MAJOR}.${SDL_DYLIB_COMPAT_VERSION_MINOR}.${SDL_DYLIB_COMPAT_VERSION_MICRO}")
 
 option(SDL2COMPAT_TESTS "Enable to build SDL2 test programs" ON)
-option(SDL2COMPAT_INSTALL "Enable installating SDL2-compat" ON)
+option(SDL2COMPAT_INSTALL "Enable installing SDL2-compat" ON)
 cmake_dependent_option(SDL2COMPAT_INSTALL_CPACK "Create binary SDL2_compat archive using CPack" ${SDL2COMPAT_MAINPROJECT} "SDL2COMPAT_INSTALL" OFF)
 option(SDL2COMPAT_STATIC "Enable building static SDL2 link library" OFF)
 option(SDL2COMPAT_WERROR "Treat warnings as errors" OFF)
