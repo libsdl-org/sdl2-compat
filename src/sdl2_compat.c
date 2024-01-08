@@ -6393,7 +6393,7 @@ SDL_GL_BindTexture(SDL_Texture *texture, float *texw, float *texh)
 
         pglEnable((GLenum) target);
 
-        if (u & v) {
+        if (u && v) {
             pglActiveTextureARB(GL_TEXTURE2_ARB);
             pglBindTexture((GLenum) target, (GLuint) v);
             pglActiveTextureARB(GL_TEXTURE1_ARB);
@@ -6426,7 +6426,7 @@ SDL_GL_BindTexture(SDL_Texture *texture, float *texw, float *texh)
             return -1;
         }
 
-        if (u & v) {
+        if (u && v) {
             pglActiveTexture(GL_TEXTURE2);
             pglBindTexture((GLenum) target, (GLuint) v);
             pglActiveTexture(GL_TEXTURE1);
@@ -6483,7 +6483,7 @@ SDL_GL_UnbindTexture(SDL_Texture *texture)
             return -1;
         }
 
-        if (u & v) {
+        if (u && v) {
             pglActiveTextureARB(GL_TEXTURE2_ARB);
             pglBindTexture((GLenum) target, 0);
             pglDisable((GLenum) target);
@@ -6513,7 +6513,7 @@ SDL_GL_UnbindTexture(SDL_Texture *texture)
             return -1;
         }
 
-        if (u & v) {
+        if (u && v) {
             pglActiveTexture(GL_TEXTURE2);
             pglBindTexture((GLenum) target, 0);
             pglActiveTexture(GL_TEXTURE1);
