@@ -136,7 +136,6 @@
 #define SDL_FlushRenderer IGNORE_THIS_VERSION_OF_SDL_FlushRenderer
 #define SDL_GDKGetTaskQueue IGNORE_THIS_VERSION_OF_SDL_GDKGetTaskQueue
 #define SDL_GDKSuspendComplete IGNORE_THIS_VERSION_OF_SDL_GDKSuspendComplete
-#define SDL_GL_BindTexture IGNORE_THIS_VERSION_OF_SDL_GL_BindTexture
 #define SDL_GL_CreateContext IGNORE_THIS_VERSION_OF_SDL_GL_CreateContext
 #define SDL_GL_DeleteContext IGNORE_THIS_VERSION_OF_SDL_GL_DeleteContext
 #define SDL_GL_ExtensionSupported IGNORE_THIS_VERSION_OF_SDL_GL_ExtensionSupported
@@ -151,7 +150,6 @@
 #define SDL_GL_SetAttribute IGNORE_THIS_VERSION_OF_SDL_GL_SetAttribute
 #define SDL_GL_SetSwapInterval IGNORE_THIS_VERSION_OF_SDL_GL_SetSwapInterval
 #define SDL_GL_SwapWindow IGNORE_THIS_VERSION_OF_SDL_GL_SwapWindow
-#define SDL_GL_UnbindTexture IGNORE_THIS_VERSION_OF_SDL_GL_UnbindTexture
 #define SDL_GL_UnloadLibrary IGNORE_THIS_VERSION_OF_SDL_GL_UnloadLibrary
 #define SDL_GUIDFromString IGNORE_THIS_VERSION_OF_SDL_GUIDFromString
 #define SDL_GUIDToString IGNORE_THIS_VERSION_OF_SDL_GUIDToString
@@ -347,6 +345,7 @@
 #define SDL_GetTextureAlphaMod IGNORE_THIS_VERSION_OF_SDL_GetTextureAlphaMod
 #define SDL_GetTextureBlendMode IGNORE_THIS_VERSION_OF_SDL_GetTextureBlendMode
 #define SDL_GetTextureColorMod IGNORE_THIS_VERSION_OF_SDL_GetTextureColorMod
+#define SDL_GetTextureRenderer IGNORE_THIS_VERSION_OF_SDL_GetTextureRenderer
 #define SDL_GetTextureScaleMode IGNORE_THIS_VERSION_OF_SDL_GetTextureScaleMode
 #define SDL_GetThreadID IGNORE_THIS_VERSION_OF_SDL_GetThreadID
 #define SDL_GetThreadName IGNORE_THIS_VERSION_OF_SDL_GetThreadName
@@ -1448,10 +1447,6 @@
 #undef SDL_GDKSuspendComplete
 #endif
 
-#ifdef SDL_GL_BindTexture
-#undef SDL_GL_BindTexture
-#endif
-
 #ifdef SDL_GL_CreateContext
 #undef SDL_GL_CreateContext
 #endif
@@ -1506,10 +1501,6 @@
 
 #ifdef SDL_GL_SwapWindow
 #undef SDL_GL_SwapWindow
-#endif
-
-#ifdef SDL_GL_UnbindTexture
-#undef SDL_GL_UnbindTexture
 #endif
 
 #ifdef SDL_GL_UnloadLibrary
@@ -2290,6 +2281,10 @@
 
 #ifdef SDL_GetTextureColorMod
 #undef SDL_GetTextureColorMod
+#endif
+
+#ifdef SDL_GetTextureRenderer
+#undef SDL_GetTextureRenderer
 #endif
 
 #ifdef SDL_GetTextureScaleMode

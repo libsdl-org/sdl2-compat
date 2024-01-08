@@ -176,6 +176,8 @@ do { \
     } \
 } while (SDL_NULL_WHILE_LOOP_CONDITION)
 
+#include <SDL3/SDL_opengl.h>
+#include <SDL3/SDL_opengl_glext.h>
 
 static SDL_bool WantDebugLogging = SDL_FALSE;
 static Uint32 LinkedSDL3VersionInt = 0;
@@ -6330,6 +6332,208 @@ SDL_GL_SwapWindow(SDL_Window *window)
 {
     (void) SDL3_GL_SwapWindow(window);
 }
+
+typedef void (GLAPIENTRY *openglfn_glEnable_t)(GLenum what);
+typedef void (GLAPIENTRY *openglfn_glDisable_t)(GLenum what);
+typedef void (GLAPIENTRY *openglfn_glActiveTexture_t)(GLenum what);
+typedef void (GLAPIENTRY *openglfn_glBindTexture_t)(GLenum target, GLuint name);
+typedef openglfn_glActiveTexture_t openglfn_glActiveTextureARB_t;
+
+static void *getglfn(const char *fn, SDL_bool *okay)
+{
+    void *retval = NULL;
+    if (*okay) {
+        retval = SDL3_GL_GetProcAddress(fn);
+        if (retval == NULL) {
+            *okay = SDL_FALSE;
+            SDL_SetError("Failed to find GL proc address of %s", fn);
+        }
+    }
+    return retval;
+}
+
+#define GLFN(fn) openglfn_##fn##_t p##fn = (openglfn_##fn##_t) getglfn(#fn, &okay)
+
+
+DECLSPEC int SDLCALL
+SDL_GL_BindTexture(SDL_Texture *texture, float *texw, float *texh)
+{
+    SDL_PropertiesID props;
+    SDL_Renderer *renderer;
+    Sint64 tex;
+
+    /* SDL3_GetTextureRenderer will do all the CHECK_TEXTURE_MAGIC stuff. */
+    renderer = SDL3_GetTextureRenderer(texture);
+    if (!renderer) {
+        return -1;
+    }
+
+    props = SDL3_GetTextureProperties(texture);
+    if (!props) {
+        return -1;
+    }
+
+    /* always flush the renderer here; good enough. SDL2 only flushed if the texture might have changed, but we'll be conservative. */
+    SDL3_FlushRenderer(renderer);
+
+    if ((tex = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEXTURE_NUMBER, -1)) != -1) {  // opengl renderer.
+        const Sint64 target = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEXTURE_TARGET, 0);
+        const Sint64 uv = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEXTURE_UV_NUMBER, 0);
+        const Sint64 u = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEXTURE_U_NUMBER, 0);
+        const Sint64 v = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEXTURE_V_NUMBER, 0);
+
+        SDL_bool okay = SDL_TRUE;
+        GLFN(glEnable);
+        GLFN(glActiveTextureARB);
+        GLFN(glBindTexture);
+
+        if (!okay) {
+            return -1;
+        }
+
+        pglEnable((GLenum) target);
+
+        if (u & v) {
+            pglActiveTextureARB(GL_TEXTURE2_ARB);
+            pglBindTexture((GLenum) target, (GLuint) v);
+            pglActiveTextureARB(GL_TEXTURE1_ARB);
+            pglBindTexture((GLenum) target, (GLuint) u);
+            pglActiveTextureARB(GL_TEXTURE0_ARB);
+        } else if (uv) {
+            pglActiveTextureARB(GL_TEXTURE1_ARB);
+            pglBindTexture((GLenum) target, (GLuint) uv);
+            pglActiveTextureARB(GL_TEXTURE0_ARB);
+        }
+        pglBindTexture((GLenum) target, (GLuint) tex);
+
+        if (texw) {
+            *texw = SDL3_GetFloatProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEX_W_FLOAT, 0.0f);
+        }
+        if (texh) {
+            *texh = SDL3_GetFloatProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEX_H_FLOAT, 0.0f);
+        }
+    } else if ((tex = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGLES2_TEXTURE_NUMBER, -1)) != -1) {  // opengles2 renderer.
+        const Sint64 target = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGLES2_TEXTURE_TARGET, 0);
+        const Sint64 uv = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGLES2_TEXTURE_UV_NUMBER, 0);
+        const Sint64 u = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGLES2_TEXTURE_U_NUMBER, 0);
+        const Sint64 v = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGLES2_TEXTURE_V_NUMBER, 0);
+
+        SDL_bool okay = SDL_TRUE;
+        GLFN(glActiveTexture);
+        GLFN(glBindTexture);
+
+        if (!okay) {
+            return -1;
+        }
+
+        if (u & v) {
+            pglActiveTexture(GL_TEXTURE2);
+            pglBindTexture((GLenum) target, (GLuint) v);
+            pglActiveTexture(GL_TEXTURE1);
+            pglBindTexture((GLenum) target, (GLuint) u);
+            pglActiveTexture(GL_TEXTURE0);
+        } else if (uv) {
+            pglActiveTexture(GL_TEXTURE1);
+            pglBindTexture((GLenum) target, (GLuint) uv);
+            pglActiveTexture(GL_TEXTURE0);
+        }
+        pglBindTexture((GLenum) target, (GLuint) tex);
+
+        if (texw) {
+            *texw = 1.0f;
+        }
+        if (texh) {
+            *texh = 1.0f;
+        }
+    }
+
+    return 0;
+}
+
+DECLSPEC int SDLCALL
+SDL_GL_UnbindTexture(SDL_Texture *texture)
+{
+    SDL_PropertiesID props;
+    SDL_Renderer *renderer;
+    Sint64 tex;
+
+    /* SDL3_GetTextureRenderer will do all the CHECK_TEXTURE_MAGIC stuff. */
+    renderer = SDL3_GetTextureRenderer(texture);
+    if (!renderer) {
+        return -1;
+    }
+
+    props = SDL3_GetTextureProperties(texture);
+    if (!props) {
+        return -1;
+    }
+
+    if ((tex = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEXTURE_NUMBER, -1)) != -1) {  // opengl renderer.
+        const Sint64 target = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEXTURE_TARGET, 0);
+        const Sint64 uv = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEXTURE_UV_NUMBER, 0);
+        const Sint64 u = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEXTURE_U_NUMBER, 0);
+        const Sint64 v = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEXTURE_V_NUMBER, 0);
+
+        SDL_bool okay = SDL_TRUE;
+        GLFN(glDisable);
+        GLFN(glActiveTextureARB);
+        GLFN(glBindTexture);
+
+        if (!okay) {
+            return -1;
+        }
+
+        if (u & v) {
+            pglActiveTextureARB(GL_TEXTURE2_ARB);
+            pglBindTexture((GLenum) target, 0);
+            pglDisable((GLenum) target);
+            pglActiveTextureARB(GL_TEXTURE1_ARB);
+            pglBindTexture((GLenum) target, 0);
+            pglDisable((GLenum) target);
+            pglActiveTextureARB(GL_TEXTURE0_ARB);
+        } else if (uv) {
+            pglActiveTextureARB(GL_TEXTURE1_ARB);
+            pglBindTexture((GLenum) target, 0);
+            pglDisable((GLenum) target);
+            pglActiveTextureARB(GL_TEXTURE0_ARB);
+        }
+        pglBindTexture((GLenum) target, 0);
+        pglDisable((GLenum) target);
+    } else if ((tex = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGLES2_TEXTURE_NUMBER, -1)) != -1) {  // opengles2 renderer.
+        const Sint64 target = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGLES2_TEXTURE_TARGET, 0);
+        const Sint64 uv = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGLES2_TEXTURE_UV_NUMBER, 0);
+        const Sint64 u = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGLES2_TEXTURE_U_NUMBER, 0);
+        const Sint64 v = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGLES2_TEXTURE_V_NUMBER, 0);
+
+        SDL_bool okay = SDL_TRUE;
+        GLFN(glActiveTexture);
+        GLFN(glBindTexture);
+
+        if (!okay) {
+            return -1;
+        }
+
+        if (u & v) {
+            pglActiveTexture(GL_TEXTURE2);
+            pglBindTexture((GLenum) target, 0);
+            pglActiveTexture(GL_TEXTURE1);
+            pglBindTexture((GLenum) target, 0);
+            pglActiveTexture(GL_TEXTURE0);
+        } else if (uv) {
+            pglActiveTexture(GL_TEXTURE1);
+            pglBindTexture((GLenum) target, 0);
+            pglActiveTexture(GL_TEXTURE0);
+        }
+        pglBindTexture((GLenum) target, 0);
+    }
+
+    /* always flush the renderer here, in case of app shenanigans. */
+    SDL3_FlushRenderer(renderer);
+
+    return 0;
+}
+
+#undef GLFN
 
 DECLSPEC void SDLCALL
 SDL_GetClipRect(SDL_Surface *surface, SDL_Rect *rect)
