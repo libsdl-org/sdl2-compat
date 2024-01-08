@@ -6362,8 +6362,8 @@ SDL_GL_BindTexture(SDL_Texture *texture, float *texw, float *texh)
     SDL_Renderer *renderer;
     Sint64 tex;
 
-    /* SDL3_GetTextureRenderer will do all the CHECK_TEXTURE_MAGIC stuff. */
-    renderer = SDL3_GetTextureRenderer(texture);
+    /* SDL3_GetRendererFromTexture will do all the CHECK_TEXTURE_MAGIC stuff. */
+    renderer = SDL3_GetRendererFromTexture(texture);
     if (!renderer) {
         return -1;
     }
@@ -6457,8 +6457,8 @@ SDL_GL_UnbindTexture(SDL_Texture *texture)
     SDL_Renderer *renderer;
     Sint64 tex;
 
-    /* SDL3_GetTextureRenderer will do all the CHECK_TEXTURE_MAGIC stuff. */
-    renderer = SDL3_GetTextureRenderer(texture);
+    /* SDL3_GetRendererFromTexture will do all the CHECK_TEXTURE_MAGIC stuff. */
+    renderer = SDL3_GetRendererFromTexture(texture);
     if (!renderer) {
         return -1;
     }

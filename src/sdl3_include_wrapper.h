@@ -345,7 +345,7 @@
 #define SDL_GetTextureAlphaMod IGNORE_THIS_VERSION_OF_SDL_GetTextureAlphaMod
 #define SDL_GetTextureBlendMode IGNORE_THIS_VERSION_OF_SDL_GetTextureBlendMode
 #define SDL_GetTextureColorMod IGNORE_THIS_VERSION_OF_SDL_GetTextureColorMod
-#define SDL_GetTextureRenderer IGNORE_THIS_VERSION_OF_SDL_GetTextureRenderer
+#define SDL_GetRendererFromTexture IGNORE_THIS_VERSION_OF_SDL_GetRendererFromTexture
 #define SDL_GetTextureScaleMode IGNORE_THIS_VERSION_OF_SDL_GetTextureScaleMode
 #define SDL_GetThreadID IGNORE_THIS_VERSION_OF_SDL_GetThreadID
 #define SDL_GetThreadName IGNORE_THIS_VERSION_OF_SDL_GetThreadName
@@ -2283,8 +2283,8 @@
 #undef SDL_GetTextureColorMod
 #endif
 
-#ifdef SDL_GetTextureRenderer
-#undef SDL_GetTextureRenderer
+#ifdef SDL_GetRendererFromTexture
+#undef SDL_GetRendererFromTexture
 #endif
 
 #ifdef SDL_GetTextureScaleMode

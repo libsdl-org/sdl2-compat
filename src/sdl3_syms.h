@@ -323,7 +323,7 @@ SDL3_SYM_PASSTHROUGH(int,SetTextureAlphaMod,(SDL_Texture *a, Uint8 b),(a,b),retu
 SDL3_SYM_PASSTHROUGH(int,GetTextureAlphaMod,(SDL_Texture *a, Uint8 *b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(int,SetTextureBlendMode,(SDL_Texture *a, SDL_BlendMode b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(int,GetTextureBlendMode,(SDL_Texture *a, SDL_BlendMode *b),(a,b),return)
-SDL3_SYM(SDL_Renderer *,GetTextureRenderer,(SDL_Texture *a),(a),return)
+SDL3_SYM(SDL_Renderer *,GetRendererFromTexture,(SDL_Texture *a),(a),return)
 SDL3_SYM_PASSTHROUGH(int,UpdateTexture,(SDL_Texture *a, const SDL_Rect *b, const void *c, int d),(a,b,c,d),return)
 SDL3_SYM_PASSTHROUGH(int,UpdateYUVTexture,(SDL_Texture *a, const SDL_Rect *b, const Uint8 *c, int d, const Uint8 *e, int f, const Uint8 *g, int h),(a,b,c,d,e,f,g,h),return)
 SDL3_SYM_PASSTHROUGH(int,LockTexture,(SDL_Texture *a, const SDL_Rect *b, void **c, int *d),(a,b,c,d),return)
