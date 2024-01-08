@@ -6407,10 +6407,10 @@ SDL_GL_BindTexture(SDL_Texture *texture, float *texw, float *texh)
         pglBindTexture((GLenum) target, (GLuint) tex);
 
         if (texw) {
-            *texw = SDL3_GetFloatProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEX_W_FLOAT, 0.0f);
+            *texw = SDL3_GetFloatProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEX_W_FLOAT, 1.0f);
         }
         if (texh) {
-            *texh = SDL3_GetFloatProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEX_H_FLOAT, 0.0f);
+            *texh = SDL3_GetFloatProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEX_H_FLOAT, 1.0f);
         }
     } else if ((tex = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGLES2_TEXTURE_NUMBER, -1)) != -1) {  // opengles2 renderer.
         const Sint64 target = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGLES2_TEXTURE_TARGET, 0);
