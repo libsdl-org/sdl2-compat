@@ -1196,8 +1196,6 @@ static int NumTouchDevices = 0;
 
 /* Functions! */
 
-static int SDLCALL EventFilter3to2(void *userdata, SDL_Event *event3);
-
 /* this stuff _might_ move to SDL_Init later */
 static int
 SDL2Compat_InitOnStartup(void)
@@ -1221,8 +1219,6 @@ SDL2Compat_InitOnStartup(void)
     if (AudioDeviceLock == NULL) {
         goto fail;
     }
-
-    SDL3_SetEventFilter(EventFilter3to2, NULL);
 
     SDL3_SetHint("SDL_WINDOWS_DPI_SCALING", 0);
     SDL3_SetHint("SDL_WINDOWS_DPI_AWARENESS", "unaware");
@@ -1734,10 +1730,20 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
     return 1;
 }
 
+static void CheckEventFilter(void)
+{
+    SDL_EventFilter filter = NULL;
+
+    if (!SDL3_GetEventFilter(&filter, NULL) || filter != EventFilter3to2) {
+        SDL3_SetEventFilter(EventFilter3to2, NULL);
+    }
+}
 
 DECLSPEC void SDLCALL
 SDL_SetEventFilter(SDL2_EventFilter filter2, void *userdata)
 {
+    CheckEventFilter();
+
     EventFilter2 = filter2;
     EventFilterUserData2 = userdata;
 }
@@ -1811,8 +1817,12 @@ SDL_WaitEvent(SDL2_Event *event2)
 DECLSPEC void SDLCALL
 SDL_AddEventWatch(SDL2_EventFilter filter2, void *userdata)
 {
+    EventFilterWrapperData *wrapperdata;
+
+    CheckEventFilter();
+
     /* we set up an SDL3 event filter to manage things already; we will also use it to call all added SDL2 event watchers. Put this new one in that list. */
-    EventFilterWrapperData *wrapperdata = (EventFilterWrapperData *) SDL3_malloc(sizeof (EventFilterWrapperData));
+    wrapperdata = (EventFilterWrapperData *) SDL3_malloc(sizeof (EventFilterWrapperData));
     if (!wrapperdata) {
         return;  /* oh well. */
     }
@@ -3494,6 +3504,8 @@ SDL_CreateShapedWindow(const char *title, unsigned int x, unsigned int y, unsign
 {
     SDL_Window *window;
     int hidden = flags & SDL_WINDOW_HIDDEN;
+
+    CheckEventFilter();
 
     if (g_shaped_window != NULL) {
         SDL3_SetError("only 1 shaped window");
@@ -5964,6 +5976,8 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
     SDL_Window *window = NULL;
     const Uint32 is_popup = flags & (SDL_WINDOW_POPUP_MENU | SDL_WINDOW_TOOLTIP);
 
+    CheckEventFilter();
+
     if (flags & SDL2_WINDOW_FULLSCREEN_DESKTOP) {
         flags &= ~SDL2_WINDOW_FULLSCREEN_DESKTOP;
         flags |= SDL_WINDOW_FULLSCREEN; /* This is fullscreen desktop for new windows */
@@ -6007,7 +6021,11 @@ SDL_CreateWindowFrom(const void *data)
 {
     SDL_Window *window;
     const char *hint;
-    SDL_PropertiesID props = SDL3_CreateProperties();
+    SDL_PropertiesID props;
+
+    CheckEventFilter();
+
+    props = SDL3_CreateProperties();
     if (!props) {
         return NULL;
     }
