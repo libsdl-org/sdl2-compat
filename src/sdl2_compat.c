@@ -5964,12 +5964,6 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
     SDL_Window *window = NULL;
     const Uint32 is_popup = flags & (SDL_WINDOW_POPUP_MENU | SDL_WINDOW_TOOLTIP);
 
-    /* SDL3 windows are shown by default */
-    if (flags & SDL2_WINDOW_SHOWN) {
-        flags &= ~(SDL2_WINDOW_SHOWN | SDL_WINDOW_HIDDEN);
-    } else {
-        flags |= SDL_WINDOW_HIDDEN;
-    }
     if (flags & SDL2_WINDOW_FULLSCREEN_DESKTOP) {
         flags &= ~SDL2_WINDOW_FULLSCREEN_DESKTOP;
         flags |= SDL_WINDOW_FULLSCREEN; /* This is fullscreen desktop for new windows */
