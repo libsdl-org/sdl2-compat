@@ -7271,17 +7271,17 @@ SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
             cvt->needed = 0;
         }
 
-        if (src_rate < dst_rate) {
-            const int mult = (dst_rate / src_rate);
-            cvt->len_mult *= mult;
-            cvt->len_ratio *= mult;
-        } else {
-            const int divisor = (src_rate / dst_rate);
-            cvt->len_ratio /= divisor;
-        }
-
         if (src_channels < dst_channels) {
             cvt->len_mult = ((cvt->len_mult * dst_channels) + (src_channels - 1)) / src_channels;
+        }
+
+        if (src_rate < dst_rate) {
+            const double mult = ((double)dst_rate / (double)src_rate);
+            cvt->len_mult *= (int)SDL_ceil(mult);
+            cvt->len_ratio *= mult;
+        } else {
+            const double divisor = ((double)src_rate / (double)dst_rate);
+            cvt->len_ratio /= divisor;
         }
     }
 
@@ -7297,7 +7297,7 @@ SDL_ConvertAudio(SDL_AudioCVT *cvt)
     int dst_channels, dst_rate;
 
     int src_len, dst_len, real_dst_len;
-    int src_samplesize, dst_samplesize;
+    int src_samplesize;
 
     /* Sanity check target pointer */
     if (cvt == NULL) {
@@ -7328,23 +7328,15 @@ SDL_ConvertAudio(SDL_AudioCVT *cvt)
     }
 
     src_samplesize = (SDL_AUDIO_BITSIZE(src_format) / 8) * src_channels;
-    dst_samplesize = (SDL_AUDIO_BITSIZE(dst_format) / 8) * dst_channels;
 
     src_len = cvt->len & ~(src_samplesize - 1);
-    dst_len = dst_samplesize * (src_len / src_samplesize);
-    if (src_rate < dst_rate) {
-        const double mult = ((double)dst_rate) / ((double)src_rate);
-        dst_len *= (int) SDL3_ceil(mult);
-    }
+    dst_len = cvt->len * cvt->len_mult;
 
     /* Run the audio converter */
     if (SDL_AudioStreamPut(stream2, cvt->buf, src_len) < 0 ||
         SDL_AudioStreamFlush(stream2) < 0) {
         goto failure;
     }
-
-    dst_len = SDL_min(dst_len, cvt->len * cvt->len_mult);
-    dst_len = dst_len & ~(dst_samplesize - 1);
 
     /* Get back in the same buffer */
     real_dst_len = SDL_AudioStreamGet(stream2, cvt->buf, dst_len);
