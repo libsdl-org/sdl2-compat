@@ -149,6 +149,12 @@ else()
   set(SDL_REVISION "SDL-${SDL_VERSION}-no-vcs")
 endif()
 
+if(SDL2COMPAT_VENDOR_INFO)
+  set(SDL2COMPAT_REVISION "${SDL_REVISION} (${SDL2COMPAT_VENDOR_INFO})")
+else()
+  set(SDL2COMPAT_REVISION "${SDL_REVISION}")
+endif()
+
 configure_file(include/SDL2/SDL_revision.h.cmake include/SDL2/SDL_revision.h @ONLY)
 
 set(SDL2COMPAT_SRCS
@@ -204,7 +210,7 @@ target_include_directories(SDL2
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SDL2>"
 )
-target_compile_definitions(SDL2 PRIVATE "SDL2COMPAT_REVISION=\"${SDL_REVISION}\"")
+target_compile_definitions(SDL2 PRIVATE "SDL2COMPAT_REVISION=\"${SDL2COMPAT_REVISION}\"")
 if(TARGET SDL3::SDL3-shared)
   set_property(TARGET SDL2 PROPERTY BUILD_RPATH $<TARGET_FILE_DIR:SDL3::SDL3-shared>)
 endif()
@@ -394,7 +400,7 @@ if(SDL2COMPAT_STATIC)
       "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SDL2>"
   )
   target_compile_definitions(SDL2-static PRIVATE _REENTRANT)
-  target_compile_definitions(SDL2-static PRIVATE "SDL2COMPAT_REVISION=\"${SDL_REVISION}\"")
+  target_compile_definitions(SDL2-static PRIVATE "SDL2COMPAT_REVISION=\"${SDL2COMPAT_REVISION}\"")
   target_link_libraries(SDL2-static PRIVATE ${CMAKE_DL_LIBS})
   set_target_properties(SDL2-static PROPERTIES
     VERSION "${PROJECT_VERSION}"
