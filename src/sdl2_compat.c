@@ -735,6 +735,24 @@ BOOL WINAPI _DllMainCRTStartup(HANDLE dllhandle, DWORD reason, LPVOID reserved)
 #define SDL2_DISABLE  0
 #define SDL2_ENABLE   1
 
+/* changed values in SDL3 */
+#define SDL2_HAPTIC_CONSTANT   (1u<<0)
+#define SDL2_HAPTIC_SINE       (1u<<1)
+#define SDL2_HAPTIC_LEFTRIGHT     (1u<<2)
+#define SDL2_HAPTIC_TRIANGLE   (1u<<3)
+#define SDL2_HAPTIC_SAWTOOTHUP (1u<<4)
+#define SDL2_HAPTIC_SAWTOOTHDOWN (1u<<5)
+#define SDL2_HAPTIC_RAMP       (1u<<6)
+#define SDL2_HAPTIC_SPRING     (1u<<7)
+#define SDL2_HAPTIC_DAMPER     (1u<<8)
+#define SDL2_HAPTIC_INERTIA    (1u<<9)
+#define SDL2_HAPTIC_FRICTION   (1u<<10)
+#define SDL2_HAPTIC_CUSTOM     (1u<<11)
+#define SDL2_HAPTIC_GAIN       (1u<<12)
+#define SDL2_HAPTIC_AUTOCENTER (1u<<13)
+#define SDL2_HAPTIC_STATUS     (1u<<14)
+#define SDL2_HAPTIC_PAUSE      (1u<<15)
+
 #define SDL2_RENDERER_TARGETTEXTURE 0x00000008
 
 /* Events changed in SDL3; notably, the `timestamp` field moved from
@@ -1179,6 +1197,8 @@ static SDL_JoystickID *gamepad_button_swap_list = NULL;
 static int num_gamepad_button_swap_list = 0;
 static SDL_SensorID *sensor_list = NULL;
 static int num_sensors = 0;
+static SDL_HapticID *haptic_list = NULL;
+static int num_haptics = 0;
 
 static SDL_mutex *joystick_lock = NULL;
 static SDL_mutex *sensor_lock = NULL;
@@ -1672,6 +1692,7 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
         case SDL_EVENT_GAMEPAD_REMOVED:
         case SDL_EVENT_JOYSTICK_REMOVED:
             SDL_NumJoysticks(); /* Refresh */
+            SDL_NumHaptics(); /* Refresh */
             break;
 
         /* display events moved to the top level in SDL3. */
@@ -2825,7 +2846,7 @@ SDL_RecordGesture(SDL_TouchID touchId)
 
     SDL3_free(touchdevs);
 
-    if (touchId < 0) {
+    if (touchId == (SDL_TouchID)-1) {
         GestureRecordAll = SDL_TRUE;  /* !!! FIXME: this is never set back to SDL_FALSE anywhere, that's probably a bug. */
         for (i = 0; i < GestureNumTouches; i++) {
             GestureTouches[i].recording = SDL_TRUE;
@@ -2979,7 +3000,7 @@ SDL_LoadDollarTemplates(SDL_TouchID touchId, SDL2_RWops *src)
     if (src == NULL) {
         return 0;
     }
-    if (touchId >= 0) {
+    if (touchId != (SDL_TouchID)-1) {
         for (i = 0; i < GestureNumTouches; i++) {
             if (GestureTouches[i].touchId == touchId) {
                 touch = &GestureTouches[i];
@@ -3008,7 +3029,7 @@ SDL_LoadDollarTemplates(SDL_TouchID touchId, SDL2_RWops *src)
         }
 #endif
 
-        if (touchId >= 0) {
+        if (touchId != (SDL_TouchID)-1) {
             /* printf("Adding loaded gesture to 1 touch\n"); */
             if (GestureAddDollar(touch, templ.path) >= 0) {
                 loaded++;
@@ -3730,7 +3751,7 @@ SDL_RenderTargetSupported(SDL_Renderer *renderer)
     SDL_RendererInfo info;
     ret = SDL_GetRendererInfo(renderer, &info);
     if (ret == 0) {
-        /* SDL_RENDERER_TARGETTEXTURE was removed in SDL3, check by name for 
+        /* SDL_RENDERER_TARGETTEXTURE was removed in SDL3, check by name for
          * renderer that does not support render target. */
         if (SDL3_strcmp(info.name, "opengles") == 0) {
             return SDL_FALSE;
@@ -4129,7 +4150,7 @@ SDL_RenderCopyF(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect *sr
 DECLSPEC int SDLCALL
 SDL_RenderCopyEx(SDL_Renderer *renderer, SDL_Texture *texture,
                  const SDL_Rect *srcrect, const SDL_Rect *dstrect,
-                 const double angle, const SDL_Point *center, const SDL_RendererFlip flip)
+                 const double angle, const SDL_Point *center, const SDL_FlipMode flip)
 {
     int retval;
     SDL_FRect srcfrect;
@@ -4168,7 +4189,7 @@ SDL_RenderCopyEx(SDL_Renderer *renderer, SDL_Texture *texture,
 DECLSPEC int SDLCALL
 SDL_RenderCopyExF(SDL_Renderer *renderer, SDL_Texture *texture,
                   const SDL_Rect *srcrect, const SDL_FRect *dstrect,
-                  const double angle, const SDL_FPoint *center, const SDL_RendererFlip flip)
+                  const double angle, const SDL_FPoint *center, const SDL_FlipMode flip)
 {
     int retval;
     SDL_FRect srcfrect;
@@ -4363,6 +4384,12 @@ SDL_Quit(void)
         sensor_list = NULL;
     }
     num_sensors = 0;
+
+    if (haptic_list) {
+        SDL3_free(haptic_list);
+        haptic_list = NULL;
+    }
+    num_haptics = 0;
 
     if (gamepad_button_swap_list) {
         SDL3_free(gamepad_button_swap_list);
@@ -5711,7 +5738,7 @@ CPU_haveCPUID(void)
     : "%eax", "%ecx"
     );
 #elif (defined(__GNUC__) || defined(__llvm__)) && defined(__x86_64__)
-/* Technically, if this is being compiled under __x86_64__ then it has 
+/* Technically, if this is being compiled under __x86_64__ then it has
    CPUid by definition.  But it's nice to be able to prove it.  :)      */
     __asm__ (
 "        pushfq                      # Get original EFLAGS             \n"
@@ -7072,6 +7099,227 @@ SDL_SensorOpen(int idx)
 }
 
 
+static SDL_HapticID
+GetHapticInstanceFromIndex(int idx)
+{
+    if ((idx < 0) || (idx >= num_haptics)) {
+        SDL3_SetError("There are %d haptics available", num_haptics);
+        return 0;
+    }
+    return haptic_list[idx];
+}
+
+DECLSPEC int SDLCALL
+SDL_NumHaptics(void)
+{
+    SDL3_free(haptic_list);
+    haptic_list = SDL3_GetHaptics(&num_haptics);
+    if (haptic_list == NULL) {
+        num_haptics = 0;
+        return -1;
+    }
+    return num_haptics;
+}
+
+DECLSPEC const char * SDLCALL
+SDL_HapticName(int device_index)
+{
+    const SDL_HapticID instance_id = GetHapticInstanceFromIndex(device_index);
+    return instance_id ? SDL3_GetHapticInstanceName(instance_id) : NULL;
+}
+
+DECLSPEC
+SDL_Haptic * SDLCALL
+SDL_HapticOpen(int device_index)
+{
+    const SDL_HapticID instance_id = GetHapticInstanceFromIndex(device_index);
+    return SDL3_OpenHaptic(instance_id);
+}
+
+DECLSPEC int SDLCALL
+SDL_HapticOpened(int device_index)
+{
+    const SDL_HapticID instance_id = GetHapticInstanceFromIndex(device_index);
+    if (SDL3_GetHapticFromInstanceID(instance_id) != NULL) {
+        return 1;
+    }
+    return 0;
+}
+
+DECLSPEC int SDLCALL
+SDL_HapticIndex(SDL_Haptic *haptic)
+{
+    const SDL_HapticID instance_id = SDL3_GetHapticInstanceID(haptic);
+    int i;
+
+    for (i = 0; i < num_haptics; ++i) {
+        if (instance_id == haptic_list[i]) {
+            return i;
+        }
+    }
+    return SDL_SetError("Haptic: Invalid haptic device identifier");
+}
+
+static Uint16 HapticFeatures3to2(Uint32 features)
+{
+    Uint16 features2 = 0;
+
+    /* We could be clever and shift bits around, but let's be clear instead */
+    if (features & SDL_HAPTIC_CONSTANT) {
+        features2 |= SDL2_HAPTIC_CONSTANT;
+    }
+    if (features & SDL_HAPTIC_SINE) {
+        features2 |= SDL2_HAPTIC_SINE;
+    }
+    if (features & SDL_HAPTIC_LEFTRIGHT) {
+        features2 |= SDL2_HAPTIC_LEFTRIGHT;
+    }
+    if (features & SDL_HAPTIC_TRIANGLE) {
+        features2 |= SDL2_HAPTIC_TRIANGLE;
+    }
+    if (features & SDL_HAPTIC_SAWTOOTHUP) {
+        features2 |= SDL2_HAPTIC_SAWTOOTHUP;
+    }
+    if (features & SDL_HAPTIC_SAWTOOTHDOWN) {
+        features2 |= SDL2_HAPTIC_SAWTOOTHDOWN;
+    }
+    if (features & SDL_HAPTIC_RAMP) {
+        features2 |= SDL2_HAPTIC_RAMP;
+    }
+    if (features & SDL_HAPTIC_SPRING) {
+        features2 |= SDL2_HAPTIC_SPRING;
+    }
+    if (features & SDL_HAPTIC_DAMPER) {
+        features2 |= SDL2_HAPTIC_DAMPER;
+    }
+    if (features & SDL_HAPTIC_INERTIA) {
+        features2 |= SDL2_HAPTIC_INERTIA;
+    }
+    if (features & SDL_HAPTIC_FRICTION) {
+        features2 |= SDL2_HAPTIC_FRICTION;
+    }
+    if (features & SDL_HAPTIC_CUSTOM) {
+        features2 |= SDL2_HAPTIC_CUSTOM;
+    }
+    if (features & SDL_HAPTIC_GAIN) {
+        features2 |= SDL2_HAPTIC_GAIN;
+    }
+    if (features & SDL_HAPTIC_AUTOCENTER) {
+        features2 |= SDL2_HAPTIC_AUTOCENTER;
+    }
+    if (features & SDL_HAPTIC_STATUS) {
+        features2 |= SDL2_HAPTIC_STATUS;
+    }
+    if (features & SDL_HAPTIC_PAUSE) {
+        features2 |= SDL2_HAPTIC_PAUSE;
+    }
+    return features2;
+}
+
+static Uint32 HapticFeatures2to3(Uint16 features)
+{
+    Uint32 features3 = 0;
+
+    /* We could be clever and shift bits around, but let's be clear instead */
+    if (features & SDL2_HAPTIC_CONSTANT) {
+        features3 |= SDL_HAPTIC_CONSTANT;
+    }
+    if (features & SDL2_HAPTIC_SINE) {
+        features3 |= SDL_HAPTIC_SINE;
+    }
+    if (features & SDL2_HAPTIC_LEFTRIGHT) {
+        features3 |= SDL_HAPTIC_LEFTRIGHT;
+    }
+    if (features & SDL2_HAPTIC_TRIANGLE) {
+        features3 |= SDL_HAPTIC_TRIANGLE;
+    }
+    if (features & SDL2_HAPTIC_SAWTOOTHUP) {
+        features3 |= SDL_HAPTIC_SAWTOOTHUP;
+    }
+    if (features & SDL2_HAPTIC_SAWTOOTHDOWN) {
+        features3 |= SDL_HAPTIC_SAWTOOTHDOWN;
+    }
+    if (features & SDL2_HAPTIC_RAMP) {
+        features3 |= SDL_HAPTIC_RAMP;
+    }
+    if (features & SDL2_HAPTIC_SPRING) {
+        features3 |= SDL_HAPTIC_SPRING;
+    }
+    if (features & SDL2_HAPTIC_DAMPER) {
+        features3 |= SDL_HAPTIC_DAMPER;
+    }
+    if (features & SDL2_HAPTIC_INERTIA) {
+        features3 |= SDL_HAPTIC_INERTIA;
+    }
+    if (features & SDL2_HAPTIC_FRICTION) {
+        features3 |= SDL_HAPTIC_FRICTION;
+    }
+    if (features & SDL2_HAPTIC_CUSTOM) {
+        features3 |= SDL_HAPTIC_CUSTOM;
+    }
+    if (features & SDL2_HAPTIC_GAIN) {
+        features3 |= SDL_HAPTIC_GAIN;
+    }
+    if (features & SDL2_HAPTIC_AUTOCENTER) {
+        features3 |= SDL_HAPTIC_AUTOCENTER;
+    }
+    if (features & SDL2_HAPTIC_STATUS) {
+        features3 |= SDL_HAPTIC_STATUS;
+    }
+    if (features & SDL2_HAPTIC_PAUSE) {
+        features3 |= SDL_HAPTIC_PAUSE;
+    }
+    return features3;
+}
+
+static void HapticEffect2to3(const SDL_HapticEffect *effect2, SDL_HapticEffect *effect3)
+{
+    SDL3_copyp(effect3, effect2);
+    effect3->type = (Uint16)HapticFeatures2to3(effect2->type);
+}
+
+DECLSPEC unsigned int SDLCALL
+SDL_HapticQuery(SDL_Haptic *haptic)
+{
+    return HapticFeatures3to2(SDL3_GetHapticFeatures(haptic));
+}
+
+DECLSPEC SDL_bool SDLCALL
+SDL_HapticEffectSupported(SDL_Haptic *haptic, SDL_HapticEffect *effect)
+{
+    SDL_HapticEffect effect3;
+
+    if (!effect) {
+        return SDL_FALSE;
+    }
+    HapticEffect2to3(effect, &effect3);
+    return SDL3_HapticEffectSupported(haptic, &effect3);
+}
+
+DECLSPEC int SDLCALL
+SDL_HapticNewEffect(SDL_Haptic *haptic, SDL_HapticEffect *effect)
+{
+    SDL_HapticEffect effect3;
+
+    if (!effect) {
+        return SDL3_InvalidParamError("effect");
+    }
+    HapticEffect2to3(effect, &effect3);
+    return SDL3_CreateHapticEffect(haptic, &effect3);
+}
+
+DECLSPEC int SDLCALL
+SDL_HapticUpdateEffect(SDL_Haptic *haptic, int effect, SDL_HapticEffect *data)
+{
+    SDL_HapticEffect effect3;
+
+    if (!data) {
+        return SDL3_InvalidParamError("data");
+    }
+    HapticEffect2to3(data, &effect3);
+    return SDL3_UpdateHapticEffect(haptic, effect, &effect3);
+}
+
 DECLSPEC int SDLCALL
 SDL_CondWaitTimeout(SDL_cond *cond, SDL_mutex *mutex, Uint32 ms)
 {
@@ -7451,6 +7699,18 @@ SDL_hid_enumerate(unsigned short vendor_id, unsigned short product_id)
     }
 
     return retval;
+}
+
+DECLSPEC unsigned long SDLCALL
+SDL_ThreadID(void)
+{
+    return (unsigned long)SDL3_GetCurrentThreadID();
+}
+
+DECLSPEC unsigned long SDLCALL
+SDL_GetThreadID(SDL_Thread *thread)
+{
+    return (unsigned long)SDL3_GetThreadID(thread);
 }
 
 #if defined(__WIN32__) || defined(__WINGDK__)

@@ -28,6 +28,12 @@
 #ifndef INCL_SDL3_INCLUDE_WRAPPER_H
 #define INCL_SDL3_INCLUDE_WRAPPER_H
 
+#define SDL_SLOW_MEMCPY
+#define SDL_SLOW_MEMMOVE
+#define SDL_SLOW_MEMSET
+
+#define SDL_ThreadID SDL3_ThreadID /* avoid clash with SDL_ThreadID() of SDL2 */
+
 #define SDL_AddEventWatch IGNORE_THIS_VERSION_OF_SDL_AddEventWatch
 #define SDL_AddGamepadMapping IGNORE_THIS_VERSION_OF_SDL_AddGamepadMapping
 #define SDL_AddGamepadMappingsFromRW IGNORE_THIS_VERSION_OF_SDL_AddGamepadMappingsFromRW
@@ -43,15 +49,15 @@
 #define SDL_AndroidSendMessage IGNORE_THIS_VERSION_OF_SDL_AndroidSendMessage
 #define SDL_AndroidShowToast IGNORE_THIS_VERSION_OF_SDL_AndroidShowToast
 #define SDL_AtomicAdd IGNORE_THIS_VERSION_OF_SDL_AtomicAdd
-#define SDL_AtomicCAS IGNORE_THIS_VERSION_OF_SDL_AtomicCAS
-#define SDL_AtomicCASPtr IGNORE_THIS_VERSION_OF_SDL_AtomicCASPtr
+#define SDL_AtomicCompareAndSwap IGNORE_THIS_VERSION_OF_SDL_AtomicCompareAndSwap
+#define SDL_AtomicCompareAndSwapPointer IGNORE_THIS_VERSION_OF_SDL_AtomicCompareAndSwapPointer
 #define SDL_AtomicGet IGNORE_THIS_VERSION_OF_SDL_AtomicGet
 #define SDL_AtomicGetPtr IGNORE_THIS_VERSION_OF_SDL_AtomicGetPtr
-#define SDL_AtomicLock IGNORE_THIS_VERSION_OF_SDL_AtomicLock
+#define SDL_LockSpinlock IGNORE_THIS_VERSION_OF_SDL_LockSpinlock
 #define SDL_AtomicSet IGNORE_THIS_VERSION_OF_SDL_AtomicSet
 #define SDL_AtomicSetPtr IGNORE_THIS_VERSION_OF_SDL_AtomicSetPtr
-#define SDL_AtomicTryLock IGNORE_THIS_VERSION_OF_SDL_AtomicTryLock
-#define SDL_AtomicUnlock IGNORE_THIS_VERSION_OF_SDL_AtomicUnlock
+#define SDL_TryLockSpinlock IGNORE_THIS_VERSION_OF_SDL_TryLockSpinlock
+#define SDL_UnlockSpinlock IGNORE_THIS_VERSION_OF_SDL_UnlockSpinlock
 #define SDL_AttachVirtualJoystick IGNORE_THIS_VERSION_OF_SDL_AttachVirtualJoystick
 #define SDL_AttachVirtualJoystickEx IGNORE_THIS_VERSION_OF_SDL_AttachVirtualJoystickEx
 #define SDL_BlitSurface IGNORE_THIS_VERSION_OF_SDL_BlitSurface
@@ -378,33 +384,30 @@
 #define SDL_GetWindowTitle IGNORE_THIS_VERSION_OF_SDL_GetWindowTitle
 #define SDL_GetYUVConversionMode IGNORE_THIS_VERSION_OF_SDL_GetYUVConversionMode
 #define SDL_GetYUVConversionModeForResolution IGNORE_THIS_VERSION_OF_SDL_GetYUVConversionModeForResolution
-#define SDL_HapticClose IGNORE_THIS_VERSION_OF_SDL_HapticClose
-#define SDL_HapticDestroyEffect IGNORE_THIS_VERSION_OF_SDL_HapticDestroyEffect
+#define SDL_CloseHaptic IGNORE_THIS_VERSION_OF_SDL_CloseHaptic
+#define SDL_DestroyHapticEffect IGNORE_THIS_VERSION_OF_SDL_DestroyHapticEffect
 #define SDL_HapticEffectSupported IGNORE_THIS_VERSION_OF_SDL_HapticEffectSupported
-#define SDL_HapticGetEffectStatus IGNORE_THIS_VERSION_OF_SDL_HapticGetEffectStatus
-#define SDL_HapticIndex IGNORE_THIS_VERSION_OF_SDL_HapticIndex
-#define SDL_HapticName IGNORE_THIS_VERSION_OF_SDL_HapticName
-#define SDL_HapticNewEffect IGNORE_THIS_VERSION_OF_SDL_HapticNewEffect
-#define SDL_HapticNumAxes IGNORE_THIS_VERSION_OF_SDL_HapticNumAxes
-#define SDL_HapticNumEffects IGNORE_THIS_VERSION_OF_SDL_HapticNumEffects
-#define SDL_HapticNumEffectsPlaying IGNORE_THIS_VERSION_OF_SDL_HapticNumEffectsPlaying
-#define SDL_HapticOpen IGNORE_THIS_VERSION_OF_SDL_HapticOpen
-#define SDL_HapticOpenFromJoystick IGNORE_THIS_VERSION_OF_SDL_HapticOpenFromJoystick
-#define SDL_HapticOpenFromMouse IGNORE_THIS_VERSION_OF_SDL_HapticOpenFromMouse
-#define SDL_HapticOpened IGNORE_THIS_VERSION_OF_SDL_HapticOpened
-#define SDL_HapticPause IGNORE_THIS_VERSION_OF_SDL_HapticPause
-#define SDL_HapticQuery IGNORE_THIS_VERSION_OF_SDL_HapticQuery
-#define SDL_HapticRumbleInit IGNORE_THIS_VERSION_OF_SDL_HapticRumbleInit
-#define SDL_HapticRumblePlay IGNORE_THIS_VERSION_OF_SDL_HapticRumblePlay
-#define SDL_HapticRumbleStop IGNORE_THIS_VERSION_OF_SDL_HapticRumbleStop
+#define SDL_GetHapticEffectStatus IGNORE_THIS_VERSION_OF_SDL_GetHapticEffectStatus
+#define SDL_CreateHapticEffect IGNORE_THIS_VERSION_OF_SDL_CreateHapticEffect
+#define SDL_GetNumHapticAxes IGNORE_THIS_VERSION_OF_SDL_GetNumHapticAxes
+#define SDL_GetMaxHapticEffects IGNORE_THIS_VERSION_OF_SDL_GetMaxHapticEffects
+#define SDL_GetMaxHapticEffectsPlaying IGNORE_THIS_VERSION_OF_SDL_GetMaxHapticEffectsPlaying
+#define SDL_OpenHaptic IGNORE_THIS_VERSION_OF_SDL_OpenHaptic
+#define SDL_OpenHapticFromJoystick IGNORE_THIS_VERSION_OF_SDL_OpenHapticFromJoystick
+#define SDL_OpenHapticFromMouse IGNORE_THIS_VERSION_OF_SDL_OpenHapticFromMouse
+#define SDL_PauseHaptic IGNORE_THIS_VERSION_OF_SDL_PauseHaptic
+#define SDL_GetHapticFeatures IGNORE_THIS_VERSION_OF_SDL_GetHapticFeatures
+#define SDL_InitHapticRumble IGNORE_THIS_VERSION_OF_SDL_InitHapticRumble
+#define SDL_PlayHapticRumble IGNORE_THIS_VERSION_OF_SDL_PlayHapticRumble
+#define SDL_StopHapticRumble IGNORE_THIS_VERSION_OF_SDL_StopHapticRumble
 #define SDL_HapticRumbleSupported IGNORE_THIS_VERSION_OF_SDL_HapticRumbleSupported
-#define SDL_HapticRunEffect IGNORE_THIS_VERSION_OF_SDL_HapticRunEffect
-#define SDL_HapticSetAutocenter IGNORE_THIS_VERSION_OF_SDL_HapticSetAutocenter
-#define SDL_HapticSetGain IGNORE_THIS_VERSION_OF_SDL_HapticSetGain
-#define SDL_HapticStopAll IGNORE_THIS_VERSION_OF_SDL_HapticStopAll
-#define SDL_HapticStopEffect IGNORE_THIS_VERSION_OF_SDL_HapticStopEffect
-#define SDL_HapticUnpause IGNORE_THIS_VERSION_OF_SDL_HapticUnpause
-#define SDL_HapticUpdateEffect IGNORE_THIS_VERSION_OF_SDL_HapticUpdateEffect
+#define SDL_RunHapticEffect IGNORE_THIS_VERSION_OF_SDL_RunHapticEffect
+#define SDL_SetHapticAutocenter IGNORE_THIS_VERSION_OF_SDL_SetHapticAutocenter
+#define SDL_SetHapticGain IGNORE_THIS_VERSION_OF_SDL_SetHapticGain
+#define SDL_StopHapticEffects IGNORE_THIS_VERSION_OF_SDL_StopHapticEffects
+#define SDL_StopHapticEffect IGNORE_THIS_VERSION_OF_SDL_StopHapticEffect
+#define SDL_ResumeHaptic IGNORE_THIS_VERSION_OF_SDL_ResumeHaptic
+#define SDL_UpdateHapticEffect IGNORE_THIS_VERSION_OF_SDL_UpdateHapticEffect
 #define SDL_HasARMSIMD IGNORE_THIS_VERSION_OF_SDL_HasARMSIMD
 #define SDL_HasAVX IGNORE_THIS_VERSION_OF_SDL_HasAVX
 #define SDL_HasAVX2 IGNORE_THIS_VERSION_OF_SDL_HasAVX2
@@ -443,7 +446,7 @@
 #define SDL_JoystickHasLED IGNORE_THIS_VERSION_OF_SDL_JoystickHasLED
 #define SDL_JoystickHasRumble IGNORE_THIS_VERSION_OF_SDL_JoystickHasRumble
 #define SDL_JoystickHasRumbleTriggers IGNORE_THIS_VERSION_OF_SDL_JoystickHasRumbleTriggers
-#define SDL_JoystickIsHaptic IGNORE_THIS_VERSION_OF_SDL_JoystickIsHaptic
+#define SDL_IsJoystickHaptic IGNORE_THIS_VERSION_OF_SDL_IsJoystickHaptic
 #define SDL_LinuxSetThreadPriority IGNORE_THIS_VERSION_OF_SDL_LinuxSetThreadPriority
 #define SDL_LinuxSetThreadPriorityAndPolicy IGNORE_THIS_VERSION_OF_SDL_LinuxSetThreadPriorityAndPolicy
 #define SDL_LoadBMP IGNORE_THIS_VERSION_OF_SDL_LoadBMP
@@ -483,8 +486,7 @@
 #define SDL_Metal_DestroyView IGNORE_THIS_VERSION_OF_SDL_Metal_DestroyView
 #define SDL_Metal_GetLayer IGNORE_THIS_VERSION_OF_SDL_Metal_GetLayer
 #define SDL_MinimizeWindow IGNORE_THIS_VERSION_OF_SDL_MinimizeWindow
-#define SDL_MouseIsHaptic IGNORE_THIS_VERSION_OF_SDL_MouseIsHaptic
-#define SDL_NumHaptics IGNORE_THIS_VERSION_OF_SDL_NumHaptics
+#define SDL_IsMouseHaptic IGNORE_THIS_VERSION_OF_SDL_IsMouseHaptic
 #define SDL_OnApplicationDidBecomeActive IGNORE_THIS_VERSION_OF_SDL_OnApplicationDidBecomeActive
 #define SDL_OnApplicationDidChangeStatusBarOrientation IGNORE_THIS_VERSION_OF_SDL_OnApplicationDidChangeStatusBarOrientation
 #define SDL_OnApplicationDidEnterBackground IGNORE_THIS_VERSION_OF_SDL_OnApplicationDidEnterBackground
@@ -642,7 +644,7 @@
 #define SDL_SurfaceHasRLE IGNORE_THIS_VERSION_OF_SDL_SurfaceHasRLE
 #define SDL_TextInputActive IGNORE_THIS_VERSION_OF_SDL_TextInputActive
 #define SDL_TextInputShown IGNORE_THIS_VERSION_OF_SDL_TextInputShown
-#define SDL_ThreadID IGNORE_THIS_VERSION_OF_SDL_ThreadID
+#define SDL_GetCurrentThreadID IGNORE_THIS_VERSION_OF_SDL_GetCurrentThreadID
 #define SDL_TryLockMutex IGNORE_THIS_VERSION_OF_SDL_TryLockMutex
 #define SDL_TryLockRWLockForReading IGNORE_THIS_VERSION_OF_SDL_TryLockRWLockForReading
 #define SDL_TryLockRWLockForWriting IGNORE_THIS_VERSION_OF_SDL_TryLockRWLockForWriting
@@ -987,6 +989,13 @@
 #define SDL_SyncWindow IGNORE_THIS_VERSION_OF_SDL_SyncWindow
 #define SDL_GetGamepadSteamHandle IGNORE_THIS_VERSION_OF_SDL_GetGamepadSteamHandle
 #define SDL_GetRendererFromTexture IGNORE_THIS_VERSION_OF_SDL_GetRendererFromTexture
+#define SDL_GetHaptics IGNORE_THIS_VERSION_OF_SDL_GetHaptics
+#define SDL_GetHapticInstanceName IGNORE_THIS_VERSION_OF_SDL_GetHapticInstanceName
+#define SDL_GetHapticFromInstanceID IGNORE_THIS_VERSION_OF_SDL_GetHapticFromInstanceID
+#define SDL_GetHapticInstanceID IGNORE_THIS_VERSION_OF_SDL_GetHapticInstanceID
+#define SDL_GetHapticName IGNORE_THIS_VERSION_OF_SDL_GetHapticName
+#define SDL_ReadSurfacePixel IGNORE_THIS_VERSION_OF_SDL_ReadSurfacePixel
+#define SDL_FlipSurface IGNORE_THIS_VERSION_OF_SDL_FlipSurface
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -1075,12 +1084,12 @@
 #undef SDL_AtomicAdd
 #endif
 
-#ifdef SDL_AtomicCAS
-#undef SDL_AtomicCAS
+#ifdef SDL_AtomicCompareAndSwap
+#undef SDL_AtomicCompareAndSwap
 #endif
 
-#ifdef SDL_AtomicCASPtr
-#undef SDL_AtomicCASPtr
+#ifdef SDL_AtomicCompareAndSwapPointer
+#undef SDL_AtomicCompareAndSwapPointer
 #endif
 
 #ifdef SDL_AtomicGet
@@ -1091,8 +1100,8 @@
 #undef SDL_AtomicGetPtr
 #endif
 
-#ifdef SDL_AtomicLock
-#undef SDL_AtomicLock
+#ifdef SDL_LockSpinlock
+#undef SDL_LockSpinlock
 #endif
 
 #ifdef SDL_AtomicSet
@@ -1103,12 +1112,12 @@
 #undef SDL_AtomicSetPtr
 #endif
 
-#ifdef SDL_AtomicTryLock
-#undef SDL_AtomicTryLock
+#ifdef SDL_TryLockSpinlock
+#undef SDL_TryLockSpinlock
 #endif
 
-#ifdef SDL_AtomicUnlock
-#undef SDL_AtomicUnlock
+#ifdef SDL_UnlockSpinlock
+#undef SDL_UnlockSpinlock
 #endif
 
 #ifdef SDL_AttachVirtualJoystick
@@ -2415,112 +2424,100 @@
 #undef SDL_GetYUVConversionModeForResolution
 #endif
 
-#ifdef SDL_HapticClose
-#undef SDL_HapticClose
+#ifdef SDL_CloseHaptic
+#undef SDL_CloseHaptic
 #endif
 
-#ifdef SDL_HapticDestroyEffect
-#undef SDL_HapticDestroyEffect
+#ifdef SDL_DestroyHapticEffect
+#undef SDL_DestroyHapticEffect
 #endif
 
 #ifdef SDL_HapticEffectSupported
 #undef SDL_HapticEffectSupported
 #endif
 
-#ifdef SDL_HapticGetEffectStatus
-#undef SDL_HapticGetEffectStatus
+#ifdef SDL_GetHapticEffectStatus
+#undef SDL_GetHapticEffectStatus
 #endif
 
-#ifdef SDL_HapticIndex
-#undef SDL_HapticIndex
+#ifdef SDL_CreateHapticEffect
+#undef SDL_CreateHapticEffect
 #endif
 
-#ifdef SDL_HapticName
-#undef SDL_HapticName
+#ifdef SDL_GetNumHapticAxes
+#undef SDL_GetNumHapticAxes
 #endif
 
-#ifdef SDL_HapticNewEffect
-#undef SDL_HapticNewEffect
+#ifdef SDL_GetMaxHapticEffects
+#undef SDL_GetMaxHapticEffects
 #endif
 
-#ifdef SDL_HapticNumAxes
-#undef SDL_HapticNumAxes
+#ifdef SDL_GetMaxHapticEffectsPlaying
+#undef SDL_GetMaxHapticEffectsPlaying
 #endif
 
-#ifdef SDL_HapticNumEffects
-#undef SDL_HapticNumEffects
+#ifdef SDL_OpenHaptic
+#undef SDL_OpenHaptic
 #endif
 
-#ifdef SDL_HapticNumEffectsPlaying
-#undef SDL_HapticNumEffectsPlaying
+#ifdef SDL_OpenHapticFromJoystick
+#undef SDL_OpenHapticFromJoystick
 #endif
 
-#ifdef SDL_HapticOpen
-#undef SDL_HapticOpen
+#ifdef SDL_OpenHapticFromMouse
+#undef SDL_OpenHapticFromMouse
 #endif
 
-#ifdef SDL_HapticOpenFromJoystick
-#undef SDL_HapticOpenFromJoystick
+#ifdef SDL_PauseHaptic
+#undef SDL_PauseHaptic
 #endif
 
-#ifdef SDL_HapticOpenFromMouse
-#undef SDL_HapticOpenFromMouse
+#ifdef SDL_GetHapticFeatures
+#undef SDL_GetHapticFeatures
 #endif
 
-#ifdef SDL_HapticOpened
-#undef SDL_HapticOpened
+#ifdef SDL_InitHapticRumble
+#undef SDL_InitHapticRumble
 #endif
 
-#ifdef SDL_HapticPause
-#undef SDL_HapticPause
+#ifdef SDL_PlayHapticRumble
+#undef SDL_PlayHapticRumble
 #endif
 
-#ifdef SDL_HapticQuery
-#undef SDL_HapticQuery
-#endif
-
-#ifdef SDL_HapticRumbleInit
-#undef SDL_HapticRumbleInit
-#endif
-
-#ifdef SDL_HapticRumblePlay
-#undef SDL_HapticRumblePlay
-#endif
-
-#ifdef SDL_HapticRumbleStop
-#undef SDL_HapticRumbleStop
+#ifdef SDL_StopHapticRumble
+#undef SDL_StopHapticRumble
 #endif
 
 #ifdef SDL_HapticRumbleSupported
 #undef SDL_HapticRumbleSupported
 #endif
 
-#ifdef SDL_HapticRunEffect
-#undef SDL_HapticRunEffect
+#ifdef SDL_RunHapticEffect
+#undef SDL_RunHapticEffect
 #endif
 
-#ifdef SDL_HapticSetAutocenter
-#undef SDL_HapticSetAutocenter
+#ifdef SDL_SetHapticAutocenter
+#undef SDL_SetHapticAutocenter
 #endif
 
-#ifdef SDL_HapticSetGain
-#undef SDL_HapticSetGain
+#ifdef SDL_SetHapticGain
+#undef SDL_SetHapticGain
 #endif
 
-#ifdef SDL_HapticStopAll
-#undef SDL_HapticStopAll
+#ifdef SDL_StopHapticEffects
+#undef SDL_StopHapticEffects
 #endif
 
-#ifdef SDL_HapticStopEffect
-#undef SDL_HapticStopEffect
+#ifdef SDL_StopHapticEffect
+#undef SDL_StopHapticEffect
 #endif
 
-#ifdef SDL_HapticUnpause
-#undef SDL_HapticUnpause
+#ifdef SDL_ResumeHaptic
+#undef SDL_ResumeHaptic
 #endif
 
-#ifdef SDL_HapticUpdateEffect
-#undef SDL_HapticUpdateEffect
+#ifdef SDL_UpdateHapticEffect
+#undef SDL_UpdateHapticEffect
 #endif
 
 #ifdef SDL_HasARMSIMD
@@ -2675,8 +2672,8 @@
 #undef SDL_JoystickHasRumbleTriggers
 #endif
 
-#ifdef SDL_JoystickIsHaptic
-#undef SDL_JoystickIsHaptic
+#ifdef SDL_IsJoystickHaptic
+#undef SDL_IsJoystickHaptic
 #endif
 
 #ifdef SDL_LinuxSetThreadPriority
@@ -2835,12 +2832,8 @@
 #undef SDL_MinimizeWindow
 #endif
 
-#ifdef SDL_MouseIsHaptic
-#undef SDL_MouseIsHaptic
-#endif
-
-#ifdef SDL_NumHaptics
-#undef SDL_NumHaptics
+#ifdef SDL_IsMouseHaptic
+#undef SDL_IsMouseHaptic
 #endif
 
 #ifdef SDL_OnApplicationDidBecomeActive
@@ -3471,8 +3464,8 @@
 #undef SDL_TextInputShown
 #endif
 
-#ifdef SDL_ThreadID
-#undef SDL_ThreadID
+#ifdef SDL_GetCurrentThreadID
+#undef SDL_GetCurrentThreadID
 #endif
 
 #ifdef SDL_TryLockMutex
@@ -4850,6 +4843,36 @@
 #ifdef SDL_GetRendererFromTexture
 #undef SDL_GetRendererFromTexture
 #endif
+
+#ifdef SDL_GetHaptics
+#undef SDL_GetHaptics
+#endif
+
+#ifdef SDL_GetHapticInstanceName
+#undef SDL_GetHapticInstanceName
+#endif
+
+#ifdef SDL_GetHapticFromInstanceID
+#undef SDL_GetHapticFromInstanceID
+#endif
+
+#ifdef SDL_GetHapticInstanceID
+#undef SDL_GetHapticInstanceID
+#endif
+
+#ifdef SDL_GetHapticName
+#undef SDL_GetHapticName
+#endif
+
+#ifdef SDL_ReadSurfacePixel
+#undef SDL_ReadSurfacePixel
+#endif
+
+#ifdef SDL_FlipSurface
+#undef SDL_FlipSurface
+#endif
+
+#undef SDL_ThreadID /* see at top. */
 
 /* undefine these macros, too: redefine as SDL3_xxx, if needed. */
 
