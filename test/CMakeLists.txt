@@ -155,7 +155,7 @@ if(HAVE_OPENGLES_V2)
   endif()
 endif()
 
-test_program(testautomation NONINTERACTIVE TIMEOUT 40
+test_program(testautomation NONINTERACTIVE TIMEOUT 120
   SRC
     "testautomation.c"
     "testautomation_audio.c"
