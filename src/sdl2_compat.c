@@ -6802,6 +6802,33 @@ SDL_JoystickPathForIndex(int idx)
     return jid ? SDL3_GetJoystickInstancePath(jid) : NULL;
 }
 
+DECLSPEC SDL_bool SDLCALL
+SDL_JoystickHasLED(SDL_Joystick *joystick)
+{
+    if (SDL3_GetJoystickCaps(joystick) & SDL_JOYSTICK_CAP_RGB_LED) {
+        return SDL_TRUE;
+    }
+    return SDL_FALSE;
+}
+
+DECLSPEC SDL_bool SDLCALL
+SDL_JoystickHasRumble(SDL_Joystick *joystick)
+{
+    if (SDL3_GetJoystickCaps(joystick) & SDL_JOYSTICK_CAP_RUMBLE) {
+        return SDL_TRUE;
+    }
+    return SDL_FALSE;
+}
+
+DECLSPEC SDL_bool SDLCALL
+SDL_JoystickHasRumbleTriggers(SDL_Joystick *joystick)
+{
+    if (SDL3_GetJoystickCaps(joystick) & SDL_JOYSTICK_CAP_TRIGGER_RUMBLE) {
+        return SDL_TRUE;
+    }
+    return SDL_FALSE;
+}
+
 DECLSPEC char* SDLCALL
 SDL_GameControllerMappingForDeviceIndex(int idx)
 {
@@ -6995,6 +7022,33 @@ SDL_GameControllerGetBindForButton(SDL_GameController *controller,
     }
 
     return bind;
+}
+
+DECLSPEC SDL_bool SDLCALL
+SDL_GameControllerHasLED(SDL_Gamepad *gamepad)
+{
+    if (SDL3_GetGamepadCaps(gamepad) & SDL_GAMEPAD_CAP_RGB_LED) {
+        return SDL_TRUE;
+    }
+    return SDL_FALSE;
+}
+
+DECLSPEC SDL_bool SDLCALL
+SDL_GameControllerHasRumble(SDL_Gamepad *gamepad)
+{
+    if (SDL3_GetGamepadCaps(gamepad) & SDL_GAMEPAD_CAP_RUMBLE) {
+        return SDL_TRUE;
+    }
+    return SDL_FALSE;
+}
+
+DECLSPEC SDL_bool SDLCALL
+SDL_GameControllerHasRumbleTriggers(SDL_Gamepad *gamepad)
+{
+    if (SDL3_GetGamepadCaps(gamepad) & SDL_GAMEPAD_CAP_TRIGGER_RUMBLE) {
+        return SDL_TRUE;
+    }
+    return SDL_FALSE;
 }
 
 DECLSPEC int SDLCALL

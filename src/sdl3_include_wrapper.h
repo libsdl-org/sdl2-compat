@@ -163,9 +163,6 @@
 #define SDL_GamepadEventsEnabled IGNORE_THIS_VERSION_OF_SDL_GamepadEventsEnabled
 #define SDL_GamepadHasAxis IGNORE_THIS_VERSION_OF_SDL_GamepadHasAxis
 #define SDL_GamepadHasButton IGNORE_THIS_VERSION_OF_SDL_GamepadHasButton
-#define SDL_GamepadHasLED IGNORE_THIS_VERSION_OF_SDL_GamepadHasLED
-#define SDL_GamepadHasRumble IGNORE_THIS_VERSION_OF_SDL_GamepadHasRumble
-#define SDL_GamepadHasRumbleTriggers IGNORE_THIS_VERSION_OF_SDL_GamepadHasRumbleTriggers
 #define SDL_GamepadHasSensor IGNORE_THIS_VERSION_OF_SDL_GamepadHasSensor
 #define SDL_GamepadSensorEnabled IGNORE_THIS_VERSION_OF_SDL_GamepadSensorEnabled
 #define SDL_GetAndroidSDKVersion IGNORE_THIS_VERSION_OF_SDL_GetAndroidSDKVersion
@@ -996,6 +993,8 @@
 #define SDL_GetHapticName IGNORE_THIS_VERSION_OF_SDL_GetHapticName
 #define SDL_ReadSurfacePixel IGNORE_THIS_VERSION_OF_SDL_ReadSurfacePixel
 #define SDL_FlipSurface IGNORE_THIS_VERSION_OF_SDL_FlipSurface
+#define SDL_GetJoystickCaps IGNORE_THIS_VERSION_OF_SDL_GetJoystickCaps
+#define SDL_GetGamepadCaps IGNORE_THIS_VERSION_OF_SDL_GetGamepadCaps
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -1538,18 +1537,6 @@
 
 #ifdef SDL_GamepadHasButton
 #undef SDL_GamepadHasButton
-#endif
-
-#ifdef SDL_GamepadHasLED
-#undef SDL_GamepadHasLED
-#endif
-
-#ifdef SDL_GamepadHasRumble
-#undef SDL_GamepadHasRumble
-#endif
-
-#ifdef SDL_GamepadHasRumbleTriggers
-#undef SDL_GamepadHasRumbleTriggers
 #endif
 
 #ifdef SDL_GamepadHasSensor
@@ -4870,6 +4857,14 @@
 
 #ifdef SDL_FlipSurface
 #undef SDL_FlipSurface
+#endif
+
+#ifdef SDL_GetJoystickCaps
+#undef SDL_GetJoystickCaps
+#endif
+
+#ifdef SDL_GetGamepadCaps
+#undef SDL_GetGamepadCaps
 #endif
 
 #undef SDL_ThreadID /* see at top. */
