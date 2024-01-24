@@ -49,7 +49,7 @@ SDL3_SYM_VARARGS(void,LogMessage,(int a, SDL_LogPriority b, SDL_PRINTF_FORMAT_ST
 SDL3_SYM_VARARGS(int,sscanf,(const char *a, SDL_SCANF_FORMAT_STRING const char *b, ...))
 SDL3_SYM_VARARGS(int,snprintf,(SDL_OUT_Z_CAP(b) char *a, size_t b, SDL_PRINTF_FORMAT_STRING const char *c, ...))
 
-#if (defined(__WIN32__) || defined(__GDK__)) && !defined(__WINRT__)
+#if (defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)) && !defined(SDL_PLATFORM_WINRT)
 SDL3_SYM_PASSTHROUGH(SDL_Thread*,CreateThread,(SDL_ThreadFunction a, const char *b, void *c, pfnSDL_CurrentBeginThread d, pfnSDL_CurrentEndThread e),(a,b,c,d,e),return)
 SDL3_SYM_PASSTHROUGH(SDL_Thread*,CreateThreadWithStackSize,(SDL_ThreadFunction a, const char *b, const size_t c, void *d, pfnSDL_CurrentBeginThread e, pfnSDL_CurrentEndThread f),(a,b,c,d,e,f),return)
 #else
@@ -57,40 +57,40 @@ SDL3_SYM_PASSTHROUGH(SDL_Thread*,CreateThread,(SDL_ThreadFunction a, const char 
 SDL3_SYM_PASSTHROUGH(SDL_Thread*,CreateThreadWithStackSize,(SDL_ThreadFunction a, const char *b, const size_t c, void *d),(a,b,c,d),return)
 #endif
 
-#if defined(__WIN32__) || defined(__GDK__)
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)
 SDL3_SYM_PASSTHROUGH(int,RegisterApp,(const char *a, Uint32 b, void *c),(a,b,c),return)
 SDL3_SYM_PASSTHROUGH(void,UnregisterApp,(void),(),)
 SDL3_SYM_PASSTHROUGH(void,SetWindowsMessageHook,(SDL_WindowsMessageHook a, void *b),(a,b),)
 #endif
 
-#if defined(__WIN32__) || defined(__WINGDK__)
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_WINGDK)
 SDL3_SYM(int,Direct3D9GetAdapterIndex,(SDL_DisplayID a),(a),return)
 SDL3_SYM(SDL_bool,DXGIGetOutputInfo,(SDL_DisplayID a,int *b, int *c),(a,b,c),return)
 #endif
 
-#ifdef __GDK__
+#ifdef SDL_PLATFORM_GDK
 SDL3_SYM_PASSTHROUGH(int,GDKGetTaskQueue,(XTaskQueueHandle *a),(a),return)
 SDL3_SYM_PASSTHROUGH(int,GDKGetDefaultUser,(XUserHandle *a),(a),return)
 #endif
 
-#ifdef __WINRT__
+#ifdef SDL_PLATFORM_WINRT
 SDL3_SYM_PASSTHROUGH(const wchar_t*,WinRTGetFSPathUNICODE,(SDL_WinRT_Path a),(a),return)
 SDL3_SYM_PASSTHROUGH(const char*,WinRTGetFSPathUTF8,(SDL_WinRT_Path a),(a),return)
 SDL3_SYM_PASSTHROUGH(SDL_WinRT_DeviceFamily,WinRTGetDeviceFamily,(void),(),return)
 #endif
 
-#ifdef __IOS__
+#ifdef SDL_PLATFORM_IOS
 SDL3_SYM_PASSTHROUGH(int,iPhoneSetAnimationCallback,(SDL_Window *a, int b, void (SDLCALL *c)(void *), void *d),(a,b,c,d),return)
 SDL3_SYM_PASSTHROUGH(void,iPhoneSetEventPump,(SDL_bool a),(a),)
 SDL3_SYM_PASSTHROUGH(void,OnApplicationDidChangeStatusBarOrientation,(void),(),)
 #endif
 
-#ifdef __LINUX__
+#ifdef SDL_PLATFORM_LINUX
 SDL3_SYM_PASSTHROUGH(int,LinuxSetThreadPriority,(Sint64 a, int b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(int,LinuxSetThreadPriorityAndPolicy,(Sint64 a, int b, int c),(a,b,c),return)
 #endif
 
-#ifdef __ANDROID__
+#ifdef SDL_PLATFORM_ANDROID
 SDL3_SYM_PASSTHROUGH(void*,AndroidGetJNIEnv,(void),(),return)
 SDL3_SYM_PASSTHROUGH(void*,AndroidGetActivity,(void),(),return)
 SDL3_SYM_PASSTHROUGH(const char*,AndroidGetInternalStoragePath,(void),(),return)
@@ -868,4 +868,3 @@ SDL3_SYM(Uint32,GetGamepadCaps,(SDL_GameController *a),(a),return)
 #undef SDL3_SYM_PASSTHROUGH
 #undef SDL3_SYM_RENAMED
 #undef SDL3_SYM_VARARGS
-

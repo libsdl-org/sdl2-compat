@@ -355,7 +355,7 @@ static void OS_GetExeName(char *buf, const unsigned maxpath) {
     buf[0] = '\0';
     GetModuleFileNameA(NULL, buf, maxpath);
 }
-#elif defined(__APPLE__) || defined(__FREEBSD__)
+#elif defined(__APPLE__) || defined(SDL_PLATFORM_FREEBSD)
 static void OS_GetExeName(char *buf, const unsigned maxpath) {
     const char *progname = getprogname();
     if (progname != NULL) {
@@ -5487,7 +5487,7 @@ SDL_GetDisplayDPI(int displayIndex, float *ddpi, float *hdpi, float *vdpi)
         content_scale = 1.0f;
     }
 
-#if defined(__ANDROID__) || defined(__IOS__)
+#if defined(SDL_PLATFORM_ANDROID) || defined(SDL_PLATFORM_IOS)
     dpi = pixel_density * content_scale * 160.0f;
 #else
     dpi = pixel_density * content_scale * 96.0f;
@@ -7767,7 +7767,7 @@ SDL_GetThreadID(SDL_Thread *thread)
     return (unsigned long)SDL3_GetThreadID(thread);
 }
 
-#if defined(__WIN32__) || defined(__WINGDK__)
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_WINGDK)
 DECLSPEC int SDLCALL
 SDL_Direct3D9GetAdapterIndex(int displayIndex)
 {
@@ -7799,7 +7799,7 @@ DECLSPEC ID3D12Device* SDLCALL SDL_RenderGetD3D12Device(SDL_Renderer *renderer)
 }
 #endif
 
-#ifdef __WINRT__
+#ifdef SDL_PLATFORM_WINRT
 DECLSPEC int SDLCALL
 SDL_WinRTRunApp(SDL_main_func mainFunction, void *reserved)
 {
@@ -7807,7 +7807,7 @@ SDL_WinRTRunApp(SDL_main_func mainFunction, void *reserved)
 }
 #endif
 
-#if defined(__GDK__)
+#if defined(SDL_PLATFORM_GDK)
 DECLSPEC int SDLCALL
 SDL_GDKRunApp(SDL_main_func mainFunction, void *reserved)
 {
@@ -7815,14 +7815,15 @@ SDL_GDKRunApp(SDL_main_func mainFunction, void *reserved)
 }
 #endif
 
-#ifdef __IOS__
+#ifdef SDL_PLATFORM_IOS
 DECLSPEC int SDLCALL
 SDL_UIKitRunApp(int argc, char *argv[], SDL_main_func mainFunction)
 {
     return SDL3_RunApp(argc, argv, mainFunction, NULL);
 }
 #endif
-#if defined(__ANDROID__)
+
+#ifdef SDL_PLATFORM_ANDROID
 DECLSPEC int SDLCALL
 SDL_AndroidGetExternalStorageState(void)
 {

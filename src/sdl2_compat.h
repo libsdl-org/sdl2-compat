@@ -176,7 +176,7 @@ typedef struct SDL2_AudioStream
 #define SDL2_AUDIO_ALLOW_ANY_CHANGE          (SDL2_AUDIO_ALLOW_FREQUENCY_CHANGE|SDL2_AUDIO_ALLOW_FORMAT_CHANGE|SDL2_AUDIO_ALLOW_CHANNELS_CHANGE|SDL2_AUDIO_ALLOW_SAMPLES_CHANGE)
 
 /* Prototypes for D3D devices */
-#if defined(__WIN32__) || defined(__WINGDK__)
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_WINGDK)
 typedef struct IDirect3DDevice9 IDirect3DDevice9;
 typedef struct ID3D11Device ID3D11Device;
 typedef struct ID3D12Device ID3D12Device;

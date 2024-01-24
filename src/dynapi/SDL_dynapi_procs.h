@@ -47,10 +47,9 @@ SDL_DYNAPI_PROC(int,SDL_snprintf,(SDL_OUT_Z_CAP(b) char *a, size_t b, SDL_PRINTF
 #ifdef SDL_CreateThread
 #undef SDL_CreateThread
 #endif
-
-#if defined(__WIN32__) || defined(__GDK__)
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)
 SDL_DYNAPI_PROC(SDL_Thread*,SDL_CreateThread,(SDL_ThreadFunction a, const char *b, void *c, pfnSDL_CurrentBeginThread d, pfnSDL_CurrentEndThread e),(a,b,c,d,e),return)
-#elif defined(__OS2__)
+#elif defined(SDL_PLATFORM_OS2)
 SDL_DYNAPI_PROC(SDL_Thread*,SDL_CreateThread,(SDL_ThreadFunction a, const char *b, void *c, pfnSDL_CurrentBeginThread d, pfnSDL_CurrentEndThread e),(a,b,c,d,e),return)
 #else
 SDL_DYNAPI_PROC(SDL_Thread*,SDL_CreateThread,(SDL_ThreadFunction a, const char *b, void *c),(a,b,c),return)
@@ -62,22 +61,22 @@ SDL_DYNAPI_PROC(SDL2_RWops*,SDL_RWFromFP,(FILE *a, SDL_bool b),(a,b),return)
 SDL_DYNAPI_PROC(SDL2_RWops*,SDL_RWFromFP,(void *a, SDL_bool b),(a,b),return)
 #endif
 
-#if defined(__WIN32__) || defined(__GDK__)
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)
 SDL_DYNAPI_PROC(int,SDL_RegisterApp,(const char *a, Uint32 b, void *c),(a,b,c),return)
 SDL_DYNAPI_PROC(void,SDL_UnregisterApp,(void),(),)
 #endif
 
-#if defined(__WIN32__) || defined(__WINGDK__)
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_WINGDK)
 SDL_DYNAPI_PROC(int,SDL_Direct3D9GetAdapterIndex,(int a),(a),return)
 SDL_DYNAPI_PROC(IDirect3DDevice9*,SDL_RenderGetD3D9Device,(SDL_Renderer *a),(a),return)
 #endif
 
-#ifdef __IOS__
+#ifdef SDL_PLATFORM_IOS
 SDL_DYNAPI_PROC(int,SDL_iPhoneSetAnimationCallback,(SDL_Window *a, int b, void (SDLCALL *c)(void *), void *d),(a,b,c,d),return)
 SDL_DYNAPI_PROC(void,SDL_iPhoneSetEventPump,(SDL_bool a),(a),)
 #endif
 
-#ifdef __ANDROID__
+#ifdef SDL_PLATFORM_ANDROID
 SDL_DYNAPI_PROC(void*,SDL_AndroidGetJNIEnv,(void),(),return)
 SDL_DYNAPI_PROC(void*,SDL_AndroidGetActivity,(void),(),return)
 SDL_DYNAPI_PROC(const char*,SDL_AndroidGetInternalStoragePath,(void),(),return)
@@ -602,11 +601,11 @@ SDL_DYNAPI_PROC(void,SDL_GL_ResetAttributes,(void),(),)
 SDL_DYNAPI_PROC(SDL_bool,SDL_HasAVX,(void),(),return)
 SDL_DYNAPI_PROC(SDL_AssertionHandler,SDL_GetDefaultAssertionHandler,(void),(),return)
 SDL_DYNAPI_PROC(SDL_AssertionHandler,SDL_GetAssertionHandler,(void **a),(a),return)
-#if defined(__WIN32__) || defined(__WINGDK__)
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_WINGDK)
 SDL_DYNAPI_PROC(SDL_bool,SDL_DXGIGetOutputInfo,(int a,int *b, int *c),(a,b,c),return)
 #endif
 SDL_DYNAPI_PROC(SDL_bool,SDL_RenderIsClipEnabled,(SDL_Renderer *a),(a),return)
-#ifdef __WINRT__
+#ifdef SDL_PLATFORM_WINRT
 SDL_DYNAPI_PROC(int,SDL_WinRTRunApp,(SDL_main_func a, void *b),(a,b),return)
 SDL_DYNAPI_PROC(const wchar_t*,SDL_WinRTGetFSPathUNICODE,(SDL_WinRT_Path a),(a),return)
 SDL_DYNAPI_PROC(const char*,SDL_WinRTGetFSPathUTF8,(SDL_WinRT_Path a),(a),return)
@@ -623,7 +622,7 @@ SDL_DYNAPI_PROC(int,SDL_QueueAudio,(SDL_AudioDeviceID a, const void *b, Uint32 c
 SDL_DYNAPI_PROC(Uint32,SDL_GetQueuedAudioSize,(SDL_AudioDeviceID a),(a),return)
 SDL_DYNAPI_PROC(void,SDL_ClearQueuedAudio,(SDL_AudioDeviceID a),(a),)
 SDL_DYNAPI_PROC(SDL_Window*,SDL_GetGrabbedWindow,(void),(),return)
-#if defined(__WIN32__) || defined(__GDK__)
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)
 SDL_DYNAPI_PROC(void,SDL_SetWindowsMessageHook,(SDL_WindowsMessageHook a, void *b),(a,b),)
 #endif
 SDL_DYNAPI_PROC(int,SDL_GetDisplayDPI,(int a, float *b, float *c, float *d),(a,b,c,d),return)
@@ -702,20 +701,20 @@ SDL_DYNAPI_PROC(SDL_YUV_CONVERSION_MODE,SDL_GetYUVConversionMode,(void),(),retur
 SDL_DYNAPI_PROC(SDL_YUV_CONVERSION_MODE,SDL_GetYUVConversionModeForResolution,(int a, int b),(a,b),return)
 SDL_DYNAPI_PROC(void*,SDL_RenderGetMetalLayer,(SDL_Renderer *a),(a),return)
 SDL_DYNAPI_PROC(void*,SDL_RenderGetMetalCommandEncoder,(SDL_Renderer *a),(a),return)
-#ifdef __WINRT__
+#ifdef SDL_PLATFORM_WINRT
 SDL_DYNAPI_PROC(SDL_WinRT_DeviceFamily,SDL_WinRTGetDeviceFamily,(void),(),return)
 #endif
-#ifdef __ANDROID__
+#ifdef SDL_PLATFORM_ANDROID
 SDL_DYNAPI_PROC(SDL_bool,SDL_IsAndroidTV,(void),(),return)
 #endif
 SDL_DYNAPI_PROC(double,SDL_log10,(double a),(a),return)
 SDL_DYNAPI_PROC(float,SDL_log10f,(float a),(a),return)
 SDL_DYNAPI_PROC(char*,SDL_GameControllerMappingForDeviceIndex,(int a),(a),return)
-#ifdef __LINUX__
+#ifdef SDL_PLATFORM_LINUX
 SDL_DYNAPI_PROC(int,SDL_LinuxSetThreadPriority,(Sint64 a, int b),(a,b),return)
 #endif
 SDL_DYNAPI_PROC(SDL_bool,SDL_HasAVX512F,(void),(),return)
-#ifdef __ANDROID__
+#ifdef SDL_PLATFORM_ANDROID
 SDL_DYNAPI_PROC(SDL_bool,SDL_IsChromebook,(void),(),return)
 SDL_DYNAPI_PROC(SDL_bool,SDL_IsDeXMode,(void),(),return)
 SDL_DYNAPI_PROC(void,SDL_AndroidBackButton,(void),(),)
@@ -746,10 +745,9 @@ SDL_DYNAPI_PROC(SDL_bool,SDL_HasColorKey,(SDL_Surface *a),(a),return)
 #ifdef SDL_CreateThreadWithStackSize
 #undef SDL_CreateThreadWithStackSize
 #endif
-
-#if defined(__WIN32__) || defined(__GDK__)
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)
 SDL_DYNAPI_PROC(SDL_Thread*,SDL_CreateThreadWithStackSize,(SDL_ThreadFunction a, const char *b, const size_t c, void *d, pfnSDL_CurrentBeginThread e, pfnSDL_CurrentEndThread f),(a,b,c,d,e,f),return)
-#elif defined(__OS2__)
+#elif defined(SDL_PLATFORM_OS2)
 SDL_DYNAPI_PROC(SDL_Thread*,SDL_CreateThreadWithStackSize,(SDL_ThreadFunction a, const char *b, const size_t c, void *d, pfnSDL_CurrentBeginThread e, pfnSDL_CurrentEndThread f),(a,b,c,d,e,f),return)
 #else
 SDL_DYNAPI_PROC(SDL_Thread*,SDL_CreateThreadWithStackSize,(SDL_ThreadFunction a, const char *b, const size_t c, void *d),(a,b,c,d),return)
@@ -770,7 +768,7 @@ SDL_DYNAPI_PROC(int,SDL_RenderFillRectsF,(SDL_Renderer *a, const SDL_FRect *b, i
 SDL_DYNAPI_PROC(int,SDL_RenderCopyF,(SDL_Renderer *a, SDL_Texture *b, const SDL_Rect *c, const SDL_FRect *d),(a,b,c,d),return)
 SDL_DYNAPI_PROC(int,SDL_RenderCopyExF,(SDL_Renderer *a, SDL_Texture *b, const SDL_Rect *c, const SDL_FRect *d, const double e, const SDL_FPoint *f, const SDL_FlipMode g),(a,b,c,d,e,f,g),return)
 SDL_DYNAPI_PROC(SDL_TouchDeviceType,SDL_GetTouchDeviceType,(SDL_TouchID a),(a),return)
-#ifdef __IOS__
+#ifdef SDL_PLATFORM_IOS
 SDL_DYNAPI_PROC(int,SDL_UIKitRunApp,(int a, char *b[], SDL_main_func c),(a,b,c),return)
 #endif
 SDL_DYNAPI_PROC(size_t,SDL_SIMDGetAlignment,(void),(),return)
@@ -804,10 +802,10 @@ SDL_DYNAPI_PROC(void,SDL_OnApplicationWillResignActive,(void),(),)
 SDL_DYNAPI_PROC(void,SDL_OnApplicationDidEnterBackground,(void),(),)
 SDL_DYNAPI_PROC(void,SDL_OnApplicationWillEnterForeground,(void),(),)
 SDL_DYNAPI_PROC(void,SDL_OnApplicationDidBecomeActive,(void),(),)
-#ifdef __IOS__
+#ifdef SDL_PLATFORM_IOS
 SDL_DYNAPI_PROC(void,SDL_OnApplicationDidChangeStatusBarOrientation,(void),(),)
 #endif
-#ifdef __ANDROID__
+#ifdef SDL_PLATFORM_ANDROID
 SDL_DYNAPI_PROC(int,SDL_GetAndroidSDKVersion,(void),(),return)
 #endif
 SDL_DYNAPI_PROC(int,SDL_isupper,(int a),(a),return)
@@ -827,7 +825,7 @@ SDL_DYNAPI_PROC(double,SDL_trunc,(double a),(a),return)
 SDL_DYNAPI_PROC(float,SDL_truncf,(float a),(a),return)
 SDL_DYNAPI_PROC(SDL_Locale *,SDL_GetPreferredLocales,(void),(),return)
 SDL_DYNAPI_PROC(void*,SDL_SIMDRealloc,(void *a, const size_t b),(a, b),return)
-#ifdef __ANDROID__
+#ifdef SDL_PLATFORM_ANDROID
 SDL_DYNAPI_PROC(SDL_bool,SDL_AndroidRequestPermission,(const char *a),(a),return)
 #endif
 SDL_DYNAPI_PROC(int,SDL_OpenURL,(const char *a),(a),return)
@@ -857,7 +855,7 @@ SDL_DYNAPI_PROC(float,SDL_roundf,(float a),(a),return)
 SDL_DYNAPI_PROC(long,SDL_lround,(double a),(a),return)
 SDL_DYNAPI_PROC(long,SDL_lroundf,(float a),(a),return)
 SDL_DYNAPI_PROC(int,SDL_SoftStretchLinear,(SDL_Surface *a, const SDL_Rect *b, SDL_Surface *c, const SDL_Rect *d),(a,b,c,d),return)
-#if defined(__WIN32__) || defined(__WINGDK__)
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_WINGDK)
 SDL_DYNAPI_PROC(ID3D11Device*,SDL_RenderGetD3D11Device,(SDL_Renderer *a),(a),return)
 #endif
 SDL_DYNAPI_PROC(int,SDL_UpdateNVTexture,(SDL_Texture *a, const SDL_Rect *b, const Uint8 *c, int d, const Uint8 *e, int f),(a,b,c,d,e,f),return)
@@ -873,7 +871,7 @@ SDL_DYNAPI_PROC(int,SDL_isxdigit,(int a),(a),return)
 SDL_DYNAPI_PROC(int,SDL_ispunct,(int a),(a),return)
 SDL_DYNAPI_PROC(int,SDL_isprint,(int a),(a),return)
 SDL_DYNAPI_PROC(int,SDL_isgraph,(int a),(a),return)
-#ifdef __ANDROID__
+#ifdef SDL_PLATFORM_ANDROID
 SDL_DYNAPI_PROC(int,SDL_AndroidShowToast,(const char *a, int b, int c, int d, int e),(a,b,c,d,e),return)
 #endif
 SDL_DYNAPI_PROC(int,SDL_GetAudioDeviceSpec,(int a, int b, SDL2_AudioSpec *c),(a,b,c),return)
@@ -894,7 +892,7 @@ SDL_DYNAPI_PROC(int,SDL_asprintf,(char **a, SDL_PRINTF_FORMAT_STRING const char 
 SDL_DYNAPI_PROC(int,SDL_vasprintf,(char **a, const char *b, va_list c),(a,b,c),return)
 SDL_DYNAPI_PROC(void*,SDL_GetWindowICCProfile,(SDL_Window *a, size_t *b),(a,b),return)
 SDL_DYNAPI_PROC(Uint64,SDL_GetTicks64,(void),(),return)
-#ifdef __LINUX__
+#ifdef SDL_PLATFORM_LINUX
 SDL_DYNAPI_PROC(int,SDL_LinuxSetThreadPriorityAndPolicy,(Sint64 a, int b, int c),(a,b,c),return)
 #endif
 SDL_DYNAPI_PROC(const char*,SDL_GameControllerGetAppleSFSymbolsNameForButton,(SDL_GameController *a, SDL_GameControllerButton b),(a,b),return)
@@ -927,7 +925,7 @@ SDL_DYNAPI_PROC(SDL_bool,SDL_GameControllerHasRumble,(SDL_GameController *a),(a)
 SDL_DYNAPI_PROC(SDL_bool,SDL_GameControllerHasRumbleTriggers,(SDL_GameController *a),(a),return)
 SDL_DYNAPI_PROC(void,SDL_hid_ble_scan,(SDL_bool a),(a),)
 SDL_DYNAPI_PROC(int,SDL_PremultiplyAlpha,(int a, int b, Uint32 c, const void *d, int e, Uint32 f, void *g, int h),(a,b,c,d,e,f,g,h),return)
-#ifdef __ANDROID__
+#ifdef SDL_PLATFORM_ANDROID
 SDL_DYNAPI_PROC(int,SDL_AndroidSendMessage,(Uint32 a, int b),(a,b),return)
 #endif
 SDL_DYNAPI_PROC(const char*,SDL_GetTouchName,(int a),(a),return)
@@ -951,12 +949,12 @@ SDL_DYNAPI_PROC(void,SDL_GUIDToString,(SDL_GUID a, char *b, int c),(a,b,c),)
 SDL_DYNAPI_PROC(SDL_GUID,SDL_GUIDFromString,(const char *a),(a),return)
 SDL_DYNAPI_PROC(SDL_bool,SDL_HasLSX,(void),(),return)
 SDL_DYNAPI_PROC(SDL_bool,SDL_HasLASX,(void),(),return)
-#if defined(__WIN32__) || defined(__GDK__)
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)
 SDL_DYNAPI_PROC(ID3D12Device*,SDL_RenderGetD3D12Device,(SDL_Renderer *a),(a),return)
 #endif
 SDL_DYNAPI_PROC(size_t,SDL_utf8strnlen,(const char *a, size_t b),(a,b),return)
 
-#if defined(__GDK__)
+#if defined(SDL_PLATFORM_GDK)
 SDL_DYNAPI_PROC(int,SDL_GDKGetTaskQueue,(XTaskQueueHandle *a),(a),return)
 SDL_DYNAPI_PROC(int,SDL_GDKRunApp,(SDL_main_func a, void *b),(a,b),return)
 #endif
@@ -976,12 +974,12 @@ SDL_DYNAPI_PROC(int,SDL_GameControllerGetSensorDataWithTimestamp,(SDL_GameContro
 SDL_DYNAPI_PROC(int,SDL_SensorGetDataWithTimestamp,(SDL_Sensor *a, Uint64 *b, float *c, int d),(a,b,c,d),return)
 SDL_DYNAPI_PROC(void,SDL_ResetHints,(void),(),)
 SDL_DYNAPI_PROC(char*,SDL_strcasestr,(const char *a, const char *b),(a,b),return)
-#if defined(__GDK__)
+#if defined(SDL_PLATFORM_GDK)
 SDL_DYNAPI_PROC(void,SDL_GDKSuspendComplete,(void),(),)
 #endif
 SDL_DYNAPI_PROC(SDL_bool,SDL_HasWindowSurface,(SDL_Window *a),(a),return)
 SDL_DYNAPI_PROC(int,SDL_DestroyWindowSurface,(SDL_Window *a),(a),return)
-#if defined(__GDK__)
+#if defined(SDL_PLATFORM_GDK)
 SDL_DYNAPI_PROC(int,SDL_GDKGetDefaultUser,(XUserHandle *a),(a),return)
 #endif
 SDL_DYNAPI_PROC(Uint64,SDL_GameControllerGetSteamHandle,(SDL_GameController *a),(a),return)

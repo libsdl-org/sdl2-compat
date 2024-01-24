@@ -19,8 +19,8 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef sdl2_protos_h
-#define sdl2_protos_h 1
+#ifndef sdl2_protos_h_
+#define sdl2_protos_h_ 1
 
 #define SDL2_PROTO(rc,fn,params) \
  extern DECLSPEC rc SDLCALL SDL_##fn params ;
@@ -37,9 +37,9 @@ SDL2_PROTO(void,LogMessage,(int a, SDL_LogPriority b, SDL_PRINTF_FORMAT_STRING c
 SDL2_PROTO(int,sscanf,(const char *a, SDL_SCANF_FORMAT_STRING const char *b, ...))
 SDL2_PROTO(int,snprintf,(SDL_OUT_Z_CAP(b) char *a, size_t b, SDL_PRINTF_FORMAT_STRING const char *c, ...))
 
-#if defined(__WIN32__) || defined(__GDK__)
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)
 SDL2_PROTO(SDL_Thread*,CreateThread,(SDL_ThreadFunction a, const char *b, void *c, pfnSDL_CurrentBeginThread d, pfnSDL_CurrentEndThread e))
-#elif defined(__OS2__)
+#elif defined(SDL_PLATFORM_OS2)
 SDL2_PROTO(SDL_Thread*,CreateThread,(SDL_ThreadFunction a, const char *b, void *c, pfnSDL_CurrentBeginThread d, pfnSDL_CurrentEndThread e))
 #else
 SDL2_PROTO(SDL_Thread*,CreateThread,(SDL_ThreadFunction a, const char *b, void *c))
@@ -51,22 +51,22 @@ SDL2_PROTO(SDL2_RWops*,RWFromFP,(FILE *a, SDL_bool b))
 SDL2_PROTO(SDL2_RWops*,RWFromFP,(void *a, SDL_bool b))
 #endif
 
-#if defined(__WIN32__) || defined(__GDK__)
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)
 SDL2_PROTO(int,RegisterApp,(const char *a, Uint32 b, void *c))
 SDL2_PROTO(void,UnregisterApp,(void))
 #endif
 
-#if defined(__WIN32__) || defined(__WINGDK__)
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_WINGDK)
 SDL2_PROTO(int,Direct3D9GetAdapterIndex,(int a))
 SDL2_PROTO(IDirect3DDevice9*,RenderGetD3D9Device,(SDL_Renderer *a))
 #endif
 
-#ifdef __IOS__
+#ifdef SDL_PLATFORM_IOS
 SDL2_PROTO(int,iPhoneSetAnimationCallback,(SDL_Window *a, int b, void (SDLCALL *c)(void *))
 SDL2_PROTO(void,iPhoneSetEventPump,(SDL_bool a))
 #endif
 
-#ifdef __ANDROID__
+#ifdef SDL_PLATFORM_ANDROID
 SDL2_PROTO(void*,AndroidGetJNIEnv,(void))
 SDL2_PROTO(void*,AndroidGetActivity,(void))
 SDL2_PROTO(const char*,AndroidGetInternalStoragePath,(void))
@@ -591,11 +591,11 @@ SDL2_PROTO(void,GL_ResetAttributes,(void))
 SDL2_PROTO(SDL_bool,HasAVX,(void))
 SDL2_PROTO(SDL_AssertionHandler,GetDefaultAssertionHandler,(void))
 SDL2_PROTO(SDL_AssertionHandler,GetAssertionHandler,(void **a))
-#if defined(__WIN32__) || defined(__WINGDK__)
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_WINGDK)
 SDL2_PROTO(SDL_bool,DXGIGetOutputInfo,(int a,int *b, int *c))
 #endif
 SDL2_PROTO(SDL_bool,RenderIsClipEnabled,(SDL_Renderer *a))
-#ifdef __WINRT__
+#ifdef SDL_PLATFORM_WINRT
 SDL2_PROTO(int,WinRTRunApp,(SDL_main_func a, void *b))
 SDL2_PROTO(const wchar_t*,WinRTGetFSPathUNICODE,(SDL_WinRT_Path a))
 SDL2_PROTO(const char*,WinRTGetFSPathUTF8,(SDL_WinRT_Path a))
@@ -612,7 +612,7 @@ SDL2_PROTO(int,QueueAudio,(SDL_AudioDeviceID a, const void *b, Uint32 c))
 SDL2_PROTO(Uint32,GetQueuedAudioSize,(SDL_AudioDeviceID a))
 SDL2_PROTO(void,ClearQueuedAudio,(SDL_AudioDeviceID a))
 SDL2_PROTO(SDL_Window*,GetGrabbedWindow,(void))
-#if defined(__WIN32__) || defined(__GDK__)
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)
 SDL2_PROTO(void,SetWindowsMessageHook,(SDL_WindowsMessageHook a, void *b))
 #endif
 SDL2_PROTO(int,GetDisplayDPI,(int a, float *b, float *c, float *d))
@@ -691,20 +691,20 @@ SDL2_PROTO(SDL_YUV_CONVERSION_MODE,GetYUVConversionMode,(void))
 SDL2_PROTO(SDL_YUV_CONVERSION_MODE,GetYUVConversionModeForResolution,(int a, int b))
 SDL2_PROTO(void*,RenderGetMetalLayer,(SDL_Renderer *a))
 SDL2_PROTO(void*,RenderGetMetalCommandEncoder,(SDL_Renderer *a))
-#ifdef __WINRT__
+#ifdef SDL_PLATFORM_WINRT
 SDL2_PROTO(SDL_WinRT_DeviceFamily,WinRTGetDeviceFamily,(void))
 #endif
-#ifdef __ANDROID__
+#ifdef SDL_PLATFORM_ANDROID
 SDL2_PROTO(SDL_bool,IsAndroidTV,(void))
 #endif
 SDL2_PROTO(double,log10,(double a))
 SDL2_PROTO(float,log10f,(float a))
 SDL2_PROTO(char*,GameControllerMappingForDeviceIndex,(int a))
-#ifdef __LINUX__
+#ifdef SDL_PLATFORM_LINUX
 SDL2_PROTO(int,LinuxSetThreadPriority,(Sint64 a, int b))
 #endif
 SDL2_PROTO(SDL_bool,HasAVX512F,(void))
-#ifdef __ANDROID__
+#ifdef SDL_PLATFORM_ANDROID
 SDL2_PROTO(SDL_bool,IsChromebook,(void))
 SDL2_PROTO(SDL_bool,IsDeXMode,(void))
 SDL2_PROTO(void,AndroidBackButton,(void))
@@ -732,9 +732,9 @@ SDL2_PROTO(SDL_bool,IsTablet,(void))
 SDL2_PROTO(SDL_DisplayOrientation,GetDisplayOrientation,(int a))
 SDL2_PROTO(SDL_bool,HasColorKey,(SDL_Surface *a))
 
-#if defined(__WIN32__) || defined(__GDK__)
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)
 SDL2_PROTO(SDL_Thread*,CreateThreadWithStackSize,(SDL_ThreadFunction a, const char *b, const size_t c, void *d, pfnSDL_CurrentBeginThread e, pfnSDL_CurrentEndThread f))
-#elif defined(__OS2__)
+#elif defined(SDL_PLATFORM_OS2)
 SDL2_PROTO(SDL_Thread*,CreateThreadWithStackSize,(SDL_ThreadFunction a, const char *b, const size_t c, void *d, pfnSDL_CurrentBeginThread e, pfnSDL_CurrentEndThread f))
 #else
 SDL2_PROTO(SDL_Thread*,CreateThreadWithStackSize,(SDL_ThreadFunction a, const char *b, const size_t c, void *d))
@@ -755,7 +755,7 @@ SDL2_PROTO(int,RenderFillRectsF,(SDL_Renderer *a, const SDL_FRect *b, int c))
 SDL2_PROTO(int,RenderCopyF,(SDL_Renderer *a, SDL_Texture *b, const SDL_Rect *c, const SDL_FRect *d))
 SDL2_PROTO(int,RenderCopyExF,(SDL_Renderer *a, SDL_Texture *b, const SDL_Rect *c, const SDL_FRect *d, const double e, const SDL_FPoint *f, const SDL_FlipMode g))
 SDL2_PROTO(SDL_TouchDeviceType,GetTouchDeviceType,(SDL_TouchID a))
-#ifdef __IOS__
+#ifdef SDL_PLATFORM_IOS
 SDL2_PROTO(int,UIKitRunApp,(int a, char *b[], SDL_main_func c))
 #endif
 SDL2_PROTO(size_t,SIMDGetAlignment,(void))
@@ -789,10 +789,10 @@ SDL2_PROTO(void,OnApplicationWillResignActive,(void))
 SDL2_PROTO(void,OnApplicationDidEnterBackground,(void))
 SDL2_PROTO(void,OnApplicationWillEnterForeground,(void))
 SDL2_PROTO(void,OnApplicationDidBecomeActive,(void))
-#ifdef __IOS__
+#ifdef SDL_PLATFORM_IOS
 SDL2_PROTO(void,OnApplicationDidChangeStatusBarOrientation,(void))
 #endif
-#ifdef __ANDROID__
+#ifdef SDL_PLATFORM_ANDROID
 SDL2_PROTO(int,GetAndroidSDKVersion,(void))
 #endif
 SDL2_PROTO(int,isupper,(int a))
@@ -812,7 +812,7 @@ SDL2_PROTO(double,trunc,(double a))
 SDL2_PROTO(float,truncf,(float a))
 SDL2_PROTO(SDL_Locale *,GetPreferredLocales,(void))
 SDL2_PROTO(void*,SIMDRealloc,(void *a, const size_t b))
-#ifdef __ANDROID__
+#ifdef SDL_PLATFORM_ANDROID
 SDL2_PROTO(SDL_bool,AndroidRequestPermission,(const char *a))
 #endif
 SDL2_PROTO(int,OpenURL,(const char *a))
@@ -842,7 +842,7 @@ SDL2_PROTO(float,roundf,(float a))
 SDL2_PROTO(long,lround,(double a))
 SDL2_PROTO(long,lroundf,(float a))
 SDL2_PROTO(int,SoftStretchLinear,(SDL_Surface *a, const SDL_Rect *b, SDL_Surface *c, const SDL_Rect *d))
-#if defined(__WIN32__) || defined(__WINGDK__)
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_WINGDK)
 SDL2_PROTO(ID3D11Device*,RenderGetD3D11Device,(SDL_Renderer *a))
 #endif
 SDL2_PROTO(int,UpdateNVTexture,(SDL_Texture *a, const SDL_Rect *b, const Uint8 *c, int d, const Uint8 *e, int f))
@@ -858,7 +858,7 @@ SDL2_PROTO(int,isxdigit,(int a))
 SDL2_PROTO(int,ispunct,(int a))
 SDL2_PROTO(int,isprint,(int a))
 SDL2_PROTO(int,isgraph,(int a))
-#ifdef __ANDROID__
+#ifdef SDL_PLATFORM_ANDROID
 SDL2_PROTO(int,AndroidShowToast,(const char *a, int b, int c, int d, int e))
 #endif
 SDL2_PROTO(int,GetAudioDeviceSpec,(int a, int b, SDL2_AudioSpec *c))
@@ -877,7 +877,7 @@ SDL2_PROTO(int,asprintf,(char **a, SDL_PRINTF_FORMAT_STRING const char *b, ...))
 SDL2_PROTO(int,vasprintf,(char **a, const char *b, va_list c))
 SDL2_PROTO(void*,GetWindowICCProfile,(SDL_Window *a, size_t *b))
 SDL2_PROTO(Uint64,GetTicks64,(void))
-#ifdef __LINUX__
+#ifdef SDL_PLATFORM_LINUX
 SDL2_PROTO(int,LinuxSetThreadPriorityAndPolicy,(Sint64 a, int b, int c))
 #endif
 SDL2_PROTO(const char*,GameControllerGetAppleSFSymbolsNameForButton,(SDL_GameController *a, SDL_GameControllerButton b))
@@ -910,7 +910,7 @@ SDL2_PROTO(SDL_bool,GameControllerHasRumble,(SDL_GameController *a))
 SDL2_PROTO(SDL_bool,GameControllerHasRumbleTriggers,(SDL_GameController *a))
 SDL2_PROTO(void,hid_ble_scan,(SDL_bool a))
 SDL2_PROTO(int,PremultiplyAlpha,(int a, int b, Uint32 c, const void *d, int e, Uint32 f, void *g, int h))
-#ifdef __ANDROID__
+#ifdef SDL_PLATFORM_ANDROID
 SDL2_PROTO(int,AndroidSendMessage,(Uint32 a, int b))
 #endif
 SDL2_PROTO(const char*,GetTouchName,(int a))
@@ -934,11 +934,11 @@ SDL2_PROTO(void,GUIDToString,(SDL_GUID a, char *b, int c))
 SDL2_PROTO(SDL_GUID,GUIDFromString,(const char *a))
 SDL2_PROTO(SDL_bool,HasLSX,(void))
 SDL2_PROTO(SDL_bool,HasLASX,(void))
-#if defined(__WIN32__) || defined(__GDK__)
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)
 SDL2_PROTO(ID3D12Device*,RenderGetD3D12Device,(SDL_Renderer *a))
 #endif
 SDL2_PROTO(size_t,utf8strnlen,(const char *a, size_t b))
-#if defined(__GDK__)
+#if defined(SDL_PLATFORM_GDK)
 SDL2_PROTO(int,GDKGetTaskQueue,(XTaskQueueHandle *a))
 SDL2_PROTO(int,GDKRunApp,(SDL_main_func a, void *b))
 #endif
@@ -958,16 +958,16 @@ SDL2_PROTO(int,GameControllerGetSensorDataWithTimestamp,(SDL_GameController *a, 
 SDL2_PROTO(int,SensorGetDataWithTimestamp,(SDL_Sensor *a, Uint64 *b, float *c, int d))
 SDL2_PROTO(void,ResetHints,(void))
 SDL2_PROTO(char*,strcasestr,(const char *a, const char *b))
-#if defined(__GDK__)
+#if defined(SDL_PLATFORM_GDK)
 SDL2_PROTO(void,GDKSuspendComplete,(void))
 #endif
 SDL2_PROTO(SDL_bool,HasWindowSurface,(SDL_Window *a))
 SDL2_PROTO(int,DestroyWindowSurface,(SDL_Window *a))
-#if defined(__GDK__)
+#if defined(SDL_PLATFORM_GDK)
 SDL2_PROTO(int,GDKGetDefaultUser,(XUserHandle *a))
 #endif
 SDL2_PROTO(Uint64,GameControllerGetSteamHandle,(SDL_GameController *a))
 
 #undef SDL2_PROTO
 
-#endif /* sdl2_protos_h */
+#endif /* sdl2_protos_h_ */

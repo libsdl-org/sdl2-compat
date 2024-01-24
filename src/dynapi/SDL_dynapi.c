@@ -28,7 +28,7 @@
 
 #define SDL_DYNAMIC_API_ENVVAR "SDL_DYNAMIC_API"
 
-#if defined(__OS2__)
+#if defined(SDL_PLATFORM_OS2)
 #define INCL_DOS
 #define INCL_DOSERRORS
 #include <os2.h>
@@ -358,7 +358,7 @@ Sint32 SDL_DYNAPI_entry(Uint32 apiver, void *table, Uint32 tablesize)
 
 /* Obviously we can't use SDL_LoadObject() to load SDL.  :)  */
 /* Also obviously, we never close the loaded library. */
-#if defined(WIN32) || defined(_WIN32) || defined(__CYGWIN__)
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_CYGWIN)
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
 #endif
@@ -376,7 +376,7 @@ static SDL_INLINE void *get_sdlapi_entry(const char *fname, const char *sym)
     return retval;
 }
 
-#elif defined(unix) || defined(__unix__) || defined(__APPLE__) || defined(__HAIKU__) || defined(__QNX__)
+#elif defined(unix) || defined(__unix__) || defined(__APPLE__) || defined(SDL_PLATFORM_HAIKU) || defined(SDL_PLATFORM_QNX)
 #include <stdio.h>
 #include <stdlib.h>
 #include <dlfcn.h>
@@ -393,7 +393,7 @@ static SDL_INLINE void *get_sdlapi_entry(const char *fname, const char *sym)
     return retval;
 }
 
-#elif defined(__OS2__)
+#elif defined(SDL_PLATFORM_OS2)
 static SDL_INLINE void *get_sdlapi_entry(const char *fname, const char *sym)
 {
     HMODULE hmodule;
@@ -415,7 +415,7 @@ static void dynapi_warn(const char *msg)
 {
     const char *caption = "SDL Dynamic API Failure!";
 /* SDL_ShowSimpleMessageBox() is a too heavy for here. */
-#if (defined(WIN32) || defined(_WIN32) || defined(__CYGWIN__)) && !defined(__XBOXONE__) && !defined(__XBOXSERIES__)
+#if (defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_CYGWIN)) && !defined(SDL_PLATFORM_XBOXONE) && !defined(SDL_PLATFORM_XBOXSERIES)
     MessageBoxA(NULL, msg, caption, MB_OK | MB_ICONERROR);
 #else
     fprintf(stderr, "\n\n%s\n%s\n\n", caption, msg);
@@ -432,9 +432,9 @@ DynApiExitProcess(int exitcode)
 #if defined(_WIN32)
     TerminateProcess(GetCurrentProcess(), exitcode);
     ExitProcess(exitcode);
-#elif defined(__OS2__)
+#elif defined(SDL_PLATFORM_OS2)
     DosExit(EXIT_PROCESS, exitcode);
-#elif defined(__HAIKU__)  /* Haiku has _Exit, but it's not marked noreturn. */
+#elif defined(SDL_PLATFORM_HAIKU)  /* Haiku has _Exit, but it's not marked noreturn. */
     _exit(exitcode);
 #else
     _Exit(exitcode);  /* this (currently) covers everything else. */
