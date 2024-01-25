@@ -1896,6 +1896,35 @@ SDL_FilterEvents(SDL2_EventFilter filter2, void *userdata)
 }
 
 
+/* Several SDL3 video backends have had their names lower-cased, map to the SDL2 equivalent name. */
+static const char *ReplaceVideoBackendName(const char *name)
+{
+    if (name) {
+        #define CHECKBACKEND(sdl2name) if (SDL_strcasecmp(name, sdl2name) == 0) { return sdl2name; }
+        CHECKBACKEND("KMSDRM");
+        CHECKBACKEND("RPI");
+        CHECKBACKEND("Android");
+        CHECKBACKEND("PSP");
+        CHECKBACKEND("PS2");
+        CHECKBACKEND("VITA");
+        #undef CHECKBACKEND
+    }
+    return name;
+}
+
+DECLSPEC const char * SDLCALL
+SDL_GetVideoDriver(int idx)
+{
+    return ReplaceVideoBackendName(SDL3_GetVideoDriver(idx));
+}
+
+DECLSPEC const char * SDLCALL
+SDL_GetCurrentVideoDriver(void)
+{
+    return ReplaceVideoBackendName(SDL3_GetCurrentVideoDriver());
+}
+
+
 /* mouse coords became floats in SDL3 */
 
 DECLSPEC Uint32 SDLCALL
