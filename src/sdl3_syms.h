@@ -861,8 +861,8 @@ SDL3_SYM(SDL_HapticID *,GetHaptics,(int *a),(a),return)
 SDL3_SYM(const char *,GetHapticInstanceName,(SDL_HapticID a),(a),return)
 SDL3_SYM(SDL_Haptic *,GetHapticFromInstanceID,(SDL_HapticID a),(a),return)
 SDL3_SYM(SDL_HapticID,GetHapticInstanceID,(SDL_Haptic *a),(a),return)
-SDL3_SYM(Uint32,GetJoystickCaps,(SDL_Joystick *a),(a),return)
-SDL3_SYM(Uint32,GetGamepadCaps,(SDL_GameController *a),(a),return)
+SDL3_SYM(SDL_PropertiesID,GetJoystickProperties,(SDL_Joystick *a),(a),return)
+SDL3_SYM(SDL_PropertiesID,GetGamepadProperties,(SDL_GameController *a),(a),return)
 
 #undef SDL3_SYM
 #undef SDL3_SYM_PASSTHROUGH

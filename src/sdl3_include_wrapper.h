@@ -993,8 +993,6 @@
 #define SDL_GetHapticName IGNORE_THIS_VERSION_OF_SDL_GetHapticName
 #define SDL_ReadSurfacePixel IGNORE_THIS_VERSION_OF_SDL_ReadSurfacePixel
 #define SDL_FlipSurface IGNORE_THIS_VERSION_OF_SDL_FlipSurface
-#define SDL_GetJoystickCaps IGNORE_THIS_VERSION_OF_SDL_GetJoystickCaps
-#define SDL_GetGamepadCaps IGNORE_THIS_VERSION_OF_SDL_GetGamepadCaps
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -4857,14 +4855,6 @@
 
 #ifdef SDL_FlipSurface
 #undef SDL_FlipSurface
-#endif
-
-#ifdef SDL_GetJoystickCaps
-#undef SDL_GetJoystickCaps
-#endif
-
-#ifdef SDL_GetGamepadCaps
-#undef SDL_GetGamepadCaps
 #endif
 
 #undef SDL_ThreadID /* see at top. */
