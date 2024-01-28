@@ -160,6 +160,7 @@ test_program(testautomation NONINTERACTIVE TIMEOUT 120
     "testautomation.c"
     "testautomation_audio.c"
     "testautomation_guid.c"
+    "testautomation_log.c"
     "testautomation_main.c"
     "testautomation_platform.c"
     "testautomation_sdltest.c"
