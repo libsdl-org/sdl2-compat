@@ -6444,11 +6444,11 @@ SDL_GL_BindTexture(SDL_Texture *texture, float *texw, float *texh)
     /* always flush the renderer here; good enough. SDL2 only flushed if the texture might have changed, but we'll be conservative. */
     SDL3_FlushRenderer(renderer);
 
-    if ((tex = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEXTURE_NUMBER, -1)) != -1) {  // opengl renderer.
-        const Sint64 target = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEXTURE_TARGET, 0);
-        const Sint64 uv = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEXTURE_UV_NUMBER, 0);
-        const Sint64 u = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEXTURE_U_NUMBER, 0);
-        const Sint64 v = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEXTURE_V_NUMBER, 0);
+    if ((tex = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGL_TEXTURE_NUMBER, -1)) != -1) {  // opengl renderer.
+        const Sint64 target = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGL_TEXTURE_TARGET, 0);
+        const Sint64 uv = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGL_TEXTURE_UV_NUMBER, 0);
+        const Sint64 u = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGL_TEXTURE_U_NUMBER, 0);
+        const Sint64 v = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGL_TEXTURE_V_NUMBER, 0);
 
         SDL_bool okay = SDL_TRUE;
         GLFN(glEnable);
@@ -6475,16 +6475,16 @@ SDL_GL_BindTexture(SDL_Texture *texture, float *texw, float *texh)
         pglBindTexture((GLenum) target, (GLuint) tex);
 
         if (texw) {
-            *texw = SDL3_GetFloatProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEX_W_FLOAT, 1.0f);
+            *texw = SDL3_GetFloatProperty(props, SDL_PROP_TEXTURE_OPENGL_TEX_W_FLOAT, 1.0f);
         }
         if (texh) {
-            *texh = SDL3_GetFloatProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEX_H_FLOAT, 1.0f);
+            *texh = SDL3_GetFloatProperty(props, SDL_PROP_TEXTURE_OPENGL_TEX_H_FLOAT, 1.0f);
         }
-    } else if ((tex = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGLES2_TEXTURE_NUMBER, -1)) != -1) {  // opengles2 renderer.
-        const Sint64 target = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGLES2_TEXTURE_TARGET, 0);
-        const Sint64 uv = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGLES2_TEXTURE_UV_NUMBER, 0);
-        const Sint64 u = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGLES2_TEXTURE_U_NUMBER, 0);
-        const Sint64 v = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGLES2_TEXTURE_V_NUMBER, 0);
+    } else if ((tex = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_NUMBER, -1)) != -1) {  // opengles2 renderer.
+        const Sint64 target = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_TARGET, 0);
+        const Sint64 uv = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_UV_NUMBER, 0);
+        const Sint64 u = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_U_NUMBER, 0);
+        const Sint64 v = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_V_NUMBER, 0);
 
         SDL_bool okay = SDL_TRUE;
         GLFN(glActiveTexture);
@@ -6536,11 +6536,11 @@ SDL_GL_UnbindTexture(SDL_Texture *texture)
         return -1;
     }
 
-    if ((tex = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEXTURE_NUMBER, -1)) != -1) {  // opengl renderer.
-        const Sint64 target = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEXTURE_TARGET, 0);
-        const Sint64 uv = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEXTURE_UV_NUMBER, 0);
-        const Sint64 u = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEXTURE_U_NUMBER, 0);
-        const Sint64 v = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGL_TEXTURE_V_NUMBER, 0);
+    if ((tex = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGL_TEXTURE_NUMBER, -1)) != -1) {  // opengl renderer.
+        const Sint64 target = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGL_TEXTURE_TARGET, 0);
+        const Sint64 uv = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGL_TEXTURE_UV_NUMBER, 0);
+        const Sint64 u = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGL_TEXTURE_U_NUMBER, 0);
+        const Sint64 v = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGL_TEXTURE_V_NUMBER, 0);
 
         SDL_bool okay = SDL_TRUE;
         GLFN(glDisable);
@@ -6567,11 +6567,11 @@ SDL_GL_UnbindTexture(SDL_Texture *texture)
         }
         pglBindTexture((GLenum) target, 0);
         pglDisable((GLenum) target);
-    } else if ((tex = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGLES2_TEXTURE_NUMBER, -1)) != -1) {  // opengles2 renderer.
-        const Sint64 target = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGLES2_TEXTURE_TARGET, 0);
-        const Sint64 uv = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGLES2_TEXTURE_UV_NUMBER, 0);
-        const Sint64 u = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGLES2_TEXTURE_U_NUMBER, 0);
-        const Sint64 v = SDL3_GetNumberProperty(props, SDL_PROPERTY_TEXTURE_OPENGLES2_TEXTURE_V_NUMBER, 0);
+    } else if ((tex = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_NUMBER, -1)) != -1) {  // opengles2 renderer.
+        const Sint64 target = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_TARGET, 0);
+        const Sint64 uv = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_UV_NUMBER, 0);
+        const Sint64 u = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_U_NUMBER, 0);
+        const Sint64 v = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_V_NUMBER, 0);
 
         SDL_bool okay = SDL_TRUE;
         GLFN(glActiveTexture);
@@ -6834,28 +6834,19 @@ SDL_JoystickPathForIndex(int idx)
 DECLSPEC SDL_bool SDLCALL
 SDL_JoystickHasLED(SDL_Joystick *joystick)
 {
-    if (SDL3_GetJoystickCaps(joystick) & SDL_JOYSTICK_CAP_RGB_LED) {
-        return SDL_TRUE;
-    }
-    return SDL_FALSE;
+    return SDL3_GetBooleanProperty(SDL3_GetJoystickProperties(joystick), SDL_PROP_JOYSTICK_CAP_RGB_LED_BOOLEAN, SDL_FALSE);
 }
 
 DECLSPEC SDL_bool SDLCALL
 SDL_JoystickHasRumble(SDL_Joystick *joystick)
 {
-    if (SDL3_GetJoystickCaps(joystick) & SDL_JOYSTICK_CAP_RUMBLE) {
-        return SDL_TRUE;
-    }
-    return SDL_FALSE;
+    return SDL3_GetBooleanProperty(SDL3_GetJoystickProperties(joystick), SDL_PROP_GAMEPAD_CAP_RUMBLE_BOOLEAN, SDL_FALSE);
 }
 
 DECLSPEC SDL_bool SDLCALL
 SDL_JoystickHasRumbleTriggers(SDL_Joystick *joystick)
 {
-    if (SDL3_GetJoystickCaps(joystick) & SDL_JOYSTICK_CAP_TRIGGER_RUMBLE) {
-        return SDL_TRUE;
-    }
-    return SDL_FALSE;
+    return SDL3_GetBooleanProperty(SDL3_GetJoystickProperties(joystick), SDL_PROP_GAMEPAD_CAP_TRIGGER_RUMBLE_BOOLEAN, SDL_FALSE);
 }
 
 DECLSPEC char* SDLCALL
@@ -7056,28 +7047,19 @@ SDL_GameControllerGetBindForButton(SDL_GameController *controller,
 DECLSPEC SDL_bool SDLCALL
 SDL_GameControllerHasLED(SDL_Gamepad *gamepad)
 {
-    if (SDL3_GetGamepadCaps(gamepad) & SDL_GAMEPAD_CAP_RGB_LED) {
-        return SDL_TRUE;
-    }
-    return SDL_FALSE;
+    return SDL3_GetBooleanProperty(SDL3_GetGamepadProperties(gamepad), SDL_PROP_GAMEPAD_CAP_RGB_LED_BOOLEAN, SDL_FALSE);
 }
 
 DECLSPEC SDL_bool SDLCALL
 SDL_GameControllerHasRumble(SDL_Gamepad *gamepad)
 {
-    if (SDL3_GetGamepadCaps(gamepad) & SDL_GAMEPAD_CAP_RUMBLE) {
-        return SDL_TRUE;
-    }
-    return SDL_FALSE;
+    return SDL3_GetBooleanProperty(SDL3_GetGamepadProperties(gamepad), SDL_PROP_GAMEPAD_CAP_RUMBLE_BOOLEAN, SDL_FALSE);
 }
 
 DECLSPEC SDL_bool SDLCALL
 SDL_GameControllerHasRumbleTriggers(SDL_Gamepad *gamepad)
 {
-    if (SDL3_GetGamepadCaps(gamepad) & SDL_GAMEPAD_CAP_TRIGGER_RUMBLE) {
-        return SDL_TRUE;
-    }
-    return SDL_FALSE;
+    return SDL3_GetBooleanProperty(SDL3_GetGamepadProperties(gamepad), SDL_PROP_GAMEPAD_CAP_TRIGGER_RUMBLE_BOOLEAN, SDL_FALSE);
 }
 
 DECLSPEC int SDLCALL
