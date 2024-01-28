@@ -440,9 +440,6 @@
 #define SDL_IsTablet IGNORE_THIS_VERSION_OF_SDL_IsTablet
 #define SDL_JoystickConnected IGNORE_THIS_VERSION_OF_SDL_JoystickConnected
 #define SDL_JoystickEventsEnabled IGNORE_THIS_VERSION_OF_SDL_JoystickEventsEnabled
-#define SDL_JoystickHasLED IGNORE_THIS_VERSION_OF_SDL_JoystickHasLED
-#define SDL_JoystickHasRumble IGNORE_THIS_VERSION_OF_SDL_JoystickHasRumble
-#define SDL_JoystickHasRumbleTriggers IGNORE_THIS_VERSION_OF_SDL_JoystickHasRumbleTriggers
 #define SDL_IsJoystickHaptic IGNORE_THIS_VERSION_OF_SDL_IsJoystickHaptic
 #define SDL_LinuxSetThreadPriority IGNORE_THIS_VERSION_OF_SDL_LinuxSetThreadPriority
 #define SDL_LinuxSetThreadPriorityAndPolicy IGNORE_THIS_VERSION_OF_SDL_LinuxSetThreadPriorityAndPolicy
@@ -2643,18 +2640,6 @@
 
 #ifdef SDL_JoystickEventsEnabled
 #undef SDL_JoystickEventsEnabled
-#endif
-
-#ifdef SDL_JoystickHasLED
-#undef SDL_JoystickHasLED
-#endif
-
-#ifdef SDL_JoystickHasRumble
-#undef SDL_JoystickHasRumble
-#endif
-
-#ifdef SDL_JoystickHasRumbleTriggers
-#undef SDL_JoystickHasRumbleTriggers
 #endif
 
 #ifdef SDL_IsJoystickHaptic
