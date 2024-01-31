@@ -4284,6 +4284,9 @@ SDL_RenderGeometryRaw(SDL_Renderer *renderer, SDL_Texture *texture, const float 
     }
 
     color3 = (SDL_FColor *) SDL3_small_alloc(SDL_FColor, num_vertices, &isstack);
+    if (!color3) {
+        return SDL3_OutOfMemory();
+    }
     for (i = 0; i < num_vertices; ++i) {
         color3[i].r = color->r / 255.0f;
         color3[i].g = color->g / 255.0f;
