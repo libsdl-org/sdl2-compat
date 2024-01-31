@@ -4264,9 +4264,17 @@ DECLSPEC int SDLCALL
 SDL_RenderGeometryRaw(SDL_Renderer *renderer, SDL_Texture *texture, const float *xy, int xy_stride, const SDL_Color *color, int color_stride, const float *uv, int uv_stride, int num_vertices, const void *indices, int num_indices, int size_indices)
 {
     int i, retval;
-    SDL_FColor *color3 = (SDL_FColor *) SDL3_stack_alloc(SDL_FColor, num_vertices);
     const char *color2 = (const char *) color;
+    SDL_FColor *color3;
 
+    if (num_vertices <= 0) {
+        return SDL3_InvalidParamError("num_vertices");
+    }
+    if (!color) {
+        return SDL3_InvalidParamError("color");
+    }
+
+    color3 = (SDL_FColor *) SDL3_stack_alloc(SDL_FColor, num_vertices);
     for (i = 0; i < num_vertices; ++i) {
         color3[i].r = color->r / 255.0f;
         color3[i].g = color->g / 255.0f;
