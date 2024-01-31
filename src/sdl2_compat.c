@@ -184,6 +184,18 @@ do { \
 #define SDL3_stack_free(data)            SDL3_free(data)
 #endif
 
+#ifdef _MSC_VER /* SDL_MAX_SMALL_ALLOC_STACKSIZE is smaller than _ALLOCA_S_THRESHOLD and should be generally safe */
+#pragma warning(disable : 6255)
+#endif
+#define SDL_MAX_SMALL_ALLOC_STACKSIZE          128
+#define SDL3_small_alloc(type, count, pisstack) ((*(pisstack) = ((sizeof(type) * (count)) < SDL_MAX_SMALL_ALLOC_STACKSIZE)), (*(pisstack) ? SDL3_stack_alloc(type, count) : (type *)SDL3_malloc(sizeof(type) * (count))))
+#define SDL3_small_free(ptr, isstack) \
+    if ((isstack)) {                 \
+        SDL3_stack_free(ptr);         \
+    } else {                         \
+        SDL3_free(ptr);               \
+    }
+
 #include <SDL3/SDL_opengl.h>
 #include <SDL3/SDL_opengl_glext.h>
 
@@ -4260,7 +4272,7 @@ SDL_RenderGeometry(SDL_Renderer *renderer, SDL_Texture *texture, const SDL2_Vert
 DECLSPEC int SDLCALL
 SDL_RenderGeometryRaw(SDL_Renderer *renderer, SDL_Texture *texture, const float *xy, int xy_stride, const SDL_Color *color, int color_stride, const float *uv, int uv_stride, int num_vertices, const void *indices, int num_indices, int size_indices)
 {
-    int i, retval;
+    int i, retval, isstack;
     const char *color2 = (const char *) color;
     SDL_FColor *color3;
 
@@ -4271,7 +4283,7 @@ SDL_RenderGeometryRaw(SDL_Renderer *renderer, SDL_Texture *texture, const float 
         return SDL3_InvalidParamError("color");
     }
 
-    color3 = (SDL_FColor *) SDL3_stack_alloc(SDL_FColor, num_vertices);
+    color3 = (SDL_FColor *) SDL3_small_alloc(SDL_FColor, num_vertices, &isstack);
     for (i = 0; i < num_vertices; ++i) {
         color3[i].r = color->r / 255.0f;
         color3[i].g = color->g / 255.0f;
@@ -4283,7 +4295,7 @@ SDL_RenderGeometryRaw(SDL_Renderer *renderer, SDL_Texture *texture, const float 
 
     color_stride = sizeof(SDL_FColor);
     retval = SDL3_RenderGeometryRaw(renderer, texture, xy, xy_stride, color3, color_stride, uv, uv_stride, num_vertices, indices, num_indices, size_indices);
-    SDL3_stack_free(color3);
+    SDL3_small_free(color3, isstack);
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
