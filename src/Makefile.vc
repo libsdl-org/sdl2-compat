@@ -3,6 +3,9 @@
 #
 # If you specifically want to build for x86:
 #	nmake /f Makefile.vc CPU=x86
+#
+# If you specifically want to build for x64:
+#	nmake /f Makefile.vc CPU=x64
 
 # change INCLUDES so it points to SDL3 headers directory:
 INCLUDES = -Iinclude
@@ -12,19 +15,27 @@ CPPFLAGS = -DNDEBUG -DDLL_EXPORT
 CC = cl
 LD = link
 RC = rc
+AS64 = ml64
 
 CFLAGS = /nologo /O2 /MD /W3 /GS-
 LDFLAGS = /nologo /DLL /NODEFAULTLIB /RELEASE
 LDLIBS = kernel32.lib user32.lib
+AS64FLAGS = /nologo /W3 /Ta
 
 !if "$(CPU)" == "x86"
 CFLAGS = $(CFLAGS) /arch:SSE
+!endif
+!if "$(CPU)" == "x64"
+X64_OBJ = sdl2_mslibc_x64.obj
 !endif
 
 DLLNAME = SDL2.dll
 IMPNAME = SDL2.lib
 
-OBJ = sdl2_compat.obj dynapi\SDL_dynapi.obj version.res
+OBJ = sdl2_compat.obj dynapi\SDL_dynapi.obj sdl2_mslibc.obj $(X64_OBJ) version.res
+
+.SUFFIXES:
+.SUFFIXES: .dll .obj .res .c .cpp .asm .masm .rc
 
 all: $(DLLNAME)
 
@@ -33,6 +44,8 @@ $(DLLNAME): $(OBJ)
 
 .c.obj:
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) /Fo$@ -c $<
+.masm.obj:
+	$(AS64) $(AS64FLAGS) $< /Fo$@ /c
 .rc.res:
 	$(RC) /r /Fo$@ $<
 

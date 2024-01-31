@@ -609,9 +609,6 @@ LoadSDL3(void)
 }
 
 #if defined(_MSC_VER) && !defined(SDL_BUILDING_WINRT)
-#ifdef _M_IX86
-#include "x86_msvc.h"
-#endif
 
 /* NOLINTNEXTLINE(readability-redundant-declaration) */
 extern void *memcpy(void *dst, const void *src, size_t len);

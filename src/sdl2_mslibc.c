@@ -19,15 +19,21 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-/* taken from SDL_stdlib.c of SDL2 */
+/* taken from SDL_mslibc.c of SDL3 */
 
-/* *INDENT-OFF* */
+#if defined(_MSC_VER) && !defined(SDL_BUILDING_WINRT)
+
+#ifndef __FLTUSED__
+#define __FLTUSED__
+__declspec(selectany) int _fltused = 1;
+#endif
+
+#ifdef _M_IX86
 
 /* Float to long */
-void
-__declspec(naked)
-_ftol()
+void __declspec(naked) _ftol()
 {
+    /* *INDENT-OFF* */
     __asm {
         push        ebp
         mov         ebp,esp
@@ -71,25 +77,23 @@ localexit:
         leave
         ret
     }
+    /* *INDENT-ON* */
 }
 
-void
-_ftol2()
+void _ftol2_sse()
 {
     _ftol();
 }
 
-void
-_ftol2_sse()
+void _ftol2()
 {
     _ftol();
 }
 
 /* 64-bit math operators for 32-bit systems */
-void
-__declspec(naked)
-_allmul()
+void __declspec(naked) _allmul()
 {
+    /* *INDENT-OFF* */
     __asm {
         mov         eax, dword ptr[esp+8]
         mov         ecx, dword ptr[esp+10h]
@@ -112,12 +116,12 @@ hard:
         pop         ebx
         ret         10h
     }
+    /* *INDENT-ON* */
 }
 
-void
-__declspec(naked)
-_alldiv()
+void __declspec(naked) _alldiv()
 {
+    /* *INDENT-OFF* */
     __asm {
         push        edi
         push        esi
@@ -198,12 +202,12 @@ L8:
         pop         edi
         ret         10h
     }
+    /* *INDENT-ON* */
 }
 
-void
-__declspec(naked)
-_aulldiv()
+void __declspec(naked) _aulldiv()
 {
+    /* *INDENT-OFF* */
     __asm {
         push        ebx
         push        esi
@@ -254,12 +258,12 @@ L2:
         pop         ebx
         ret         10h
     }
+    /* *INDENT-ON* */
 }
 
-void
-__declspec(naked)
-_allrem()
+void __declspec(naked) _allrem()
 {
+    /* *INDENT-OFF* */
     __asm {
         push        ebx
         push        edi
@@ -339,12 +343,12 @@ L8:
         pop         ebx
         ret         10h
     }
+    /* *INDENT-ON* */
 }
 
-void
-__declspec(naked)
-_aullrem()
+void __declspec(naked) _aullrem()
 {
+    /* *INDENT-OFF* */
     __asm {
         push        ebx
         mov         eax,dword ptr [esp+14h]
@@ -396,12 +400,12 @@ L2:
         pop         ebx
         ret         10h
     }
+    /* *INDENT-ON* */
 }
 
-void
-__declspec(naked)
-_alldvrm()
+void __declspec(naked) _alldvrm()
 {
+    /* *INDENT-OFF* */
     __asm {
         push        edi
         push        esi
@@ -504,12 +508,12 @@ L8:
         pop         edi
         ret         10h
     }
+    /* *INDENT-ON* */
 }
 
-void
-__declspec(naked)
-_aulldvrm()
+void __declspec(naked) _aulldvrm()
 {
+    /* *INDENT-OFF* */
     __asm {
         push        esi
         mov         eax,dword ptr [esp+14h]
@@ -575,12 +579,12 @@ L2:
         pop         esi
         ret         10h
     }
+    /* *INDENT-ON* */
 }
 
-void
-__declspec(naked)
-_allshl()
+void __declspec(naked) _allshl()
 {
+    /* *INDENT-OFF* */
     __asm {
         cmp         cl,40h
         jae         RETZERO
@@ -600,12 +604,12 @@ RETZERO:
         xor         edx,edx
         ret
     }
+    /* *INDENT-ON* */
 }
 
-void
-__declspec(naked)
-_allshr()
+void __declspec(naked) _allshr()
 {
+    /* *INDENT-OFF* */
     __asm {
         cmp         cl,3Fh
         jae         RETSIGN
@@ -625,12 +629,12 @@ RETSIGN:
         mov         eax,edx
         ret
     }
+    /* *INDENT-ON* */
 }
 
-void
-__declspec(naked)
-_aullshr()
+void __declspec(naked) _aullshr()
 {
+    /* *INDENT-OFF* */
     __asm {
         cmp         cl,40h
         jae         RETZERO
@@ -650,7 +654,82 @@ RETZERO:
         xor         edx,edx
         ret
     }
+    /* *INDENT-ON* */
 }
-/* *INDENT-ON* */
 
-/* vi: set ts=4 sw=4 expandtab: */
+void __declspec(naked) _chkstk(void)
+{
+    __asm {
+        push        ecx
+        mov         ecx,esp     ; lea         ecx,dword ptr [esp]+4
+        add         ecx,4
+        sub         ecx,eax
+        sbb         eax,eax
+        not         eax
+        and         ecx,eax
+        mov         eax,esp
+        and         eax,0xfffff000
+L1:
+        cmp         ecx,eax
+        jb          short L2
+        mov         eax,ecx
+        pop         ecx
+        xchg        esp,eax
+        mov         eax,dword ptr [eax]
+        mov         dword ptr [esp],eax
+        ret
+L2:
+        sub         eax,0x1000
+        test        dword ptr [eax],eax
+        jmp         short L1
+    }
+}
+
+void __declspec(naked) _alloca_probe_8(void)
+{
+    /* *INDENT-OFF* */
+    __asm {
+        push        ecx
+        mov         ecx,esp     ; lea         ecx,dword ptr [esp]+8
+        add         ecx,8
+        sub         ecx,eax
+        and         ecx,0x7
+        add         eax,ecx
+        sbb         ecx,ecx
+        or          eax,ecx
+        pop         ecx
+        jmp         _chkstk
+    }
+    /* *INDENT-ON* */
+}
+
+void __declspec(naked) _alloca_probe_16(void)
+{
+    /* *INDENT-OFF* */
+    __asm {
+        push        ecx
+        mov         ecx,esp     ; lea         ecx,dword ptr [esp]+8
+        add         ecx,8
+        sub         ecx,eax
+        and         ecx,0xf
+        add         eax,ecx
+        sbb         ecx,ecx
+        or          eax,ecx
+        pop         ecx
+        jmp         _chkstk
+    }
+    /* *INDENT-ON* */
+}
+
+#endif /* _M_IX86 */
+
+#ifdef _M_ARM64
+
+/* !!! FIXME !!! */
+void __chkstk(void);
+void __chkstk() {
+}
+
+#endif
+
+#endif /* MSC_VER */

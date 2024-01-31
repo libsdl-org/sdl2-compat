@@ -184,8 +184,21 @@ endif()
 
 if(WIN32)
   list(APPEND SDL2COMPAT_SRCS
+    "src/sdl2_mslibc.c"
     "src/version.rc"
   )
+endif()
+if(MSVC)
+  if(SDL_CPU_X64)
+    list(APPEND SDL2COMPAT_SRCS
+      "src/sdl2_mslibc_x64.masm"
+    )
+    enable_language(ASM_MASM)
+    set_property(SOURCE "src/sdl2_mslibc_x64.masm" PROPERTY LANGUAGE "ASM_MASM")
+  elseif(SDL_CPU_ARM32 OR SDL_CPU_ARM64)
+    # FIXME: ARM assembler (armasm.exe/armasm64.exe) is NOT ASM_MASM, and does currently not work with CMake
+    # (https://gitlab.kitware.com/cmake/cmake/-/issues/18912)
+  endif()
 endif()
 
 if(APPLE)
@@ -215,6 +228,9 @@ if(TARGET SDL3::SDL3-shared)
   set_property(TARGET SDL2 PROPERTY BUILD_RPATH $<TARGET_FILE_DIR:SDL3::SDL3-shared>)
 endif()
 
+if(MSVC AND SDL_CPU_X64)
+  target_compile_options(SDL2 PRIVATE "$<$<COMPILE_LANGUAGE:ASM_MASM>:/nologo>")
+endif()
 set(EXTRA_CFLAGS )
 if(CMAKE_C_COMPILER_ID MATCHES "Clang|GNU")
   set(EXTRA_CFLAGS "${EXTRA_CFLAGS} -Wall")
@@ -309,9 +325,9 @@ if(WINDOWS_STORE)
   target_compile_options(SDL2 PRIVATE "-ZW")
 elseif(MSVC)
   # Don't try to link with the default set of libraries.
-  target_compile_options(SDL2 PRIVATE /GS-)
+  target_compile_options(SDL2 PRIVATE "$<$<COMPILE_LANGUAGE:C>:/GS->")
   if(SDL_CPU_X86)  # don't emit SSE2 in x86 builds
-    target_compile_options(SDL2 PRIVATE /arch:SSE)
+    target_compile_options(SDL2 PRIVATE "$<$<COMPILE_LANGUAGE:C>:/arch:SSE>")
   endif()
   if(NOT MSVC_CLANG AND NOT SDL_CPU_ARM32)
     set_property(TARGET SDL2 APPEND_STRING PROPERTY LINK_FLAGS " /NODEFAULTLIB")
