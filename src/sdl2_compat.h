@@ -321,4 +321,11 @@ typedef struct SDL_WindowShapeMode {
     SDL_WindowShapeParams parameters;
 } SDL_WindowShapeMode;
 
+
+typedef struct SDL2_Vertex {
+    SDL_FPoint position;
+    SDL_Color  color;
+    SDL_FPoint tex_coord;
+} SDL2_Vertex;
+
 #endif /* sdl2_compat_h */
