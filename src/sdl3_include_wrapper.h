@@ -990,6 +990,16 @@
 #define SDL_GetHapticName IGNORE_THIS_VERSION_OF_SDL_GetHapticName
 #define SDL_ReadSurfacePixel IGNORE_THIS_VERSION_OF_SDL_ReadSurfacePixel
 #define SDL_FlipSurface IGNORE_THIS_VERSION_OF_SDL_FlipSurface
+#define SDL_SetTextureColorModFloat IGNORE_THIS_VERSION_OF_SDL_SetTextureColorModFloat
+#define SDL_GetTextureColorModFloat IGNORE_THIS_VERSION_OF_SDL_GetTextureColorModFloat
+#define SDL_SetTextureAlphaModFloat IGNORE_THIS_VERSION_OF_SDL_SetTextureAlphaModFloat
+#define SDL_GetTextureAlphaModFloat IGNORE_THIS_VERSION_OF_SDL_GetTextureAlphaModFloat
+#define SDL_SetRenderDrawColorFloat IGNORE_THIS_VERSION_OF_SDL_SetRenderDrawColorFloat
+#define SDL_GetRenderDrawColorFloat IGNORE_THIS_VERSION_OF_SDL_GetRenderDrawColorFloat
+#define SDL_ConvertPixelsAndColorspace IGNORE_THIS_VERSION_OF_SDL_ConvertPixelsAndColorspace
+#define SDL_SetSurfaceColorspace IGNORE_THIS_VERSION_OF_SDL_SetSurfaceColorspace
+#define SDL_GetSurfaceColorspace IGNORE_THIS_VERSION_OF_SDL_GetSurfaceColorspace
+#define SDL_ConvertSurfaceFormatAndColorspace IGNORE_THIS_VERSION_OF_SDL_ConvertSurfaceFormatAndColorspace
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -4840,6 +4850,46 @@
 
 #ifdef SDL_FlipSurface
 #undef SDL_FlipSurface
+#endif
+
+#ifdef SDL_SetTextureColorModFloat
+#undef SDL_SetTextureColorModFloat
+#endif
+
+#ifdef SDL_GetTextureColorModFloat
+#undef SDL_GetTextureColorModFloat
+#endif
+
+#ifdef SDL_SetTextureAlphaModFloat
+#undef SDL_SetTextureAlphaModFloat
+#endif
+
+#ifdef SDL_GetTextureAlphaModFloat
+#undef SDL_GetTextureAlphaModFloat
+#endif
+
+#ifdef SDL_SetRenderDrawColorFloat
+#undef SDL_SetRenderDrawColorFloat
+#endif
+
+#ifdef SDL_GetRenderDrawColorFloat
+#undef SDL_GetRenderDrawColorFloat
+#endif
+
+#ifdef SDL_ConvertPixelsAndColorspace
+#undef SDL_ConvertPixelsAndColorspace
+#endif
+
+#ifdef SDL_SetSurfaceColorspace
+#undef SDL_SetSurfaceColorspace
+#endif
+
+#ifdef SDL_GetSurfaceColorspace
+#undef SDL_GetSurfaceColorspace
+#endif
+
+#ifdef SDL_ConvertSurfaceFormatAndColorspace
+#undef SDL_ConvertSurfaceFormatAndColorspace
 #endif
 
 #undef SDL_ThreadID /* see at top. */
