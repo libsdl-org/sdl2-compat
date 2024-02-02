@@ -1000,8 +1000,6 @@
 #define SDL_SetSurfaceColorspace IGNORE_THIS_VERSION_OF_SDL_SetSurfaceColorspace
 #define SDL_GetSurfaceColorspace IGNORE_THIS_VERSION_OF_SDL_GetSurfaceColorspace
 #define SDL_ConvertSurfaceFormatAndColorspace IGNORE_THIS_VERSION_OF_SDL_ConvertSurfaceFormatAndColorspace
-#define SDL_SetRenderDrawColorspace IGNORE_THIS_VERSION_OF_SDL_SetRenderDrawColorspace
-#define SDL_GetRenderDrawColorspace IGNORE_THIS_VERSION_OF_SDL_GetRenderDrawColorspace
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -4892,14 +4890,6 @@
 
 #ifdef SDL_ConvertSurfaceFormatAndColorspace
 #undef SDL_ConvertSurfaceFormatAndColorspace
-#endif
-
-#ifdef SDL_SetRenderDrawColorspace
-#undef SDL_SetRenderDrawColorspace
-#endif
-
-#ifdef SDL_GetRenderDrawColorspace
-#undef SDL_GetRenderDrawColorspace
 #endif
 
 #undef SDL_ThreadID /* see at top. */
