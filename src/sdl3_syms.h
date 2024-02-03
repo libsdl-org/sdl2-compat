@@ -338,7 +338,7 @@ SDL3_SYM_PASSTHROUGH(int,GetRenderDrawColor,(SDL_Renderer *a, Uint8 *b, Uint8 *c
 SDL3_SYM_PASSTHROUGH(int,SetRenderDrawBlendMode,(SDL_Renderer *a, SDL_BlendMode b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(int,GetRenderDrawBlendMode,(SDL_Renderer *a, SDL_BlendMode *b),(a,b),return)
 SDL3_SYM(int,RenderClear,(SDL_Renderer *a),(a),return)
-SDL3_SYM_PASSTHROUGH(int,RenderReadPixels,(SDL_Renderer *a, const SDL_Rect *b, Uint32 c, void *d, int e),(a,b,c,d,e),return)
+SDL3_SYM(SDL_Surface *,RenderReadPixels,(SDL_Renderer *a, const SDL_Rect *b),(a,b),return)
 SDL3_SYM(int,RenderPresent,(SDL_Renderer *a),(a),return)
 SDL3_SYM(void,DestroyTexture,(SDL_Texture *a),(a),)
 SDL3_SYM(void,DestroyRenderer,(SDL_Renderer *a),(a),)
@@ -859,6 +859,7 @@ SDL3_SYM(SDL_Haptic *,GetHapticFromInstanceID,(SDL_HapticID a),(a),return)
 SDL3_SYM(SDL_HapticID,GetHapticInstanceID,(SDL_Haptic *a),(a),return)
 SDL3_SYM(SDL_PropertiesID,GetJoystickProperties,(SDL_Joystick *a),(a),return)
 SDL3_SYM(SDL_PropertiesID,GetGamepadProperties,(SDL_GameController *a),(a),return)
+SDL3_SYM(int,GetSurfaceColorspace,(SDL_Surface *a, SDL_Colorspace *b),(a,b),return)
 
 #undef SDL3_SYM
 #undef SDL3_SYM_PASSTHROUGH
