@@ -4357,6 +4357,27 @@ SDL_RenderGeometryRaw(SDL_Renderer *renderer, SDL_Texture *texture, const float 
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
+DECLSPEC int SDLCALL
+SDL_RenderReadPixels(SDL_Renderer * renderer, const SDL_Rect * rect, Uint32 format, void *pixels, int pitch)
+{
+    SDL_Colorspace surface_colorspace = SDL_COLORSPACE_UNKNOWN;
+    int result = -1;
+
+    SDL_Surface *surface = SDL3_RenderReadPixels(renderer, rect);
+    if (!surface) {
+        return -1;
+    }
+
+    if (SDL3_GetSurfaceColorspace(surface, &surface_colorspace) == 0 &&
+        SDL3_ConvertPixelsAndColorspace(surface->w, surface->h, surface->format->format, surface_colorspace,  surface->pixels, surface->pitch, format, SDL_COLORSPACE_SRGB, pixels, pitch) == 0) {
+        result = 0;
+    }
+
+    SDL3_DestroySurface(surface);
+
+    return result;
+}
+
 DECLSPEC void SDLCALL
 SDL_RenderPresent(SDL_Renderer *renderer)
 {
