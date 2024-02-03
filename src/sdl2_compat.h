@@ -328,4 +328,12 @@ typedef struct SDL2_Vertex {
     SDL_FPoint tex_coord;
 } SDL2_Vertex;
 
+typedef enum
+{
+    SDL_YUV_CONVERSION_JPEG,        /**< Full range JPEG */
+    SDL_YUV_CONVERSION_BT601,       /**< BT.601 (the default) */
+    SDL_YUV_CONVERSION_BT709,       /**< BT.709 */
+    SDL_YUV_CONVERSION_AUTOMATIC    /**< BT.601 for SD content, BT.709 for HD content */
+} SDL_YUV_CONVERSION_MODE;
+
 #endif /* sdl2_compat_h */

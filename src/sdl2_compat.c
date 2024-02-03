@@ -2581,6 +2581,61 @@ SDL_ConvertSurfaceFormat(SDL_Surface * src, Uint32 pixel_format, Uint32 flags)
     return SDL3_ConvertSurfaceFormat(src, pixel_format);
 }
 
+#define SDL_YUV_SD_THRESHOLD 576
+
+static SDL_YUV_CONVERSION_MODE SDL_YUV_ConversionMode = SDL_YUV_CONVERSION_BT601;
+
+DECLSPEC void SDLCALL
+SDL_SetYUVConversionMode(SDL_YUV_CONVERSION_MODE mode)
+{
+    SDL_YUV_ConversionMode = mode;
+}
+
+DECLSPEC SDL_YUV_CONVERSION_MODE SDLCALL
+SDL_GetYUVConversionMode(void)
+{
+    return SDL_YUV_ConversionMode;
+}
+
+DECLSPEC SDL_YUV_CONVERSION_MODE SDLCALL
+SDL_GetYUVConversionModeForResolution(int width, int height)
+{
+    SDL_YUV_CONVERSION_MODE mode = SDL_GetYUVConversionMode();
+    if (mode == SDL_YUV_CONVERSION_AUTOMATIC) {
+        if (height <= SDL_YUV_SD_THRESHOLD) {
+            mode = SDL_YUV_CONVERSION_BT601;
+        } else {
+            mode = SDL_YUV_CONVERSION_BT709;
+        }
+    }
+    return mode;
+}
+
+static SDL_Colorspace GetColorspaceForFormatAndSize(Uint32 format, int width, int height)
+{
+    if (SDL_ISPIXELFORMAT_FOURCC(format)) {
+        switch (SDL_GetYUVConversionModeForResolution(width, height)) {
+        case SDL_YUV_CONVERSION_JPEG:
+            return SDL_COLORSPACE_BT601_FULL;
+        case SDL_YUV_CONVERSION_BT601:
+            return SDL_COLORSPACE_BT601_LIMITED;
+        case SDL_YUV_CONVERSION_BT709:
+            return SDL_COLORSPACE_BT709_LIMITED;
+        default:
+            break;
+        }
+    }
+    return SDL_COLORSPACE_SRGB;
+}
+
+DECLSPEC int SDLCALL
+SDL_ConvertPixels(int width, int height, Uint32 src_format, const void *src, int src_pitch, Uint32 dst_format, void *dst, int dst_pitch)
+{
+    SDL_Colorspace src_colorspace = GetColorspaceForFormatAndSize(src_format, width, height);
+    SDL_Colorspace dst_colorspace = GetColorspaceForFormatAndSize(dst_format, width, height);
+    return SDL3_ConvertPixelsAndColorspace(width, height, src_format, src_colorspace, src, src_pitch, dst_format, dst_colorspace, dst, dst_pitch);
+}
+
 DECLSPEC SDL_Surface * SDLCALL
 SDL_CreateRGBSurface(Uint32 flags, int width, int height, int depth, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
 {

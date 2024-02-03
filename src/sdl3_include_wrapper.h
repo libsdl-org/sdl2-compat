@@ -379,8 +379,6 @@
 #define SDL_GetWindowSizeInPixels IGNORE_THIS_VERSION_OF_SDL_GetWindowSizeInPixels
 #define SDL_GetWindowSurface IGNORE_THIS_VERSION_OF_SDL_GetWindowSurface
 #define SDL_GetWindowTitle IGNORE_THIS_VERSION_OF_SDL_GetWindowTitle
-#define SDL_GetYUVConversionMode IGNORE_THIS_VERSION_OF_SDL_GetYUVConversionMode
-#define SDL_GetYUVConversionModeForResolution IGNORE_THIS_VERSION_OF_SDL_GetYUVConversionModeForResolution
 #define SDL_CloseHaptic IGNORE_THIS_VERSION_OF_SDL_CloseHaptic
 #define SDL_DestroyHapticEffect IGNORE_THIS_VERSION_OF_SDL_DestroyHapticEffect
 #define SDL_HapticEffectSupported IGNORE_THIS_VERSION_OF_SDL_HapticEffectSupported
@@ -625,7 +623,6 @@
 #define SDL_SetWindowSize IGNORE_THIS_VERSION_OF_SDL_SetWindowSize
 #define SDL_SetWindowTitle IGNORE_THIS_VERSION_OF_SDL_SetWindowTitle
 #define SDL_SetWindowsMessageHook IGNORE_THIS_VERSION_OF_SDL_SetWindowsMessageHook
-#define SDL_SetYUVConversionMode IGNORE_THIS_VERSION_OF_SDL_SetYUVConversionMode
 #define SDL_ShowCursor IGNORE_THIS_VERSION_OF_SDL_ShowCursor
 #define SDL_ShowMessageBox IGNORE_THIS_VERSION_OF_SDL_ShowMessageBox
 #define SDL_ShowSimpleMessageBox IGNORE_THIS_VERSION_OF_SDL_ShowSimpleMessageBox
@@ -1000,6 +997,7 @@
 #define SDL_SetSurfaceColorspace IGNORE_THIS_VERSION_OF_SDL_SetSurfaceColorspace
 #define SDL_GetSurfaceColorspace IGNORE_THIS_VERSION_OF_SDL_GetSurfaceColorspace
 #define SDL_ConvertSurfaceFormatAndColorspace IGNORE_THIS_VERSION_OF_SDL_ConvertSurfaceFormatAndColorspace
+#define SDL_CopyProperties IGNORE_THIS_VERSION_OF_SDL_CopyProperties
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -2408,14 +2406,6 @@
 #undef SDL_GetWindowTitle
 #endif
 
-#ifdef SDL_GetYUVConversionMode
-#undef SDL_GetYUVConversionMode
-#endif
-
-#ifdef SDL_GetYUVConversionModeForResolution
-#undef SDL_GetYUVConversionModeForResolution
-#endif
-
 #ifdef SDL_CloseHaptic
 #undef SDL_CloseHaptic
 #endif
@@ -3390,10 +3380,6 @@
 
 #ifdef SDL_SetWindowsMessageHook
 #undef SDL_SetWindowsMessageHook
-#endif
-
-#ifdef SDL_SetYUVConversionMode
-#undef SDL_SetYUVConversionMode
 #endif
 
 #ifdef SDL_ShowCursor
@@ -4890,6 +4876,10 @@
 
 #ifdef SDL_ConvertSurfaceFormatAndColorspace
 #undef SDL_ConvertSurfaceFormatAndColorspace
+#endif
+
+#ifdef SDL_CopyProperties
+#undef SDL_CopyProperties
 #endif
 
 #undef SDL_ThreadID /* see at top. */
