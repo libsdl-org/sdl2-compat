@@ -4327,33 +4327,7 @@ SDL_RenderGeometry(SDL_Renderer *renderer, SDL_Texture *texture, const SDL2_Vert
 DECLSPEC int SDLCALL
 SDL_RenderGeometryRaw(SDL_Renderer *renderer, SDL_Texture *texture, const float *xy, int xy_stride, const SDL_Color *color, int color_stride, const float *uv, int uv_stride, int num_vertices, const void *indices, int num_indices, int size_indices)
 {
-    int i, retval, isstack;
-    const char *color2 = (const char *) color;
-    SDL_FColor *color3;
-
-    if (num_vertices <= 0) {
-        return SDL3_InvalidParamError("num_vertices");
-    }
-    if (!color) {
-        return SDL3_InvalidParamError("color");
-    }
-
-    color3 = (SDL_FColor *) SDL3_small_alloc(SDL_FColor, num_vertices, &isstack);
-    if (!color3) {
-        return SDL3_OutOfMemory();
-    }
-    for (i = 0; i < num_vertices; ++i) {
-        color3[i].r = color->r / 255.0f;
-        color3[i].g = color->g / 255.0f;
-        color3[i].b = color->b / 255.0f;
-        color3[i].a = color->a / 255.0f;
-        color2 += color_stride;
-        color = (const SDL_Color *) color2;
-    }
-
-    color_stride = sizeof(SDL_FColor);
-    retval = SDL3_RenderGeometryRaw(renderer, texture, xy, xy_stride, color3, color_stride, uv, uv_stride, num_vertices, indices, num_indices, size_indices);
-    SDL3_small_free(color3, isstack);
+    const int retval = SDL3_RenderGeometryRaw(renderer, texture, xy, xy_stride, color, color_stride, uv, uv_stride, num_vertices, indices, num_indices, size_indices);
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
