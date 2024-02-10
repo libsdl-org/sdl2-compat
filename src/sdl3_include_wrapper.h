@@ -425,7 +425,7 @@
 #define SDL_HasSSE41 IGNORE_THIS_VERSION_OF_SDL_HasSSE41
 #define SDL_HasSSE42 IGNORE_THIS_VERSION_OF_SDL_HasSSE42
 #define SDL_HasScreenKeyboardSupport IGNORE_THIS_VERSION_OF_SDL_HasScreenKeyboardSupport
-#define SDL_HasWindowSurface IGNORE_THIS_VERSION_OF_SDL_HasWindowSurface
+#define SDL_WindowHasSurface IGNORE_THIS_VERSION_OF_SDL_WindowHasSurface
 #define SDL_HideCursor IGNORE_THIS_VERSION_OF_SDL_HideCursor
 #define SDL_HideWindow IGNORE_THIS_VERSION_OF_SDL_HideWindow
 #define SDL_Init IGNORE_THIS_VERSION_OF_SDL_Init
@@ -998,6 +998,7 @@
 #define SDL_GetSurfaceColorspace IGNORE_THIS_VERSION_OF_SDL_GetSurfaceColorspace
 #define SDL_ConvertSurfaceFormatAndColorspace IGNORE_THIS_VERSION_OF_SDL_ConvertSurfaceFormatAndColorspace
 #define SDL_CopyProperties IGNORE_THIS_VERSION_OF_SDL_CopyProperties
+#define SDL_SetWindowShape IGNORE_THIS_VERSION_OF_SDL_SetWindowShape
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -2590,8 +2591,8 @@
 #undef SDL_HasScreenKeyboardSupport
 #endif
 
-#ifdef SDL_HasWindowSurface
-#undef SDL_HasWindowSurface
+#ifdef SDL_WindowHasSurface
+#undef SDL_WindowHasSurface
 #endif
 
 #ifdef SDL_HideCursor
@@ -4880,6 +4881,10 @@
 
 #ifdef SDL_CopyProperties
 #undef SDL_CopyProperties
+#endif
+
+#ifdef SDL_SetWindowShape
+#undef SDL_SetWindowShape
 #endif
 
 #undef SDL_ThreadID /* see at top. */
