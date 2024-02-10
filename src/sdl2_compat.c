@@ -2725,26 +2725,26 @@ DECLSPEC SDL_bool SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWMinfo 
 
     if (SDL_strcmp(driver, "Android") == 0) {
         info->subsystem = SDL2_SYSWM_ANDROID;
-        info->info.android.window = SDL3_GetProperty(props, "SDL.window.android.window", NULL);
-        info->info.android.surface = SDL3_GetProperty(props, "SDL.window.android.surface", NULL);
+        info->info.android.window = SDL3_GetProperty(props, SDL_PROP_WINDOW_ANDROID_WINDOW_POINTER, NULL);
+        info->info.android.surface = SDL3_GetProperty(props, SDL_PROP_WINDOW_ANDROID_SURFACE_POINTER, NULL);
     } else if (SDL_strcmp(driver, "cocoa") == 0) {
         info->subsystem = SDL2_SYSWM_COCOA;
-        info->info.cocoa.window = (NSWindow *)SDL3_GetProperty(props, "SDL.window.cocoa.window", NULL);
+        info->info.cocoa.window = (NSWindow *)SDL3_GetProperty(props, SDL_PROP_WINDOW_COCOA_WINDOW_POINTER, NULL);
     } else if (SDL_strcmp(driver, "kmsdrm") == 0) {
         info->subsystem = SDL2_SYSWM_KMSDRM;
-        info->info.kmsdrm.dev_index = (int)SDL3_GetNumberProperty(props, "SDL.window.kmsdrm.dev_index", 0);
-        info->info.kmsdrm.drm_fd = (int)SDL3_GetNumberProperty(props, "SDL.window.kmsdrm.drm_fd", -1);
-        info->info.kmsdrm.gbm_dev = SDL3_GetProperty(props, "SDL.window.kmsdrm.gbm_dev", NULL);
+        info->info.kmsdrm.dev_index = (int)SDL3_GetNumberProperty(props, SDL_PROP_WINDOW_KMSDRM_DEVICE_INDEX_NUMBER, 0);
+        info->info.kmsdrm.drm_fd = (int)SDL3_GetNumberProperty(props, SDL_PROP_WINDOW_KMSDRM_DRM_FD_NUMBER, -1);
+        info->info.kmsdrm.gbm_dev = SDL3_GetProperty(props, SDL_PROP_WINDOW_KMSDRM_GBM_DEVICE_POINTER, NULL);
     } else if (SDL_strcmp(driver, "uikit") == 0) {
         info->subsystem = SDL2_SYSWM_UIKIT;
-        info->info.uikit.window = (UIWindow *)SDL3_GetProperty(props, "SDL.window.uikit.window", NULL);
+        info->info.uikit.window = (UIWindow *)SDL3_GetProperty(props, SDL_PROP_WINDOW_UIKIT_WINDOW_POINTER, NULL);
         info->info.uikit.colorbuffer = 0;
         info->info.uikit.framebuffer = 0;
         info->info.uikit.resolveFramebuffer = 0;
     } else if (SDL_strcmp(driver, "vivante") == 0) {
         info->subsystem = SDL2_SYSWM_VIVANTE;
-        info->info.vivante.display = SDL3_GetProperty(props, "SDL.window.vivante.display", NULL);
-        info->info.vivante.window = SDL3_GetProperty(props, "SDL.window.vivante.window", NULL);
+        info->info.vivante.display = SDL3_GetProperty(props, SDL_PROP_WINDOW_VIVANTE_DISPLAY_POINTER, NULL);
+        info->info.vivante.window = SDL3_GetProperty(props, SDL_PROP_WINDOW_VIVANTE_WINDOW_POINTER, NULL);
     } else if (SDL_strcmp(driver, "wayland") == 0) {
         Uint32 version2 = SDL_VERSIONNUM((Uint32)info->version.major,
                                          (Uint32)info->version.minor,
@@ -2768,33 +2768,33 @@ DECLSPEC SDL_bool SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWMinfo 
         }
 
         info->subsystem = SDL2_SYSWM_WAYLAND;
-        info->info.wl.display = SDL3_GetProperty(props, "SDL.window.wayland.display", NULL);
-        info->info.wl.surface = SDL3_GetProperty(props, "SDL.window.wayland.surface", NULL);
+        info->info.wl.display = SDL3_GetProperty(props, SDL_PROP_WINDOW_WAYLAND_DISPLAY_POINTER, NULL);
+        info->info.wl.surface = SDL3_GetProperty(props, SDL_PROP_WINDOW_WAYLAND_SURFACE_POINTER, NULL);
         info->info.wl.shell_surface = NULL; /* Deprecated */
 
         if (version2 >= SDL_VERSIONNUM(2, 0, 15)) {
-            info->info.wl.egl_window = SDL3_GetProperty(props, "SDL.window.wayland.egl_window", NULL);
-            info->info.wl.xdg_surface = SDL3_GetProperty(props, "SDL.window.wayland.xdg_surface", NULL);
+            info->info.wl.egl_window = SDL3_GetProperty(props, SDL_PROP_WINDOW_WAYLAND_EGL_WINDOW_POINTER, NULL);
+            info->info.wl.xdg_surface = SDL3_GetProperty(props, SDL_PROP_WINDOW_WAYLAND_XDG_SURFACE_POINTER, NULL);
             if (version2 >= SDL_VERSIONNUM(2, 0, 17)) {
-                info->info.wl.xdg_toplevel = SDL3_GetProperty(props, "SDL.window.wayland.xdg_toplevel", NULL);
+                info->info.wl.xdg_toplevel = SDL3_GetProperty(props, SDL_PROP_WINDOW_WAYLAND_XDG_TOPLEVEL_POINTER, NULL);
                 if (version2 >= SDL_VERSIONNUM(2, 0, 22)) {
-                    info->info.wl.xdg_popup = SDL3_GetProperty(props, "SDL.window.wayland.xdg_popup", NULL);
-                    info->info.wl.xdg_positioner = SDL3_GetProperty(props, "SDL.window.wayland.xdg_positioner", NULL);
+                    info->info.wl.xdg_popup = SDL3_GetProperty(props, SDL_PROP_WINDOW_WAYLAND_XDG_POPUP_POINTER, NULL);
+                    info->info.wl.xdg_positioner = SDL3_GetProperty(props, SDL_PROP_WINDOW_WAYLAND_XDG_POSITIONER_POINTER, NULL);
                 }
             }
         }
     } else if (SDL_strcmp(driver, "windows") == 0) {
         info->subsystem = SDL2_SYSWM_WINDOWS;
-        info->info.win.window = SDL3_GetProperty(props, "SDL.window.win32.hwnd", NULL);
-        info->info.win.hdc = SDL3_GetProperty(props, "SDL.window.win32.hdc", NULL);
-        info->info.win.hinstance = SDL3_GetProperty(props, "SDL.window.win32.hinstance", NULL);
+        info->info.win.window = SDL3_GetProperty(props, SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
+        info->info.win.hdc = SDL3_GetProperty(props, SDL_PROP_WINDOW_WIN32_HDC_POINTER, NULL);
+        info->info.win.hinstance = SDL3_GetProperty(props, SDL_PROP_WINDOW_WIN32_INSTANCE_POINTER, NULL);
     } else if (SDL_strcmp(driver, "winrt") == 0) {
         info->subsystem = SDL2_SYSWM_WINRT;
-        info->info.winrt.window = SDL3_GetProperty(props, "SDL.window.winrt.window", NULL);
+        info->info.winrt.window = SDL3_GetProperty(props, SDL_PROP_WINDOW_WINRT_WINDOW_POINTER, NULL);
     } else if (SDL_strcmp(driver, "x11") == 0) {
         info->subsystem = SDL2_SYSWM_X11;
-        info->info.x11.display = SDL3_GetProperty(props, "SDL.window.x11.display", NULL);
-        info->info.x11.window = (unsigned long)SDL3_GetNumberProperty(props, "SDL.window.x11.window", 0);
+        info->info.x11.display = SDL3_GetProperty(props, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, NULL);
+        info->info.x11.window = (unsigned long)SDL3_GetNumberProperty(props, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0);
     } else {
         SDL3_SetError("Video driver '%s' has no mapping to SDL_SysWMinfo", driver);
         info->subsystem = SDL2_SYSWM_UNKNOWN;
@@ -3527,153 +3527,89 @@ GestureProcessEvent(const SDL_Event *event3)
 }
 
 
-static SDL_Window *g_shaped_window = NULL;
-static SDL_WindowShapeMode g_shape_mode;
-static Uint8 *g_bitmap = NULL;
-static int g_bitmap_w = 0, g_bitmap_h = 0;
-static SDL_Surface *g_shape_surface = NULL;
-static SDL_Texture *g_shape_texture = NULL;
-
-static void shaped_window_cleanup(void)
-{
-    g_shaped_window = NULL;
-    SDL3_zero(g_shape_mode);
-    if (g_bitmap) {
-        SDL3_free(g_bitmap);
-        g_bitmap = NULL;
-    }
-    g_bitmap_w = 0;
-    g_bitmap_h = 0;
-
-    if (g_shape_surface) {
-        SDL3_DestroySurface(g_shape_surface);
-        g_shape_surface = NULL;
-    }
-
-    if (g_shape_texture) {
-        SDL3_DestroyTexture(g_shape_texture);
-        g_shape_texture = NULL;
-    }
-}
-
 /* REQUIRES that bitmap point to a w-by-h bitmap with ppb pixels-per-byte. */
-static void SDL_CalculateShapeBitmap(SDL_WindowShapeMode mode, SDL_Surface *shape, Uint8 *bitmap, Uint8 ppb)
+static void SDL_CalculateShapeBitmap(SDL_WindowShapeMode mode, SDL_Surface *shape, Uint32 *pixels, int pitch)
 {
     int x = 0;
     int y = 0;
     Uint8 r = 0, g = 0, b = 0, alpha = 0;
     Uint8 *pixel = NULL;
     Uint32 pixel_value = 0, mask_value = 0;
-    size_t bytes_per_scanline = (size_t)(shape->w + (ppb - 1)) / ppb;
-    Uint8 *bitmap_scanline;
     SDL_Color key;
 
-    if (SDL_MUSTLOCK(shape)) {
-        SDL3_LockSurface(shape);
-    }
-
-    SDL3_memset(bitmap, 0, shape->h * bytes_per_scanline);
-
     for (y = 0; y < shape->h; y++) {
-        bitmap_scanline = bitmap + y * bytes_per_scanline;
         for (x = 0; x < shape->w; x++) {
             alpha = 0;
             pixel_value = 0;
             pixel = (Uint8 *)(shape->pixels) + (y * shape->pitch) + (x * shape->format->BytesPerPixel);
             switch (shape->format->BytesPerPixel) {
-            case (1):
+            case 1:
                 pixel_value = *pixel;
                 break;
-            case (2):
+            case 2:
                 pixel_value = *(Uint16 *)pixel;
                 break;
-            case (3):
+            case 3:
                 pixel_value = *(Uint32 *)pixel & (~shape->format->Amask);
                 break;
-            case (4):
+            case 4:
                 pixel_value = *(Uint32 *)pixel;
                 break;
             }
             SDL3_GetRGBA(pixel_value, shape->format, &r, &g, &b, &alpha);
             switch (mode.mode) {
             case (ShapeModeDefault):
-                mask_value = (alpha >= 1 ? 1 : 0);
+                mask_value = (alpha >= 1 ? 0xFFFFFFFF : 0);
                 break;
             case (ShapeModeBinarizeAlpha):
-                mask_value = (alpha >= mode.parameters.binarizationCutoff ? 1 : 0);
+                mask_value = (alpha >= mode.parameters.binarizationCutoff ? 0xFFFFFFFF : 0);
                 break;
             case (ShapeModeReverseBinarizeAlpha):
-                mask_value = (alpha <= mode.parameters.binarizationCutoff ? 1 : 0);
+                mask_value = (alpha <= mode.parameters.binarizationCutoff ? 0xFFFFFFFF : 0);
                 break;
             case (ShapeModeColorKey):
                 key = mode.parameters.colorKey;
-                mask_value = ((key.r != r || key.g != g || key.b != b) ? 1 : 0);
+                mask_value = ((key.r != r || key.g != g || key.b != b) ? 0xFFFFFFFF : 0);
                 break;
             }
-            bitmap_scanline[x / ppb] |= mask_value << (x % ppb);
+            pixels[x] = mask_value;
         }
-    }
-
-    if (SDL_MUSTLOCK(shape)) {
-        SDL3_UnlockSurface(shape);
+        pixels = (Uint32 *)((Uint8 *)pixels + pitch);
     }
 }
-
 
 
 DECLSPEC SDL_Window * SDLCALL
 SDL_CreateShapedWindow(const char *title, unsigned int x, unsigned int y, unsigned int w, unsigned int h, Uint32 flags)
 {
-    SDL_Window *window;
-    int hidden = flags & SDL_WINDOW_HIDDEN;
+    flags |= (SDL_WINDOW_HIDDEN | SDL_WINDOW_TRANSPARENT);
 
-    CheckEventFilter();
-
-    if (g_shaped_window != NULL) {
-        SDL3_SetError("only 1 shaped window");
-        return NULL;
-    }
-
-    flags &= ~SDL2_WINDOW_SHOWN;
-    flags |= SDL_WINDOW_HIDDEN;
-    flags |= SDL_WINDOW_TRANSPARENT;
-
-    window = SDL3_CreateWindow(title, (int)w, (int)h, flags);
-    if (window) {
-        if (!SDL_WINDOWPOS_ISUNDEFINED(x) || !SDL_WINDOWPOS_ISUNDEFINED(y)) {
-            SDL3_SetWindowPosition(window, (int)x, (int)y);
-        }
-        if (!hidden) {
-            SDL3_ShowWindow(window);
-        }
-    }
-
-    shaped_window_cleanup();
-    g_shaped_window = window;
-
-    return window;
+    return SDL_CreateWindow(title, (int)x, (int)y, (int)w, (int)h, flags);
 }
 
 DECLSPEC SDL_bool SDLCALL
 SDL_IsShapedWindow(const SDL_Window *window)
 {
-    if (window == NULL) {
-        return SDL_FALSE;
-    }
-    if (window == g_shaped_window) {
+    if (SDL3_GetWindowFlags((SDL_Window *)window) & SDL_WINDOW_TRANSPARENT) {
         return SDL_TRUE;
     }
     return SDL_FALSE;
 }
 
-DECLSPEC int SDLCALL
-SDL_SetWindowShape(SDL_Window *window,SDL_Surface *shape, SDL_WindowShapeMode *shape_mode)
-{
-    if (window == NULL) {
-        return SDL_NONSHAPEABLE_WINDOW;
-    }
+#define PROP_WINDOW_SHAPE_MODE_POINTER "sdl2-compat.window.shape_mode"
 
-    if (window != g_shaped_window) {
+static void SDLCALL CleanupFreeableProperty(void *userdata, void *value)
+{
+    SDL3_free(value);
+}
+
+DECLSPEC int SDLCALL
+SDL_SetWindowShape(SDL_Window *window, SDL_Surface *shape, SDL_WindowShapeMode *shape_mode)
+{
+    SDL_Surface *surface;
+    int result;
+
+    if (!SDL_IsShapedWindow(window)) {
         return SDL_NONSHAPEABLE_WINDOW;
     }
 
@@ -3685,53 +3621,43 @@ SDL_SetWindowShape(SDL_Window *window,SDL_Surface *shape, SDL_WindowShapeMode *s
         return SDL_INVALID_SHAPE_ARGUMENT;
     }
 
-    shaped_window_cleanup();
-    g_shaped_window = window;
-    g_shape_mode = *shape_mode;
-
-    g_bitmap_w = shape->w;
-    g_bitmap_h = shape->h;
-    g_bitmap = (Uint8 *) SDL3_malloc(shape->w * shape->h);
-    if (g_bitmap == NULL) {
-        shaped_window_cleanup();
-        g_shaped_window = window;
+    surface = SDL3_CreateSurface(shape->w, shape->h, SDL_PIXELFORMAT_ARGB32);
+    if (!surface) {
         return -1;
     }
 
-    SDL_CalculateShapeBitmap(*shape_mode, shape, g_bitmap, 1);
+    SDL_CalculateShapeBitmap(*shape_mode, shape, (Uint32 *)surface->pixels, surface->pitch);
 
-    g_shape_surface = SDL3_CreateSurface(g_bitmap_w, g_bitmap_h, SDL_PIXELFORMAT_ABGR8888);
-    if (g_shape_surface) {
-        int x, y, i = 0;
-        Uint32 *ptr = (Uint32 *)g_shape_surface->pixels;
-        for (y = 0; y < g_bitmap_h; y++) {
-            for (x = 0; x < g_bitmap_w; x++) {
-                Uint8 val = g_bitmap[i++];
-                if (val == 0) {
-                    ptr[x] = 0;
-                } else {
-                    ptr[x] = 0xffffffff;
-                }
-            }
-            ptr = (Uint32 *)((Uint8 *)ptr + g_shape_surface->pitch);
+    result = SDL3_SetWindowShape(window, surface);
+    if (result == 0) {
+        SDL_WindowShapeMode *property = (SDL_WindowShapeMode *)SDL3_malloc(sizeof(*property));
+        if (property) {
+            SDL3_copyp(property, shape_mode);
+            result = SDL3_SetPropertyWithCleanup(SDL3_GetWindowProperties(window), PROP_WINDOW_SHAPE_MODE_POINTER, property, CleanupFreeableProperty, NULL);
+        } else {
+            result = -1;
         }
     }
 
-    return 0;
+    SDL3_DestroySurface(surface);
+
+    if (result == 0) {
+        SDL3_ShowWindow(window);
+    }
+
+    return result;
 }
 
 DECLSPEC int SDLCALL
 SDL_GetShapedWindowMode(SDL_Window *window, SDL_WindowShapeMode *shape_mode)
 {
-    if (window == NULL) {
-        return SDL_NONSHAPEABLE_WINDOW;
-    }
-    if (window != g_shaped_window) {
+    SDL_WindowShapeMode *property = (SDL_WindowShapeMode *)SDL3_GetProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_SHAPE_MODE_POINTER, NULL);
+    if (!property) {
         return SDL_NONSHAPEABLE_WINDOW;
     }
 
     if (shape_mode) {
-        *shape_mode = g_shape_mode;
+        SDL3_copyp(shape_mode, property);
     }
     return 0;
 }
@@ -3803,11 +3729,12 @@ SDL_GetRenderDriverInfo(int idx, SDL_RendererInfo *info)
     return 0;
 }
 
-#define RENDERER_BATCHING_PROP "sdl2-compat.renderer.batching"
+#define PROP_RENDERER_BATCHING "sdl2-compat.renderer.batching"
+
 static int FlushRendererIfNotBatching(SDL_Renderer *renderer)
 {
     const SDL_PropertiesID props = SDL3_GetRendererProperties(renderer);
-    if (!SDL3_GetBooleanProperty(props, RENDERER_BATCHING_PROP, SDL_FALSE)) {
+    if (!SDL3_GetBooleanProperty(props, PROP_RENDERER_BATCHING, SDL_FALSE)) {
         return SDL3_FlushRenderer(renderer);
     }
     return 0;
@@ -3839,7 +3766,7 @@ SDL_CreateRenderer(SDL_Window *window, int idx, Uint32 flags)
 
     props = SDL3_GetRendererProperties(renderer);
     if (props) {
-        SDL3_SetBooleanProperty(props, RENDERER_BATCHING_PROP, SDL2Compat_GetHintBoolean("SDL_RENDER_BATCHING", SDL_FALSE));
+        SDL3_SetBooleanProperty(props, PROP_RENDERER_BATCHING, SDL2Compat_GetHintBoolean("SDL_RENDER_BATCHING", SDL_FALSE));
     }
 
     return renderer;
@@ -4355,44 +4282,6 @@ SDL_RenderReadPixels(SDL_Renderer * renderer, const SDL_Rect * rect, Uint32 form
 DECLSPEC void SDLCALL
 SDL_RenderPresent(SDL_Renderer *renderer)
 {
-    /* Apply the shape */
-    if (g_shape_surface && g_shaped_window == SDL3_GetRenderWindow(renderer)) {
-        SDL_RendererInfo info;
-        SDL3_GetRendererInfo(renderer, &info);
-
-        if (info.flags & SDL_RENDERER_SOFTWARE) {
-            if (g_bitmap) {
-                int x, y, i = 0;
-                Uint8 r, g, b, a;
-                SDL3_GetRenderDrawColor(renderer, &r, &g, &b, &a);
-                SDL3_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-                for (y = 0; y < g_bitmap_h; y++) {
-                    for (x = 0; x < g_bitmap_w; x++) {
-                        Uint8 val = g_bitmap[i++];
-                        if (val == 0) {
-                            SDL3_RenderPoint(renderer, (float)x, (float)y);
-                        }
-                    }
-                }
-                SDL3_SetRenderDrawColor(renderer, r, g, b, a);
-            }
-        } else {
-            if (g_shape_texture == NULL) {
-                SDL_BlendMode bm;
-
-                g_shape_texture = SDL3_CreateTextureFromSurface(renderer, g_shape_surface);
-
-                /* if Alpha is 0, set all to 0, else leave unchanged. */
-                bm = SDL3_ComposeCustomBlendMode(
-                        SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_SRC_ALPHA, SDL_BLENDOPERATION_ADD,
-                        SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_SRC_ALPHA, SDL_BLENDOPERATION_ADD);
-
-                SDL3_SetTextureBlendMode(g_shape_texture, bm);
-            }
-            SDL3_RenderTexture(renderer, g_shape_texture, NULL, NULL);
-        }
-    }
-
     SDL3_RenderPresent(renderer);
 }
 
@@ -6060,7 +5949,7 @@ SDL_GetWindowFlags(SDL_Window *window)
     return flags;
 }
 
-#define POPUP_PARENT_PROP_STR "sdl2-compat.window.parent"
+#define PROP_WINDOW_PARENT_POINTER "sdl2-compat.window.parent"
 
 DECLSPEC void* SDLCALL
 SDL_GetWindowData(SDL_Window * window, const char *name)
@@ -6098,16 +5987,18 @@ SDL_SetWindowData(SDL_Window * window, const char *name, void *userdata)
     return prev;
 }
 
+#define PROP_TEXTURE_USERDATA_POINTER "sdl2-compat.texture.userdata"
+
 DECLSPEC int SDLCALL
 SDL_SetTextureUserData(SDL_Texture * texture, void *userdata)
 {
-    return SDL3_SetProperty(SDL3_GetTextureProperties(texture), "userdata", userdata);
+    return SDL3_SetProperty(SDL3_GetTextureProperties(texture), PROP_TEXTURE_USERDATA_POINTER, userdata);
 }
 
 DECLSPEC void * SDLCALL
 SDL_GetTextureUserData(SDL_Texture * texture)
 {
-    return SDL3_GetProperty(SDL3_GetTextureProperties(texture), "userdata", NULL);
+    return SDL3_GetProperty(SDL3_GetTextureProperties(texture), PROP_TEXTURE_USERDATA_POINTER, NULL);
 }
 
 static void
@@ -6150,12 +6041,12 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
 
         WindowPos2To3(&x, &y);
         if (title && *title) {
-            SDL3_SetStringProperty(props, "title", title);
+            SDL3_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, title);
         }
-        SDL3_SetNumberProperty(props, "x", x);
-        SDL3_SetNumberProperty(props, "y", y);
-        SDL3_SetNumberProperty(props, "width", w);
-        SDL3_SetNumberProperty(props, "height", h);
+        SDL3_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_X_NUMBER, x);
+        SDL3_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, y);
+        SDL3_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, w);
+        SDL3_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, h);
         SDL3_SetNumberProperty(props, "flags", flags);
 
         window = SDL3_CreateWindowWithProperties(props);
@@ -6168,7 +6059,7 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
 
         if (parent) {
             window = SDL3_CreatePopupWindow(parent, x, y, w, h, flags);
-            SDL_SetWindowData(window, POPUP_PARENT_PROP_STR, parent);
+            SDL_SetWindowData(window, PROP_WINDOW_PARENT_POINTER, parent);
         }
     }
     return window;
@@ -6195,15 +6086,15 @@ SDL_CreateWindowFrom(const void *data)
         */
         SDL_Window *otherWindow = NULL;
         (void)SDL3_sscanf(hint, "%p", (void **)&otherWindow);
-        SDL3_SetProperty(props, "win32.pixel_format_hwnd", SDL3_GetProperty(SDL3_GetWindowProperties(otherWindow), "SDL.window.win32.hwnd", NULL));
-        SDL3_SetBooleanProperty(props, "opengl", SDL_TRUE);
+        SDL3_SetProperty(props, SDL_PROP_WINDOW_CREATE_WIN32_PIXEL_FORMAT_HWND_POINTER, SDL3_GetProperty(SDL3_GetWindowProperties(otherWindow), SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL));
+        SDL3_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN, SDL_TRUE);
     }
 
     if (SDL3_GetHintBoolean("SDL_VIDEO_FOREIGN_WINDOW_OPENGL", SDL_FALSE)) {
-        SDL3_SetBooleanProperty(props, "opengl", SDL_TRUE);
+        SDL3_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN, SDL_TRUE);
     }
     if (SDL3_GetHintBoolean("SDL_VIDEO_FOREIGN_WINDOW_VULKAN", SDL_FALSE)) {
-        SDL3_SetBooleanProperty(props, "vulkan", SDL_TRUE);
+        SDL3_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_VULKAN_BOOLEAN, SDL_TRUE);
     }
 
     SDL3_SetProperty(props, "sdl2-compat.external_window", (void *)data);
@@ -6332,7 +6223,7 @@ SDL_SetWindowPosition(SDL_Window *window, int x, int y)
 {
     /* Popup windows need to be transformed from global to relative coordinates. */
     if (SDL3_GetWindowFlags(window) & (SDL_WINDOW_TOOLTIP | SDL_WINDOW_POPUP_MENU)) {
-        SDL_Window *parent = (SDL_Window *) SDL_GetWindowData(window, POPUP_PARENT_PROP_STR);
+        SDL_Window *parent = (SDL_Window *) SDL_GetWindowData(window, PROP_WINDOW_PARENT_POINTER);
 
         while (parent) {
             int x_off, y_off;
@@ -6341,7 +6232,7 @@ SDL_SetWindowPosition(SDL_Window *window, int x, int y)
             x -= x_off;
             y -= y_off;
 
-            parent = (SDL_Window *) SDL_GetWindowData(parent, POPUP_PARENT_PROP_STR);
+            parent = (SDL_Window *) SDL_GetWindowData(parent, PROP_WINDOW_PARENT_POINTER);
         }
     } else {
         WindowPos2To3(&x, &y);
@@ -6357,7 +6248,7 @@ SDL_GetWindowPosition(SDL_Window *window, int *x, int *y)
 
     /* Popup windows need to be transformed from relative to global coordinates. */
     if (SDL3_GetWindowFlags(window) & (SDL_WINDOW_TOOLTIP | SDL_WINDOW_POPUP_MENU)) {
-        SDL_Window *parent = (SDL_Window *) SDL_GetWindowData(window, POPUP_PARENT_PROP_STR);
+        SDL_Window *parent = (SDL_Window *) SDL_GetWindowData(window, PROP_WINDOW_PARENT_POINTER);
 
         while (parent) {
             int x_off, y_off;
@@ -6366,7 +6257,7 @@ SDL_GetWindowPosition(SDL_Window *window, int *x, int *y)
             *x += x_off;
             *y += y_off;
 
-            parent = (SDL_Window *) SDL_GetWindowData(parent, POPUP_PARENT_PROP_STR);
+            parent = (SDL_Window *) SDL_GetWindowData(parent, PROP_WINDOW_PARENT_POINTER);
         }
     }
 }
@@ -6465,17 +6356,6 @@ DECLSPEC void SDLCALL
 SDL_SetWindowMouseGrab(SDL_Window *window, SDL_bool grabbed)
 {
     SDL3_SetWindowMouseGrab(window, grabbed);
-}
-
-DECLSPEC void SDLCALL
-SDL_DestroyWindow(SDL_Window *window)
-{
-    if (window == g_shaped_window) {
-        shaped_window_cleanup();
-        g_shaped_window = NULL;
-    }
-
-    SDL3_DestroyWindow(window);
 }
 
 DECLSPEC void SDLCALL
@@ -7896,19 +7776,19 @@ SDL_DXGIGetOutputInfo(int displayIndex, int *adapterIndex, int *outputIndex)
 DECLSPEC IDirect3DDevice9* SDLCALL SDL_RenderGetD3D9Device(SDL_Renderer *renderer)
 {
     return (IDirect3DDevice9 *)SDL3_GetProperty(SDL3_GetRendererProperties(renderer),
-                                                "SDL.renderer.d3d9.device", NULL);
+                                                SDL_PROP_RENDERER_D3D9_DEVICE_POINTER, NULL);
 }
 
 DECLSPEC ID3D11Device* SDLCALL SDL_RenderGetD3D11Device(SDL_Renderer *renderer)
 {
     return (ID3D11Device *)SDL3_GetProperty(SDL3_GetRendererProperties(renderer),
-                                            "SDL.renderer.d3d11.device", NULL);
+                                            SDL_PROP_RENDERER_D3D11_DEVICE_POINTER, NULL);
 }
 
 DECLSPEC ID3D12Device* SDLCALL SDL_RenderGetD3D12Device(SDL_Renderer *renderer)
 {
     return (ID3D12Device *)SDL3_GetProperty(SDL3_GetRendererProperties(renderer),
-                                            "SDL.renderer.d3d12.device", NULL);
+                                            SDL_PROP_RENDERER_D3D12_DEVICE_POINTER, NULL);
 }
 #endif
 
