@@ -581,7 +581,7 @@ LoadSDL3(void)
             #define SDL3_SYM(rc,fn,params,args,ret) SDL3_##fn = (SDL3_##fn##_t) LoadSDL3Symbol("SDL_" #fn, &okay);
             #include "sdl3_syms.h"
             if (okay) {
-                SDL_version v;
+                SDL_Version v;
                 SDL3_GetVersion(&v);
                 LinkedSDL3VersionInt = SDL_VERSIONNUM(v.major, v.minor, v.patch);
                 okay = (LinkedSDL3VersionInt >= SDL3_REQUIRED_VER);
@@ -1285,7 +1285,7 @@ fail:
 
 /* obviously we have to override this so we don't report ourselves as SDL3. */
 DECLSPEC void SDLCALL
-SDL_GetVersion(SDL_version *ver)
+SDL_GetVersion(SDL_Version *ver)
 {
     if (ver) {
         ver->major = 2;
@@ -1579,8 +1579,8 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
         event2->wheel.y = (Sint32)event3->wheel.y;
         event2->wheel.preciseX = event3->wheel.x;
         event2->wheel.preciseY = event3->wheel.y;
-        event2->wheel.mouseX = (Sint32)event3->wheel.mouseX;
-        event2->wheel.mouseY = (Sint32)event3->wheel.mouseY;
+        event2->wheel.mouseX = (Sint32)event3->wheel.mouse_x;
+        event2->wheel.mouseY = (Sint32)event3->wheel.mouse_y;
         break;
     case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
     case SDL_EVENT_GAMEPAD_BUTTON_UP:
@@ -1660,8 +1660,8 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
         */
         event3->wheel.x = (float)event2->wheel.x;
         event3->wheel.y = (float)event2->wheel.y;
-        event3->wheel.mouseX = (float)event2->wheel.mouseX;
-        event3->wheel.mouseY = (float)event2->wheel.mouseY;
+        event3->wheel.mouse_x = (float)event2->wheel.mouseX;
+        event3->wheel.mouse_y = (float)event2->wheel.mouseY;
         break;
     default:
         break;
@@ -3389,10 +3389,10 @@ GestureProcessEvent(const SDL_Event *event3)
     float dDist;
 
     if (event3->type == SDL_EVENT_FINGER_MOTION || event3->type == SDL_EVENT_FINGER_DOWN || event3->type == SDL_EVENT_FINGER_UP) {
-        GestureTouch *inTouch = GestureGetTouch(event3->tfinger.touchId);
+        GestureTouch *inTouch = GestureGetTouch(event3->tfinger.touchID);
 
         if (inTouch == NULL) {  /* we maybe didn't see this one before. */
-            inTouch = GestureAddTouch(event3->tfinger.touchId);
+            inTouch = GestureAddTouch(event3->tfinger.touchID);
             if (!inTouch) {
                 return;  /* oh well. */
             }
@@ -3541,8 +3541,8 @@ static void SDL_CalculateShapeBitmap(SDL_WindowShapeMode mode, SDL_Surface *shap
         for (x = 0; x < shape->w; x++) {
             alpha = 0;
             pixel_value = 0;
-            pixel = (Uint8 *)(shape->pixels) + (y * shape->pitch) + (x * shape->format->BytesPerPixel);
-            switch (shape->format->BytesPerPixel) {
+            pixel = (Uint8 *)(shape->pixels) + (y * shape->pitch) + (x * shape->format->bytes_per_pixel);
+            switch (shape->format->bytes_per_pixel) {
             case 1:
                 pixel_value = *pixel;
                 break;
@@ -6969,14 +6969,14 @@ SDL_GameControllerGetBindForAxis(SDL_GameController *controller,
             int i;
             for (i = 0; bindings[i]; ++i) {
                 SDL_GamepadBinding *binding = bindings[i];
-                if (binding->outputType == SDL_GAMEPAD_BINDTYPE_AXIS && binding->output.axis.axis == axis) {
-                    bind.bindType = binding->inputType;
-                    if (binding->inputType == SDL_GAMEPAD_BINDTYPE_AXIS) {
+                if (binding->output_type == SDL_GAMEPAD_BINDTYPE_AXIS && binding->output.axis.axis == axis) {
+                    bind.bindType = binding->input_type;
+                    if (binding->input_type == SDL_GAMEPAD_BINDTYPE_AXIS) {
                         /* FIXME: There might be multiple axes bound now that we have axis ranges... */
                         bind.value.axis = binding->input.axis.axis;
-                    } else if (binding->inputType == SDL_GAMEPAD_BINDTYPE_BUTTON) {
+                    } else if (binding->input_type == SDL_GAMEPAD_BINDTYPE_BUTTON) {
                         bind.value.button = binding->input.button;
-                    } else if (binding->inputType == SDL_GAMEPAD_BINDTYPE_HAT) {
+                    } else if (binding->input_type == SDL_GAMEPAD_BINDTYPE_HAT) {
                         bind.value.hat.hat = binding->input.hat.hat;
                         bind.value.hat.hat_mask = binding->input.hat.hat_mask;
                     }
@@ -7005,13 +7005,13 @@ SDL_GameControllerGetBindForButton(SDL_GameController *controller,
             int i;
             for (i = 0; bindings[i]; ++i) {
                 SDL_GamepadBinding *binding = bindings[i];
-                if (binding->outputType == SDL_GAMEPAD_BINDTYPE_BUTTON && binding->output.button == button) {
-                    bind.bindType = binding->inputType;
-                    if (binding->inputType == SDL_GAMEPAD_BINDTYPE_AXIS) {
+                if (binding->output_type == SDL_GAMEPAD_BINDTYPE_BUTTON && binding->output.button == button) {
+                    bind.bindType = binding->input_type;
+                    if (binding->input_type == SDL_GAMEPAD_BINDTYPE_AXIS) {
                         bind.value.axis = binding->input.axis.axis;
-                    } else if (binding->inputType == SDL_GAMEPAD_BINDTYPE_BUTTON) {
+                    } else if (binding->input_type == SDL_GAMEPAD_BINDTYPE_BUTTON) {
                         bind.value.button = binding->input.button;
-                    } else if (binding->inputType == SDL_GAMEPAD_BINDTYPE_HAT) {
+                    } else if (binding->input_type == SDL_GAMEPAD_BINDTYPE_HAT) {
                         bind.value.hat.hat = binding->input.hat.hat;
                         bind.value.hat.hat_mask = binding->input.hat.hat_mask;
                     }

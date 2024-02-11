@@ -212,7 +212,7 @@ typedef struct _UIWindow UIWindow;
 
 struct SDL_SysWMinfo
 {
-    SDL_version version;
+    SDL_Version version;
     SDL2_SYSWM_TYPE subsystem;
     union
     {
