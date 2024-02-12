@@ -6427,7 +6427,7 @@ SDL_GL_BindTexture(SDL_Texture *texture, float *texw, float *texh)
     SDL3_FlushRenderer(renderer);
 
     if ((tex = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGL_TEXTURE_NUMBER, -1)) != -1) {  // opengl renderer.
-        const Sint64 target = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGL_TEXTURE_TARGET, 0);
+        const Sint64 target = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGL_TEXTURE_TARGET_NUMBER, 0);
         const Sint64 uv = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGL_TEXTURE_UV_NUMBER, 0);
         const Sint64 u = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGL_TEXTURE_U_NUMBER, 0);
         const Sint64 v = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGL_TEXTURE_V_NUMBER, 0);
@@ -6463,7 +6463,7 @@ SDL_GL_BindTexture(SDL_Texture *texture, float *texw, float *texh)
             *texh = SDL3_GetFloatProperty(props, SDL_PROP_TEXTURE_OPENGL_TEX_H_FLOAT, 1.0f);
         }
     } else if ((tex = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_NUMBER, -1)) != -1) {  // opengles2 renderer.
-        const Sint64 target = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_TARGET, 0);
+        const Sint64 target = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_TARGET_NUMBER, 0);
         const Sint64 uv = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_UV_NUMBER, 0);
         const Sint64 u = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_U_NUMBER, 0);
         const Sint64 v = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_V_NUMBER, 0);
@@ -6519,7 +6519,7 @@ SDL_GL_UnbindTexture(SDL_Texture *texture)
     }
 
     if ((tex = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGL_TEXTURE_NUMBER, -1)) != -1) {  // opengl renderer.
-        const Sint64 target = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGL_TEXTURE_TARGET, 0);
+        const Sint64 target = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGL_TEXTURE_TARGET_NUMBER, 0);
         const Sint64 uv = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGL_TEXTURE_UV_NUMBER, 0);
         const Sint64 u = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGL_TEXTURE_U_NUMBER, 0);
         const Sint64 v = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGL_TEXTURE_V_NUMBER, 0);
@@ -6550,7 +6550,7 @@ SDL_GL_UnbindTexture(SDL_Texture *texture)
         pglBindTexture((GLenum) target, 0);
         pglDisable((GLenum) target);
     } else if ((tex = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_NUMBER, -1)) != -1) {  // opengles2 renderer.
-        const Sint64 target = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_TARGET, 0);
+        const Sint64 target = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_TARGET_NUMBER, 0);
         const Sint64 uv = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_UV_NUMBER, 0);
         const Sint64 u = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_U_NUMBER, 0);
         const Sint64 v = SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_V_NUMBER, 0);
