@@ -512,20 +512,20 @@ static void
 SDL2Compat_ApplyQuirks(SDL_bool force_x11)
 {
     const char *exe_name = SDL2Compat_GetExeName();
+    const char *old_env;
     unsigned int i;
 
     if (WantDebugLogging) {
         SDL3_Log("This app appears to be named '%s'", exe_name);
     }
 
-#define UpdateHintName(old, new) \
-    { const char *old_env = SDL3_getenv(old); if (old_env) { SDL3_setenv(new, old_env, 1); } }
-
     /* if you change this, update also SDL2_to_SDL3_hint() */
     for (i = 0; i < SDL_arraysize(renamed_hints); ++i) {
-        UpdateHintName(renamed_hints[i].old_hint, renamed_hints[i].new_hint);
+        old_env = SDL3_getenv(renamed_hints[i].old_hint);
+        if (old_env) {
+            SDL3_setenv(renamed_hints[i].new_hint, old_env, 1);
+        }
     }
-#undef UpdateHintName
 
     #ifdef __linux__
     if (force_x11) {
@@ -4317,7 +4317,7 @@ SDL_CreateTexture(SDL_Renderer * renderer, Uint32 format, int access, int w, int
 {
     SDL_Texture *texture = SDL3_CreateTexture(renderer, format, access, w, h);
     if (texture) {
-        SDL_SetTextureScaleMode(texture, SDL_GetScaleMode());
+        SDL3_SetTextureScaleMode(texture, SDL_GetScaleMode());
     }
     return texture;
 }
@@ -4327,7 +4327,7 @@ SDL_CreateTextureFromSurface(SDL_Renderer * renderer, SDL_Surface * surface)
 {
     SDL_Texture *texture = SDL3_CreateTextureFromSurface(renderer, surface);
     if (texture) {
-        SDL_SetTextureScaleMode(texture, SDL_GetScaleMode());
+        SDL3_SetTextureScaleMode(texture, SDL_GetScaleMode());
     }
     return texture;
 }
@@ -7803,9 +7803,9 @@ SDL_CreateThread(SDL_ThreadFunction fn, const char *name, void *data,
     size_t stacksize = 0;
     const char *hint = SDL3_GetHint("SDL_THREAD_STACK_SIZE");
     if (hint) {
-        stacksize = (size_t)SDL_strtoul(hint, NULL, 0);
+        stacksize = (size_t)SDL3_strtoul(hint, NULL, 0);
     }
-    return SDL_CreateThreadWithStackSize(fn, name, stacksize, data, pfnBeginThread, pfnEndThread);
+    return SDL3_CreateThreadWithStackSize(fn, name, stacksize, data, pfnBeginThread, pfnEndThread);
 }
 
 #else
@@ -7816,9 +7816,9 @@ SDL_CreateThread(SDL_ThreadFunction fn, const char *name, void *data)
     size_t stacksize = 0;
     const char *hint = SDL3_GetHint("SDL_THREAD_STACK_SIZE");
     if (hint) {
-        stacksize = (size_t)SDL_strtoul(hint, NULL, 0);
+        stacksize = (size_t)SDL3_strtoul(hint, NULL, 0);
     }
-    return SDL_CreateThreadWithStackSize(fn, name, stacksize, data);
+    return SDL3_CreateThreadWithStackSize(fn, name, stacksize, data);
 }
 
 #endif /* (SDL_PLATFORM_WIN32 || SDL_PLATFORM_GDK) && !SDL_PLATFORM_WINRT */
