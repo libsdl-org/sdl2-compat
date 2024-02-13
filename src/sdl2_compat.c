@@ -7835,6 +7835,29 @@ SDL_AndroidGetExternalStorageState(void)
     }
     return state;
 }
+
+static void SDLCALL AndroidRequestPermissionBlockingCallback(void *userdata, const char *permission, SDL_bool granted)
+{
+    SDL3_AtomicSet((SDL_AtomicInt *) userdata, granted ? 1 : -1);
+}
+
+DECLSPEC SDL_bool SDLCALL
+SDL_AndroidRequestPermission(const char *permission)
+{
+    SDL_AtomicInt response;
+    SDL3_AtomicSet(&response, 0);
+
+    if (SDL_AndroidRequestPermissionAsync(permission, AndroidRequestPermissionBlockingCallback, &response) == -1) {
+        return SDL_FALSE;
+    }
+
+    /* Wait for the request to complete */
+    while (SDL3_AtomicGet(&response) == 0) {
+        SDL3_Delay(10);
+    }
+
+    return (SDL3_AtomicGet(&response) < 0) ? SDL_FALSE : SDL_TRUE;
+}
 #endif
 
 #ifdef __cplusplus

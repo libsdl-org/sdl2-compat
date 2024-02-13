@@ -101,7 +101,7 @@ SDL3_SYM_PASSTHROUGH(SDL_bool,IsAndroidTV,(void),(),return)
 SDL3_SYM_PASSTHROUGH(SDL_bool,IsChromebook,(void),(),return)
 SDL3_SYM_PASSTHROUGH(SDL_bool,IsDeXMode,(void),(),return)
 SDL3_SYM_PASSTHROUGH(void,AndroidBackButton,(void),(),)
-SDL3_SYM_PASSTHROUGH(SDL_bool,AndroidRequestPermission,(const char *a),(a),return)
+SDL3_SYM(int,AndroidRequestPermission,(const char *a, SDL_AndroidRequestPermissionCallback b, void *c),(a,b,c),return)
 SDL3_SYM_PASSTHROUGH(int,AndroidShowToast,(const char *a, int b, int c, int d, int e),(a,b,c,d,e),return)
 SDL3_SYM_PASSTHROUGH(int,GetAndroidSDKVersion,(void),(),return)
 #endif
