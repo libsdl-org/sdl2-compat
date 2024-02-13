@@ -431,23 +431,36 @@ SDL2Compat_GetHintBoolean(const char *name, SDL_bool default_value)
 }
 
 
-/* if you change this, update also SDL2Compat_ApplyQuirks() */
+static struct {
+    const char *old_hint;
+    const char *new_hint;
+} renamed_hints[] = {
+    { "SDL_AUDIODRIVER", "SDL_AUDIO_DRIVER" },
+    { "SDL_ALLOW_TOPMOST", "SDL_WINDOW_ALLOW_TOPMOST" },
+    { "SDL_DIRECTINPUT_ENABLED", "SDL_JOYSTICK_DIRECTINPUT" },
+    { "SDL_GDK_TEXTINPUT_DEFAULT", "SDL_GDK_TEXTINPUT_DEFAULT_TEXT" },
+    { "SDL_JOYSTICK_GAMECUBE_RUMBLE_BRAKE", "SDL_JOYSTICK_HIDAPI_GAMECUBE_RUMBLE_BRAKE" },
+    { "SDL_LINUX_DIGITAL_HATS", "SDL_JOYSTICK_LINUX_DIGITAL_HATS" },
+    { "SDL_LINUX_HAT_DEADZONES", "SDL_JOYSTICK_LINUX_HAT_DEADZONES" },
+    { "SDL_LINUX_JOYSTICK_CLASSIC", "SDL_JOYSTICK_LINUX_CLASSIC" },
+    { "SDL_LINUX_JOYSTICK_DEADZONES", "SDL_JOYSTICK_LINUX_DEADZONES" },
+    { "SDL_PS2_DYNAMIC_VSYNC", "SDL_RENDER_PS2_DYNAMIC_VSYNC" },
+    { "SDL_VIDEODRIVER", "SDL_VIDEO_DRIVER" },
+    { "SDL_VIDEO_WAYLAND_WMCLASS", "SDL_APP_ID" },
+    { "SDL_VIDEO_X11_FORCE_EGL", "SDL_VIDEO_FORCE_EGL" },
+    { "SDL_VIDEO_X11_WMCLASS", "SDL_APP_ID" },
+};
+
 static const char *
 SDL2_to_SDL3_hint(const char *name)
 {
-    if (SDL3_strcmp(name, "SDL_VIDEODRIVER") == 0) {
-        return "SDL_VIDEO_DRIVER";
-    }
-    else if (SDL3_strcmp(name, "SDL_AUDIODRIVER") == 0) {
-        return "SDL_AUDIO_DRIVER";
-    }
-    else if (SDL3_strcmp(name, "SDL_VIDEO_X11_WMCLASS") == 0) {
-        return "SDL_APP_ID";
-    }
-    else if (SDL3_strcmp(name, "SDL_VIDEO_WAYLAND_WMCLASS") == 0) {
-        return "SDL_APP_ID";
-    }
+    unsigned int i;
 
+    for (i = 0; i < SDL_arraysize(renamed_hints); ++i) {
+        if (SDL3_strcmp(name, renamed_hints[i].old_hint) == 0) {
+            return renamed_hints[i].new_hint;
+        }
+    }
     return name;
 }
 
@@ -499,7 +512,7 @@ static void
 SDL2Compat_ApplyQuirks(SDL_bool force_x11)
 {
     const char *exe_name = SDL2Compat_GetExeName();
-    int i;
+    unsigned int i;
 
     if (WantDebugLogging) {
         SDL3_Log("This app appears to be named '%s'", exe_name);
@@ -509,10 +522,9 @@ SDL2Compat_ApplyQuirks(SDL_bool force_x11)
     { const char *old_env = SDL3_getenv(old); if (old_env) { SDL3_setenv(new, old_env, 1); } }
 
     /* if you change this, update also SDL2_to_SDL3_hint() */
-    UpdateHintName("SDL_VIDEODRIVER", "SDL_VIDEO_DRIVER");
-    UpdateHintName("SDL_AUDIODRIVER", "SDL_AUDIO_DRIVER");
-    UpdateHintName("SDL_VIDEO_X11_WMCLASS", "SDL_APP_ID");
-    UpdateHintName("SDL_VIDEO_WAYLAND_WMCLASS", "SDL_APP_ID");
+    for (i = 0; i < SDL_arraysize(renamed_hints); ++i) {
+        UpdateHintName(renamed_hints[i].old_hint, renamed_hints[i].new_hint);
+    }
 #undef UpdateHintName
 
     #ifdef __linux__
@@ -534,7 +546,7 @@ SDL2Compat_ApplyQuirks(SDL_bool force_x11)
     if (*exe_name == '\0') {
         return;
     }
-    for (i = 0; i < (int) SDL_arraysize(quirks); i++) {
+    for (i = 0; i < SDL_arraysize(quirks); i++) {
         if (!SDL3_strcmp(exe_name, quirks[i].exe_name)) {
             if (!SDL3_getenv(quirks[i].hint_name)) {
                 if (WantDebugLogging) {
@@ -4285,16 +4297,39 @@ SDL_RenderPresent(SDL_Renderer *renderer)
     SDL3_RenderPresent(renderer);
 }
 
-DECLSPEC void SDLCALL
-SDL_DestroyTexture(SDL_Texture *texture)
+static SDL_ScaleMode SDL_GetScaleMode(void)
 {
-    SDL3_DestroyTexture(texture);
+    const char *hint = SDL3_GetHint("SDL_RENDER_SCALE_QUALITY");
+
+    if (!hint || SDL3_strcasecmp(hint, "nearest") == 0) {
+        return SDL_SCALEMODE_NEAREST;
+    } else if (SDL3_strcasecmp(hint, "linear") == 0) {
+        return SDL_SCALEMODE_LINEAR;
+    } else if (SDL3_strcasecmp(hint, "best") == 0) {
+        return SDL_SCALEMODE_BEST;
+    } else {
+        return (SDL_ScaleMode)SDL3_atoi(hint);
+    }
 }
 
-DECLSPEC void SDLCALL
-SDL_DestroyRenderer(SDL_Renderer *renderer)
+DECLSPEC SDL_Texture * SDLCALL
+SDL_CreateTexture(SDL_Renderer * renderer, Uint32 format, int access, int w, int h)
 {
-    SDL3_DestroyRenderer(renderer);
+    SDL_Texture *texture = SDL3_CreateTexture(renderer, format, access, w, h);
+    if (texture) {
+        SDL_SetTextureScaleMode(texture, SDL_GetScaleMode());
+    }
+    return texture;
+}
+
+DECLSPEC SDL_Texture * SDLCALL
+SDL_CreateTextureFromSurface(SDL_Renderer * renderer, SDL_Surface * surface)
+{
+    SDL_Texture *texture = SDL3_CreateTextureFromSurface(renderer, surface);
+    if (texture) {
+        SDL_SetTextureScaleMode(texture, SDL_GetScaleMode());
+    }
+    return texture;
 }
 
 
@@ -6057,6 +6092,7 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
         SDL3_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, w);
         SDL3_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, h);
         SDL3_SetNumberProperty(props, "flags", flags);
+        SDL3_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_EXTERNAL_GRAPHICS_CONTEXT_BOOLEAN, SDL3_GetHintBoolean("SDL_VIDEO_EXTERNAL_CONTEXT", SDL_FALSE));
 
         window = SDL3_CreateWindowWithProperties(props);
         SDL3_DestroyProperties(props);
@@ -7756,6 +7792,36 @@ SDL_hid_enumerate(unsigned short vendor_id, unsigned short product_id)
 
     return retval;
 }
+
+#if (defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)) && !defined(SDL_PLATFORM_WINRT)
+
+DECLSPEC SDL_Thread *SDLCALL
+SDL_CreateThread(SDL_ThreadFunction fn, const char *name, void *data,
+                 pfnSDL_CurrentBeginThread pfnBeginThread,
+                 pfnSDL_CurrentEndThread pfnEndThread)
+{
+    size_t stacksize = 0;
+    const char *hint = SDL3_GetHint("SDL_THREAD_STACK_SIZE");
+    if (hint) {
+        stacksize = (size_t)SDL_strtoul(hint, NULL, 0);
+    }
+    return SDL_CreateThreadWithStackSize(fn, name, stacksize, data, pfnBeginThread, pfnEndThread);
+}
+
+#else
+
+DECLSPEC SDL_Thread *SDLCALL
+SDL_CreateThread(SDL_ThreadFunction fn, const char *name, void *data)
+{
+    size_t stacksize = 0;
+    const char *hint = SDL3_GetHint("SDL_THREAD_STACK_SIZE");
+    if (hint) {
+        stacksize = (size_t)SDL_strtoul(hint, NULL, 0);
+    }
+    return SDL_CreateThreadWithStackSize(fn, name, stacksize, data);
+}
+
+#endif /* (SDL_PLATFORM_WIN32 || SDL_PLATFORM_GDK) && !SDL_PLATFORM_WINRT */
 
 DECLSPEC unsigned long SDLCALL
 SDL_ThreadID(void)

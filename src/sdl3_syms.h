@@ -50,10 +50,8 @@ SDL3_SYM_VARARGS(int,sscanf,(const char *a, SDL_SCANF_FORMAT_STRING const char *
 SDL3_SYM_VARARGS(int,snprintf,(SDL_OUT_Z_CAP(b) char *a, size_t b, SDL_PRINTF_FORMAT_STRING const char *c, ...))
 
 #if (defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)) && !defined(SDL_PLATFORM_WINRT)
-SDL3_SYM_PASSTHROUGH(SDL_Thread*,CreateThread,(SDL_ThreadFunction a, const char *b, void *c, pfnSDL_CurrentBeginThread d, pfnSDL_CurrentEndThread e),(a,b,c,d,e),return)
 SDL3_SYM_PASSTHROUGH(SDL_Thread*,CreateThreadWithStackSize,(SDL_ThreadFunction a, const char *b, const size_t c, void *d, pfnSDL_CurrentBeginThread e, pfnSDL_CurrentEndThread f),(a,b,c,d,e,f),return)
 #else
-SDL3_SYM_PASSTHROUGH(SDL_Thread*,CreateThread,(SDL_ThreadFunction a, const char *b, void *c),(a,b,c),return)
 SDL3_SYM_PASSTHROUGH(SDL_Thread*,CreateThreadWithStackSize,(SDL_ThreadFunction a, const char *b, const size_t c, void *d),(a,b,c,d),return)
 #endif
 
@@ -311,8 +309,8 @@ SDL3_SYM_PASSTHROUGH(SDL_Renderer*,CreateSoftwareRenderer,(SDL_Surface *a),(a),r
 SDL3_SYM_PASSTHROUGH(SDL_Renderer*,GetRenderer,(SDL_Window *a),(a),return)
 SDL3_SYM_PASSTHROUGH(int,GetRendererInfo,(SDL_Renderer *a, SDL_RendererInfo *b),(a,b),return)
 SDL3_SYM_RENAMED(int,GetRendererOutputSize,GetRenderOutputSize,(SDL_Renderer *a, int *b, int *c),(a,b,c),return)
-SDL3_SYM_PASSTHROUGH(SDL_Texture*,CreateTexture,(SDL_Renderer *a, Uint32 b, int c, int d, int e),(a,b,c,d,e),return)
-SDL3_SYM_PASSTHROUGH(SDL_Texture*,CreateTextureFromSurface,(SDL_Renderer *a, SDL_Surface *b),(a,b),return)
+SDL3_SYM(SDL_Texture*,CreateTexture,(SDL_Renderer *a, Uint32 b, int c, int d, int e),(a,b,c,d,e),return)
+SDL3_SYM(SDL_Texture*,CreateTextureFromSurface,(SDL_Renderer *a, SDL_Surface *b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(int,QueryTexture,(SDL_Texture *a, Uint32 *b, int *c, int *d, int *e),(a,b,c,d,e),return)
 SDL3_SYM_PASSTHROUGH(int,SetTextureColorMod,(SDL_Texture *a, Uint8 b, Uint8 c, Uint8 d),(a,b,c,d),return)
 SDL3_SYM_PASSTHROUGH(int,GetTextureColorMod,(SDL_Texture *a, Uint8 *b, Uint8 *c, Uint8 *d),(a,b,c,d),return)
@@ -340,8 +338,8 @@ SDL3_SYM_PASSTHROUGH(int,GetRenderDrawBlendMode,(SDL_Renderer *a, SDL_BlendMode 
 SDL3_SYM(int,RenderClear,(SDL_Renderer *a),(a),return)
 SDL3_SYM(SDL_Surface *,RenderReadPixels,(SDL_Renderer *a, const SDL_Rect *b),(a,b),return)
 SDL3_SYM(int,RenderPresent,(SDL_Renderer *a),(a),return)
-SDL3_SYM(void,DestroyTexture,(SDL_Texture *a),(a),)
-SDL3_SYM(void,DestroyRenderer,(SDL_Renderer *a),(a),)
+SDL3_SYM_PASSTHROUGH(void,DestroyTexture,(SDL_Texture *a),(a),)
+SDL3_SYM_PASSTHROUGH(void,DestroyRenderer,(SDL_Renderer *a),(a),)
 SDL3_SYM(SDL_RWops*,RWFromFile,(const char *a, const char *b),(a,b),return)
 SDL3_SYM(SDL_RWops*,RWFromMem,(void *a, size_t b),(a,b),return)
 SDL3_SYM(SDL_RWops*,RWFromConstMem,(const void *a, size_t b),(a,b),return)
