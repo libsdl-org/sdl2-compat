@@ -7913,7 +7913,7 @@ SDL_AndroidRequestPermission(const char *permission)
     SDL_AtomicInt response;
     SDL3_AtomicSet(&response, 0);
 
-    if (SDL_AndroidRequestPermissionAsync(permission, AndroidRequestPermissionBlockingCallback, &response) == -1) {
+    if (SDL3_AndroidRequestPermission(permission, AndroidRequestPermissionBlockingCallback, &response) == -1) {
         return SDL_FALSE;
     }
 
