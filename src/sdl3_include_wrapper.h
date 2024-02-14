@@ -998,7 +998,11 @@
 #define SDL_GetSurfaceColorspace IGNORE_THIS_VERSION_OF_SDL_GetSurfaceColorspace
 #define SDL_ConvertSurfaceFormatAndColorspace IGNORE_THIS_VERSION_OF_SDL_ConvertSurfaceFormatAndColorspace
 #define SDL_CopyProperties IGNORE_THIS_VERSION_OF_SDL_CopyProperties
+#define SDL_SetRenderColorScale IGNORE_THIS_VERSION_OF_SDL_SetRenderColorScale
+#define SDL_GetRenderColorScale IGNORE_THIS_VERSION_OF_SDL_GetRenderColorScale
+#define SDL_RenderGeometryRawFloat IGNORE_THIS_VERSION_OF_SDL_RenderGeometryRawFloat
 #define SDL_SetWindowShape IGNORE_THIS_VERSION_OF_SDL_SetWindowShape
+#define SDL_RenderViewportSet IGNORE_THIS_VERSION_OF_SDL_RenderViewportSet
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -4883,8 +4887,24 @@
 #undef SDL_CopyProperties
 #endif
 
+#ifdef SDL_SetRenderColorScale
+#undef SDL_SetRenderColorScale
+#endif
+
+#ifdef SDL_GetRenderColorScale
+#undef SDL_GetRenderColorScale
+#endif
+
+#ifdef SDL_RenderGeometryRawFloat
+#undef SDL_RenderGeometryRawFloat
+#endif
+
 #ifdef SDL_SetWindowShape
 #undef SDL_SetWindowShape
+#endif
+
+#ifdef SDL_RenderViewportSet
+#undef SDL_RenderViewportSet
 #endif
 
 #undef SDL_ThreadID /* see at top. */
