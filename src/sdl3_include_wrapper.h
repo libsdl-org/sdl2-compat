@@ -926,22 +926,6 @@
 #define SDL_SetPropertyWithCleanup IGNORE_THIS_VERSION_OF_SDL_SetPropertyWithCleanup
 #define SDL_SetX11EventHook IGNORE_THIS_VERSION_OF_SDL_SetX11EventHook
 #define SDL_GetGlobalProperties IGNORE_THIS_VERSION_OF_SDL_GetGlobalProperties
-#define SDL_OpenVideoCapture IGNORE_THIS_VERSION_OF_SDL_OpenVideoCapture
-#define SDL_SetVideoCaptureSpec IGNORE_THIS_VERSION_OF_SDL_SetVideoCaptureSpec
-#define SDL_OpenVideoCaptureWithSpec IGNORE_THIS_VERSION_OF_SDL_OpenVideoCaptureWithSpec
-#define SDL_GetVideoCaptureDeviceName IGNORE_THIS_VERSION_OF_SDL_GetVideoCaptureDeviceName
-#define SDL_GetVideoCaptureSpec IGNORE_THIS_VERSION_OF_SDL_GetVideoCaptureSpec
-#define SDL_GetVideoCaptureFormat IGNORE_THIS_VERSION_OF_SDL_GetVideoCaptureFormat
-#define SDL_GetNumVideoCaptureFormats IGNORE_THIS_VERSION_OF_SDL_GetNumVideoCaptureFormats
-#define SDL_GetVideoCaptureFrameSize IGNORE_THIS_VERSION_OF_SDL_GetVideoCaptureFrameSize
-#define SDL_GetNumVideoCaptureFrameSizes IGNORE_THIS_VERSION_OF_SDL_GetNumVideoCaptureFrameSizes
-#define SDL_GetVideoCaptureStatus IGNORE_THIS_VERSION_OF_SDL_GetVideoCaptureStatus
-#define SDL_StartVideoCapture IGNORE_THIS_VERSION_OF_SDL_StartVideoCapture
-#define SDL_AcquireVideoCaptureFrame IGNORE_THIS_VERSION_OF_SDL_AcquireVideoCaptureFrame
-#define SDL_ReleaseVideoCaptureFrame IGNORE_THIS_VERSION_OF_SDL_ReleaseVideoCaptureFrame
-#define SDL_StopVideoCapture IGNORE_THIS_VERSION_OF_SDL_StopVideoCapture
-#define SDL_CloseVideoCapture IGNORE_THIS_VERSION_OF_SDL_CloseVideoCapture
-#define SDL_GetVideoCaptureDevices IGNORE_THIS_VERSION_OF_SDL_GetVideoCaptureDevices
 #define SDL_GetGamepadButtonLabelForType IGNORE_THIS_VERSION_OF_SDL_GetGamepadButtonLabelForType
 #define SDL_GetGamepadButtonLabel IGNORE_THIS_VERSION_OF_SDL_GetGamepadButtonLabel
 #define SDL_GetPens IGNORE_THIS_VERSION_OF_SDL_GetPens
@@ -1003,6 +987,22 @@
 #define SDL_RenderGeometryRawFloat IGNORE_THIS_VERSION_OF_SDL_RenderGeometryRawFloat
 #define SDL_SetWindowShape IGNORE_THIS_VERSION_OF_SDL_SetWindowShape
 #define SDL_RenderViewportSet IGNORE_THIS_VERSION_OF_SDL_RenderViewportSet
+#define SDL_HasProperty IGNORE_THIS_VERSION_OF_SDL_HasProperty
+#define SDL_GetNumCameraDrivers IGNORE_THIS_VERSION_OF_SDL_GetNumCameraDrivers
+#define SDL_GetCameraDriver IGNORE_THIS_VERSION_OF_SDL_GetCameraDriver
+#define SDL_GetCurrentCameraDriver IGNORE_THIS_VERSION_OF_SDL_GetCurrentCameraDriver
+#define SDL_GetCameraDevices IGNORE_THIS_VERSION_OF_SDL_GetCameraDevices
+#define SDL_GetCameraDeviceSupportedFormats IGNORE_THIS_VERSION_OF_SDL_GetCameraDeviceSupportedFormats
+#define SDL_GetCameraDeviceName IGNORE_THIS_VERSION_OF_SDL_GetCameraDeviceName
+#define SDL_OpenCameraDevice IGNORE_THIS_VERSION_OF_SDL_OpenCameraDevice
+#define SDL_GetCameraInstanceID IGNORE_THIS_VERSION_OF_SDL_GetCameraInstanceID
+#define SDL_GetCameraProperties IGNORE_THIS_VERSION_OF_SDL_GetCameraProperties
+#define SDL_GetCameraFormat IGNORE_THIS_VERSION_OF_SDL_GetCameraFormat
+#define SDL_AcquireCameraFrame IGNORE_THIS_VERSION_OF_SDL_AcquireCameraFrame
+#define SDL_ReleaseCameraFrame IGNORE_THIS_VERSION_OF_SDL_ReleaseCameraFrame
+#define SDL_CloseCamera IGNORE_THIS_VERSION_OF_SDL_CloseCamera
+#define SDL_GetCameraPermissionState IGNORE_THIS_VERSION_OF_SDL_GetCameraPermissionState
+#define SDL_GetCameraDevicePosition IGNORE_THIS_VERSION_OF_SDL_GetCameraDevicePosition
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -4599,70 +4599,6 @@
 #undef SDL_GetGlobalProperties
 #endif
 
-#ifdef SDL_OpenVideoCapture
-#undef SDL_OpenVideoCapture
-#endif
-
-#ifdef SDL_SetVideoCaptureSpec
-#undef SDL_SetVideoCaptureSpec
-#endif
-
-#ifdef SDL_OpenVideoCaptureWithSpec
-#undef SDL_OpenVideoCaptureWithSpec
-#endif
-
-#ifdef SDL_GetVideoCaptureDeviceName
-#undef SDL_GetVideoCaptureDeviceName
-#endif
-
-#ifdef SDL_GetVideoCaptureSpec
-#undef SDL_GetVideoCaptureSpec
-#endif
-
-#ifdef SDL_GetVideoCaptureFormat
-#undef SDL_GetVideoCaptureFormat
-#endif
-
-#ifdef SDL_GetNumVideoCaptureFormats
-#undef SDL_GetNumVideoCaptureFormats
-#endif
-
-#ifdef SDL_GetVideoCaptureFrameSize
-#undef SDL_GetVideoCaptureFrameSize
-#endif
-
-#ifdef SDL_GetNumVideoCaptureFrameSizes
-#undef SDL_GetNumVideoCaptureFrameSizes
-#endif
-
-#ifdef SDL_GetVideoCaptureStatus
-#undef SDL_GetVideoCaptureStatus
-#endif
-
-#ifdef SDL_StartVideoCapture
-#undef SDL_StartVideoCapture
-#endif
-
-#ifdef SDL_AcquireVideoCaptureFrame
-#undef SDL_AcquireVideoCaptureFrame
-#endif
-
-#ifdef SDL_ReleaseVideoCaptureFrame
-#undef SDL_ReleaseVideoCaptureFrame
-#endif
-
-#ifdef SDL_StopVideoCapture
-#undef SDL_StopVideoCapture
-#endif
-
-#ifdef SDL_CloseVideoCapture
-#undef SDL_CloseVideoCapture
-#endif
-
-#ifdef SDL_GetVideoCaptureDevices
-#undef SDL_GetVideoCaptureDevices
-#endif
-
 #ifdef SDL_GetGamepadButtonLabelForType
 #undef SDL_GetGamepadButtonLabelForType
 #endif
@@ -4905,6 +4841,70 @@
 
 #ifdef SDL_RenderViewportSet
 #undef SDL_RenderViewportSet
+#endif
+
+#ifdef SDL_HasProperty
+#undef SDL_HasProperty
+#endif
+
+#ifdef SDL_GetNumCameraDrivers
+#undef SDL_GetNumCameraDrivers
+#endif
+
+#ifdef SDL_GetCameraDriver
+#undef SDL_GetCameraDriver
+#endif
+
+#ifdef SDL_GetCurrentCameraDriver
+#undef SDL_GetCurrentCameraDriver
+#endif
+
+#ifdef SDL_GetCameraDevices
+#undef SDL_GetCameraDevices
+#endif
+
+#ifdef SDL_GetCameraDeviceSupportedFormats
+#undef SDL_GetCameraDeviceSupportedFormats
+#endif
+
+#ifdef SDL_GetCameraDeviceName
+#undef SDL_GetCameraDeviceName
+#endif
+
+#ifdef SDL_OpenCameraDevice
+#undef SDL_OpenCameraDevice
+#endif
+
+#ifdef SDL_GetCameraInstanceID
+#undef SDL_GetCameraInstanceID
+#endif
+
+#ifdef SDL_GetCameraProperties
+#undef SDL_GetCameraProperties
+#endif
+
+#ifdef SDL_GetCameraFormat
+#undef SDL_GetCameraFormat
+#endif
+
+#ifdef SDL_AcquireCameraFrame
+#undef SDL_AcquireCameraFrame
+#endif
+
+#ifdef SDL_ReleaseCameraFrame
+#undef SDL_ReleaseCameraFrame
+#endif
+
+#ifdef SDL_CloseCamera
+#undef SDL_CloseCamera
+#endif
+
+#ifdef SDL_GetCameraPermissionState
+#undef SDL_GetCameraPermissionState
+#endif
+
+#ifdef SDL_GetCameraDevicePosition
+#undef SDL_GetCameraDevicePosition
 #endif
 
 #undef SDL_ThreadID /* see at top. */
