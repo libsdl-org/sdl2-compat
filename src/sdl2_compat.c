@@ -508,6 +508,12 @@ SDL_DelHintCallback(const char *name, SDL_HintCallback callback, void *userdata)
     SDL3_DelHintCallback(SDL2_to_SDL3_hint(name), callback, userdata);
 }
 
+DECLSPEC void SDLCALL
+SDL_ClearHints(void)
+{
+    SDL3_ResetHints();
+}
+
 static void
 SDL2Compat_ApplyQuirks(SDL_bool force_x11)
 {
@@ -2645,7 +2651,7 @@ SDL_ConvertPixels(int width, int height, Uint32 src_format, const void *src, int
 {
     SDL_Colorspace src_colorspace = GetColorspaceForFormatAndSize(src_format, width, height);
     SDL_Colorspace dst_colorspace = GetColorspaceForFormatAndSize(dst_format, width, height);
-    return SDL3_ConvertPixelsAndColorspace(width, height, src_format, src_colorspace, src, src_pitch, dst_format, dst_colorspace, dst, dst_pitch);
+    return SDL3_ConvertPixelsAndColorspace(width, height, src_format, src_colorspace, 0, src, src_pitch, dst_format, dst_colorspace, 0, dst, dst_pitch);
 }
 
 DECLSPEC SDL_Surface * SDLCALL
@@ -4282,7 +4288,7 @@ SDL_RenderReadPixels(SDL_Renderer * renderer, const SDL_Rect * rect, Uint32 form
     }
 
     if (SDL3_GetSurfaceColorspace(surface, &surface_colorspace) == 0 &&
-        SDL3_ConvertPixelsAndColorspace(surface->w, surface->h, surface->format->format, surface_colorspace,  surface->pixels, surface->pitch, format, SDL_COLORSPACE_SRGB, pixels, pitch) == 0) {
+        SDL3_ConvertPixelsAndColorspace(surface->w, surface->h, surface->format->format, surface_colorspace, SDL3_GetSurfaceProperties(surface), surface->pixels, surface->pitch, format, SDL_COLORSPACE_SRGB, 0, pixels, pitch) == 0 ) {
         result = 0;
     }
 
