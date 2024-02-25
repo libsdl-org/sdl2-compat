@@ -69,7 +69,6 @@
 #define SDL_CleanupTLS IGNORE_THIS_VERSION_OF_SDL_CleanupTLS
 #define SDL_ClearComposition IGNORE_THIS_VERSION_OF_SDL_ClearComposition
 #define SDL_ClearError IGNORE_THIS_VERSION_OF_SDL_ClearError
-#define SDL_ClearHints IGNORE_THIS_VERSION_OF_SDL_ClearHints
 #define SDL_CloseGamepad IGNORE_THIS_VERSION_OF_SDL_CloseGamepad
 #define SDL_CloseJoystick IGNORE_THIS_VERSION_OF_SDL_CloseJoystick
 #define SDL_CloseSensor IGNORE_THIS_VERSION_OF_SDL_CloseSensor
@@ -1169,10 +1168,6 @@
 
 #ifdef SDL_ClearError
 #undef SDL_ClearError
-#endif
-
-#ifdef SDL_ClearHints
-#undef SDL_ClearHints
 #endif
 
 #ifdef SDL_CloseGamepad
