@@ -1002,6 +1002,9 @@
 #define SDL_CloseCamera IGNORE_THIS_VERSION_OF_SDL_CloseCamera
 #define SDL_GetCameraPermissionState IGNORE_THIS_VERSION_OF_SDL_GetCameraPermissionState
 #define SDL_GetCameraDevicePosition IGNORE_THIS_VERSION_OF_SDL_GetCameraDevicePosition
+#define SDL_qsort_r IGNORE_THIS_VERSION_OF_SDL_qsort_r
+#define SDL_bsearch_r IGNORE_THIS_VERSION_OF_SDL_bsearch_r
+#define SDL_AddVulkanRenderSemaphores IGNORE_THIS_VERSION_OF_SDL_AddVulkanRenderSemaphores
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -4900,6 +4903,18 @@
 
 #ifdef SDL_GetCameraDevicePosition
 #undef SDL_GetCameraDevicePosition
+#endif
+
+#ifdef SDL_qsort_r
+#undef SDL_qsort_r
+#endif
+
+#ifdef SDL_bsearch_r
+#undef SDL_bsearch_r
+#endif
+
+#ifdef SDL_AddVulkanRenderSemaphores
+#undef SDL_AddVulkanRenderSemaphores
 #endif
 
 #undef SDL_ThreadID /* see at top. */
