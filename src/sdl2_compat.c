@@ -1930,6 +1930,13 @@ SDL_FilterEvents(SDL2_EventFilter filter2, void *userdata)
     SDL3_FilterEvents(EventFilterWrapper3to2, &wrapperdata);
 }
 
+DECLSPEC Uint32 SDLCALL
+SDL_RegisterEvents(int numevents)
+{
+    Uint32 r = SDL3_RegisterEvents(numevents);
+    return r > 0 ? r : (Uint32)(-1);
+}
+
 
 /* Several SDL3 video backends have had their names lower-cased, map to the SDL2 equivalent name. */
 static const char *ReplaceVideoBackendName(const char *name)
