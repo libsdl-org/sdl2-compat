@@ -2603,7 +2603,7 @@ DECLSPEC SDL_Surface * SDLCALL
 SDL_ConvertSurfaceFormat(SDL_Surface * src, Uint32 pixel_format, Uint32 flags)
 {
     (void) flags; /* SDL3 removed the (unused) `flags` argument */
-    return SDL3_ConvertSurfaceFormat(src, pixel_format);
+    return SDL3_ConvertSurfaceFormat(src, (SDL_PixelFormatEnum)pixel_format);
 }
 
 #define SDL_YUV_SD_THRESHOLD 576
@@ -2658,7 +2658,13 @@ SDL_ConvertPixels(int width, int height, Uint32 src_format, const void *src, int
 {
     SDL_Colorspace src_colorspace = GetColorspaceForFormatAndSize(src_format, width, height);
     SDL_Colorspace dst_colorspace = GetColorspaceForFormatAndSize(dst_format, width, height);
-    return SDL3_ConvertPixelsAndColorspace(width, height, src_format, src_colorspace, 0, src, src_pitch, dst_format, dst_colorspace, 0, dst, dst_pitch);
+    return SDL3_ConvertPixelsAndColorspace(width, height, (SDL_PixelFormatEnum)src_format, src_colorspace, 0, src, src_pitch, (SDL_PixelFormatEnum)dst_format, dst_colorspace, 0, dst, dst_pitch);
+}
+
+DECLSPEC int SDLCALL
+SDL_PremultiplyAlpha(int width, int height, Uint32 src_format, const void * src, int src_pitch, Uint32 dst_format, void * dst, int dst_pitch)
+{
+    return SDL3_PremultiplyAlpha(width, height, (SDL_PixelFormatEnum)src_format, src, src_pitch, (SDL_PixelFormatEnum)dst_format, dst, dst_pitch);
 }
 
 DECLSPEC SDL_Surface * SDLCALL
@@ -2670,7 +2676,7 @@ SDL_CreateRGBSurface(Uint32 flags, int width, int height, int depth, Uint32 Rmas
 DECLSPEC SDL_Surface * SDLCALL
 SDL_CreateRGBSurfaceWithFormat(Uint32 flags, int width, int height, int depth, Uint32 format)
 {
-    return SDL3_CreateSurface(width, height, format);
+    return SDL3_CreateSurface(width, height, (SDL_PixelFormatEnum)format);
 }
 
 DECLSPEC SDL_Surface * SDLCALL
@@ -2682,7 +2688,7 @@ SDL_CreateRGBSurfaceFrom(void *pixels, int width, int height, int depth, int pit
 DECLSPEC SDL_Surface * SDLCALL
 SDL_CreateRGBSurfaceWithFormatFrom(void *pixels, int width, int height, int depth, int pitch, Uint32 format)
 {
-    return SDL3_CreateSurfaceFrom(pixels, width, height, pitch, format);
+    return SDL3_CreateSurfaceFrom(pixels, width, height, pitch, (SDL_PixelFormatEnum)format);
 }
 
 DECLSPEC int SDLCALL
@@ -4295,7 +4301,7 @@ SDL_RenderReadPixels(SDL_Renderer * renderer, const SDL_Rect * rect, Uint32 form
     }
 
     if (SDL3_GetSurfaceColorspace(surface, &surface_colorspace) == 0 &&
-        SDL3_ConvertPixelsAndColorspace(surface->w, surface->h, surface->format->format, surface_colorspace, SDL3_GetSurfaceProperties(surface), surface->pixels, surface->pitch, format, SDL_COLORSPACE_SRGB, 0, pixels, pitch) == 0 ) {
+        SDL3_ConvertPixelsAndColorspace(surface->w, surface->h, surface->format->format, surface_colorspace, SDL3_GetSurfaceProperties(surface), surface->pixels, surface->pitch, (SDL_PixelFormatEnum)format, SDL_COLORSPACE_SRGB, 0, pixels, pitch) == 0 ) {
         result = 0;
     }
 
@@ -5378,7 +5384,7 @@ struct SDL2_DisplayMode
 static void
 DisplayMode_2to3(const SDL2_DisplayMode *in, SDL_DisplayMode *out) {
     if (in && out) {
-        out->format = in->format;
+        out->format = (SDL_PixelFormatEnum)in->format;
         out->w = in->w;
         out->h = in->h;
         out->refresh_rate = (float) in->refresh_rate;
@@ -6239,6 +6245,18 @@ SDL_SetCursor(SDL_Cursor * cursor)
     SDL3_SetCursor(cursor);
 }
 
+DECLSPEC SDL_bool SDLCALL
+SDL_PixelFormatEnumToMasks(Uint32 format, int *bpp, Uint32 * Rmask, Uint32 * Gmask, Uint32 * Bmask, Uint32 * Amask)
+{
+    return SDL3_GetMasksForPixelFormatEnum((SDL_PixelFormatEnum)format, bpp, Rmask, Gmask, Bmask, Amask);
+}
+
+DECLSPEC Uint32 SDLCALL
+SDL_MasksToPixelFormatEnum(int bpp, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
+{
+    return (Uint32)SDL3_GetPixelFormatEnumForMasks(bpp, Rmask, Gmask, Bmask, Amask);
+}
+
 DECLSPEC const char *
 SDL_GetPixelFormatName(Uint32 format)
 {
@@ -6248,8 +6266,14 @@ SDL_GetPixelFormatName(Uint32 format)
     case SDL_PIXELFORMAT_XBGR8888:
         return "SDL_PIXELFORMAT_BGR888";
     default:
-        return SDL3_GetPixelFormatName(format);
+        return SDL3_GetPixelFormatName((SDL_PixelFormatEnum)format);
     }
+}
+
+DECLSPEC SDL_PixelFormat * SDLCALL
+SDL_AllocFormat(Uint32 pixel_format)
+{
+    return SDL3_CreatePixelFormat((SDL_PixelFormatEnum)pixel_format);
 }
 
 DECLSPEC void SDLCALL
