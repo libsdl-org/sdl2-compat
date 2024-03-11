@@ -1005,6 +1005,8 @@
 #define SDL_qsort_r IGNORE_THIS_VERSION_OF_SDL_qsort_r
 #define SDL_bsearch_r IGNORE_THIS_VERSION_OF_SDL_bsearch_r
 #define SDL_AddVulkanRenderSemaphores IGNORE_THIS_VERSION_OF_SDL_AddVulkanRenderSemaphores
+#define SDL_GetNumJoystickBalls IGNORE_THIS_VERSION_OF_SDL_GetNumJoystickBalls
+#define SDL_GetJoystickBall IGNORE_THIS_VERSION_OF_SDL_GetJoystickBall
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -4915,6 +4917,14 @@
 
 #ifdef SDL_AddVulkanRenderSemaphores
 #undef SDL_AddVulkanRenderSemaphores
+#endif
+
+#ifdef SDL_GetNumJoystickBalls
+#undef SDL_GetNumJoystickBalls
+#endif
+
+#ifdef SDL_GetJoystickBall
+#undef SDL_GetJoystickBall
 #endif
 
 #undef SDL_ThreadID /* see at top. */

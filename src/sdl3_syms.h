@@ -24,15 +24,12 @@
 #ifndef SDL3_SYM
 #define SDL3_SYM(rc,fn,params,args,ret)
 #endif
-
 #ifndef SDL3_SYM_PASSTHROUGH
 #define SDL3_SYM_PASSTHROUGH(rc,fn,params,args,ret) SDL3_SYM(rc,fn,params,args,ret)
 #endif
-
 #ifndef SDL3_SYM_RENAMED
 #define SDL3_SYM_RENAMED(rc,oldfn,newfn,params,args,ret) SDL3_SYM(rc,newfn,params,args,ret)
 #endif
-
 #ifndef SDL3_SYM_VARARGS
 #define SDL3_SYM_VARARGS(rc,fn,params) SDL3_SYM(rc,fn,params,unused,unused)
 #endif
@@ -213,10 +210,12 @@ SDL3_SYM_RENAMED(SDL_JoystickGUID,JoystickGetGUIDFromString,GetJoystickGUIDFromS
 SDL3_SYM_RENAMED(SDL_bool,JoystickGetAttached,JoystickConnected,(SDL_Joystick *a),(a),return)
 SDL3_SYM(SDL_JoystickID,GetJoystickInstanceID,(SDL_Joystick *a),(a),return)
 SDL3_SYM_RENAMED(int,JoystickNumAxes,GetNumJoystickAxes,(SDL_Joystick *a),(a),return)
+SDL3_SYM_RENAMED(int,JoystickNumBalls,GetNumJoystickBalls,(SDL_Joystick *a),(a),return)
 SDL3_SYM_RENAMED(int,JoystickNumHats,GetNumJoystickHats,(SDL_Joystick *a),(a),return)
 SDL3_SYM_RENAMED(int,JoystickNumButtons,GetNumJoystickButtons,(SDL_Joystick *a),(a),return)
 SDL3_SYM_RENAMED(void,JoystickUpdate,UpdateJoysticks,(void),(),)
 SDL3_SYM_RENAMED(Sint16,JoystickGetAxis,GetJoystickAxis,(SDL_Joystick *a, int b),(a,b),return)
+SDL3_SYM_RENAMED(int,JoystickGetBall,GetJoystickBall,(SDL_Joystick *a, int b, int *c, int *d),(a,b,c,d),return);
 SDL3_SYM_RENAMED(Uint8,JoystickGetHat,GetJoystickHat,(SDL_Joystick *a, int b),(a,b),return)
 SDL3_SYM_RENAMED(Uint8,JoystickGetButton,GetJoystickButton,(SDL_Joystick *a, int b),(a,b),return)
 SDL3_SYM_RENAMED(void,JoystickClose,CloseJoystick,(SDL_Joystick *a),(a),)
