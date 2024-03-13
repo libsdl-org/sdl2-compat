@@ -7852,6 +7852,24 @@ SDL_GetThreadID(SDL_Thread *thread)
     return (unsigned long)SDL3_GetThreadID(thread);
 }
 
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)
+static SDL2_WindowsMessageHook g_WindowsMessageHook = NULL;
+
+static SDL_bool SDLCALL SDL3to2_WindowsMessageHook(void *userdata, MSG *msg)
+{
+    g_WindowsMessageHook(userdata, msg->hwnd, msg->message, msg->wParam, msg->lParam);
+    return SDL_TRUE;
+}
+
+DECLSPEC void SDLCALL
+SDL_SetWindowsMessageHook(SDL2_WindowsMessageHook callback, void *userdata)
+{
+    SDL_WindowsMessageHook callback3 = (callback != NULL) ? SDL3to2_WindowsMessageHook : NULL;
+    g_WindowsMessageHook = callback;
+    SDL3_SetWindowsMessageHook(callback3, userdata);
+}
+#endif
+
 #if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_WINGDK)
 DECLSPEC int SDLCALL
 SDL_Direct3D9GetAdapterIndex(int displayIndex)

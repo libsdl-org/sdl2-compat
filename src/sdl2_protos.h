@@ -613,7 +613,7 @@ SDL2_PROTO(Uint32,GetQueuedAudioSize,(SDL_AudioDeviceID a))
 SDL2_PROTO(void,ClearQueuedAudio,(SDL_AudioDeviceID a))
 SDL2_PROTO(SDL_Window*,GetGrabbedWindow,(void))
 #if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)
-SDL2_PROTO(void,SetWindowsMessageHook,(SDL_WindowsMessageHook a, void *b))
+SDL2_PROTO(void,SetWindowsMessageHook,(SDL2_WindowsMessageHook a, void *b))
 #endif
 SDL2_PROTO(int,GetDisplayDPI,(int a, float *b, float *c, float *d))
 SDL2_PROTO(SDL_JoystickPowerLevel,JoystickCurrentPowerLevel,(SDL_Joystick *a))

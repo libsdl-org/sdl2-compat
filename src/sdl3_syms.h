@@ -47,7 +47,8 @@ SDL3_SYM_VARARGS(int,sscanf,(const char *a, SDL_SCANF_FORMAT_STRING const char *
 SDL3_SYM_VARARGS(int,snprintf,(SDL_OUT_Z_CAP(b) char *a, size_t b, SDL_PRINTF_FORMAT_STRING const char *c, ...))
 
 #if (defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)) && !defined(SDL_PLATFORM_WINRT)
-SDL3_SYM_PASSTHROUGH(SDL_Thread*,CreateThreadWithStackSize,(SDL_ThreadFunction a, const char *b, const size_t c, void *d, pfnSDL_CurrentBeginThread e, pfnSDL_CurrentEndThread f),(a,b,c,d,e,f),return)
+SDL3_SYM_PASSTHROUGH(SDL_Thread*,CreateThreadWithStackSize,(SDL_ThreadFunction a, const char *b, const size_t c, void *d,
+                                                              pfnSDL_CurrentBeginThread e, pfnSDL_CurrentEndThread f),(a,b,c,d,e,f),return)
 #else
 SDL3_SYM_PASSTHROUGH(SDL_Thread*,CreateThreadWithStackSize,(SDL_ThreadFunction a, const char *b, const size_t c, void *d),(a,b,c,d),return)
 #endif
@@ -55,7 +56,7 @@ SDL3_SYM_PASSTHROUGH(SDL_Thread*,CreateThreadWithStackSize,(SDL_ThreadFunction a
 #if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)
 SDL3_SYM_PASSTHROUGH(int,RegisterApp,(const char *a, Uint32 b, void *c),(a,b,c),return)
 SDL3_SYM_PASSTHROUGH(void,UnregisterApp,(void),(),)
-SDL3_SYM_PASSTHROUGH(void,SetWindowsMessageHook,(SDL_WindowsMessageHook a, void *b),(a,b),)
+SDL3_SYM(void,SetWindowsMessageHook,(SDL_WindowsMessageHook a, void *b),(a,b),)
 #endif
 
 #if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_WINGDK)

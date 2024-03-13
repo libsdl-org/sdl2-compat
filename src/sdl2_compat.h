@@ -181,6 +181,9 @@ typedef struct IDirect3DDevice9 IDirect3DDevice9;
 typedef struct ID3D11Device ID3D11Device;
 typedef struct ID3D12Device ID3D12Device;
 #endif
+#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)
+typedef void (SDLCALL * SDL2_WindowsMessageHook)(void *userdata, void *hWnd, unsigned int message, Uint64 wParam, Sint64 lParam);
+#endif
 
 /* SDL2 SysWM mapping */
 typedef enum
