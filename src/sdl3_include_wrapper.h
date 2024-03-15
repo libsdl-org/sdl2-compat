@@ -84,7 +84,6 @@
 #define SDL_CreatePalette IGNORE_THIS_VERSION_OF_SDL_CreatePalette
 #define SDL_CreatePixelFormat IGNORE_THIS_VERSION_OF_SDL_CreatePixelFormat
 #define SDL_CreatePopupWindow IGNORE_THIS_VERSION_OF_SDL_CreatePopupWindow
-#define SDL_CreateRW IGNORE_THIS_VERSION_OF_SDL_CreateRW
 #define SDL_CreateRWLock IGNORE_THIS_VERSION_OF_SDL_CreateRWLock
 #define SDL_CreateRenderer IGNORE_THIS_VERSION_OF_SDL_CreateRenderer
 #define SDL_CreateSemaphore IGNORE_THIS_VERSION_OF_SDL_CreateSemaphore
@@ -501,12 +500,13 @@
 #define SDL_RWFromConstMem IGNORE_THIS_VERSION_OF_SDL_RWFromConstMem
 #define SDL_RWFromFile IGNORE_THIS_VERSION_OF_SDL_RWFromFile
 #define SDL_RWFromMem IGNORE_THIS_VERSION_OF_SDL_RWFromMem
-#define SDL_RWclose IGNORE_THIS_VERSION_OF_SDL_RWclose
-#define SDL_RWread IGNORE_THIS_VERSION_OF_SDL_RWread
-#define SDL_RWseek IGNORE_THIS_VERSION_OF_SDL_RWseek
-#define SDL_RWsize IGNORE_THIS_VERSION_OF_SDL_RWsize
-#define SDL_RWtell IGNORE_THIS_VERSION_OF_SDL_RWtell
-#define SDL_RWwrite IGNORE_THIS_VERSION_OF_SDL_RWwrite
+#define SDL_OpenRW IGNORE_THIS_VERSION_OF_SDL_OpenRW
+#define SDL_CloseRW IGNORE_THIS_VERSION_OF_SDL_CloseRW
+#define SDL_ReadRW IGNORE_THIS_VERSION_OF_SDL_ReadRW
+#define SDL_SeekRW IGNORE_THIS_VERSION_OF_SDL_SeekRW
+#define SDL_SizeRW IGNORE_THIS_VERSION_OF_SDL_SizeRW
+#define SDL_TellRW IGNORE_THIS_VERSION_OF_SDL_TellRW
+#define SDL_WriteRW IGNORE_THIS_VERSION_OF_SDL_WriteRW
 #define SDL_RaiseWindow IGNORE_THIS_VERSION_OF_SDL_RaiseWindow
 #define SDL_ReadU16BE IGNORE_THIS_VERSION_OF_SDL_ReadU16BE
 #define SDL_ReadU32BE IGNORE_THIS_VERSION_OF_SDL_ReadU32BE
@@ -912,7 +912,7 @@
 #define SDL_GetJoystickProperties IGNORE_THIS_VERSION_OF_SDL_GetJoystickProperties
 #define SDL_GetRendererProperties IGNORE_THIS_VERSION_OF_SDL_GetRendererProperties
 #define SDL_GetTextureProperties IGNORE_THIS_VERSION_OF_SDL_GetTextureProperties
-#define SDL_GetRWProperties IGNORE_THIS_VERSION_OF_SDL_GetRWProperties
+#define SDL_GetIOProperties IGNORE_THIS_VERSION_OF_SDL_GetIOProperties
 #define SDL_GetSensorProperties IGNORE_THIS_VERSION_OF_SDL_GetSensorProperties
 #define SDL_GetSurfaceProperties IGNORE_THIS_VERSION_OF_SDL_GetSurfaceProperties
 #define SDL_GetWindowProperties IGNORE_THIS_VERSION_OF_SDL_GetWindowProperties
@@ -1235,10 +1235,6 @@
 #undef SDL_CreatePopupWindow
 #endif
 
-#ifdef SDL_CreateRW
-#undef SDL_CreateRW
-#endif
-
 #ifdef SDL_CreateRWLock
 #undef SDL_CreateRWLock
 #endif
@@ -1341,10 +1337,6 @@
 
 #ifdef SDL_DestroyPixelFormat
 #undef SDL_DestroyPixelFormat
-#endif
-
-#ifdef SDL_DestroyRW
-#undef SDL_DestroyRW
 #endif
 
 #ifdef SDL_DestroyRWLock
@@ -2903,28 +2895,32 @@
 #undef SDL_RWFromMem
 #endif
 
-#ifdef SDL_RWclose
-#undef SDL_RWclose
+#ifdef SDL_OpenRW
+#undef SDL_OpenRW
 #endif
 
-#ifdef SDL_RWread
-#undef SDL_RWread
+#ifdef SDL_CloseRW
+#undef SDL_CloseRW
 #endif
 
-#ifdef SDL_RWseek
-#undef SDL_RWseek
+#ifdef SDL_ReadRW
+#undef SDL_ReadRW
 #endif
 
-#ifdef SDL_RWsize
-#undef SDL_RWsize
+#ifdef SDL_SeekRW
+#undef SDL_SeekRW
 #endif
 
-#ifdef SDL_RWtell
-#undef SDL_RWtell
+#ifdef SDL_SizeRW
+#undef SDL_SizeRW
 #endif
 
-#ifdef SDL_RWwrite
-#undef SDL_RWwrite
+#ifdef SDL_TellRW
+#undef SDL_TellRW
+#endif
+
+#ifdef SDL_WriteRW
+#undef SDL_WriteRW
 #endif
 
 #ifdef SDL_RaiseWindow
@@ -4547,8 +4543,8 @@
 #undef SDL_GetTextureProperties
 #endif
 
-#ifdef SDL_GetRWProperties
-#undef SDL_GetRWProperties
+#ifdef SDL_GetIOProperties
+#undef SDL_GetIOProperties
 #endif
 
 #ifdef SDL_GetSensorProperties
