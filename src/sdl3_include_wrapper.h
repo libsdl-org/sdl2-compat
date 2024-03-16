@@ -36,7 +36,7 @@
 
 #define SDL_AddEventWatch IGNORE_THIS_VERSION_OF_SDL_AddEventWatch
 #define SDL_AddGamepadMapping IGNORE_THIS_VERSION_OF_SDL_AddGamepadMapping
-#define SDL_AddGamepadMappingsFromRW IGNORE_THIS_VERSION_OF_SDL_AddGamepadMappingsFromRW
+#define SDL_AddGamepadMappingsFromIO IGNORE_THIS_VERSION_OF_SDL_AddGamepadMappingsFromIO
 #define SDL_AddHintCallback IGNORE_THIS_VERSION_OF_SDL_AddHintCallback
 #define SDL_AddTimer IGNORE_THIS_VERSION_OF_SDL_AddTimer
 #define SDL_AndroidBackButton IGNORE_THIS_VERSION_OF_SDL_AndroidBackButton
@@ -110,7 +110,6 @@
 #define SDL_DestroyMutex IGNORE_THIS_VERSION_OF_SDL_DestroyMutex
 #define SDL_DestroyPalette IGNORE_THIS_VERSION_OF_SDL_DestroyPalette
 #define SDL_DestroyPixelFormat IGNORE_THIS_VERSION_OF_SDL_DestroyPixelFormat
-#define SDL_DestroyRW IGNORE_THIS_VERSION_OF_SDL_DestroyRW
 #define SDL_DestroyRWLock IGNORE_THIS_VERSION_OF_SDL_DestroyRWLock
 #define SDL_DestroyRenderer IGNORE_THIS_VERSION_OF_SDL_DestroyRenderer
 #define SDL_DestroySemaphore IGNORE_THIS_VERSION_OF_SDL_DestroySemaphore
@@ -440,9 +439,9 @@
 #define SDL_LinuxSetThreadPriority IGNORE_THIS_VERSION_OF_SDL_LinuxSetThreadPriority
 #define SDL_LinuxSetThreadPriorityAndPolicy IGNORE_THIS_VERSION_OF_SDL_LinuxSetThreadPriorityAndPolicy
 #define SDL_LoadBMP IGNORE_THIS_VERSION_OF_SDL_LoadBMP
-#define SDL_LoadBMP_RW IGNORE_THIS_VERSION_OF_SDL_LoadBMP_RW
+#define SDL_LoadBMP_IO IGNORE_THIS_VERSION_OF_SDL_LoadBMP_IO
 #define SDL_LoadFile IGNORE_THIS_VERSION_OF_SDL_LoadFile
-#define SDL_LoadFile_RW IGNORE_THIS_VERSION_OF_SDL_LoadFile_RW
+#define SDL_LoadFile_IO IGNORE_THIS_VERSION_OF_SDL_LoadFile_IO
 #define SDL_LoadFunction IGNORE_THIS_VERSION_OF_SDL_LoadFunction
 #define SDL_LoadObject IGNORE_THIS_VERSION_OF_SDL_LoadObject
 #define SDL_LockJoysticks IGNORE_THIS_VERSION_OF_SDL_LockJoysticks
@@ -497,16 +496,14 @@
 #define SDL_QueryTexture IGNORE_THIS_VERSION_OF_SDL_QueryTexture
 #define SDL_Quit IGNORE_THIS_VERSION_OF_SDL_Quit
 #define SDL_QuitSubSystem IGNORE_THIS_VERSION_OF_SDL_QuitSubSystem
-#define SDL_RWFromConstMem IGNORE_THIS_VERSION_OF_SDL_RWFromConstMem
-#define SDL_RWFromFile IGNORE_THIS_VERSION_OF_SDL_RWFromFile
-#define SDL_RWFromMem IGNORE_THIS_VERSION_OF_SDL_RWFromMem
-#define SDL_OpenRW IGNORE_THIS_VERSION_OF_SDL_OpenRW
-#define SDL_CloseRW IGNORE_THIS_VERSION_OF_SDL_CloseRW
-#define SDL_ReadRW IGNORE_THIS_VERSION_OF_SDL_ReadRW
-#define SDL_SeekRW IGNORE_THIS_VERSION_OF_SDL_SeekRW
-#define SDL_SizeRW IGNORE_THIS_VERSION_OF_SDL_SizeRW
-#define SDL_TellRW IGNORE_THIS_VERSION_OF_SDL_TellRW
-#define SDL_WriteRW IGNORE_THIS_VERSION_OF_SDL_WriteRW
+#define SDL_IOFromConstMem IGNORE_THIS_VERSION_OF_SDL_IOFromConstMem
+#define SDL_IOFromFile IGNORE_THIS_VERSION_OF_SDL_IOFromFile
+#define SDL_IOFromMem IGNORE_THIS_VERSION_OF_SDL_IOFromMem
+#define SDL_ReadIO IGNORE_THIS_VERSION_OF_SDL_ReadIO
+#define SDL_SeekIO IGNORE_THIS_VERSION_OF_SDL_SeekIO
+#define SDL_SizeIO IGNORE_THIS_VERSION_OF_SDL_SizeIO
+#define SDL_TellIO IGNORE_THIS_VERSION_OF_SDL_TellIO
+#define SDL_WriteIO IGNORE_THIS_VERSION_OF_SDL_WriteIO
 #define SDL_RaiseWindow IGNORE_THIS_VERSION_OF_SDL_RaiseWindow
 #define SDL_ReadU16BE IGNORE_THIS_VERSION_OF_SDL_ReadU16BE
 #define SDL_ReadU32BE IGNORE_THIS_VERSION_OF_SDL_ReadU32BE
@@ -549,7 +546,7 @@
 #define SDL_RunApp IGNORE_THIS_VERSION_OF_SDL_RunApp
 #define SDL_SIMDGetAlignment IGNORE_THIS_VERSION_OF_SDL_SIMDGetAlignment
 #define SDL_SaveBMP IGNORE_THIS_VERSION_OF_SDL_SaveBMP
-#define SDL_SaveBMP_RW IGNORE_THIS_VERSION_OF_SDL_SaveBMP_RW
+#define SDL_SaveBMP_IO IGNORE_THIS_VERSION_OF_SDL_SaveBMP_IO
 #define SDL_ScreenKeyboardShown IGNORE_THIS_VERSION_OF_SDL_ScreenKeyboardShown
 #define SDL_ScreenSaverEnabled IGNORE_THIS_VERSION_OF_SDL_ScreenSaverEnabled
 #define SDL_SendGamepadEffect IGNORE_THIS_VERSION_OF_SDL_SendGamepadEffect
@@ -873,7 +870,7 @@
 #define SDL_SetAudioStreamPutCallback IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamPutCallback
 #define SDL_DestroyAudioStream IGNORE_THIS_VERSION_OF_SDL_DestroyAudioStream
 #define SDL_OpenAudioDeviceStream IGNORE_THIS_VERSION_OF_SDL_OpenAudioDeviceStream
-#define SDL_LoadWAV_RW IGNORE_THIS_VERSION_OF_SDL_LoadWAV_RW
+#define SDL_LoadWAV_IO IGNORE_THIS_VERSION_OF_SDL_LoadWAV_IO
 #define SDL_LoadWAV IGNORE_THIS_VERSION_OF_SDL_LoadWAV
 #define SDL_MixAudioFormat IGNORE_THIS_VERSION_OF_SDL_MixAudioFormat
 #define SDL_ConvertAudioSamples IGNORE_THIS_VERSION_OF_SDL_ConvertAudioSamples
@@ -918,8 +915,8 @@
 #define SDL_GetWindowProperties IGNORE_THIS_VERSION_OF_SDL_GetWindowProperties
 #define SDL_ClearProperty IGNORE_THIS_VERSION_OF_SDL_ClearProperty
 #define SDL_EnterAppMainCallbacks IGNORE_THIS_VERSION_OF_SDL_EnterAppMainCallbacks
-#define SDL_RWprintf IGNORE_THIS_VERSION_OF_SDL_RWprintf
-#define SDL_RWvprintf IGNORE_THIS_VERSION_OF_SDL_RWvprintf
+#define SDL_IOprintf IGNORE_THIS_VERSION_OF_SDL_IOprintf
+#define SDL_IOvprintf IGNORE_THIS_VERSION_OF_SDL_IOvprintf
 #define SDL_AllocateEventMemory IGNORE_THIS_VERSION_OF_SDL_AllocateEventMemory
 #define SDL_GetDisplayProperties IGNORE_THIS_VERSION_OF_SDL_GetDisplayProperties
 #define SDL_SetPropertyWithCleanup IGNORE_THIS_VERSION_OF_SDL_SetPropertyWithCleanup
@@ -1007,6 +1004,12 @@
 #define SDL_AddVulkanRenderSemaphores IGNORE_THIS_VERSION_OF_SDL_AddVulkanRenderSemaphores
 #define SDL_GetNumJoystickBalls IGNORE_THIS_VERSION_OF_SDL_GetNumJoystickBalls
 #define SDL_GetJoystickBall IGNORE_THIS_VERSION_OF_SDL_GetJoystickBall
+#define SDL_ShowOpenFileDialog IGNORE_THIS_VERSION_OF_SDL_ShowOpenFileDialog
+#define SDL_ShowSaveFileDialog IGNORE_THIS_VERSION_OF_SDL_ShowSaveFileDialog
+#define SDL_ShowOpenFolderDialog IGNORE_THIS_VERSION_OF_SDL_ShowOpenFolderDialog
+#define SDL_OpenIO IGNORE_THIS_VERSION_OF_SDL_OpenIO
+#define SDL_CloseIO IGNORE_THIS_VERSION_OF_SDL_CloseIO
+#define SDL_GetIOStatus IGNORE_THIS_VERSION_OF_SDL_GetIOStatus
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -1043,8 +1046,8 @@
 #undef SDL_AddGamepadMapping
 #endif
 
-#ifdef SDL_AddGamepadMappingsFromRW
-#undef SDL_AddGamepadMappingsFromRW
+#ifdef SDL_AddGamepadMappingsFromIO
+#undef SDL_AddGamepadMappingsFromIO
 #endif
 
 #ifdef SDL_AddHintCallback
@@ -2655,16 +2658,16 @@
 #undef SDL_LoadBMP
 #endif
 
-#ifdef SDL_LoadBMP_RW
-#undef SDL_LoadBMP_RW
+#ifdef SDL_LoadBMP_IO
+#undef SDL_LoadBMP_IO
 #endif
 
 #ifdef SDL_LoadFile
 #undef SDL_LoadFile
 #endif
 
-#ifdef SDL_LoadFile_RW
-#undef SDL_LoadFile_RW
+#ifdef SDL_LoadFile_IO
+#undef SDL_LoadFile_IO
 #endif
 
 #ifdef SDL_LoadFunction
@@ -2883,44 +2886,36 @@
 #undef SDL_QuitSubSystem
 #endif
 
-#ifdef SDL_RWFromConstMem
-#undef SDL_RWFromConstMem
+#ifdef SDL_IOFromConstMem
+#undef SDL_IOFromConstMem
 #endif
 
-#ifdef SDL_RWFromFile
-#undef SDL_RWFromFile
+#ifdef SDL_IOFromFile
+#undef SDL_IOFromFile
 #endif
 
-#ifdef SDL_RWFromMem
-#undef SDL_RWFromMem
+#ifdef SDL_IOFromMem
+#undef SDL_IOFromMem
 #endif
 
-#ifdef SDL_OpenRW
-#undef SDL_OpenRW
+#ifdef SDL_ReadIO
+#undef SDL_ReadIO
 #endif
 
-#ifdef SDL_CloseRW
-#undef SDL_CloseRW
+#ifdef SDL_SeekIO
+#undef SDL_SeekIO
 #endif
 
-#ifdef SDL_ReadRW
-#undef SDL_ReadRW
+#ifdef SDL_SizeIO
+#undef SDL_SizeIO
 #endif
 
-#ifdef SDL_SeekRW
-#undef SDL_SeekRW
+#ifdef SDL_TellIO
+#undef SDL_TellIO
 #endif
 
-#ifdef SDL_SizeRW
-#undef SDL_SizeRW
-#endif
-
-#ifdef SDL_TellRW
-#undef SDL_TellRW
-#endif
-
-#ifdef SDL_WriteRW
-#undef SDL_WriteRW
+#ifdef SDL_WriteIO
+#undef SDL_WriteIO
 #endif
 
 #ifdef SDL_RaiseWindow
@@ -3091,8 +3086,8 @@
 #undef SDL_SaveBMP
 #endif
 
-#ifdef SDL_SaveBMP_RW
-#undef SDL_SaveBMP_RW
+#ifdef SDL_SaveBMP_IO
+#undef SDL_SaveBMP_IO
 #endif
 
 #ifdef SDL_ScreenKeyboardShown
@@ -4387,8 +4382,8 @@
 #undef SDL_OpenAudioDeviceStream
 #endif
 
-#ifdef SDL_LoadWAV_RW
-#undef SDL_LoadWAV_RW
+#ifdef SDL_LoadWAV_IO
+#undef SDL_LoadWAV_IO
 #endif
 
 #ifdef SDL_LoadWAV
@@ -4567,12 +4562,12 @@
 #undef SDL_EnterAppMainCallbacks
 #endif
 
-#ifdef SDL_RWprintf
-#undef SDL_RWprintf
+#ifdef SDL_IOprintf
+#undef SDL_IOprintf
 #endif
 
-#ifdef SDL_RWvprintf
-#undef SDL_RWvprintf
+#ifdef SDL_IOvprintf
+#undef SDL_IOvprintf
 #endif
 
 #ifdef SDL_AllocateEventMemory
@@ -4921,6 +4916,30 @@
 
 #ifdef SDL_GetJoystickBall
 #undef SDL_GetJoystickBall
+#endif
+
+#ifdef SDL_ShowOpenFileDialog
+#undef SDL_ShowOpenFileDialog
+#endif
+
+#ifdef SDL_ShowSaveFileDialog
+#undef SDL_ShowSaveFileDialog
+#endif
+
+#ifdef SDL_ShowOpenFolderDialog
+#undef SDL_ShowOpenFolderDialog
+#endif
+
+#ifdef SDL_OpenIO
+#undef SDL_OpenIO
+#endif
+
+#ifdef SDL_CloseIO
+#undef SDL_CloseIO
+#endif
+
+#ifdef SDL_GetIOStatus
+#undef SDL_GetIOStatus
 #endif
 
 #undef SDL_ThreadID /* see at top. */
