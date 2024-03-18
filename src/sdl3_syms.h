@@ -615,7 +615,7 @@ SDL3_SYM_PASSTHROUGH(SDL_TouchDeviceType,GetTouchDeviceType,(SDL_TouchID a),(a),
 SDL3_SYM_PASSTHROUGH(size_t,SIMDGetAlignment,(void),(),return)
 SDL3_SYM(void*,aligned_alloc,(size_t a, size_t b),(a,b),return)
 SDL3_SYM(void,aligned_free,(void *a),(a),)
-SDL3_SYM(Sint64,SizeIO,(SDL_IOStream *a),(a),return)
+SDL3_SYM(Sint64,GetIOSize,(SDL_IOStream *a),(a),return)
 SDL3_SYM(Sint64,SeekIO,(SDL_IOStream *a, Sint64 b, int c),(a,b,c),return)
 SDL3_SYM(Sint64,TellIO,(SDL_IOStream *a),(a),return)
 SDL3_SYM(size_t,ReadIO,(SDL_IOStream *a, void *b, size_t c),(a,b,c),return)

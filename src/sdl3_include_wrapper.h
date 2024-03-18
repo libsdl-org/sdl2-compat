@@ -501,7 +501,7 @@
 #define SDL_IOFromMem IGNORE_THIS_VERSION_OF_SDL_IOFromMem
 #define SDL_ReadIO IGNORE_THIS_VERSION_OF_SDL_ReadIO
 #define SDL_SeekIO IGNORE_THIS_VERSION_OF_SDL_SeekIO
-#define SDL_SizeIO IGNORE_THIS_VERSION_OF_SDL_SizeIO
+#define SDL_GetIOSize IGNORE_THIS_VERSION_OF_SDL_GetIOSize
 #define SDL_TellIO IGNORE_THIS_VERSION_OF_SDL_TellIO
 #define SDL_WriteIO IGNORE_THIS_VERSION_OF_SDL_WriteIO
 #define SDL_RaiseWindow IGNORE_THIS_VERSION_OF_SDL_RaiseWindow
@@ -1031,6 +1031,7 @@
 #define SDL_RenameStoragePath IGNORE_THIS_VERSION_OF_SDL_RenameStoragePath
 #define SDL_GetStoragePathInfo IGNORE_THIS_VERSION_OF_SDL_GetStoragePathInfo
 #define SDL_FileTimeFromWindows IGNORE_THIS_VERSION_OF_SDL_FileTimeFromWindows
+#define SDL_IOFromDynamicMem IGNORE_THIS_VERSION_OF_SDL_IOFromDynamicMem
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -2927,8 +2928,8 @@
 #undef SDL_SeekIO
 #endif
 
-#ifdef SDL_SizeIO
-#undef SDL_SizeIO
+#ifdef SDL_GetIOSize
+#undef SDL_GetIOSize
 #endif
 
 #ifdef SDL_TellIO
@@ -5045,6 +5046,10 @@
 
 #ifdef SDL_FileTimeFromWindows
 #undef SDL_FileTimeFromWindows
+#endif
+
+#ifdef SDL_IOFromDynamicMem
+#undef SDL_IOFromDynamicMem
 #endif
 
 #undef SDL_ThreadID /* see at top. */

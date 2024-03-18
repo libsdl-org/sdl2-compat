@@ -2091,7 +2091,7 @@ SDL_FreeRW(SDL2_RWops *rwops2)
 static Sint64 SDLCALL
 RWops3to2_size(SDL2_RWops *rwops2)
 {
-    return SDL3_SizeIO(rwops2->hidden.sdl3.iostrm);
+    return SDL3_GetIOSize(rwops2->hidden.sdl3.iostrm);
 }
 
 static Sint64 SDLCALL
