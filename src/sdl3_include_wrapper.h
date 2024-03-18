@@ -455,14 +455,14 @@
 #define SDL_LogCritical IGNORE_THIS_VERSION_OF_SDL_LogCritical
 #define SDL_LogDebug IGNORE_THIS_VERSION_OF_SDL_LogDebug
 #define SDL_LogError IGNORE_THIS_VERSION_OF_SDL_LogError
-#define SDL_LogGetOutputFunction IGNORE_THIS_VERSION_OF_SDL_LogGetOutputFunction
+#define SDL_GetLogOutputFunction IGNORE_THIS_VERSION_OF_SDL_GetLogOutputFunction
 #define SDL_LogGetPriority IGNORE_THIS_VERSION_OF_SDL_LogGetPriority
 #define SDL_LogInfo IGNORE_THIS_VERSION_OF_SDL_LogInfo
 #define SDL_LogMessage IGNORE_THIS_VERSION_OF_SDL_LogMessage
 #define SDL_LogMessageV IGNORE_THIS_VERSION_OF_SDL_LogMessageV
 #define SDL_LogResetPriorities IGNORE_THIS_VERSION_OF_SDL_LogResetPriorities
 #define SDL_LogSetAllPriority IGNORE_THIS_VERSION_OF_SDL_LogSetAllPriority
-#define SDL_LogSetOutputFunction IGNORE_THIS_VERSION_OF_SDL_LogSetOutputFunction
+#define SDL_SetLogOutputFunction IGNORE_THIS_VERSION_OF_SDL_SetLogOutputFunction
 #define SDL_LogSetPriority IGNORE_THIS_VERSION_OF_SDL_LogSetPriority
 #define SDL_LogVerbose IGNORE_THIS_VERSION_OF_SDL_LogVerbose
 #define SDL_LogWarn IGNORE_THIS_VERSION_OF_SDL_LogWarn
@@ -1010,6 +1010,27 @@
 #define SDL_OpenIO IGNORE_THIS_VERSION_OF_SDL_OpenIO
 #define SDL_CloseIO IGNORE_THIS_VERSION_OF_SDL_CloseIO
 #define SDL_GetIOStatus IGNORE_THIS_VERSION_OF_SDL_GetIOStatus
+#define SDL_OpenTitleStorage IGNORE_THIS_VERSION_OF_SDL_OpenTitleStorage
+#define SDL_OpenUserStorage IGNORE_THIS_VERSION_OF_SDL_OpenUserStorage
+#define SDL_OpenStorage IGNORE_THIS_VERSION_OF_SDL_OpenStorage
+#define SDL_CloseStorage IGNORE_THIS_VERSION_OF_SDL_CloseStorage
+#define SDL_StorageReady IGNORE_THIS_VERSION_OF_SDL_StorageReady
+#define SDL_GetStorageFileSize IGNORE_THIS_VERSION_OF_SDL_GetStorageFileSize
+#define SDL_ReadStorageFile IGNORE_THIS_VERSION_OF_SDL_ReadStorageFile
+#define SDL_GetStorageSpaceRemaining IGNORE_THIS_VERSION_OF_SDL_GetStorageSpaceRemaining
+#define SDL_CreateDirectory IGNORE_THIS_VERSION_OF_SDL_CreateDirectory
+#define SDL_EnumerateDirectory IGNORE_THIS_VERSION_OF_SDL_EnumerateDirectory
+#define SDL_RemovePath IGNORE_THIS_VERSION_OF_SDL_RemovePath
+#define SDL_RenamePath IGNORE_THIS_VERSION_OF_SDL_RenamePath
+#define SDL_GetPathInfo IGNORE_THIS_VERSION_OF_SDL_GetPathInfo
+#define SDL_FileTimeToWindows IGNORE_THIS_VERSION_OF_SDL_FileTimeToWindows
+#define SDL_OpenFileStorage IGNORE_THIS_VERSION_OF_SDL_OpenFileStorage
+#define SDL_CreateStorageDirectory IGNORE_THIS_VERSION_OF_SDL_CreateStorageDirectory
+#define SDL_EnumerateStorageDirectory IGNORE_THIS_VERSION_OF_SDL_EnumerateStorageDirectory
+#define SDL_RemoveStoragePath IGNORE_THIS_VERSION_OF_SDL_RemoveStoragePath
+#define SDL_RenameStoragePath IGNORE_THIS_VERSION_OF_SDL_RenameStoragePath
+#define SDL_GetStoragePathInfo IGNORE_THIS_VERSION_OF_SDL_GetStoragePathInfo
+#define SDL_FileTimeFromWindows IGNORE_THIS_VERSION_OF_SDL_FileTimeFromWindows
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -2722,8 +2743,8 @@
 #undef SDL_LogError
 #endif
 
-#ifdef SDL_LogGetOutputFunction
-#undef SDL_LogGetOutputFunction
+#ifdef SDL_GetLogOutputFunction
+#undef SDL_GetLogOutputFunction
 #endif
 
 #ifdef SDL_LogGetPriority
@@ -2750,8 +2771,8 @@
 #undef SDL_LogSetAllPriority
 #endif
 
-#ifdef SDL_LogSetOutputFunction
-#undef SDL_LogSetOutputFunction
+#ifdef SDL_SetLogOutputFunction
+#undef SDL_SetLogOutputFunction
 #endif
 
 #ifdef SDL_LogSetPriority
@@ -4940,6 +4961,90 @@
 
 #ifdef SDL_GetIOStatus
 #undef SDL_GetIOStatus
+#endif
+
+#ifdef SDL_OpenTitleStorage
+#undef SDL_OpenTitleStorage
+#endif
+
+#ifdef SDL_OpenUserStorage
+#undef SDL_OpenUserStorage
+#endif
+
+#ifdef SDL_OpenStorage
+#undef SDL_OpenStorage
+#endif
+
+#ifdef SDL_CloseStorage
+#undef SDL_CloseStorage
+#endif
+
+#ifdef SDL_StorageReady
+#undef SDL_StorageReady
+#endif
+
+#ifdef SDL_GetStorageFileSize
+#undef SDL_GetStorageFileSize
+#endif
+
+#ifdef SDL_ReadStorageFile
+#undef SDL_ReadStorageFile
+#endif
+
+#ifdef SDL_GetStorageSpaceRemaining
+#undef SDL_GetStorageSpaceRemaining
+#endif
+
+#ifdef SDL_CreateDirectory
+#undef SDL_CreateDirectory
+#endif
+
+#ifdef SDL_EnumerateDirectory
+#undef SDL_EnumerateDirectory
+#endif
+
+#ifdef SDL_RemovePath
+#undef SDL_RemovePath
+#endif
+
+#ifdef SDL_RenamePath
+#undef SDL_RenamePath
+#endif
+
+#ifdef SDL_GetPathInfo
+#undef SDL_GetPathInfo
+#endif
+
+#ifdef SDL_FileTimeToWindows
+#undef SDL_FileTimeToWindows
+#endif
+
+#ifdef SDL_OpenFileStorage
+#undef SDL_OpenFileStorage
+#endif
+
+#ifdef SDL_CreateStorageDirectory
+#undef SDL_CreateStorageDirectory
+#endif
+
+#ifdef SDL_EnumerateStorageDirectory
+#undef SDL_EnumerateStorageDirectory
+#endif
+
+#ifdef SDL_RemoveStoragePath
+#undef SDL_RemoveStoragePath
+#endif
+
+#ifdef SDL_RenameStoragePath
+#undef SDL_RenameStoragePath
+#endif
+
+#ifdef SDL_GetStoragePathInfo
+#undef SDL_GetStoragePathInfo
+#endif
+
+#ifdef SDL_FileTimeFromWindows
+#undef SDL_FileTimeFromWindows
 #endif
 
 #undef SDL_ThreadID /* see at top. */
