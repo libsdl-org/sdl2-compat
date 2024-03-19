@@ -124,6 +124,7 @@
 #define SDL_CreateWindowWithProperties IGNORE_THIS_VERSION_OF_SDL_CreateWindowWithProperties
 #define SDL_CursorVisible IGNORE_THIS_VERSION_OF_SDL_CursorVisible
 #define SDL_DXGIGetOutputInfo IGNORE_THIS_VERSION_OF_SDL_DXGIGetOutputInfo
+#define SDL_DateTimeToTime IGNORE_THIS_VERSION_OF_SDL_DateTimeToTime
 #define SDL_DelEventWatch IGNORE_THIS_VERSION_OF_SDL_DelEventWatch
 #define SDL_DelHintCallback IGNORE_THIS_VERSION_OF_SDL_DelHintCallback
 #define SDL_Delay IGNORE_THIS_VERSION_OF_SDL_Delay
@@ -160,8 +161,6 @@
 #define SDL_EnumerateStorageDirectory IGNORE_THIS_VERSION_OF_SDL_EnumerateStorageDirectory
 #define SDL_Error IGNORE_THIS_VERSION_OF_SDL_Error
 #define SDL_EventEnabled IGNORE_THIS_VERSION_OF_SDL_EventEnabled
-#define SDL_FileTimeFromWindows IGNORE_THIS_VERSION_OF_SDL_FileTimeFromWindows
-#define SDL_FileTimeToWindows IGNORE_THIS_VERSION_OF_SDL_FileTimeToWindows
 #define SDL_FillSurfaceRect IGNORE_THIS_VERSION_OF_SDL_FillSurfaceRect
 #define SDL_FillSurfaceRects IGNORE_THIS_VERSION_OF_SDL_FillSurfaceRects
 #define SDL_FilterEvents IGNORE_THIS_VERSION_OF_SDL_FilterEvents
@@ -234,8 +233,12 @@
 #define SDL_GetCurrentDisplayOrientation IGNORE_THIS_VERSION_OF_SDL_GetCurrentDisplayOrientation
 #define SDL_GetCurrentRenderOutputSize IGNORE_THIS_VERSION_OF_SDL_GetCurrentRenderOutputSize
 #define SDL_GetCurrentThreadID IGNORE_THIS_VERSION_OF_SDL_GetCurrentThreadID
+#define SDL_GetCurrentTime IGNORE_THIS_VERSION_OF_SDL_GetCurrentTime
 #define SDL_GetCurrentVideoDriver IGNORE_THIS_VERSION_OF_SDL_GetCurrentVideoDriver
 #define SDL_GetCursor IGNORE_THIS_VERSION_OF_SDL_GetCursor
+#define SDL_GetDayOfWeek IGNORE_THIS_VERSION_OF_SDL_GetDayOfWeek
+#define SDL_GetDayOfYear IGNORE_THIS_VERSION_OF_SDL_GetDayOfYear
+#define SDL_GetDaysInMonth IGNORE_THIS_VERSION_OF_SDL_GetDaysInMonth
 #define SDL_GetDefaultAssertionHandler IGNORE_THIS_VERSION_OF_SDL_GetDefaultAssertionHandler
 #define SDL_GetDefaultCursor IGNORE_THIS_VERSION_OF_SDL_GetDefaultCursor
 #define SDL_GetDesktopDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetDesktopDisplayMode
@@ -812,6 +815,9 @@
 #define SDL_TellIO IGNORE_THIS_VERSION_OF_SDL_TellIO
 #define SDL_TextInputActive IGNORE_THIS_VERSION_OF_SDL_TextInputActive
 #define SDL_TextInputShown IGNORE_THIS_VERSION_OF_SDL_TextInputShown
+#define SDL_TimeFromWindows IGNORE_THIS_VERSION_OF_SDL_TimeFromWindows
+#define SDL_TimeToDateTime IGNORE_THIS_VERSION_OF_SDL_TimeToDateTime
+#define SDL_TimeToWindows IGNORE_THIS_VERSION_OF_SDL_TimeToWindows
 #define SDL_TryLockMutex IGNORE_THIS_VERSION_OF_SDL_TryLockMutex
 #define SDL_TryLockRWLockForReading IGNORE_THIS_VERSION_OF_SDL_TryLockRWLockForReading
 #define SDL_TryLockRWLockForWriting IGNORE_THIS_VERSION_OF_SDL_TryLockRWLockForWriting
@@ -1420,6 +1426,10 @@
 #undef SDL_DXGIGetOutputInfo
 #endif
 
+#ifdef SDL_DateTimeToTime
+#undef SDL_DateTimeToTime
+#endif
+
 #ifdef SDL_DelEventWatch
 #undef SDL_DelEventWatch
 #endif
@@ -1562,14 +1572,6 @@
 
 #ifdef SDL_EventEnabled
 #undef SDL_EventEnabled
-#endif
-
-#ifdef SDL_FileTimeFromWindows
-#undef SDL_FileTimeFromWindows
-#endif
-
-#ifdef SDL_FileTimeToWindows
-#undef SDL_FileTimeToWindows
 #endif
 
 #ifdef SDL_FillSurfaceRect
@@ -1860,12 +1862,28 @@
 #undef SDL_GetCurrentThreadID
 #endif
 
+#ifdef SDL_GetCurrentTime
+#undef SDL_GetCurrentTime
+#endif
+
 #ifdef SDL_GetCurrentVideoDriver
 #undef SDL_GetCurrentVideoDriver
 #endif
 
 #ifdef SDL_GetCursor
 #undef SDL_GetCursor
+#endif
+
+#ifdef SDL_GetDayOfWeek
+#undef SDL_GetDayOfWeek
+#endif
+
+#ifdef SDL_GetDayOfYear
+#undef SDL_GetDayOfYear
+#endif
+
+#ifdef SDL_GetDaysInMonth
+#undef SDL_GetDaysInMonth
 #endif
 
 #ifdef SDL_GetDefaultAssertionHandler
@@ -4170,6 +4188,18 @@
 
 #ifdef SDL_TextInputShown
 #undef SDL_TextInputShown
+#endif
+
+#ifdef SDL_TimeFromWindows
+#undef SDL_TimeFromWindows
+#endif
+
+#ifdef SDL_TimeToDateTime
+#undef SDL_TimeToDateTime
+#endif
+
+#ifdef SDL_TimeToWindows
+#undef SDL_TimeToWindows
 #endif
 
 #ifdef SDL_TryLockMutex
