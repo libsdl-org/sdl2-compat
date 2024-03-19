@@ -2176,7 +2176,7 @@ SDL_RWFromFile(const char *file, const char *mode)
             #endif
 
             if (!handle) {
-                handle = SDL3_GetProperty(props, SDL_PROP_IOSTREAM_STDIO_HANDLE_POINTER, NULL);
+                handle = SDL3_GetProperty(props, SDL_PROP_IOSTREAM_STDIO_FILE_POINTER, NULL);
                 if (handle) {
                     rwops2->hidden.stdio.autoclose = SDL_FALSE;
                     rwops2->hidden.stdio.fp = handle;
