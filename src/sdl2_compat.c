@@ -1537,6 +1537,12 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     SDL3_memcpy((&event2->common) + 1, (&event3->common) + 1, sizeof (SDL2_Event) - sizeof (SDL2_CommonEvent));
     /* mouse coords became floats in SDL3: */
     switch (event3->type) {
+    case SDL_EVENT_KEY_DOWN:
+    case SDL_EVENT_KEY_UP:
+        event2->key.state = event3->key.state;
+        event2->key.repeat = event3->key.repeat;
+        event2->key.keysym = event3->key.keysym;
+        break;
     case SDL_EVENT_TEXT_INPUT:
         SDL3_strlcpy(event2->text.text, event3->text.text, sizeof(event2->text.text));
         break;
@@ -1648,6 +1654,13 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
         SDL3_memcpy(event3->text.text, event3->text.text, len);
         break;
     }
+    case SDL_EVENT_KEY_DOWN:
+    case SDL_EVENT_KEY_UP:
+        event3->key.which = 0;
+        event3->key.state = event2->key.state;
+        event3->key.repeat = event2->key.repeat;
+        event3->key.keysym = event2->key.keysym;
+        break;
     #if 0 /* FIXME: Can this ever happen? */
     case SDL_EVENT_TEXT_EDITING: {
         const size_t len = SDL3_strlen(event2->edit.text) + 1;
