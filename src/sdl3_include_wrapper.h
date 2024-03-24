@@ -351,14 +351,18 @@
 #define SDL_GetKeyFromScancode IGNORE_THIS_VERSION_OF_SDL_GetKeyFromScancode
 #define SDL_GetKeyName IGNORE_THIS_VERSION_OF_SDL_GetKeyName
 #define SDL_GetKeyboardFocus IGNORE_THIS_VERSION_OF_SDL_GetKeyboardFocus
+#define SDL_GetKeyboardInstanceName IGNORE_THIS_VERSION_OF_SDL_GetKeyboardInstanceName
 #define SDL_GetKeyboardState IGNORE_THIS_VERSION_OF_SDL_GetKeyboardState
+#define SDL_GetKeyboards IGNORE_THIS_VERSION_OF_SDL_GetKeyboards
 #define SDL_GetLogOutputFunction IGNORE_THIS_VERSION_OF_SDL_GetLogOutputFunction
 #define SDL_GetMasksForPixelFormatEnum IGNORE_THIS_VERSION_OF_SDL_GetMasksForPixelFormatEnum
 #define SDL_GetMaxHapticEffects IGNORE_THIS_VERSION_OF_SDL_GetMaxHapticEffects
 #define SDL_GetMaxHapticEffectsPlaying IGNORE_THIS_VERSION_OF_SDL_GetMaxHapticEffectsPlaying
 #define SDL_GetMemoryFunctions IGNORE_THIS_VERSION_OF_SDL_GetMemoryFunctions
+#define SDL_GetMice IGNORE_THIS_VERSION_OF_SDL_GetMice
 #define SDL_GetModState IGNORE_THIS_VERSION_OF_SDL_GetModState
 #define SDL_GetMouseFocus IGNORE_THIS_VERSION_OF_SDL_GetMouseFocus
+#define SDL_GetMouseInstanceName IGNORE_THIS_VERSION_OF_SDL_GetMouseInstanceName
 #define SDL_GetMouseState IGNORE_THIS_VERSION_OF_SDL_GetMouseState
 #define SDL_GetNaturalDisplayOrientation IGNORE_THIS_VERSION_OF_SDL_GetNaturalDisplayOrientation
 #define SDL_GetNumAllocations IGNORE_THIS_VERSION_OF_SDL_GetNumAllocations
@@ -519,9 +523,13 @@
 #define SDL_HasClipboardText IGNORE_THIS_VERSION_OF_SDL_HasClipboardText
 #define SDL_HasEvent IGNORE_THIS_VERSION_OF_SDL_HasEvent
 #define SDL_HasEvents IGNORE_THIS_VERSION_OF_SDL_HasEvents
+#define SDL_HasGamepad IGNORE_THIS_VERSION_OF_SDL_HasGamepad
+#define SDL_HasJoystick IGNORE_THIS_VERSION_OF_SDL_HasJoystick
+#define SDL_HasKeyboard IGNORE_THIS_VERSION_OF_SDL_HasKeyboard
 #define SDL_HasLASX IGNORE_THIS_VERSION_OF_SDL_HasLASX
 #define SDL_HasLSX IGNORE_THIS_VERSION_OF_SDL_HasLSX
 #define SDL_HasMMX IGNORE_THIS_VERSION_OF_SDL_HasMMX
+#define SDL_HasMouse IGNORE_THIS_VERSION_OF_SDL_HasMouse
 #define SDL_HasNEON IGNORE_THIS_VERSION_OF_SDL_HasNEON
 #define SDL_HasPrimarySelectionText IGNORE_THIS_VERSION_OF_SDL_HasPrimarySelectionText
 #define SDL_HasProperty IGNORE_THIS_VERSION_OF_SDL_HasProperty
@@ -2334,8 +2342,16 @@
 #undef SDL_GetKeyboardFocus
 #endif
 
+#ifdef SDL_GetKeyboardInstanceName
+#undef SDL_GetKeyboardInstanceName
+#endif
+
 #ifdef SDL_GetKeyboardState
 #undef SDL_GetKeyboardState
+#endif
+
+#ifdef SDL_GetKeyboards
+#undef SDL_GetKeyboards
 #endif
 
 #ifdef SDL_GetLogOutputFunction
@@ -2358,12 +2374,20 @@
 #undef SDL_GetMemoryFunctions
 #endif
 
+#ifdef SDL_GetMice
+#undef SDL_GetMice
+#endif
+
 #ifdef SDL_GetModState
 #undef SDL_GetModState
 #endif
 
 #ifdef SDL_GetMouseFocus
 #undef SDL_GetMouseFocus
+#endif
+
+#ifdef SDL_GetMouseInstanceName
+#undef SDL_GetMouseInstanceName
 #endif
 
 #ifdef SDL_GetMouseState
@@ -3006,6 +3030,18 @@
 #undef SDL_HasEvents
 #endif
 
+#ifdef SDL_HasGamepad
+#undef SDL_HasGamepad
+#endif
+
+#ifdef SDL_HasJoystick
+#undef SDL_HasJoystick
+#endif
+
+#ifdef SDL_HasKeyboard
+#undef SDL_HasKeyboard
+#endif
+
 #ifdef SDL_HasLASX
 #undef SDL_HasLASX
 #endif
@@ -3016,6 +3052,10 @@
 
 #ifdef SDL_HasMMX
 #undef SDL_HasMMX
+#endif
+
+#ifdef SDL_HasMouse
+#undef SDL_HasMouse
 #endif
 
 #ifdef SDL_HasNEON
