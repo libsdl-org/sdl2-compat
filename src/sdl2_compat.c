@@ -6461,7 +6461,16 @@ SDL_RestoreWindow(SDL_Window *window)
 DECLSPEC void SDLCALL
 SDL_SetWindowGrab(SDL_Window *window, SDL_bool grabbed)
 {
-    SDL3_SetWindowGrab(window, grabbed);
+    SDL3_SetWindowMouseGrab(window, grabbed);
+    if (SDL3_GetHintBoolean("SDL_GRAB_KEYBOARD", SDL_FALSE)) {
+        SDL3_SetWindowKeyboardGrab(window, grabbed);
+    }
+}
+
+DECLSPEC SDL_bool SDLCALL
+SDL_GetWindowGrab(SDL_Window *window)
+{
+    return SDL3_GetWindowKeyboardGrab(window) || SDL3_GetWindowMouseGrab(window);
 }
 
 DECLSPEC void SDLCALL

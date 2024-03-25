@@ -494,7 +494,6 @@
 #define SDL_GetWindowFlags IGNORE_THIS_VERSION_OF_SDL_GetWindowFlags
 #define SDL_GetWindowFromID IGNORE_THIS_VERSION_OF_SDL_GetWindowFromID
 #define SDL_GetWindowFullscreenMode IGNORE_THIS_VERSION_OF_SDL_GetWindowFullscreenMode
-#define SDL_GetWindowGrab IGNORE_THIS_VERSION_OF_SDL_GetWindowGrab
 #define SDL_GetWindowICCProfile IGNORE_THIS_VERSION_OF_SDL_GetWindowICCProfile
 #define SDL_GetWindowID IGNORE_THIS_VERSION_OF_SDL_GetWindowID
 #define SDL_GetWindowKeyboardGrab IGNORE_THIS_VERSION_OF_SDL_GetWindowKeyboardGrab
@@ -783,7 +782,6 @@
 #define SDL_SetWindowFocusable IGNORE_THIS_VERSION_OF_SDL_SetWindowFocusable
 #define SDL_SetWindowFullscreen IGNORE_THIS_VERSION_OF_SDL_SetWindowFullscreen
 #define SDL_SetWindowFullscreenMode IGNORE_THIS_VERSION_OF_SDL_SetWindowFullscreenMode
-#define SDL_SetWindowGrab IGNORE_THIS_VERSION_OF_SDL_SetWindowGrab
 #define SDL_SetWindowHitTest IGNORE_THIS_VERSION_OF_SDL_SetWindowHitTest
 #define SDL_SetWindowIcon IGNORE_THIS_VERSION_OF_SDL_SetWindowIcon
 #define SDL_SetWindowInputFocus IGNORE_THIS_VERSION_OF_SDL_SetWindowInputFocus
@@ -2914,10 +2912,6 @@
 #undef SDL_GetWindowFullscreenMode
 #endif
 
-#ifdef SDL_GetWindowGrab
-#undef SDL_GetWindowGrab
-#endif
-
 #ifdef SDL_GetWindowICCProfile
 #undef SDL_GetWindowICCProfile
 #endif
@@ -4068,10 +4062,6 @@
 
 #ifdef SDL_SetWindowFullscreenMode
 #undef SDL_SetWindowFullscreenMode
-#endif
-
-#ifdef SDL_SetWindowGrab
-#undef SDL_SetWindowGrab
 #endif
 
 #ifdef SDL_SetWindowHitTest
