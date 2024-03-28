@@ -22,6 +22,14 @@
 #ifndef sdl2_compat_h
 #define sdl2_compat_h
 
+/* This is to make sure the SDL2 SDL_bool (an enum) and the SDL3 one (an int) are compatible. */
+typedef enum
+{
+    DUMMY_ENUM_VALUE0,
+    DUMMY_ENUM_VALUE1
+} SDL2_DUMMY_ENUM;
+SDL_COMPILE_TIME_ASSERT(SDL23bool, sizeof(SDL2_DUMMY_ENUM) == sizeof(SDL_bool));
+
 /* these types were removed from / renamed in SDL3. We need them for SDL2 APIs exported here. */
 
 typedef SDL_AtomicInt SDL_atomic_t;
