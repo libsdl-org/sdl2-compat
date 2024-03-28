@@ -820,7 +820,6 @@
 #define SDL_SyncWindow IGNORE_THIS_VERSION_OF_SDL_SyncWindow
 #define SDL_TellIO IGNORE_THIS_VERSION_OF_SDL_TellIO
 #define SDL_TextInputActive IGNORE_THIS_VERSION_OF_SDL_TextInputActive
-#define SDL_TextInputShown IGNORE_THIS_VERSION_OF_SDL_TextInputShown
 #define SDL_TimeFromWindows IGNORE_THIS_VERSION_OF_SDL_TimeFromWindows
 #define SDL_TimeToDateTime IGNORE_THIS_VERSION_OF_SDL_TimeToDateTime
 #define SDL_TimeToWindows IGNORE_THIS_VERSION_OF_SDL_TimeToWindows
@@ -4214,10 +4213,6 @@
 
 #ifdef SDL_TextInputActive
 #undef SDL_TextInputActive
-#endif
-
-#ifdef SDL_TextInputShown
-#undef SDL_TextInputShown
 #endif
 
 #ifdef SDL_TimeFromWindows

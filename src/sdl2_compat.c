@@ -4370,7 +4370,7 @@ static SDL_ScaleMode SDL_GetScaleMode(void)
 DECLSPEC SDL_Texture * SDLCALL
 SDL_CreateTexture(SDL_Renderer * renderer, Uint32 format, int access, int w, int h)
 {
-    SDL_Texture *texture = SDL3_CreateTexture(renderer, format, access, w, h);
+    SDL_Texture *texture = SDL3_CreateTexture(renderer, (SDL_PixelFormatEnum)format, access, w, h);
     if (texture) {
         SDL3_SetTextureScaleMode(texture, SDL_GetScaleMode());
     }
@@ -6267,6 +6267,12 @@ DECLSPEC void SDLCALL
 SDL_JoystickSetPlayerIndex(SDL_Joystick *joystick, int player_index)
 {
     SDL3_SetJoystickPlayerIndex(joystick, player_index);
+}
+
+DECLSPEC SDL_bool SDLCALL
+SDL_IsTextInputShown()
+{
+    return SDL_FALSE;
 }
 
 DECLSPEC void SDLCALL
