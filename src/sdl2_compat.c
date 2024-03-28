@@ -2810,7 +2810,7 @@ DECLSPEC SDL_bool SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWMinfo 
 
     props = SDL3_GetWindowProperties(window);
 
-    if (SDL_strcmp(driver, "Android") == 0) {
+    if (SDL_strcmp(driver, "android") == 0) {
         info->subsystem = SDL2_SYSWM_ANDROID;
         info->info.android.window = SDL3_GetProperty(props, SDL_PROP_WINDOW_ANDROID_WINDOW_POINTER, NULL);
         info->info.android.surface = SDL3_GetProperty(props, SDL_PROP_WINDOW_ANDROID_SURFACE_POINTER, NULL);
