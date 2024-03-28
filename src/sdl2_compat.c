@@ -6158,6 +6158,9 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
         }
 
         if (parent) {
+            /* UE5 mixes the utility flag with popup flags, which SDL3 does not allow. */
+            flags &= ~SDL_WINDOW_UTILITY;
+
             window = SDL3_CreatePopupWindow(parent, x, y, w, h, flags);
             SDL_SetWindowData(window, PROP_WINDOW_PARENT_POINTER, parent);
         }
