@@ -1718,6 +1718,17 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
 
     GestureProcessEvent(event3);  /* this might need to generate new gesture events from touch input. */
 
+    /* Ensure joystick and haptic IDs are updated before calling Event3to2() */
+    switch (event3->type) {
+        case SDL_EVENT_JOYSTICK_ADDED:
+        case SDL_EVENT_GAMEPAD_ADDED:
+        case SDL_EVENT_GAMEPAD_REMOVED:
+        case SDL_EVENT_JOYSTICK_REMOVED:
+            SDL_NumJoysticks(); /* Refresh */
+            SDL_NumHaptics(); /* Refresh */
+            break;
+    }
+
     if (EventFilter2) {
         /* !!! FIXME: this needs to not return if the filter gives its blessing, as we still have more to do. */
         return EventFilter2(EventFilterUserData2, Event3to2(event3, &event2));
@@ -1735,14 +1746,6 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
     /* push new events when we need to convert something, like toplevel SDL3 events generating the SDL2 SDL_WINDOWEVENT. */
 
     switch (event3->type) {
-        case SDL_EVENT_JOYSTICK_ADDED:
-        case SDL_EVENT_GAMEPAD_ADDED:
-        case SDL_EVENT_GAMEPAD_REMOVED:
-        case SDL_EVENT_JOYSTICK_REMOVED:
-            SDL_NumJoysticks(); /* Refresh */
-            SDL_NumHaptics(); /* Refresh */
-            break;
-
         /* display events moved to the top level in SDL3. */
         case SDL_EVENT_DISPLAY_ORIENTATION:
         case SDL_EVENT_DISPLAY_ADDED:
