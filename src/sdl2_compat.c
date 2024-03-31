@@ -7948,13 +7948,13 @@ SDL_SetWindowsMessageHook(SDL2_WindowsMessageHook callback, void *userdata)
 DECLSPEC int SDLCALL
 SDL_Direct3D9GetAdapterIndex(int displayIndex)
 {
-    return SDL3_Direct3D9GetAdapterIndex((SDL_DisplayID)displayIndex);
+    return SDL3_Direct3D9GetAdapterIndex(Display_IndexToID(displayIndex));
 }
 
 DECLSPEC SDL_bool SDLCALL
 SDL_DXGIGetOutputInfo(int displayIndex, int *adapterIndex, int *outputIndex)
 {
-    return SDL3_DXGIGetOutputInfo((SDL_DisplayID)displayIndex, adapterIndex, outputIndex);
+    return SDL3_DXGIGetOutputInfo(Display_IndexToID(displayIndex), adapterIndex, outputIndex);
 }
 
 DECLSPEC IDirect3DDevice9* SDLCALL SDL_RenderGetD3D9Device(SDL_Renderer *renderer)
