@@ -5673,6 +5673,36 @@ SDL_GetDesktopDisplayMode(int displayIndex, SDL2_DisplayMode *mode)
     return 0;
 }
 
+#define PROP_WINDOW_FULLSCREEN_MODE "sdl2-compat.window.fullscreen-mode"
+
+static int
+ApplyFullscreenMode(SDL_Window *window)
+{
+    SDL_DisplayMode *mode = (SDL_DisplayMode *) SDL3_GetProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_FULLSCREEN_MODE, NULL);
+    if (mode) {
+        /* Always try to enter fullscreen on the current display */
+        mode->displayID = SDL3_GetDisplayForWindow(window);
+    }
+    if (mode && SDL3_SetWindowFullscreenMode(window, mode) == 0) {
+        return 0;
+    } else {
+        int count = 0;
+        const SDL_DisplayMode **list;
+        int ret;
+
+        /* FIXME: at least set a valid fullscreen mode */
+        list = SDL3_GetFullscreenDisplayModes(SDL3_GetPrimaryDisplay(), &count);
+        if (list && count) {
+            ret = SDL3_SetWindowFullscreenMode(window, list[0]);
+        } else {
+            /* If no exclusive modes, use the fullscreen desktop mode. */
+            ret = SDL3_SetWindowFullscreenMode(window, NULL);
+        }
+        SDL3_free((void *)list);
+        return ret;
+    }
+}
+
 DECLSPEC int SDLCALL
 SDL_GetWindowDisplayMode(SDL_Window *window, SDL2_DisplayMode *mode)
 {
@@ -5687,7 +5717,7 @@ SDL_GetWindowDisplayMode(SDL_Window *window, SDL2_DisplayMode *mode)
         return SDL3_InvalidParamError("mode");
     }
 
-    dp = SDL3_GetWindowFullscreenMode(window);
+    dp = (SDL_DisplayMode *) SDL3_GetProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_FULLSCREEN_MODE, (void *) SDL3_GetWindowFullscreenMode(window));
     if (dp) {
         DisplayMode_3to2(dp, mode);
     } else {
@@ -5744,29 +5774,32 @@ SDL_GetClosestDisplayMode(int displayIndex, const SDL2_DisplayMode *mode, SDL2_D
 DECLSPEC int SDLCALL
 SDL_SetWindowDisplayMode(SDL_Window *window, const SDL2_DisplayMode *mode)
 {
+    int ret;
     SDL_DisplayMode dp;
+
+    SDL3_zero(dp);
     DisplayMode_2to3(mode, &dp);
-    dp.displayID = SDL3_GetDisplayForWindow(window);
-    if (SDL3_SetWindowFullscreenMode(window, mode ? &dp : NULL) == 0) {
-        return 0;
-    } else {
-        int count = 0;
-        const SDL_DisplayMode **list;
-        int ret = -1;
 
-        /* FIXME: at least set a valid fullscreen mode */
-        list = SDL3_GetFullscreenDisplayModes(SDL3_GetPrimaryDisplay(), &count);
-        if (list && count) {
-            ret = SDL3_SetWindowFullscreenMode(window, list[0]);
+    /* Store the requested mode in case we aren't in full-screen exclusive mode yet (or ever) */
+    if (mode) {
+        SDL_DisplayMode *property = (SDL_DisplayMode *) SDL3_malloc(sizeof(*property));
+        if (property) {
+            SDL3_copyp(property, &dp);
+            ret = SDL3_SetPropertyWithCleanup(SDL3_GetWindowProperties(window), PROP_WINDOW_FULLSCREEN_MODE, property, CleanupFreeableProperty, NULL);
         } else {
-            /* If no exclusive modes, use the fullscreen desktop mode. */
-            ret = SDL3_SetWindowFullscreenMode(window, NULL);
+            ret = -1;
         }
-        SDL3_free((void *)list);
-        return ret;
+    } else {
+        ret = SDL3_SetProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_FULLSCREEN_MODE, NULL);
     }
-}
 
+    /* If're we're in full-screen exclusive mode now, apply the new display mode */
+    if ((SDL3_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) && SDL3_GetWindowFullscreenMode(window)) {
+        ret = ApplyFullscreenMode(window);
+    }
+
+    return ret;
+}
 
 /* this came out of SDL2 directly. */
 static SDL_bool SDL_Vulkan_GetInstanceExtensions_Helper(unsigned int *userCount,
@@ -6209,7 +6242,19 @@ SDL_CreateWindowFrom(const void *data)
 DECLSPEC int SDLCALL
 SDL_SetWindowFullscreen(SDL_Window *window, Uint32 flags)
 {
-    return SDL3_SetWindowFullscreen(window, (flags & SDL2_WINDOW_FULLSCREEN_DESKTOP) != 0);
+    int ret = 0;
+
+    if (flags == SDL2_WINDOW_FULLSCREEN_DESKTOP) {
+        ret = SDL3_SetWindowFullscreenMode(window, NULL);
+    } else if (flags == SDL_WINDOW_FULLSCREEN) {
+        ret = ApplyFullscreenMode(window);
+    }
+
+    if (ret == 0) {
+        ret = SDL3_SetWindowFullscreen(window, (flags & SDL2_WINDOW_FULLSCREEN_DESKTOP) != 0);
+    }
+
+    return ret;
 }
 
 DECLSPEC void SDLCALL
