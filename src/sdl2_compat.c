@@ -5733,10 +5733,16 @@ ApplyFullscreenMode(SDL_Window *window)
     } else {
         int count = 0;
         const SDL_DisplayMode **list;
+        SDL_DisplayID displayID;
         int ret;
 
+        displayID = SDL3_GetDisplayForWindow(window);
+        if (!displayID) {
+            displayID = SDL3_GetPrimaryDisplay();
+        }
+
         /* FIXME: at least set a valid fullscreen mode */
-        list = SDL3_GetFullscreenDisplayModes(SDL3_GetPrimaryDisplay(), &count);
+        list = SDL3_GetFullscreenDisplayModes(displayID, &count);
         if (list && count) {
             ret = SDL3_SetWindowFullscreenMode(window, list[0]);
         } else {
@@ -5766,9 +5772,14 @@ SDL_GetWindowDisplayMode(SDL_Window *window, SDL2_DisplayMode *mode)
     if (dp) {
         DisplayMode_3to2(dp, mode);
     } else {
+        SDL_DisplayID displayID = SDL3_GetDisplayForWindow(window);
+        if (!displayID) {
+            displayID = SDL3_GetPrimaryDisplay();
+        }
+
         /* Desktop mode */
         /* FIXME: is this correct ? */
-        dp = SDL3_GetDesktopDisplayMode(SDL3_GetPrimaryDisplay());
+        dp = SDL3_GetDesktopDisplayMode(displayID);
         if (dp == NULL) {
             return -1;
         }
