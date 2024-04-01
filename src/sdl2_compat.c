@@ -1624,6 +1624,28 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     case SDL_EVENT_GAMEPAD_ADDED:
         event2->jaxis.which = GetIndexFromJoystickInstance(event3->jaxis.which);
         break;
+    case SDL_EVENT_JOYSTICK_BATTERY_UPDATED:
+        switch (event3->jbattery.state) {
+        case SDL_POWERSTATE_CHARGING:
+        case SDL_POWERSTATE_CHARGED:
+            event2->jbattery.level = SDL_JOYSTICK_POWER_WIRED;
+            break;
+        case SDL_POWERSTATE_ON_BATTERY:
+            if (event3->jbattery.percent > 70) {
+                event2->jbattery.level = SDL_JOYSTICK_POWER_FULL;
+            } else if (event3->jbattery.percent > 20) {
+                event2->jbattery.level = SDL_JOYSTICK_POWER_MEDIUM;
+            } else if (event3->jbattery.percent > 5) {
+                event2->jbattery.level = SDL_JOYSTICK_POWER_LOW;
+            } else {
+                event2->jbattery.level = SDL_JOYSTICK_POWER_EMPTY;
+            }
+            break;
+        default:
+            event2->jbattery.level = SDL_JOYSTICK_POWER_UNKNOWN;
+            break;
+        }
+        break;
     default:
         break;
     }
@@ -1693,6 +1715,9 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
         event3->wheel.y = (float)event2->wheel.y;
         event3->wheel.mouse_x = (float)event2->wheel.mouseX;
         event3->wheel.mouse_y = (float)event2->wheel.mouseY;
+        break;
+    case SDL_EVENT_JOYSTICK_BATTERY_UPDATED:
+        /* This should never happen, but see Event3to2() for details */
         break;
     default:
         break;
@@ -4390,6 +4415,11 @@ SDL_CreateTextureFromSurface(SDL_Renderer * renderer, SDL_Surface * surface)
     return texture;
 }
 
+DECLSPEC int SDLCALL
+SDL_QueryTexture(SDL_Texture * texture, Uint32 * format, int *access, int *w, int *h)
+{
+    return SDL3_QueryTexture(texture, (SDL_PixelFormatEnum *)format, access, w, h);
+}
 
 DECLSPEC int SDLCALL
 SDL_LockMutex(SDL_Mutex *a)
@@ -6968,6 +6998,35 @@ DECLSPEC SDL_bool SDLCALL
 SDL_JoystickHasRumbleTriggers(SDL_Joystick *joystick)
 {
     return SDL3_GetBooleanProperty(SDL3_GetJoystickProperties(joystick), SDL_PROP_GAMEPAD_CAP_TRIGGER_RUMBLE_BOOLEAN, SDL_FALSE);
+}
+
+DECLSPEC SDL_JoystickPowerLevel SDLCALL
+SDL_JoystickCurrentPowerLevel(SDL_Joystick *joystick)
+{
+    SDL_JoystickConnectionState connection_state;
+
+    connection_state = SDL3_GetJoystickConnectionState(joystick);
+    if (connection_state == SDL_JOYSTICK_CONNECTION_WIRELESS) {
+        int percent = -1;
+        SDL_PowerState state = SDL3_GetJoystickPowerInfo(joystick, &percent);
+        if (state == SDL_POWERSTATE_ON_BATTERY) {
+            if (percent > 70) {
+                return SDL_JOYSTICK_POWER_FULL;
+            } else if (percent > 20) {
+                return SDL_JOYSTICK_POWER_MEDIUM;
+            } else if (percent > 5) {
+                return SDL_JOYSTICK_POWER_LOW;
+            } else {
+                return SDL_JOYSTICK_POWER_EMPTY;
+            }
+        } else {
+            return SDL_JOYSTICK_POWER_UNKNOWN;
+        }
+    } else if (connection_state == SDL_JOYSTICK_CONNECTION_WIRED) {
+        return SDL_JOYSTICK_POWER_WIRED;
+    } else {
+        return SDL_JOYSTICK_POWER_UNKNOWN;
+    }
 }
 
 DECLSPEC char* SDLCALL

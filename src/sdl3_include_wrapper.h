@@ -264,6 +264,7 @@
 #define SDL_GetGamepadButtonFromString IGNORE_THIS_VERSION_OF_SDL_GetGamepadButtonFromString
 #define SDL_GetGamepadButtonLabel IGNORE_THIS_VERSION_OF_SDL_GetGamepadButtonLabel
 #define SDL_GetGamepadButtonLabelForType IGNORE_THIS_VERSION_OF_SDL_GetGamepadButtonLabelForType
+#define SDL_GetGamepadConnectionState IGNORE_THIS_VERSION_OF_SDL_GetGamepadConnectionState
 #define SDL_GetGamepadFirmwareVersion IGNORE_THIS_VERSION_OF_SDL_GetGamepadFirmwareVersion
 #define SDL_GetGamepadFromInstanceID IGNORE_THIS_VERSION_OF_SDL_GetGamepadFromInstanceID
 #define SDL_GetGamepadFromPlayerIndex IGNORE_THIS_VERSION_OF_SDL_GetGamepadFromPlayerIndex
@@ -284,7 +285,7 @@
 #define SDL_GetGamepadName IGNORE_THIS_VERSION_OF_SDL_GetGamepadName
 #define SDL_GetGamepadPath IGNORE_THIS_VERSION_OF_SDL_GetGamepadPath
 #define SDL_GetGamepadPlayerIndex IGNORE_THIS_VERSION_OF_SDL_GetGamepadPlayerIndex
-#define SDL_GetGamepadPowerLevel IGNORE_THIS_VERSION_OF_SDL_GetGamepadPowerLevel
+#define SDL_GetGamepadPowerInfo IGNORE_THIS_VERSION_OF_SDL_GetGamepadPowerInfo
 #define SDL_GetGamepadProduct IGNORE_THIS_VERSION_OF_SDL_GetGamepadProduct
 #define SDL_GetGamepadProductVersion IGNORE_THIS_VERSION_OF_SDL_GetGamepadProductVersion
 #define SDL_GetGamepadProperties IGNORE_THIS_VERSION_OF_SDL_GetGamepadProperties
@@ -319,6 +320,7 @@
 #define SDL_GetJoystickAxisInitialState IGNORE_THIS_VERSION_OF_SDL_GetJoystickAxisInitialState
 #define SDL_GetJoystickBall IGNORE_THIS_VERSION_OF_SDL_GetJoystickBall
 #define SDL_GetJoystickButton IGNORE_THIS_VERSION_OF_SDL_GetJoystickButton
+#define SDL_GetJoystickConnectionState IGNORE_THIS_VERSION_OF_SDL_GetJoystickConnectionState
 #define SDL_GetJoystickFirmwareVersion IGNORE_THIS_VERSION_OF_SDL_GetJoystickFirmwareVersion
 #define SDL_GetJoystickFromInstanceID IGNORE_THIS_VERSION_OF_SDL_GetJoystickFromInstanceID
 #define SDL_GetJoystickFromPlayerIndex IGNORE_THIS_VERSION_OF_SDL_GetJoystickFromPlayerIndex
@@ -339,7 +341,7 @@
 #define SDL_GetJoystickName IGNORE_THIS_VERSION_OF_SDL_GetJoystickName
 #define SDL_GetJoystickPath IGNORE_THIS_VERSION_OF_SDL_GetJoystickPath
 #define SDL_GetJoystickPlayerIndex IGNORE_THIS_VERSION_OF_SDL_GetJoystickPlayerIndex
-#define SDL_GetJoystickPowerLevel IGNORE_THIS_VERSION_OF_SDL_GetJoystickPowerLevel
+#define SDL_GetJoystickPowerInfo IGNORE_THIS_VERSION_OF_SDL_GetJoystickPowerInfo
 #define SDL_GetJoystickProduct IGNORE_THIS_VERSION_OF_SDL_GetJoystickProduct
 #define SDL_GetJoystickProductVersion IGNORE_THIS_VERSION_OF_SDL_GetJoystickProductVersion
 #define SDL_GetJoystickProperties IGNORE_THIS_VERSION_OF_SDL_GetJoystickProperties
@@ -1991,6 +1993,10 @@
 #undef SDL_GetGamepadButtonLabelForType
 #endif
 
+#ifdef SDL_GetGamepadConnectionState
+#undef SDL_GetGamepadConnectionState
+#endif
+
 #ifdef SDL_GetGamepadFirmwareVersion
 #undef SDL_GetGamepadFirmwareVersion
 #endif
@@ -2071,8 +2077,8 @@
 #undef SDL_GetGamepadPlayerIndex
 #endif
 
-#ifdef SDL_GetGamepadPowerLevel
-#undef SDL_GetGamepadPowerLevel
+#ifdef SDL_GetGamepadPowerInfo
+#undef SDL_GetGamepadPowerInfo
 #endif
 
 #ifdef SDL_GetGamepadProduct
@@ -2211,6 +2217,10 @@
 #undef SDL_GetJoystickButton
 #endif
 
+#ifdef SDL_GetJoystickConnectionState
+#undef SDL_GetJoystickConnectionState
+#endif
+
 #ifdef SDL_GetJoystickFirmwareVersion
 #undef SDL_GetJoystickFirmwareVersion
 #endif
@@ -2291,8 +2301,8 @@
 #undef SDL_GetJoystickPlayerIndex
 #endif
 
-#ifdef SDL_GetJoystickPowerLevel
-#undef SDL_GetJoystickPowerLevel
+#ifdef SDL_GetJoystickPowerInfo
+#undef SDL_GetJoystickPowerInfo
 #endif
 
 #ifdef SDL_GetJoystickProduct
