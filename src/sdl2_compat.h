@@ -77,6 +77,17 @@ typedef SDL_Gamepad SDL_GameController;  /* since they're opaque types, for simp
 typedef SDL_GamepadAxis SDL_GameControllerAxis;
 typedef SDL_GamepadButton SDL_GameControllerButton;
 
+typedef enum
+{
+    SDL_JOYSTICK_POWER_UNKNOWN = -1,
+    SDL_JOYSTICK_POWER_EMPTY,   /* <= 5% */
+    SDL_JOYSTICK_POWER_LOW,     /* <= 20% */
+    SDL_JOYSTICK_POWER_MEDIUM,  /* <= 70% */
+    SDL_JOYSTICK_POWER_FULL,    /* <= 100% */
+    SDL_JOYSTICK_POWER_WIRED,
+    SDL_JOYSTICK_POWER_MAX
+} SDL_JoystickPowerLevel;
+
 typedef Sint32 SDL2_JoystickID;  /* this became unsigned in SDL3, but we'll just hope we don't overflow. */
 typedef Sint32 SDL2_SensorID;  /* this became unsigned in SDL3, but we'll just hope we don't overflow. */
 
