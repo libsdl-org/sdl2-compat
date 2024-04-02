@@ -1572,9 +1572,13 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     case SDL_EVENT_MOUSE_MOTION:
         renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->motion.windowID));
         if (renderer) {
-            SDL3_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
-            SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
-            event3 = &cvtevent3;
+            SDL_RendererLogicalPresentation mode = SDL_LOGICAL_PRESENTATION_DISABLED;
+            SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode, NULL);
+            if (mode != SDL_LOGICAL_PRESENTATION_DISABLED) {
+                SDL3_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
+                SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
+                event3 = &cvtevent3;
+            }
         }
         event2->motion.x = (Sint32)event3->motion.x;
         event2->motion.y = (Sint32)event3->motion.y;
@@ -1585,9 +1589,13 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     case SDL_EVENT_MOUSE_BUTTON_UP:
         renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->button.windowID));
         if (renderer) {
-            SDL3_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
-            SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
-            event3 = &cvtevent3;
+            SDL_RendererLogicalPresentation mode = SDL_LOGICAL_PRESENTATION_DISABLED;
+            SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode, NULL);
+            if (mode != SDL_LOGICAL_PRESENTATION_DISABLED) {
+                SDL3_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
+                SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
+                event3 = &cvtevent3;
+            }
         }
         event2->button.x = (Sint32)event3->button.x;
         event2->button.y = (Sint32)event3->button.y;
@@ -1595,9 +1603,13 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     case SDL_EVENT_MOUSE_WHEEL:
         renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->wheel.windowID));
         if (renderer) {
-            SDL3_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
-            SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
-            event3 = &cvtevent3;
+            SDL_RendererLogicalPresentation mode = SDL_LOGICAL_PRESENTATION_DISABLED;
+            SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode, NULL);
+            if (mode != SDL_LOGICAL_PRESENTATION_DISABLED) {
+                SDL3_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
+                SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
+                event3 = &cvtevent3;
+            }
         }
         event2->wheel.x = (Sint32)event3->wheel.x;
         event2->wheel.y = (Sint32)event3->wheel.y;
