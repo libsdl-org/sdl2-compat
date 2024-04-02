@@ -6232,9 +6232,9 @@ SDL_CreateWindowFrom(const void *data)
         /* This hint is a pointer (in string form) of the address of
            the window to share a pixel format with
         */
-        SDL_Window *otherWindow = NULL;
-        (void)SDL3_sscanf(hint, "%p", (void **)&otherWindow);
-        SDL3_SetProperty(props, SDL_PROP_WINDOW_CREATE_WIN32_PIXEL_FORMAT_HWND_POINTER, SDL3_GetProperty(SDL3_GetWindowProperties(otherWindow), SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL));
+        void *otherWindow = NULL; /* SDL_Window* */
+        (void)SDL3_sscanf(hint, "%p", &otherWindow);
+        SDL3_SetProperty(props, SDL_PROP_WINDOW_CREATE_WIN32_PIXEL_FORMAT_HWND_POINTER, SDL3_GetProperty(SDL3_GetWindowProperties((SDL_Window *)otherWindow), SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL));
         SDL3_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN, SDL_TRUE);
     }
 
