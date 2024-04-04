@@ -788,6 +788,8 @@ BOOL WINAPI _DllMainCRTStartup(HANDLE dllhandle, DWORD reason, LPVOID reserved)
 #define SDL2_HAPTIC_STATUS     (1u<<14)
 #define SDL2_HAPTIC_PAUSE      (1u<<15)
 
+#define SDL2_RENDERER_SOFTWARE      0x00000001
+#define SDL2_RENDERER_ACCELERATED   0x00000002
 #define SDL2_RENDERER_TARGETTEXTURE 0x00000008
 
 /* Events changed in SDL3; notably, the `timestamp` field moved from
@@ -3783,22 +3785,22 @@ SDL_GetRenderDriverInfo(int idx, SDL_RendererInfo *info)
 
     /* these are the values that SDL2 returns. */
     if ((SDL3_strcmp(name, "opengl") == 0) || (SDL3_strcmp(name, "opengles2") == 0)) {
-        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
+        info->flags = SDL2_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
         info->num_texture_formats = 4;
         info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
         info->texture_formats[1] = SDL_PIXELFORMAT_ABGR8888;
         info->texture_formats[2] = SDL_PIXELFORMAT_XRGB8888;
         info->texture_formats[3] = SDL_PIXELFORMAT_XBGR8888;
     } else if (SDL3_strcmp(name, "opengles") == 0) {
-        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
+        info->flags = SDL2_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
         info->num_texture_formats = 1;
         info->texture_formats[0] = SDL_PIXELFORMAT_ABGR8888;
     } else if (SDL3_strcmp(name, "direct3d") == 0) {
-        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
+        info->flags = SDL2_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
         info->num_texture_formats = 1;
         info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
     } else if (SDL3_strcmp(name, "direct3d11") == 0) {
-        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
+        info->flags = SDL2_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
         info->num_texture_formats = 6;
         info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
         info->texture_formats[1] = SDL_PIXELFORMAT_XRGB8888;
@@ -3807,7 +3809,7 @@ SDL_GetRenderDriverInfo(int idx, SDL_RendererInfo *info)
         info->texture_formats[4] = SDL_PIXELFORMAT_NV12;
         info->texture_formats[5] = SDL_PIXELFORMAT_NV21;
     } else if (SDL3_strcmp(name, "direct3d12") == 0) {
-        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
+        info->flags = SDL2_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
         info->num_texture_formats = 6;
         info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
         info->texture_formats[1] = SDL_PIXELFORMAT_XRGB8888;
@@ -3818,7 +3820,7 @@ SDL_GetRenderDriverInfo(int idx, SDL_RendererInfo *info)
         info->max_texture_width = 16384;
         info->max_texture_height = 16384;
     } else if (SDL3_strcmp(name, "metal") == 0) {
-        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
+        info->flags = SDL2_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
         info->num_texture_formats = 6;
         info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
         info->texture_formats[1] = SDL_PIXELFORMAT_ABGR8888;
@@ -3827,9 +3829,9 @@ SDL_GetRenderDriverInfo(int idx, SDL_RendererInfo *info)
         info->texture_formats[4] = SDL_PIXELFORMAT_NV12;
         info->texture_formats[5] = SDL_PIXELFORMAT_NV21;
     } else if (SDL3_strcmp(name, "software") == 0) {
-        info->flags = SDL_RENDERER_SOFTWARE | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
+        info->flags = SDL2_RENDERER_SOFTWARE | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
     } else {  /* this seems reasonable if something currently-unknown shows up in SDL3. */
-        info->flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
+        info->flags = SDL2_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
         info->num_texture_formats = 1;
         info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
     }
@@ -3854,7 +3856,7 @@ SDL_CreateRenderer(SDL_Window *window, int idx, Uint32 flags)
     SDL_PropertiesID props;
     SDL_Renderer *renderer = NULL;
     const char *name = NULL;
-    int want_targettexture = flags & SDL2_RENDERER_TARGETTEXTURE;
+
     if (idx != -1) {
         name = SDL3_GetRenderDriver(idx);
         if (!name) {
@@ -3862,15 +3864,23 @@ SDL_CreateRenderer(SDL_Window *window, int idx, Uint32 flags)
         }
     }
 
-    flags = flags & ~SDL2_RENDERER_TARGETTEXTURE; /* clear flags removed in SDL3 */
-    renderer = SDL3_CreateRenderer(window, name, flags);
-
-    if (renderer != NULL && want_targettexture && !SDL_RenderTargetSupported(renderer)) {
-        SDL_DestroyRenderer(renderer);
-        SDL_SetError("Couldn't find render driver with SDL_RENDERER_TARGETTEXTURE flags");
-        return NULL;
+    if (flags & SDL2_RENDERER_ACCELERATED) {
+        if (name && SDL3_strcmp(name, SDL_SOFTWARE_RENDERER) == 0) {
+            SDL3_SetError("Couldn't find matching render driver");
+            return NULL;
+        }
     }
 
+    if (flags & SDL2_RENDERER_SOFTWARE) {
+        if (name && SDL3_strcmp(name, SDL_SOFTWARE_RENDERER) != 0) {
+            SDL3_SetError("Couldn't find matching render driver");
+            return NULL;
+        }
+        name = SDL_SOFTWARE_RENDERER;
+    }
+
+    flags &= ~(SDL2_RENDERER_SOFTWARE | SDL2_RENDERER_ACCELERATED | SDL2_RENDERER_TARGETTEXTURE); /* clear flags removed in SDL3 */
+    renderer = SDL3_CreateRenderer(window, name, flags);
     props = SDL3_GetRendererProperties(renderer);
     if (props) {
         SDL3_SetBooleanProperty(props, PROP_RENDERER_BATCHING, SDL2Compat_GetHintBoolean("SDL_RENDER_BATCHING", SDL_FALSE));
@@ -3882,18 +3892,8 @@ SDL_CreateRenderer(SDL_Window *window, int idx, Uint32 flags)
 DECLSPEC SDL_bool SDLCALL
 SDL_RenderTargetSupported(SDL_Renderer *renderer)
 {
-    int ret;
-    SDL_RendererInfo info;
-    ret = SDL_GetRendererInfo(renderer, &info);
-    if (ret == 0) {
-        /* SDL_RENDERER_TARGETTEXTURE was removed in SDL3, check by name for
-         * renderer that does not support render target. */
-        if (SDL3_strcmp(info.name, "opengles") == 0) {
-            return SDL_FALSE;
-        }
-        return SDL_TRUE;
-    }
-    return SDL_FALSE;
+    /* All SDL3 renderers support target textures */
+    return SDL_TRUE;
 }
 
 DECLSPEC void SDLCALL

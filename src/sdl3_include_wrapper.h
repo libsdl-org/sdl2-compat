@@ -513,6 +513,8 @@
 #define SDL_GetWindowSizeInPixels IGNORE_THIS_VERSION_OF_SDL_GetWindowSizeInPixels
 #define SDL_GetWindowSurface IGNORE_THIS_VERSION_OF_SDL_GetWindowSurface
 #define SDL_GetWindowTitle IGNORE_THIS_VERSION_OF_SDL_GetWindowTitle
+#define SDL_GlobDirectory IGNORE_THIS_VERSION_OF_SDL_GlobDirectory
+#define SDL_GlobStorageDirectory IGNORE_THIS_VERSION_OF_SDL_GlobStorageDirectory
 #define SDL_HapticEffectSupported IGNORE_THIS_VERSION_OF_SDL_HapticEffectSupported
 #define SDL_HapticRumbleSupported IGNORE_THIS_VERSION_OF_SDL_HapticRumbleSupported
 #define SDL_HasARMSIMD IGNORE_THIS_VERSION_OF_SDL_HasARMSIMD
@@ -2987,6 +2989,14 @@
 
 #ifdef SDL_GetWindowTitle
 #undef SDL_GetWindowTitle
+#endif
+
+#ifdef SDL_GlobDirectory
+#undef SDL_GlobDirectory
+#endif
+
+#ifdef SDL_GlobStorageDirectory
+#undef SDL_GlobStorageDirectory
 #endif
 
 #ifdef SDL_HapticEffectSupported
