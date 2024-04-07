@@ -99,6 +99,7 @@ typedef struct SDL2_DisplayMode SDL2_DisplayMode;
 
 typedef struct SDL2_hid_device_info SDL2_hid_device_info;
 
+typedef SDL_EventAction SDL_eventaction;
 typedef union SDL2_Event SDL2_Event;
 typedef int (SDLCALL *SDL2_EventFilter) (void *userdata, SDL2_Event *event);
 
