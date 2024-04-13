@@ -70,8 +70,7 @@ SDL3_SYM_PASSTHROUGH(int,GDKGetDefaultUser,(XUserHandle *a),(a),return)
 #endif
 
 #ifdef SDL_PLATFORM_WINRT
-SDL3_SYM_PASSTHROUGH(const wchar_t*,WinRTGetFSPathUNICODE,(SDL_WinRT_Path a),(a),return)
-SDL3_SYM_PASSTHROUGH(const char*,WinRTGetFSPathUTF8,(SDL_WinRT_Path a),(a),return)
+SDL3_SYM_RENAMED(const char*,WinRTGetFSPathUTF8,WinRTGetFSPath,(SDL_WinRT_Path a),(a),return)
 SDL3_SYM_PASSTHROUGH(SDL_WinRT_DeviceFamily,WinRTGetDeviceFamily,(void),(),return)
 #endif
 

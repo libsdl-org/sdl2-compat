@@ -8165,6 +8165,31 @@ SDL_AndroidRequestPermission(const char *permission)
 }
 #endif
 
+#ifdef SDL_PLATFORM_WINRT
+static wchar_t *winrt_getfspath_cached_strings[4];  // these need to be saved here, since we return a const string. These strings' memory leaks!
+
+DECLSPEC const wchar_t* SDLCALL
+SDL_WinRTGetFSPathUNICODE(int SDL_WinRT_Path pathType)
+{
+    wchar_t *wstr = NULL;
+
+    if (((int) a) >= SDL_arraysize(winrt_getfspath_cached_strings)) {  // in case something new is added in SDL3...
+        SDL3_SetError("Unsupported SDL_WinRT_Path %d", (int) a);
+    } else {
+        wstr = winrt_getfspath_cached_strings[a];
+        if (!wstr) {
+            const char *utf8 = SDL3_WinRTGetFSPath(a);
+            if (utf8) {
+                wstr = (wchar_t *) SDL_iconv_string("UTF-16LE", "UTF-8", (const char *)(utf8), SDL_strlen(utf8) + 1);
+                winrt_getfspath_cached_strings[a] = wstr;
+            }
+        }
+    }
+
+    return wstr;
+}
+#endif
+
 #ifdef __cplusplus
 }
 #endif

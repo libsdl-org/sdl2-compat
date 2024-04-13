@@ -869,8 +869,7 @@
 #define SDL_WarpMouseInWindow IGNORE_THIS_VERSION_OF_SDL_WarpMouseInWindow
 #define SDL_WasInit IGNORE_THIS_VERSION_OF_SDL_WasInit
 #define SDL_WinRTGetDeviceFamily IGNORE_THIS_VERSION_OF_SDL_WinRTGetDeviceFamily
-#define SDL_WinRTGetFSPathUNICODE IGNORE_THIS_VERSION_OF_SDL_WinRTGetFSPathUNICODE
-#define SDL_WinRTGetFSPathUTF8 IGNORE_THIS_VERSION_OF_SDL_WinRTGetFSPathUTF8
+#define SDL_WinRTGetFSPath IGNORE_THIS_VERSION_OF_SDL_WinRTGetFSPath
 #define SDL_WindowHasSurface IGNORE_THIS_VERSION_OF_SDL_WindowHasSurface
 #define SDL_WriteIO IGNORE_THIS_VERSION_OF_SDL_WriteIO
 #define SDL_WriteS16BE IGNORE_THIS_VERSION_OF_SDL_WriteS16BE
@@ -4415,12 +4414,8 @@
 #undef SDL_WinRTGetDeviceFamily
 #endif
 
-#ifdef SDL_WinRTGetFSPathUNICODE
-#undef SDL_WinRTGetFSPathUNICODE
-#endif
-
-#ifdef SDL_WinRTGetFSPathUTF8
-#undef SDL_WinRTGetFSPathUTF8
+#ifdef SDL_WinRTGetFSPath
+#undef SDL_WinRTGetFSPath
 #endif
 
 #ifdef SDL_WindowHasSurface
