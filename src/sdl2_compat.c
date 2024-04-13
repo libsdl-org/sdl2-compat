@@ -7315,15 +7315,44 @@ SDL_GameControllerHasRumbleTriggers(SDL_Gamepad *gamepad)
 DECLSPEC int SDLCALL
 SDL_JoystickAttachVirtual(SDL_JoystickType type, int naxes, int nbuttons, int nhats)
 {
-    SDL_JoystickID jid = SDL3_AttachVirtualJoystick(type, naxes, nbuttons, nhats);
+    const SDL_JoystickID jid = SDL3_AttachVirtualJoystick(type, naxes, nbuttons, nhats);
     SDL_NumJoysticks(); /* Refresh */
     return GetIndexFromJoystickInstance(jid);
 }
 
 DECLSPEC int SDLCALL
-SDL_JoystickAttachVirtualEx(const SDL_VirtualJoystickDesc *desc)
+SDL_JoystickAttachVirtualEx(const SDL2_VirtualJoystickDesc *desc2)
 {
-    SDL_JoystickID jid = SDL3_AttachVirtualJoystickEx(desc);
+    SDL_JoystickID jid;
+    SDL_VirtualJoystickDesc desc3;
+
+    if (!desc2) {
+        return SDL3_InvalidParamError("desc");
+    } else if (desc2->version != SDL_VIRTUAL_JOYSTICK_DESC_VERSION) { /* SDL2 only had one version. */
+        return SDL3_SetError("Unsupported virtual joystick description version %u", desc2->version);
+    }
+
+    SDL3_zero(desc3);
+    #define SETDESCFIELD(x) desc3.x = desc2->x
+    SETDESCFIELD(type);
+    SETDESCFIELD(naxes);
+    SETDESCFIELD(nbuttons);
+    SETDESCFIELD(nhats);
+    SETDESCFIELD(vendor_id);
+    SETDESCFIELD(product_id);
+    SETDESCFIELD(button_mask);
+    SETDESCFIELD(axis_mask);
+    SETDESCFIELD(name);
+    SETDESCFIELD(userdata);
+    SETDESCFIELD(Update);
+    SETDESCFIELD(SetPlayerIndex);
+    SETDESCFIELD(Rumble);
+    SETDESCFIELD(RumbleTriggers);
+    SETDESCFIELD(SetLED);
+    SETDESCFIELD(SendEffect);
+    #undef SETDESCFIELD
+
+    jid = SDL3_AttachVirtualJoystickEx(&desc3);
     SDL_NumJoysticks(); /* Refresh */
     return GetIndexFromJoystickInstance(jid);
 }
