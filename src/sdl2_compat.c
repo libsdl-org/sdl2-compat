@@ -6931,10 +6931,12 @@ SDL_NumJoysticks(void)
 
 static int
 GetIndexFromJoystickInstance(SDL_JoystickID jid) {
-    int i;
-    for (i = 0; i < num_joysticks; i++) {
-        if (joystick_list[i] == jid) {
-            return i;
+    if (jid != 0) {
+        int i;
+        for (i = 0; i < num_joysticks; i++) {
+            if (joystick_list[i] == jid) {
+                return i;
+            }
         }
     }
     return -1;
