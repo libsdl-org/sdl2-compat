@@ -1250,6 +1250,9 @@ static int NumGamepadMappings = 0;
 
 static SDL_TouchID *TouchDevices = NULL;
 static int NumTouchDevices = 0;
+static SDL_TouchID TouchFingersDeviceID = 0;
+static SDL_Finger **TouchFingers = NULL;
+static int NumTouchFingers = 0;
 
 /* Functions! */
 
@@ -2973,6 +2976,27 @@ SDL_GetTouchName(int idx)
     return tid ? SDL3_GetTouchDeviceName(tid) : NULL;
 }
 
+DECLSPEC int SDLCALL
+SDL_GetNumTouchFingers(SDL_TouchID touchID)
+{
+    SDL3_free(TouchFingers);
+    TouchFingersDeviceID = touchID;
+    TouchFingers = SDL3_GetTouchFingers(touchID, &NumTouchFingers);
+    return NumTouchFingers;
+}
+
+DECLSPEC SDL_Finger * SDLCALL
+SDL_GetTouchFinger(SDL_TouchID touchID, int idx)
+{
+    if (touchID != TouchFingersDeviceID) {
+        SDL_GetNumTouchFingers(touchID);
+    }
+    if ((idx < 0) || (idx >= NumTouchFingers)) {
+        SDL3_SetError("Unknown touch finger");
+        return NULL;
+    }
+    return TouchFingers[idx];
+}
 
 /* Touch gestures were removed from SDL3, so this is the SDL2 implementation copied in here, and tweaked a little. */
 
@@ -4559,6 +4583,10 @@ SDL_Quit(void)
     SDL3_free(TouchDevices);
     TouchDevices = NULL;
     NumTouchDevices = 0;
+    TouchFingersDeviceID = 0;
+    SDL3_free(TouchFingers);
+    TouchFingers = NULL;
+    NumTouchFingers = 0;
 
     SDL3_Quit();
 }

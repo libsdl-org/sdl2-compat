@@ -378,7 +378,6 @@
 #define SDL_GetNumJoystickButtons IGNORE_THIS_VERSION_OF_SDL_GetNumJoystickButtons
 #define SDL_GetNumJoystickHats IGNORE_THIS_VERSION_OF_SDL_GetNumJoystickHats
 #define SDL_GetNumRenderDrivers IGNORE_THIS_VERSION_OF_SDL_GetNumRenderDrivers
-#define SDL_GetNumTouchFingers IGNORE_THIS_VERSION_OF_SDL_GetNumTouchFingers
 #define SDL_GetNumVideoDrivers IGNORE_THIS_VERSION_OF_SDL_GetNumVideoDrivers
 #define SDL_GetNumberProperty IGNORE_THIS_VERSION_OF_SDL_GetNumberProperty
 #define SDL_GetOriginalMemoryFunctions IGNORE_THIS_VERSION_OF_SDL_GetOriginalMemoryFunctions
@@ -487,7 +486,7 @@
 #define SDL_GetTouchDeviceName IGNORE_THIS_VERSION_OF_SDL_GetTouchDeviceName
 #define SDL_GetTouchDeviceType IGNORE_THIS_VERSION_OF_SDL_GetTouchDeviceType
 #define SDL_GetTouchDevices IGNORE_THIS_VERSION_OF_SDL_GetTouchDevices
-#define SDL_GetTouchFinger IGNORE_THIS_VERSION_OF_SDL_GetTouchFinger
+#define SDL_GetTouchFingers IGNORE_THIS_VERSION_OF_SDL_GetTouchFingers
 #define SDL_GetUserFolder IGNORE_THIS_VERSION_OF_SDL_GetUserFolder
 #define SDL_GetVersion IGNORE_THIS_VERSION_OF_SDL_GetVersion
 #define SDL_GetVideoDriver IGNORE_THIS_VERSION_OF_SDL_GetVideoDriver
@@ -942,8 +941,8 @@
 #define SDL_hid_send_feature_report IGNORE_THIS_VERSION_OF_SDL_hid_send_feature_report
 #define SDL_hid_set_nonblocking IGNORE_THIS_VERSION_OF_SDL_hid_set_nonblocking
 #define SDL_hid_write IGNORE_THIS_VERSION_OF_SDL_hid_write
-#define SDL_iPhoneSetAnimationCallback IGNORE_THIS_VERSION_OF_SDL_iPhoneSetAnimationCallback
-#define SDL_iPhoneSetEventPump IGNORE_THIS_VERSION_OF_SDL_iPhoneSetEventPump
+#define SDL_iOSSetAnimationCallback IGNORE_THIS_VERSION_OF_SDL_iOSSetAnimationCallback
+#define SDL_iOSSetEventPump IGNORE_THIS_VERSION_OF_SDL_iOSSetEventPump
 #define SDL_iconv IGNORE_THIS_VERSION_OF_SDL_iconv
 #define SDL_iconv_close IGNORE_THIS_VERSION_OF_SDL_iconv_close
 #define SDL_iconv_open IGNORE_THIS_VERSION_OF_SDL_iconv_open
@@ -2450,10 +2449,6 @@
 #undef SDL_GetNumRenderDrivers
 #endif
 
-#ifdef SDL_GetNumTouchFingers
-#undef SDL_GetNumTouchFingers
-#endif
-
 #ifdef SDL_GetNumVideoDrivers
 #undef SDL_GetNumVideoDrivers
 #endif
@@ -2886,8 +2881,8 @@
 #undef SDL_GetTouchDevices
 #endif
 
-#ifdef SDL_GetTouchFinger
-#undef SDL_GetTouchFinger
+#ifdef SDL_GetTouchFingers
+#undef SDL_GetTouchFingers
 #endif
 
 #ifdef SDL_GetUserFolder
@@ -4706,12 +4701,12 @@
 #undef SDL_hid_write
 #endif
 
-#ifdef SDL_iPhoneSetAnimationCallback
-#undef SDL_iPhoneSetAnimationCallback
+#ifdef SDL_iOSSetAnimationCallback
+#undef SDL_iOSSetAnimationCallback
 #endif
 
-#ifdef SDL_iPhoneSetEventPump
-#undef SDL_iPhoneSetEventPump
+#ifdef SDL_iOSSetEventPump
+#undef SDL_iOSSetEventPump
 #endif
 
 #ifdef SDL_iconv
