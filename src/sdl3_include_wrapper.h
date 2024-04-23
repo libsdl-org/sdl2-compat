@@ -1045,6 +1045,7 @@
 #define SDL_wcsnstr IGNORE_THIS_VERSION_OF_SDL_wcsnstr
 #define SDL_wcsstr IGNORE_THIS_VERSION_OF_SDL_wcsstr
 #define SDL_wcstol IGNORE_THIS_VERSION_OF_SDL_wcstol
+#define SDL_WriteStorageFile IGNORE_THIS_VERSION_OF_SDL_WriteStorageFile
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -5115,6 +5116,10 @@
 
 #ifdef SDL_wcstol
 #undef SDL_wcstol
+#endif
+
+#ifdef SDL_WriteStorageFile
+#undef SDL_WriteStorageFile
 #endif
 
 #undef SDL_ThreadID /* see at top. */
