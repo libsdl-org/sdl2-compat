@@ -6285,6 +6285,30 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
     return window;
 }
 
+DECLSPEC int SDLCALL
+SDL_CreateWindowAndRenderer(int width, int height, Uint32 window_flags,
+                            SDL_Window **window, SDL_Renderer **renderer)
+{
+    // This function's code is exactly what SDL2 does (including not checking that `window` and `renderer` aren't NULL),
+    //  but we want to make sure these go through the sdl2-compat CreateWindow and CreateRenderer functions
+    //  to do some compatibility magic, instead of just calling the SDL3 equivalent of this function.
+
+    *window = SDL_CreateWindow(NULL, SDL_WINDOWPOS_UNDEFINED,
+                               SDL_WINDOWPOS_UNDEFINED,
+                               width, height, window_flags);
+    if (!*window) {
+        *renderer = NULL;
+        return -1;
+    }
+
+    *renderer = SDL_CreateRenderer(*window, -1, 0);
+    if (!*renderer) {
+        return -1;
+    }
+
+    return 0;
+}
+
 DECLSPEC SDL_Window * SDLCALL
 SDL_CreateWindowFrom(const void *data)
 {
