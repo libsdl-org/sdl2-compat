@@ -301,7 +301,7 @@ SDL3_SYM_RENAMED(SDL_bool,EnclosePoints,GetRectEnclosingPoints,(const SDL_Point 
 SDL3_SYM_RENAMED(SDL_bool,IntersectRectAndLine,GetRectAndLineIntersection,(const SDL_Rect *a, int *b, int *c, int *d, int *e),(a,b,c,d,e),return)
 SDL3_SYM_PASSTHROUGH(int,GetNumRenderDrivers,(void),(),return)
 SDL3_SYM(const char *,GetRenderDriver,(int a),(a),return);
-SDL3_SYM_PASSTHROUGH(int,CreateWindowAndRenderer,(int a, int b, Uint32 c, SDL_Window **d, SDL_Renderer **e),(a,b,c,d,e),return)
+SDL3_SYM(int,CreateWindowAndRenderer,(const char *a, int b, int c, Uint32 d, SDL_Window **e, SDL_Renderer **f),(a,b,c,d,e,f),return)
 SDL3_SYM(SDL_Renderer*,CreateRenderer,(SDL_Window *a, const char *b, Uint32 c),(a,b,c),return)
 SDL3_SYM_PASSTHROUGH(SDL_Renderer*,CreateSoftwareRenderer,(SDL_Surface *a),(a),return)
 SDL3_SYM_PASSTHROUGH(SDL_Renderer*,GetRenderer,(SDL_Window *a),(a),return)

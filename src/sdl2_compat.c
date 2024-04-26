@@ -3873,6 +3873,12 @@ static int FlushRendererIfNotBatching(SDL_Renderer *renderer)
     return 0;
 }
 
+DECLSPEC int SDLCALL
+SDL_CreateWindowAndRenderer(int width, int height, Uint32 window_flags, SDL_Window **window, SDL_Renderer **renderer)
+{
+    return SDL3_CreateWindowAndRenderer(NULL, width, height, window_flags, window, renderer);
+}
+
 /* Second parameter changed from an index to a string in SDL3. */
 DECLSPEC SDL_Renderer *SDLCALL
 SDL_CreateRenderer(SDL_Window *window, int idx, Uint32 flags)
