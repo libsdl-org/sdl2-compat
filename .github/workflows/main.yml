@@ -55,7 +55,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Install Ninja
       if: ${{ !contains(matrix.platform.shell, 'msys2') }}
-      uses: turtlesec-no/get-ninja@main
+      uses: aseprite/get-ninja@main
     - name: Calculate extra arguments
       id: calculate-arguments
       run: |
