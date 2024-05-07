@@ -6428,7 +6428,7 @@ SDL_JoystickSetPlayerIndex(SDL_Joystick *joystick, int player_index)
 DECLSPEC SDL_bool SDLCALL
 SDL_IsTextInputShown()
 {
-    return SDL_FALSE;
+    return SDL3_TextInputActive();
 }
 
 DECLSPEC void SDLCALL
