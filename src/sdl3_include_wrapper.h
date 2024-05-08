@@ -159,7 +159,6 @@
 #define SDL_EnumerateDirectory IGNORE_THIS_VERSION_OF_SDL_EnumerateDirectory
 #define SDL_EnumerateProperties IGNORE_THIS_VERSION_OF_SDL_EnumerateProperties
 #define SDL_EnumerateStorageDirectory IGNORE_THIS_VERSION_OF_SDL_EnumerateStorageDirectory
-#define SDL_Error IGNORE_THIS_VERSION_OF_SDL_Error
 #define SDL_EventEnabled IGNORE_THIS_VERSION_OF_SDL_EventEnabled
 #define SDL_FillSurfaceRect IGNORE_THIS_VERSION_OF_SDL_FillSurfaceRect
 #define SDL_FillSurfaceRects IGNORE_THIS_VERSION_OF_SDL_FillSurfaceRects
@@ -629,6 +628,7 @@
 #define SDL_OpenTitleStorage IGNORE_THIS_VERSION_OF_SDL_OpenTitleStorage
 #define SDL_OpenURL IGNORE_THIS_VERSION_OF_SDL_OpenURL
 #define SDL_OpenUserStorage IGNORE_THIS_VERSION_OF_SDL_OpenUserStorage
+#define SDL_OutOfMemory IGNORE_THIS_VERSION_OF_SDL_OutOfMemory
 #define SDL_PauseAudioDevice IGNORE_THIS_VERSION_OF_SDL_PauseAudioDevice
 #define SDL_PauseHaptic IGNORE_THIS_VERSION_OF_SDL_PauseHaptic
 #define SDL_PeepEvents IGNORE_THIS_VERSION_OF_SDL_PeepEvents
@@ -877,6 +877,7 @@
 #define SDL_WriteS32LE IGNORE_THIS_VERSION_OF_SDL_WriteS32LE
 #define SDL_WriteS64BE IGNORE_THIS_VERSION_OF_SDL_WriteS64BE
 #define SDL_WriteS64LE IGNORE_THIS_VERSION_OF_SDL_WriteS64LE
+#define SDL_WriteStorageFile IGNORE_THIS_VERSION_OF_SDL_WriteStorageFile
 #define SDL_WriteU16BE IGNORE_THIS_VERSION_OF_SDL_WriteU16BE
 #define SDL_WriteU16LE IGNORE_THIS_VERSION_OF_SDL_WriteU16LE
 #define SDL_WriteU32BE IGNORE_THIS_VERSION_OF_SDL_WriteU32BE
@@ -1045,7 +1046,6 @@
 #define SDL_wcsnstr IGNORE_THIS_VERSION_OF_SDL_wcsnstr
 #define SDL_wcsstr IGNORE_THIS_VERSION_OF_SDL_wcsstr
 #define SDL_wcstol IGNORE_THIS_VERSION_OF_SDL_wcstol
-#define SDL_WriteStorageFile IGNORE_THIS_VERSION_OF_SDL_WriteStorageFile
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -1572,10 +1572,6 @@
 
 #ifdef SDL_EnumerateStorageDirectory
 #undef SDL_EnumerateStorageDirectory
-#endif
-
-#ifdef SDL_Error
-#undef SDL_Error
 #endif
 
 #ifdef SDL_EventEnabled
@@ -3454,6 +3450,10 @@
 #undef SDL_OpenUserStorage
 #endif
 
+#ifdef SDL_OutOfMemory
+#undef SDL_OutOfMemory
+#endif
+
 #ifdef SDL_PauseAudioDevice
 #undef SDL_PauseAudioDevice
 #endif
@@ -4446,6 +4446,10 @@
 #undef SDL_WriteS64LE
 #endif
 
+#ifdef SDL_WriteStorageFile
+#undef SDL_WriteStorageFile
+#endif
+
 #ifdef SDL_WriteU16BE
 #undef SDL_WriteU16BE
 #endif
@@ -5118,20 +5122,12 @@
 #undef SDL_wcstol
 #endif
 
-#ifdef SDL_WriteStorageFile
-#undef SDL_WriteStorageFile
-#endif
-
 #undef SDL_ThreadID /* see at top. */
 
 /* undefine these macros, too: redefine as SDL3_xxx, if needed. */
 
 #ifdef SDL_enabled_assert
 #undef SDL_enabled_assert
-#endif
-
-#ifdef SDL_OutOfMemory
-#undef SDL_OutOfMemory
 #endif
 
 #ifdef SDL_Unsupported

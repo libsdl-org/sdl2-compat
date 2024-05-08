@@ -151,8 +151,7 @@ extern "C" {
 /* these are macros (etc) in the SDL headers, so make our own. */
 #define SDL3_AtomicIncRef(a)  SDL3_AtomicAdd(a, 1)
 #define SDL3_AtomicDecRef(a) (SDL3_AtomicAdd(a,-1) == 1)
-#define SDL3_OutOfMemory() SDL3_Error(SDL_ENOMEM)
-#define SDL3_Unsupported() SDL3_Error(SDL_UNSUPPORTED)
+#define SDL3_Unsupported()            SDL3_SetError("That operation is not supported")
 #define SDL3_InvalidParamError(param) SDL3_SetError("Parameter '%s' is invalid", (param))
 #define SDL3_zero(x) SDL3_memset(&(x), 0, sizeof((x)))
 #define SDL3_zerop(x) SDL3_memset((x), 0, sizeof(*(x)))
@@ -1366,6 +1365,31 @@ SDL_SetError(const char *fmt, ...)
     return -1;
 }
 
+DECLSPEC void SDLCALL
+SDL_ClearError(void)
+{
+    SDL3_ClearError();
+}
+
+DECLSPEC int SDLCALL
+SDL_Error(SDL_errorcode code)
+{
+    switch (code) {
+    case SDL_ENOMEM:
+        return SDL3_OutOfMemory();
+    case SDL_EFREAD:
+        return SDL3_SetError("Error reading from datastream");
+    case SDL_EFWRITE:
+        return SDL3_SetError("Error writing to datastream");
+    case SDL_EFSEEK:
+        return SDL3_SetError("Error seeking in datastream");
+    case SDL_UNSUPPORTED:
+        return SDL3_Unsupported();
+    default:
+        return SDL3_SetError("Unknown SDL error");
+    }
+}
+
 DECLSPEC int SDLCALL
 SDL_sscanf(const char *text, const char *fmt, ...)
 {
@@ -2400,7 +2424,7 @@ stdio_seek(SDL2_RWops *rwops2, Sint64 offset, int whence)
         }
         return pos;
     }
-    return SDL3_Error(SDL_EFSEEK);
+    return SDL_Error(SDL_EFSEEK);
 }
 
 static size_t SDLCALL
@@ -2409,7 +2433,7 @@ stdio_read(SDL2_RWops *rwops2, void *ptr, size_t size, size_t maxnum)
     FILE *fp = (FILE *) rwops2->hidden.stdio.fp;
     size_t nread = fread(ptr, size, maxnum, fp);
     if (nread == 0 && ferror(fp)) {
-        SDL3_Error(SDL_EFREAD);
+        SDL_Error(SDL_EFREAD);
     }
     return nread;
 }
@@ -2420,7 +2444,7 @@ stdio_write(SDL2_RWops *rwops2, const void *ptr, size_t size, size_t num)
     FILE *fp = (FILE *) rwops2->hidden.stdio.fp;
     size_t nwrote = fwrite(ptr, size, num, fp);
     if (nwrote == 0 && ferror(fp)) {
-        SDL3_Error(SDL_EFWRITE);
+        SDL_Error(SDL_EFWRITE);
     }
     return nwrote;
 }
@@ -2432,7 +2456,7 @@ stdio_close(SDL2_RWops *rwops2)
     if (rwops2) {
         if (rwops2->hidden.stdio.autoclose) {
             if (fclose((FILE *)rwops2->hidden.stdio.fp) != 0) {
-                status = SDL3_Error(SDL_EFWRITE);
+                status = SDL_Error(SDL_EFWRITE);
             }
         }
         SDL_FreeRW(rwops2);
