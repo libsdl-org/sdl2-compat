@@ -32,6 +32,16 @@ SDL_COMPILE_TIME_ASSERT(SDL23bool, sizeof(SDL2_DUMMY_ENUM) == sizeof(SDL_bool));
 
 /* these types were removed from / renamed in SDL3. We need them for SDL2 APIs exported here. */
 
+typedef enum SDL_errorcode
+{
+    SDL_ENOMEM,
+    SDL_EFREAD,
+    SDL_EFWRITE,
+    SDL_EFSEEK,
+    SDL_UNSUPPORTED,
+    SDL_LASTERROR
+} SDL_errorcode;
+
 typedef SDL_AtomicInt SDL_atomic_t;
 
 typedef SDL_Condition SDL_cond;
