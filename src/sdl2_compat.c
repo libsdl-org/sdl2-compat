@@ -6161,7 +6161,7 @@ SDL_FreeWAV(Uint8 *audio_buf)
 DECLSPEC Uint32 SDLCALL
 SDL_GetWindowFlags(SDL_Window *window)
 {
-    Uint32 flags3 = SDL3_GetWindowFlags(window);
+    Uint32 flags3 = (Uint32) SDL3_GetWindowFlags(window);
     Uint32 flags = (flags3 & ~(SDL2_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN | SDL2_WINDOW_FULLSCREEN_DESKTOP | SDL2_WINDOW_SKIP_TASKBAR));
 
     if ((flags3 & SDL_WINDOW_HIDDEN) == 0) {
