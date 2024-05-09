@@ -3821,7 +3821,34 @@ SDL_GetShapedWindowMode(SDL_Window *window, SDL_WindowShapeMode *shape_mode)
 
 
 DECLSPEC int SDLCALL
-SDL_GetRenderDriverInfo(int idx, SDL_RendererInfo *info)
+SDL_GetRendererInfo(SDL_Renderer *renderer, SDL2_RendererInfo *info)
+{
+    SDL_RendererInfo info3;
+    unsigned int i;
+
+    SDL3_zerop(info);
+    if (SDL3_GetRendererInfo(renderer, &info3) < 0) {
+        return -1;
+    }
+
+    info->name = info3.name;
+    info->flags = info3.flags;
+    info->num_texture_formats = info3.num_texture_formats;
+    info->max_texture_width = info3.max_texture_width;
+    info->max_texture_height = info3.max_texture_height;
+
+    if (info->num_texture_formats > 16) {
+        info->num_texture_formats = 16;
+    }
+    for (i = 0; i < info->num_texture_formats; ++i) {
+        info->texture_formats[i] = info3.texture_formats[i];
+    }
+
+    return 0;
+}
+
+DECLSPEC int SDLCALL
+SDL_GetRenderDriverInfo(int idx, SDL2_RendererInfo *info)
 {
     const char *name = SDL3_GetRenderDriver(idx);
     if (!name) {
@@ -7391,7 +7418,17 @@ SDL_GameControllerHasRumbleTriggers(SDL_Gamepad *gamepad)
 DECLSPEC int SDLCALL
 SDL_JoystickAttachVirtual(SDL_JoystickType type, int naxes, int nbuttons, int nhats)
 {
-    const SDL_JoystickID jid = SDL3_AttachVirtualJoystick(type, naxes, nbuttons, nhats);
+    SDL_JoystickID jid;
+    SDL_VirtualJoystickDesc desc3;
+
+    SDL3_zero(desc3);
+    desc3.type = (Uint16)type;
+    desc3.naxes = (Uint16)naxes;
+    desc3.nbuttons = (Uint16)nbuttons;
+    desc3.nhats = (Uint16)nhats;
+
+    jid = SDL3_AttachVirtualJoystick(&desc3);
+
     SDL_NumJoysticks(); /* Refresh */
     return GetIndexFromJoystickInstance(jid);
 }
@@ -7428,7 +7465,7 @@ SDL_JoystickAttachVirtualEx(const SDL2_VirtualJoystickDesc *desc2)
     SETDESCFIELD(SendEffect);
     #undef SETDESCFIELD
 
-    jid = SDL3_AttachVirtualJoystickEx(&desc3);
+    jid = SDL3_AttachVirtualJoystick(&desc3);
     SDL_NumJoysticks(); /* Refresh */
     return GetIndexFromJoystickInstance(jid);
 }

@@ -369,6 +369,17 @@ typedef enum
     SDL_YUV_CONVERSION_AUTOMATIC    /**< BT.601 for SD content, BT.709 for HD content */
 } SDL_YUV_CONVERSION_MODE;
 
+
+typedef struct SDL2_RendererInfo
+{
+    const char *name;           /**< The name of the renderer */
+    Uint32 flags;               /**< Supported ::SDL_RendererFlags */
+    Uint32 num_texture_formats; /**< The number of available texture formats */
+    Uint32 texture_formats[16]; /**< The available texture formats */
+    int max_texture_width;      /**< The maximum texture width */
+    int max_texture_height;     /**< The maximum texture height */
+} SDL2_RendererInfo;
+
 #define SDL_VIRTUAL_JOYSTICK_DESC_VERSION 1
 
 typedef struct SDL2_VirtualJoystickDesc

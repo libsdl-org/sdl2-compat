@@ -60,7 +60,6 @@
 #define SDL_AtomicSet IGNORE_THIS_VERSION_OF_SDL_AtomicSet
 #define SDL_AtomicSetPtr IGNORE_THIS_VERSION_OF_SDL_AtomicSetPtr
 #define SDL_AttachVirtualJoystick IGNORE_THIS_VERSION_OF_SDL_AttachVirtualJoystick
-#define SDL_AttachVirtualJoystickEx IGNORE_THIS_VERSION_OF_SDL_AttachVirtualJoystickEx
 #define SDL_AudioDevicePaused IGNORE_THIS_VERSION_OF_SDL_AudioDevicePaused
 #define SDL_BindAudioStream IGNORE_THIS_VERSION_OF_SDL_BindAudioStream
 #define SDL_BindAudioStreams IGNORE_THIS_VERSION_OF_SDL_BindAudioStreams
@@ -235,6 +234,7 @@
 #define SDL_GetCurrentTime IGNORE_THIS_VERSION_OF_SDL_GetCurrentTime
 #define SDL_GetCurrentVideoDriver IGNORE_THIS_VERSION_OF_SDL_GetCurrentVideoDriver
 #define SDL_GetCursor IGNORE_THIS_VERSION_OF_SDL_GetCursor
+#define SDL_GetDateTimeLocalePreferences IGNORE_THIS_VERSION_OF_SDL_GetDateTimeLocalePreferences
 #define SDL_GetDayOfWeek IGNORE_THIS_VERSION_OF_SDL_GetDayOfWeek
 #define SDL_GetDayOfYear IGNORE_THIS_VERSION_OF_SDL_GetDayOfYear
 #define SDL_GetDaysInMonth IGNORE_THIS_VERSION_OF_SDL_GetDaysInMonth
@@ -1178,10 +1178,6 @@
 #undef SDL_AttachVirtualJoystick
 #endif
 
-#ifdef SDL_AttachVirtualJoystickEx
-#undef SDL_AttachVirtualJoystickEx
-#endif
-
 #ifdef SDL_AudioDevicePaused
 #undef SDL_AudioDevicePaused
 #endif
@@ -1876,6 +1872,10 @@
 
 #ifdef SDL_GetCursor
 #undef SDL_GetCursor
+#endif
+
+#ifdef SDL_GetDateTimeLocalePreferences
+#undef SDL_GetDateTimeLocalePreferences
 #endif
 
 #ifdef SDL_GetDayOfWeek
