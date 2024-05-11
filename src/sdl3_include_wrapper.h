@@ -712,6 +712,7 @@
 #define SDL_SeekIO IGNORE_THIS_VERSION_OF_SDL_SeekIO
 #define SDL_SendGamepadEffect IGNORE_THIS_VERSION_OF_SDL_SendGamepadEffect
 #define SDL_SendJoystickEffect IGNORE_THIS_VERSION_OF_SDL_SendJoystickEffect
+#define SDL_SendJoystickVirtualSensorData IGNORE_THIS_VERSION_OF_SDL_SendJoystickVirtualSensorData
 #define SDL_SetAssertionHandler IGNORE_THIS_VERSION_OF_SDL_SetAssertionHandler
 #define SDL_SetAudioPostmixCallback IGNORE_THIS_VERSION_OF_SDL_SetAudioPostmixCallback
 #define SDL_SetAudioStreamFormat IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamFormat
@@ -739,8 +740,10 @@
 #define SDL_SetJoystickLED IGNORE_THIS_VERSION_OF_SDL_SetJoystickLED
 #define SDL_SetJoystickPlayerIndex IGNORE_THIS_VERSION_OF_SDL_SetJoystickPlayerIndex
 #define SDL_SetJoystickVirtualAxis IGNORE_THIS_VERSION_OF_SDL_SetJoystickVirtualAxis
+#define SDL_SetJoystickVirtualBall IGNORE_THIS_VERSION_OF_SDL_SetJoystickVirtualBall
 #define SDL_SetJoystickVirtualButton IGNORE_THIS_VERSION_OF_SDL_SetJoystickVirtualButton
 #define SDL_SetJoystickVirtualHat IGNORE_THIS_VERSION_OF_SDL_SetJoystickVirtualHat
+#define SDL_SetJoystickVirtualTouchpad IGNORE_THIS_VERSION_OF_SDL_SetJoystickVirtualTouchpad
 #define SDL_SetLogOutputFunction IGNORE_THIS_VERSION_OF_SDL_SetLogOutputFunction
 #define SDL_SetMainReady IGNORE_THIS_VERSION_OF_SDL_SetMainReady
 #define SDL_SetMemoryFunctions IGNORE_THIS_VERSION_OF_SDL_SetMemoryFunctions
@@ -3786,6 +3789,10 @@
 #undef SDL_SendJoystickEffect
 #endif
 
+#ifdef SDL_SendJoystickVirtualSensorData
+#undef SDL_SendJoystickVirtualSensorData
+#endif
+
 #ifdef SDL_SetAssertionHandler
 #undef SDL_SetAssertionHandler
 #endif
@@ -3894,12 +3901,20 @@
 #undef SDL_SetJoystickVirtualAxis
 #endif
 
+#ifdef SDL_SetJoystickVirtualBall
+#undef SDL_SetJoystickVirtualBall
+#endif
+
 #ifdef SDL_SetJoystickVirtualButton
 #undef SDL_SetJoystickVirtualButton
 #endif
 
 #ifdef SDL_SetJoystickVirtualHat
 #undef SDL_SetJoystickVirtualHat
+#endif
+
+#ifdef SDL_SetJoystickVirtualTouchpad
+#undef SDL_SetJoystickVirtualTouchpad
 #endif
 
 #ifdef SDL_SetLogOutputFunction

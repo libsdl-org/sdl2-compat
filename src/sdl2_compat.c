@@ -2019,6 +2019,18 @@ SDL_RegisterEvents(int numevents)
     return r > 0 ? r : (Uint32)(-1);
 }
 
+DECLSPEC SDL2_Keymod SDLCALL
+SDL_GetModState(void)
+{
+    return SDL3_GetModState();
+}
+
+DECLSPEC void SDLCALL
+SDL_SetModState(SDL2_Keymod modstate)
+{
+    SDL3_SetModState((SDL_Keymod)modstate);
+}
+
 
 /* Several SDL3 video backends have had their names lower-cased, map to the SDL2 equivalent name. */
 static const char *ReplaceVideoBackendName(const char *name)

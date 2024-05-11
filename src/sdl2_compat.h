@@ -32,6 +32,8 @@ SDL_COMPILE_TIME_ASSERT(SDL23bool, sizeof(SDL2_DUMMY_ENUM) == sizeof(SDL_bool));
 
 /* these types were removed from / renamed in SDL3. We need them for SDL2 APIs exported here. */
 
+typedef int SDL2_Keymod; /* actually this is an enum in real SDL2 */
+
 typedef enum SDL_errorcode
 {
     SDL_ENOMEM,
