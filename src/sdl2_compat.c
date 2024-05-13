@@ -789,6 +789,7 @@ BOOL WINAPI _DllMainCRTStartup(HANDLE dllhandle, DWORD reason, LPVOID reserved)
 
 #define SDL2_RENDERER_SOFTWARE      0x00000001
 #define SDL2_RENDERER_ACCELERATED   0x00000002
+#define SDL2_RENDERER_PRESENTVSYNC  0x00000004
 #define SDL2_RENDERER_TARGETTEXTURE 0x00000008
 
 /* Events changed in SDL3; notably, the `timestamp` field moved from
@@ -3836,6 +3837,7 @@ DECLSPEC int SDLCALL
 SDL_GetRendererInfo(SDL_Renderer *renderer, SDL2_RendererInfo *info)
 {
     SDL_RendererInfo info3;
+    SDL_PropertiesID props;
     unsigned int i;
 
     SDL3_zerop(info);
@@ -3843,11 +3845,21 @@ SDL_GetRendererInfo(SDL_Renderer *renderer, SDL2_RendererInfo *info)
         return -1;
     }
 
+    props = SDL3_GetRendererProperties(renderer);
+
     info->name = info3.name;
-    info->flags = info3.flags;
     info->num_texture_formats = info3.num_texture_formats;
-    info->max_texture_width = info3.max_texture_width;
-    info->max_texture_height = info3.max_texture_height;
+    info->max_texture_width = (int)SDL3_GetNumberProperty(props, SDL_PROP_RENDERER_MAX_TEXTURE_SIZE_NUMBER, 0);
+    info->max_texture_height = info->max_texture_width;
+
+    if (SDL3_strcmp(info->name, SDL_SOFTWARE_RENDERER) == 0) {
+        info->flags = SDL2_RENDERER_SOFTWARE | SDL2_RENDERER_TARGETTEXTURE;
+    } else {
+        info->flags = SDL2_RENDERER_ACCELERATED | SDL2_RENDERER_TARGETTEXTURE;
+    }
+    if (SDL3_GetNumberProperty(props, SDL_PROP_RENDERER_VSYNC_NUMBER, 0)) {
+        info->flags |= SDL2_RENDERER_PRESENTVSYNC;
+    }
 
     if (info->num_texture_formats > 16) {
         info->num_texture_formats = 16;
@@ -3872,22 +3884,22 @@ SDL_GetRenderDriverInfo(int idx, SDL2_RendererInfo *info)
 
     /* these are the values that SDL2 returns. */
     if ((SDL3_strcmp(name, "opengl") == 0) || (SDL3_strcmp(name, "opengles2") == 0)) {
-        info->flags = SDL2_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
+        info->flags = SDL2_RENDERER_ACCELERATED | SDL2_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
         info->num_texture_formats = 4;
         info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
         info->texture_formats[1] = SDL_PIXELFORMAT_ABGR8888;
         info->texture_formats[2] = SDL_PIXELFORMAT_XRGB8888;
         info->texture_formats[3] = SDL_PIXELFORMAT_XBGR8888;
     } else if (SDL3_strcmp(name, "opengles") == 0) {
-        info->flags = SDL2_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
+        info->flags = SDL2_RENDERER_ACCELERATED | SDL2_RENDERER_PRESENTVSYNC;
         info->num_texture_formats = 1;
         info->texture_formats[0] = SDL_PIXELFORMAT_ABGR8888;
     } else if (SDL3_strcmp(name, "direct3d") == 0) {
-        info->flags = SDL2_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
+        info->flags = SDL2_RENDERER_ACCELERATED | SDL2_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
         info->num_texture_formats = 1;
         info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
     } else if (SDL3_strcmp(name, "direct3d11") == 0) {
-        info->flags = SDL2_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
+        info->flags = SDL2_RENDERER_ACCELERATED | SDL2_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
         info->num_texture_formats = 6;
         info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
         info->texture_formats[1] = SDL_PIXELFORMAT_XRGB8888;
@@ -3896,7 +3908,7 @@ SDL_GetRenderDriverInfo(int idx, SDL2_RendererInfo *info)
         info->texture_formats[4] = SDL_PIXELFORMAT_NV12;
         info->texture_formats[5] = SDL_PIXELFORMAT_NV21;
     } else if (SDL3_strcmp(name, "direct3d12") == 0) {
-        info->flags = SDL2_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
+        info->flags = SDL2_RENDERER_ACCELERATED | SDL2_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
         info->num_texture_formats = 6;
         info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
         info->texture_formats[1] = SDL_PIXELFORMAT_XRGB8888;
@@ -3907,7 +3919,7 @@ SDL_GetRenderDriverInfo(int idx, SDL2_RendererInfo *info)
         info->max_texture_width = 16384;
         info->max_texture_height = 16384;
     } else if (SDL3_strcmp(name, "metal") == 0) {
-        info->flags = SDL2_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
+        info->flags = SDL2_RENDERER_ACCELERATED | SDL2_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
         info->num_texture_formats = 6;
         info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
         info->texture_formats[1] = SDL_PIXELFORMAT_ABGR8888;
@@ -3916,9 +3928,9 @@ SDL_GetRenderDriverInfo(int idx, SDL2_RendererInfo *info)
         info->texture_formats[4] = SDL_PIXELFORMAT_NV12;
         info->texture_formats[5] = SDL_PIXELFORMAT_NV21;
     } else if (SDL3_strcmp(name, "software") == 0) {
-        info->flags = SDL2_RENDERER_SOFTWARE | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
+        info->flags = SDL2_RENDERER_SOFTWARE | SDL2_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
     } else {  /* this seems reasonable if something currently-unknown shows up in SDL3. */
-        info->flags = SDL2_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
+        info->flags = SDL2_RENDERER_ACCELERATED | SDL2_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
         info->num_texture_formats = 1;
         info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
     }
@@ -3941,7 +3953,7 @@ DECLSPEC SDL_Renderer *SDLCALL
 SDL_CreateRenderer(SDL_Window *window, int idx, Uint32 flags)
 {
     SDL_PropertiesID props;
-    SDL_Renderer *renderer = NULL;
+    SDL_Renderer *renderer;
     const char *name = NULL;
 
     if (idx != -1) {
@@ -3966,11 +3978,13 @@ SDL_CreateRenderer(SDL_Window *window, int idx, Uint32 flags)
         name = SDL_SOFTWARE_RENDERER;
     }
 
-    flags &= ~(SDL2_RENDERER_SOFTWARE | SDL2_RENDERER_ACCELERATED | SDL2_RENDERER_TARGETTEXTURE); /* clear flags removed in SDL3 */
-    renderer = SDL3_CreateRenderer(window, name, flags);
+    renderer = SDL3_CreateRenderer(window, name);
     props = SDL3_GetRendererProperties(renderer);
     if (props) {
         SDL3_SetBooleanProperty(props, PROP_RENDERER_BATCHING, SDL2Compat_GetHintBoolean("SDL_RENDER_BATCHING", SDL_FALSE));
+    }
+    if (flags & SDL2_RENDERER_PRESENTVSYNC) {
+        SDL3_SetRenderVSync(renderer, 1);
     }
 
     return renderer;
