@@ -457,7 +457,7 @@ SDL3_SYM_PASSTHROUGH(SDL_TimerID,AddTimer,(Uint32 a, SDL_TimerCallback b, void *
 SDL3_SYM_PASSTHROUGH(SDL_bool,RemoveTimer,(SDL_TimerID a),(a),return)
 SDL3_SYM(SDL_TouchID*,GetTouchDevices,(int *a),(a),return)
 SDL3_SYM(SDL_Finger**,GetTouchFingers,(SDL_TouchID a, int *b),(a,b),return)
-SDL3_SYM(int,GetVersion,(SDL_Version *a),(a),return)
+SDL3_SYM(int,GetVersion,(void),(),return)
 SDL3_SYM_PASSTHROUGH(int,GetNumVideoDrivers,(void),(),return)
 SDL3_SYM(const char*,GetVideoDriver,(int a),(a),return)
 SDL3_SYM(const char*,GetCurrentVideoDriver,(void),(),return)

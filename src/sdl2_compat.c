@@ -199,7 +199,6 @@ do { \
 #include <SDL3/SDL_opengl_glext.h>
 
 static SDL_bool WantDebugLogging = SDL_FALSE;
-static Uint32 LinkedSDL3VersionInt = 0;
 
 
 static char *
@@ -598,19 +597,21 @@ LoadSDL3(void)
             #define SDL3_SYM(rc,fn,params,args,ret) SDL3_##fn = (SDL3_##fn##_t) LoadSDL3Symbol("SDL_" #fn, &okay);
             #include "sdl3_syms.h"
             if (okay) {
-                SDL_Version v;
-                SDL3_GetVersion(&v);
-                LinkedSDL3VersionInt = SDL_VERSIONNUM(v.major, v.minor, v.patch);
-                okay = (LinkedSDL3VersionInt >= SDL3_REQUIRED_VER);
+                const int sdl3version = SDL3_GetVersion();
+                const int sdl3major = SDL_VERSIONNUM_MAJOR(sdl3version);
+                const int sdl3minor = SDL_VERSIONNUM_MINOR(sdl3version);
+                const int sdl3micro = SDL_VERSIONNUM_MICRO(sdl3version);
+
+                okay = (sdl3version >= SDL3_REQUIRED_VER);
                 if (!okay) {
                     char value[12];
                     char *p = SDL2COMPAT_stpcpy(loaderror, "SDL3 ");
 
-                    SDL2COMPAT_itoa(value, v.major);
+                    SDL2COMPAT_itoa(value, sdl3major);
                     p = SDL2COMPAT_stpcpy(p, value); *p++ = '.';
-                    SDL2COMPAT_itoa(value, v.minor);
+                    SDL2COMPAT_itoa(value, sdl3minor);
                     p = SDL2COMPAT_stpcpy(p, value); *p++ = '.';
-                    SDL2COMPAT_itoa(value, v.patch);
+                    SDL2COMPAT_itoa(value, sdl3micro);
                     p = SDL2COMPAT_stpcpy(p, value);
 
                     SDL2COMPAT_stpcpy(p, " library is too old.");
@@ -618,9 +619,11 @@ LoadSDL3(void)
                     WantDebugLogging = SDL2Compat_GetHintBoolean("SDL2COMPAT_DEBUG_LOGGING", SDL_FALSE);
                     if (WantDebugLogging) {
                         #if defined(__DATE__) && defined(__TIME__)
-                        SDL3_Log("sdl2-compat 2.%d.%d, built on " __DATE__ " at " __TIME__ ", talking to SDL3 %d.%d.%d", SDL2_COMPAT_VERSION_MINOR, SDL2_COMPAT_VERSION_PATCH, v.major, v.minor, v.patch);
+                        SDL3_Log("sdl2-compat 2.%d.%d, built on " __DATE__ " at " __TIME__ ", talking to SDL3 %d.%d.%d",
+                                 SDL2_COMPAT_VERSION_MINOR, SDL2_COMPAT_VERSION_PATCH, sdl3major, sdl3minor, sdl3micro);
                         #else
-                        SDL3_Log("sdl2-compat 2.%d.%d, talking to SDL3 %d.%d.%d", SDL2_COMPAT_VERSION_MINOR, SDL2_COMPAT_VERSION_PATCH, v.major, v.minor, v.patch);
+                        SDL3_Log("sdl2-compat 2.%d.%d, talking to SDL3 %d.%d.%d",
+                                 SDL2_COMPAT_VERSION_MINOR, SDL2_COMPAT_VERSION_PATCH, sdl3major, sdl3minor, sdl3micro);
                         #endif
                     }
                     SDL2Compat_ApplyQuirks(force_x11);  /* Apply and maybe print a list of any enabled quirks. */
@@ -1308,7 +1311,7 @@ fail:
 
 /* obviously we have to override this so we don't report ourselves as SDL3. */
 DECLSPEC void SDLCALL
-SDL_GetVersion(SDL_Version *ver)
+SDL_GetVersion(SDL2_version *ver)
 {
     if (ver) {
         ver->major = 2;

@@ -217,6 +217,13 @@ typedef struct ID3D12Device ID3D12Device;
 typedef void (SDLCALL * SDL2_WindowsMessageHook)(void *userdata, void *hWnd, unsigned int message, Uint64 wParam, Sint64 lParam);
 #endif
 
+typedef struct SDL2_version
+{
+    Uint8 major;
+    Uint8 minor;
+    Uint8 patch;
+} SDL2_version;
+
 /* SDL2 SysWM mapping */
 typedef enum
 {
@@ -247,7 +254,7 @@ typedef struct _UIWindow UIWindow;
 
 struct SDL_SysWMinfo
 {
-    SDL_Version version;
+    SDL2_version version;
     SDL2_SYSWM_TYPE subsystem;
     union
     {
