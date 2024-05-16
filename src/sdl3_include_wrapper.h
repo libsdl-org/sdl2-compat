@@ -356,6 +356,7 @@
 #define SDL_GetKeyboardState IGNORE_THIS_VERSION_OF_SDL_GetKeyboardState
 #define SDL_GetKeyboards IGNORE_THIS_VERSION_OF_SDL_GetKeyboards
 #define SDL_GetLogOutputFunction IGNORE_THIS_VERSION_OF_SDL_GetLogOutputFunction
+#define SDL_GetLogPriority IGNORE_THIS_VERSION_OF_SDL_GetLogPriority
 #define SDL_GetMasksForPixelFormatEnum IGNORE_THIS_VERSION_OF_SDL_GetMasksForPixelFormatEnum
 #define SDL_GetMaxHapticEffects IGNORE_THIS_VERSION_OF_SDL_GetMaxHapticEffects
 #define SDL_GetMaxHapticEffectsPlaying IGNORE_THIS_VERSION_OF_SDL_GetMaxHapticEffectsPlaying
@@ -441,6 +442,7 @@
 #define SDL_GetRendererInfo IGNORE_THIS_VERSION_OF_SDL_GetRendererInfo
 #define SDL_GetRendererProperties IGNORE_THIS_VERSION_OF_SDL_GetRendererProperties
 #define SDL_GetRevision IGNORE_THIS_VERSION_OF_SDL_GetRevision
+#define SDL_GetSIMDAlignment IGNORE_THIS_VERSION_OF_SDL_GetSIMDAlignment
 #define SDL_GetScancodeFromKey IGNORE_THIS_VERSION_OF_SDL_GetScancodeFromKey
 #define SDL_GetScancodeFromName IGNORE_THIS_VERSION_OF_SDL_GetScancodeFromName
 #define SDL_GetScancodeName IGNORE_THIS_VERSION_OF_SDL_GetScancodeName
@@ -587,13 +589,9 @@
 #define SDL_LogCritical IGNORE_THIS_VERSION_OF_SDL_LogCritical
 #define SDL_LogDebug IGNORE_THIS_VERSION_OF_SDL_LogDebug
 #define SDL_LogError IGNORE_THIS_VERSION_OF_SDL_LogError
-#define SDL_LogGetPriority IGNORE_THIS_VERSION_OF_SDL_LogGetPriority
 #define SDL_LogInfo IGNORE_THIS_VERSION_OF_SDL_LogInfo
 #define SDL_LogMessage IGNORE_THIS_VERSION_OF_SDL_LogMessage
 #define SDL_LogMessageV IGNORE_THIS_VERSION_OF_SDL_LogMessageV
-#define SDL_LogResetPriorities IGNORE_THIS_VERSION_OF_SDL_LogResetPriorities
-#define SDL_LogSetAllPriority IGNORE_THIS_VERSION_OF_SDL_LogSetAllPriority
-#define SDL_LogSetPriority IGNORE_THIS_VERSION_OF_SDL_LogSetPriority
 #define SDL_LogVerbose IGNORE_THIS_VERSION_OF_SDL_LogVerbose
 #define SDL_LogWarn IGNORE_THIS_VERSION_OF_SDL_LogWarn
 #define SDL_MapRGB IGNORE_THIS_VERSION_OF_SDL_MapRGB
@@ -695,6 +693,7 @@
 #define SDL_ResetHint IGNORE_THIS_VERSION_OF_SDL_ResetHint
 #define SDL_ResetHints IGNORE_THIS_VERSION_OF_SDL_ResetHints
 #define SDL_ResetKeyboard IGNORE_THIS_VERSION_OF_SDL_ResetKeyboard
+#define SDL_ResetLogPriorities IGNORE_THIS_VERSION_OF_SDL_ResetLogPriorities
 #define SDL_RestoreWindow IGNORE_THIS_VERSION_OF_SDL_RestoreWindow
 #define SDL_ResumeAudioDevice IGNORE_THIS_VERSION_OF_SDL_ResumeAudioDevice
 #define SDL_ResumeHaptic IGNORE_THIS_VERSION_OF_SDL_ResumeHaptic
@@ -704,7 +703,6 @@
 #define SDL_RumbleJoystickTriggers IGNORE_THIS_VERSION_OF_SDL_RumbleJoystickTriggers
 #define SDL_RunApp IGNORE_THIS_VERSION_OF_SDL_RunApp
 #define SDL_RunHapticEffect IGNORE_THIS_VERSION_OF_SDL_RunHapticEffect
-#define SDL_SIMDGetAlignment IGNORE_THIS_VERSION_OF_SDL_SIMDGetAlignment
 #define SDL_SaveBMP IGNORE_THIS_VERSION_OF_SDL_SaveBMP
 #define SDL_SaveBMP_IO IGNORE_THIS_VERSION_OF_SDL_SaveBMP_IO
 #define SDL_ScreenKeyboardShown IGNORE_THIS_VERSION_OF_SDL_ScreenKeyboardShown
@@ -745,6 +743,8 @@
 #define SDL_SetJoystickVirtualHat IGNORE_THIS_VERSION_OF_SDL_SetJoystickVirtualHat
 #define SDL_SetJoystickVirtualTouchpad IGNORE_THIS_VERSION_OF_SDL_SetJoystickVirtualTouchpad
 #define SDL_SetLogOutputFunction IGNORE_THIS_VERSION_OF_SDL_SetLogOutputFunction
+#define SDL_SetLogPriorities IGNORE_THIS_VERSION_OF_SDL_SetLogPriorities
+#define SDL_SetLogPriority IGNORE_THIS_VERSION_OF_SDL_SetLogPriority
 #define SDL_SetMainReady IGNORE_THIS_VERSION_OF_SDL_SetMainReady
 #define SDL_SetMemoryFunctions IGNORE_THIS_VERSION_OF_SDL_SetMemoryFunctions
 #define SDL_SetModState IGNORE_THIS_VERSION_OF_SDL_SetModState
@@ -2365,6 +2365,10 @@
 #undef SDL_GetLogOutputFunction
 #endif
 
+#ifdef SDL_GetLogPriority
+#undef SDL_GetLogPriority
+#endif
+
 #ifdef SDL_GetMasksForPixelFormatEnum
 #undef SDL_GetMasksForPixelFormatEnum
 #endif
@@ -2703,6 +2707,10 @@
 
 #ifdef SDL_GetRevision
 #undef SDL_GetRevision
+#endif
+
+#ifdef SDL_GetSIMDAlignment
+#undef SDL_GetSIMDAlignment
 #endif
 
 #ifdef SDL_GetScancodeFromKey
@@ -3289,10 +3297,6 @@
 #undef SDL_LogError
 #endif
 
-#ifdef SDL_LogGetPriority
-#undef SDL_LogGetPriority
-#endif
-
 #ifdef SDL_LogInfo
 #undef SDL_LogInfo
 #endif
@@ -3303,18 +3307,6 @@
 
 #ifdef SDL_LogMessageV
 #undef SDL_LogMessageV
-#endif
-
-#ifdef SDL_LogResetPriorities
-#undef SDL_LogResetPriorities
-#endif
-
-#ifdef SDL_LogSetAllPriority
-#undef SDL_LogSetAllPriority
-#endif
-
-#ifdef SDL_LogSetPriority
-#undef SDL_LogSetPriority
 #endif
 
 #ifdef SDL_LogVerbose
@@ -3721,6 +3713,10 @@
 #undef SDL_ResetKeyboard
 #endif
 
+#ifdef SDL_ResetLogPriorities
+#undef SDL_ResetLogPriorities
+#endif
+
 #ifdef SDL_RestoreWindow
 #undef SDL_RestoreWindow
 #endif
@@ -3755,10 +3751,6 @@
 
 #ifdef SDL_RunHapticEffect
 #undef SDL_RunHapticEffect
-#endif
-
-#ifdef SDL_SIMDGetAlignment
-#undef SDL_SIMDGetAlignment
 #endif
 
 #ifdef SDL_SaveBMP
@@ -3919,6 +3911,14 @@
 
 #ifdef SDL_SetLogOutputFunction
 #undef SDL_SetLogOutputFunction
+#endif
+
+#ifdef SDL_SetLogPriorities
+#undef SDL_SetLogPriorities
+#endif
+
+#ifdef SDL_SetLogPriority
+#undef SDL_SetLogPriority
 #endif
 
 #ifdef SDL_SetMainReady
@@ -5137,7 +5137,7 @@
 #undef SDL_wcstol
 #endif
 
-#undef SDL_ThreadID /* see at top. */
+#undef SDL_ThreadID /* see at top */
 
 /* undefine these macros, too: redefine as SDL3_xxx, if needed. */
 

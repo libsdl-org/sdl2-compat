@@ -7821,13 +7821,13 @@ SDL_SemWaitTimeout(SDL_sem *sem, Uint32 ms)
 DECLSPEC void * SDLCALL
 SDL_SIMDAlloc(const size_t len)
 {
-    return SDL3_aligned_alloc(SDL3_SIMDGetAlignment(), len);
+    return SDL3_aligned_alloc(SDL3_GetSIMDAlignment(), len);
 }
 
 DECLSPEC void * SDLCALL
 SDL_SIMDRealloc(void *mem, const size_t len)
 {
-    const size_t alignment = SDL3_SIMDGetAlignment();
+    const size_t alignment = SDL3_GetSIMDAlignment();
     const size_t padding = (alignment - (len % alignment)) % alignment;
     Uint8 *retval = (Uint8 *)mem;
     void *oldmem = mem;
