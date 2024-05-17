@@ -596,7 +596,7 @@
 #define SDL_Metal_DestroyView IGNORE_THIS_VERSION_OF_SDL_Metal_DestroyView
 #define SDL_Metal_GetLayer IGNORE_THIS_VERSION_OF_SDL_Metal_GetLayer
 #define SDL_MinimizeWindow IGNORE_THIS_VERSION_OF_SDL_MinimizeWindow
-#define SDL_MixAudioFormat IGNORE_THIS_VERSION_OF_SDL_MixAudioFormat
+#define SDL_MixAudio IGNORE_THIS_VERSION_OF_SDL_MixAudio
 #define SDL_OnApplicationDidBecomeActive IGNORE_THIS_VERSION_OF_SDL_OnApplicationDidBecomeActive
 #define SDL_OnApplicationDidChangeStatusBarOrientation IGNORE_THIS_VERSION_OF_SDL_OnApplicationDidChangeStatusBarOrientation
 #define SDL_OnApplicationDidEnterBackground IGNORE_THIS_VERSION_OF_SDL_OnApplicationDidEnterBackground
@@ -3318,8 +3318,8 @@
 #undef SDL_MinimizeWindow
 #endif
 
-#ifdef SDL_MixAudioFormat
-#undef SDL_MixAudioFormat
+#ifdef SDL_MixAudio
+#undef SDL_MixAudio
 #endif
 
 #ifdef SDL_OnApplicationDidBecomeActive

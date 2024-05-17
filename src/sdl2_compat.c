@@ -5356,9 +5356,12 @@ SDL_AudioStreamFlush(SDL2_AudioStream *stream2)
     return SDL3_FlushAudioStream(stream2 ? stream2->stream3 : NULL);
 }
 
+#define SDL2_MIX_MAXVOLUME 128.0f
 DECLSPEC void SDLCALL
 SDL_MixAudioFormat(Uint8 *dst, const Uint8 *src, SDL_AudioFormat format, Uint32 len, int volume)
 {
+    const float fvolume = volume / SDL2_MIX_MAXVOLUME;
+
     /* SDL3 removed U16 audio formats. Convert to S16SYS. */
     if ((format == SDL2_AUDIO_U16LSB) || (format == SDL2_AUDIO_U16MSB)) {
         const Uint32 tmpsamples = len / sizeof (Uint16);
@@ -5369,11 +5372,11 @@ SDL_MixAudioFormat(Uint8 *dst, const Uint8 *src, SDL_AudioFormat format, Uint32 
             } else if (format == SDL2_AUDIO_U16MSB) {
                 AudioUi16MSBToSi16Sys(tmpbuf, (const Uint16 *) src, tmpsamples);
             }
-            SDL3_MixAudioFormat(dst, (const Uint8 *) tmpbuf, SDL_AUDIO_S16, tmpsamples * sizeof (Sint16), volume);
+            SDL3_MixAudio(dst, (const Uint8 *) tmpbuf, SDL_AUDIO_S16, tmpsamples * sizeof (Sint16), fvolume);
             SDL3_free(tmpbuf);
         }
     } else {
-        SDL3_MixAudioFormat(dst, src, format, len, volume);
+        SDL3_MixAudio(dst, src, format, len, fvolume);
     }
 }
 
