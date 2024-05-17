@@ -383,18 +383,11 @@
 #define SDL_GetOriginalMemoryFunctions IGNORE_THIS_VERSION_OF_SDL_GetOriginalMemoryFunctions
 #define SDL_GetPathInfo IGNORE_THIS_VERSION_OF_SDL_GetPathInfo
 #define SDL_GetPenCapabilities IGNORE_THIS_VERSION_OF_SDL_GetPenCapabilities
-#define SDL_GetPenCapabilities IGNORE_THIS_VERSION_OF_SDL_GetPenCapabilities
-#define SDL_GetPenFromGUID IGNORE_THIS_VERSION_OF_SDL_GetPenFromGUID
 #define SDL_GetPenFromGUID IGNORE_THIS_VERSION_OF_SDL_GetPenFromGUID
 #define SDL_GetPenGUID IGNORE_THIS_VERSION_OF_SDL_GetPenGUID
-#define SDL_GetPenGUID IGNORE_THIS_VERSION_OF_SDL_GetPenGUID
-#define SDL_GetPenName IGNORE_THIS_VERSION_OF_SDL_GetPenName
 #define SDL_GetPenName IGNORE_THIS_VERSION_OF_SDL_GetPenName
 #define SDL_GetPenStatus IGNORE_THIS_VERSION_OF_SDL_GetPenStatus
-#define SDL_GetPenStatus IGNORE_THIS_VERSION_OF_SDL_GetPenStatus
 #define SDL_GetPenType IGNORE_THIS_VERSION_OF_SDL_GetPenType
-#define SDL_GetPenType IGNORE_THIS_VERSION_OF_SDL_GetPenType
-#define SDL_GetPens IGNORE_THIS_VERSION_OF_SDL_GetPens
 #define SDL_GetPens IGNORE_THIS_VERSION_OF_SDL_GetPens
 #define SDL_GetPerformanceCounter IGNORE_THIS_VERSION_OF_SDL_GetPerformanceCounter
 #define SDL_GetPerformanceFrequency IGNORE_THIS_VERSION_OF_SDL_GetPerformanceFrequency
@@ -631,7 +624,6 @@
 #define SDL_PauseHaptic IGNORE_THIS_VERSION_OF_SDL_PauseHaptic
 #define SDL_PeepEvents IGNORE_THIS_VERSION_OF_SDL_PeepEvents
 #define SDL_PenConnected IGNORE_THIS_VERSION_OF_SDL_PenConnected
-#define SDL_PenConnected IGNORE_THIS_VERSION_OF_SDL_PenConnected
 #define SDL_PlayHapticRumble IGNORE_THIS_VERSION_OF_SDL_PlayHapticRumble
 #define SDL_PollEvent IGNORE_THIS_VERSION_OF_SDL_PollEvent
 #define SDL_PostSemaphore IGNORE_THIS_VERSION_OF_SDL_PostSemaphore
@@ -856,6 +848,7 @@
 #define SDL_UpdateWindowSurfaceRects IGNORE_THIS_VERSION_OF_SDL_UpdateWindowSurfaceRects
 #define SDL_UpdateYUVTexture IGNORE_THIS_VERSION_OF_SDL_UpdateYUVTexture
 #define SDL_Vulkan_CreateSurface IGNORE_THIS_VERSION_OF_SDL_Vulkan_CreateSurface
+#define SDL_Vulkan_DestroySurface IGNORE_THIS_VERSION_OF_SDL_Vulkan_DestroySurface
 #define SDL_Vulkan_GetInstanceExtensions IGNORE_THIS_VERSION_OF_SDL_Vulkan_GetInstanceExtensions
 #define SDL_Vulkan_GetVkGetInstanceProcAddr IGNORE_THIS_VERSION_OF_SDL_Vulkan_GetVkGetInstanceProcAddr
 #define SDL_Vulkan_LoadLibrary IGNORE_THIS_VERSION_OF_SDL_Vulkan_LoadLibrary
@@ -1074,7 +1067,7 @@
 #undef CreateThread
 #undef CreateSemaphore
 #undef CreateMutex
-#endif  /* _WIN32 */
+#endif /* _WIN32 */
 
 
 #ifdef SDL_AcquireCameraFrame
@@ -2473,20 +2466,8 @@
 #undef SDL_GetPenCapabilities
 #endif
 
-#ifdef SDL_GetPenCapabilities
-#undef SDL_GetPenCapabilities
-#endif
-
 #ifdef SDL_GetPenFromGUID
 #undef SDL_GetPenFromGUID
-#endif
-
-#ifdef SDL_GetPenFromGUID
-#undef SDL_GetPenFromGUID
-#endif
-
-#ifdef SDL_GetPenGUID
-#undef SDL_GetPenGUID
 #endif
 
 #ifdef SDL_GetPenGUID
@@ -2497,28 +2478,12 @@
 #undef SDL_GetPenName
 #endif
 
-#ifdef SDL_GetPenName
-#undef SDL_GetPenName
-#endif
-
-#ifdef SDL_GetPenStatus
-#undef SDL_GetPenStatus
-#endif
-
 #ifdef SDL_GetPenStatus
 #undef SDL_GetPenStatus
 #endif
 
 #ifdef SDL_GetPenType
 #undef SDL_GetPenType
-#endif
-
-#ifdef SDL_GetPenType
-#undef SDL_GetPenType
-#endif
-
-#ifdef SDL_GetPens
-#undef SDL_GetPens
 #endif
 
 #ifdef SDL_GetPens
@@ -3465,10 +3430,6 @@
 #undef SDL_PenConnected
 #endif
 
-#ifdef SDL_PenConnected
-#undef SDL_PenConnected
-#endif
-
 #ifdef SDL_PlayHapticRumble
 #undef SDL_PlayHapticRumble
 #endif
@@ -4363,6 +4324,10 @@
 
 #ifdef SDL_Vulkan_CreateSurface
 #undef SDL_Vulkan_CreateSurface
+#endif
+
+#ifdef SDL_Vulkan_DestroySurface
+#undef SDL_Vulkan_DestroySurface
 #endif
 
 #ifdef SDL_Vulkan_GetInstanceExtensions
