@@ -205,7 +205,7 @@ SDL_DYNAPI_VARARGS(static, _DEFAULT, SDL_InitDynamicAPI())
 /* Public API functions to jump into the jump table. */
 #if DISABLE_JUMP_MAGIC
 #define SDL_DYNAPI_PROC(rc, fn, params, args, ret) \
-    DECLSPEC rc SDLCALL fn params                  \
+    SDL_DECLSPEC rc SDLCALL fn params                  \
     {                                              \
         ret jump_table.fn args;                    \
     }
@@ -213,7 +213,7 @@ SDL_DYNAPI_VARARGS(static, _DEFAULT, SDL_InitDynamicAPI())
 #include "SDL_dynapi_procs.h"
 #undef SDL_DYNAPI_PROC
 #undef SDL_DYNAPI_PROC_NO_VARARGS
-SDL_DYNAPI_VARARGS(DECLSPEC, , )
+SDL_DYNAPI_VARARGS(SDL_DECLSPEC, , )
 #else
 /* !!! FIXME: need the jump magic. */
 #error Write me.
@@ -345,7 +345,7 @@ static Sint32 initialize_jumptable(Uint32 apiver, void *table, Uint32 tablesize)
 /* Here's the exported entry point that fills in the jump table. */
 /*  Use specific types when an "int" might suffice to keep this sane. */
 typedef Sint32 (SDLCALL *SDL_DYNAPI_ENTRYFN)(Uint32 apiver, void *table, Uint32 tablesize);
-extern DECLSPEC Sint32 SDLCALL SDL_DYNAPI_entry(Uint32, void *, Uint32);
+extern SDL_DECLSPEC Sint32 SDLCALL SDL_DYNAPI_entry(Uint32, void *, Uint32);
 
 Sint32 SDL_DYNAPI_entry(Uint32 apiver, void *table, Uint32 tablesize)
 {

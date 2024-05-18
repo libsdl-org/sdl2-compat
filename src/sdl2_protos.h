@@ -23,7 +23,7 @@
 #define sdl2_protos_h_ 1
 
 #define SDL2_PROTO(rc,fn,params) \
- extern DECLSPEC rc SDLCALL SDL_##fn params ;
+ extern SDL_DECLSPEC rc SDLCALL SDL_##fn params ;
 
 SDL2_PROTO(int,SetError,(SDL_PRINTF_FORMAT_STRING const char *a, ...))
 SDL2_PROTO(void,Log,(SDL_PRINTF_FORMAT_STRING const char *a, ...))
