@@ -37,12 +37,12 @@ This breaks the build when creating SDL_ ## DisableScreenSaver
 
 #if SDL_DYNAMIC_API
 #include "dynapi/SDL_dynapi_overrides.h"
-/* force DECLSPEC off...it's all internal symbols now.
+/* force SDL_DECLSPEC off...it's all internal symbols now.
    These will have actual #defines during SDL_dynapi.c only */
-#ifdef DECLSPEC
-#undef DECLSPEC
+#ifdef SDL_DECLSPEC
+#undef SDL_DECLSPEC
 #endif
-#define DECLSPEC
+#define SDL_DECLSPEC
 #endif
 
 #define STRINGIFY2(V) #V
@@ -139,12 +139,12 @@ extern "C" {
 
 /* Things that _should_ be binary compatible pass right through... */
 #define SDL3_SYM_PASSTHROUGH(rc,fn,params,args,ret) \
-    DECLSPEC rc SDLCALL SDL_##fn params { ret SDL3_##fn args; }
+    SDL_DECLSPEC rc SDLCALL SDL_##fn params { ret SDL3_##fn args; }
 #include "sdl3_syms.h"
 
 /* Things that were renamed and _should_ be binary compatible pass right through with the correct names... */
 #define SDL3_SYM_RENAMED(rc,oldfn,newfn,params,args,ret) \
-    DECLSPEC rc SDLCALL SDL_##oldfn params { ret SDL3_##newfn args; }
+    SDL_DECLSPEC rc SDLCALL SDL_##oldfn params { ret SDL3_##newfn args; }
 #include "sdl3_syms.h"
 
 
@@ -462,51 +462,51 @@ SDL2_to_SDL3_hint(const char *name)
     return name;
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_SetHintWithPriority(const char *name, const char *value, SDL_HintPriority priority)
 {
     return SDL3_SetHintWithPriority(SDL2_to_SDL3_hint(name), value, priority);
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_SetHint(const char *name, const char *value)
 {
     return SDL3_SetHint(SDL2_to_SDL3_hint(name), value);
 }
 
-DECLSPEC const char * SDLCALL
+SDL_DECLSPEC const char * SDLCALL
 SDL_GetHint(const char *name)
 {
     return SDL3_GetHint(SDL2_to_SDL3_hint(name));
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_ResetHint(const char *name)
 {
     return SDL3_ResetHint(SDL2_to_SDL3_hint(name));
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_GetHintBoolean(const char *name, SDL_bool default_value)
 {
     return SDL3_GetHintBoolean(SDL2_to_SDL3_hint(name), default_value);
 }
 
 /* FIXME: callbacks may need tweaking ... */
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_AddHintCallback(const char *name, SDL_HintCallback callback, void *userdata)
 {
     /* this returns an int of 0 or -1 in SDL3, but SDL2 it was void (even if it failed). */
     (void) SDL3_AddHintCallback(SDL2_to_SDL3_hint(name), callback, userdata);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_DelHintCallback(const char *name, SDL_HintCallback callback, void *userdata)
 {
     SDL3_DelHintCallback(SDL2_to_SDL3_hint(name), callback, userdata);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_ClearHints(void)
 {
     SDL3_ResetHints();
@@ -1310,7 +1310,7 @@ fail:
 
 
 /* obviously we have to override this so we don't report ourselves as SDL3. */
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_GetVersion(SDL2_version *ver)
 {
     if (ver) {
@@ -1325,7 +1325,7 @@ SDL_GetVersion(SDL2_version *ver)
     }
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GetRevisionNumber(void)
 {
     /* After the move to GitHub, this always returned zero, since this was a
@@ -1333,20 +1333,20 @@ SDL_GetRevisionNumber(void)
     return 0;
 }
 
-DECLSPEC const char * SDLCALL
+SDL_DECLSPEC const char * SDLCALL
 SDL_GetRevision(void)
 {
     return SDL2COMPAT_REVISION;
 }
 
-DECLSPEC char * SDLCALL
+SDL_DECLSPEC char * SDLCALL
 SDL_GetErrorMsg(char *errstr, int maxlen)
 {
     SDL3_strlcpy(errstr, SDL3_GetError(), maxlen);
     return errstr;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_SetError(const char *fmt, ...)
 {
     char ch;
@@ -1369,13 +1369,13 @@ SDL_SetError(const char *fmt, ...)
     return -1;
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_ClearError(void)
 {
     SDL3_ClearError();
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_Error(SDL_errorcode code)
 {
     switch (code) {
@@ -1394,7 +1394,7 @@ SDL_Error(SDL_errorcode code)
     }
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_sscanf(const char *text, const char *fmt, ...)
 {
     int retval;
@@ -1405,7 +1405,7 @@ SDL_sscanf(const char *text, const char *fmt, ...)
     return retval;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_snprintf(char *text, size_t maxlen, const char *fmt, ...)
 {
     int retval;
@@ -1416,7 +1416,7 @@ SDL_snprintf(char *text, size_t maxlen, const char *fmt, ...)
     return retval;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_asprintf(char **str, SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
 {
     int retval;
@@ -1427,7 +1427,7 @@ SDL_asprintf(char **str, SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
     return retval;
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_Log(SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
 {
     va_list ap;
@@ -1436,7 +1436,7 @@ SDL_Log(SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
     va_end(ap);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_LogMessage(int category, SDL_LogPriority priority, SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
 {
     va_list ap;
@@ -1446,7 +1446,7 @@ SDL_LogMessage(int category, SDL_LogPriority priority, SDL_PRINTF_FORMAT_STRING 
 }
 
 #define SDL_LOG_IMPL(name, prio)                                             \
-DECLSPEC void SDLCALL                                                        \
+SDL_DECLSPEC void SDLCALL                                                        \
 SDL_Log##name(int category, SDL_PRINTF_FORMAT_STRING const char *fmt, ...) { \
     va_list ap; va_start(ap, fmt);                                           \
     SDL3_LogMessageV(category, SDL_LOG_PRIORITY_##prio, fmt, ap);            \
@@ -1772,7 +1772,7 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
 
 static void GestureProcessEvent(const SDL_Event *event3);
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_PushEvent(SDL2_Event *event2)
 {
     SDL_Event event3;
@@ -1881,7 +1881,7 @@ static void CheckEventFilter(void)
     }
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_SetEventFilter(SDL2_EventFilter filter2, void *userdata)
 {
     CheckEventFilter();
@@ -1890,7 +1890,7 @@ SDL_SetEventFilter(SDL2_EventFilter filter2, void *userdata)
     EventFilterUserData2 = userdata;
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_GetEventFilter(SDL2_EventFilter *filter2, void **userdata)
 {
     if (!EventFilter2) {
@@ -1907,7 +1907,7 @@ SDL_GetEventFilter(SDL2_EventFilter *filter2, void **userdata)
     return SDL_TRUE;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_PeepEvents(SDL2_Event *events2, int numevents, SDL_eventaction action, Uint32 minType, Uint32 maxType)
 {
     SDL_Event *events3 = (SDL_Event *) SDL3_malloc(numevents * sizeof (SDL_Event));
@@ -1933,7 +1933,7 @@ SDL_PeepEvents(SDL2_Event *events2, int numevents, SDL_eventaction action, Uint3
     return retval;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_WaitEventTimeout(SDL2_Event *event2, int timeout)
 {
     SDL_Event event3;
@@ -1944,19 +1944,19 @@ SDL_WaitEventTimeout(SDL2_Event *event2, int timeout)
     return retval;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_PollEvent(SDL2_Event *event2)
 {
     return SDL_WaitEventTimeout(event2, 0);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_WaitEvent(SDL2_Event *event2)
 {
     return SDL_WaitEventTimeout(event2, -1);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_AddEventWatch(SDL2_EventFilter filter2, void *userdata)
 {
     EventFilterWrapperData *wrapperdata;
@@ -1976,7 +1976,7 @@ SDL_AddEventWatch(SDL2_EventFilter filter2, void *userdata)
     SDL3_UnlockMutex(EventWatchListMutex);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_DelEventWatch(SDL2_EventFilter filter2, void *userdata)
 {
     EventFilterWrapperData *i;
@@ -2006,7 +2006,7 @@ EventFilterWrapper3to2(void *userdata, SDL_Event *event)
     return wrapperdata->filter2(wrapperdata->userdata, Event3to2(event, &event2));
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_FilterEvents(SDL2_EventFilter filter2, void *userdata)
 {
     EventFilterWrapperData wrapperdata;
@@ -2016,20 +2016,20 @@ SDL_FilterEvents(SDL2_EventFilter filter2, void *userdata)
     SDL3_FilterEvents(EventFilterWrapper3to2, &wrapperdata);
 }
 
-DECLSPEC Uint32 SDLCALL
+SDL_DECLSPEC Uint32 SDLCALL
 SDL_RegisterEvents(int numevents)
 {
     Uint32 r = SDL3_RegisterEvents(numevents);
     return r > 0 ? r : (Uint32)(-1);
 }
 
-DECLSPEC SDL2_Keymod SDLCALL
+SDL_DECLSPEC SDL2_Keymod SDLCALL
 SDL_GetModState(void)
 {
     return SDL3_GetModState();
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_SetModState(SDL2_Keymod modstate)
 {
     SDL3_SetModState((SDL_Keymod)modstate);
@@ -2052,13 +2052,13 @@ static const char *ReplaceVideoBackendName(const char *name)
     return name;
 }
 
-DECLSPEC const char * SDLCALL
+SDL_DECLSPEC const char * SDLCALL
 SDL_GetVideoDriver(int idx)
 {
     return ReplaceVideoBackendName(SDL3_GetVideoDriver(idx));
 }
 
-DECLSPEC const char * SDLCALL
+SDL_DECLSPEC const char * SDLCALL
 SDL_GetCurrentVideoDriver(void)
 {
     return ReplaceVideoBackendName(SDL3_GetCurrentVideoDriver());
@@ -2067,7 +2067,7 @@ SDL_GetCurrentVideoDriver(void)
 
 /* mouse coords became floats in SDL3 */
 
-DECLSPEC Uint32 SDLCALL
+SDL_DECLSPEC Uint32 SDLCALL
 SDL_GetMouseState(int *x, int *y)
 {
     float fx, fy;
@@ -2077,7 +2077,7 @@ SDL_GetMouseState(int *x, int *y)
     return ret;
 }
 
-DECLSPEC Uint32 SDLCALL
+SDL_DECLSPEC Uint32 SDLCALL
 SDL_GetGlobalMouseState(int *x, int *y)
 {
     float fx, fy;
@@ -2087,7 +2087,7 @@ SDL_GetGlobalMouseState(int *x, int *y)
     return ret;
 }
 
-DECLSPEC Uint32 SDLCALL
+SDL_DECLSPEC Uint32 SDLCALL
 SDL_GetRelativeMouseState(int *x, int *y)
 {
     float fx, fy;
@@ -2097,13 +2097,13 @@ SDL_GetRelativeMouseState(int *x, int *y)
     return ret;
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_WarpMouseInWindow(SDL_Window *window, int x, int y)
 {
     SDL3_WarpMouseInWindow(window, (float)x, (float)y);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_WarpMouseGlobal(int x, int y)
 {
     return SDL3_WarpMouseGlobal((float)x, (float)y);
@@ -2170,7 +2170,7 @@ struct SDL2_RWops
     } hidden;
 };
 
-DECLSPEC SDL2_RWops *SDLCALL
+SDL_DECLSPEC SDL2_RWops *SDLCALL
 SDL_AllocRW(void)
 {
     SDL2_RWops *rwops2 = (SDL2_RWops *)SDL3_malloc(sizeof *rwops2);
@@ -2180,7 +2180,7 @@ SDL_AllocRW(void)
     return rwops2;
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_FreeRW(SDL2_RWops *rwops2)
 {
     SDL3_free(rwops2);
@@ -2249,7 +2249,7 @@ RWops3to2(SDL_IOStream *iostrm3, Uint32 type)
     return rwops2;
 }
 
-DECLSPEC SDL2_RWops *SDLCALL
+SDL_DECLSPEC SDL2_RWops *SDLCALL
 SDL_RWFromFile(const char *file, const char *mode)
 {
     SDL2_RWops *rwops2 = RWops3to2(SDL3_IOFromFile(file, mode), SDL_RWOPS_PLATFORM_FILE);
@@ -2285,7 +2285,7 @@ SDL_RWFromFile(const char *file, const char *mode)
     return rwops2;
 }
 
-DECLSPEC SDL2_RWops *SDLCALL
+SDL_DECLSPEC SDL2_RWops *SDLCALL
 SDL_RWFromMem(void *mem, int size)
 {
     if (size < 0) { /* SDL3 already checks size == 0 */
@@ -2295,7 +2295,7 @@ SDL_RWFromMem(void *mem, int size)
     return RWops3to2(SDL3_IOFromMem(mem, size), SDL_RWOPS_MEMORY);
 }
 
-DECLSPEC SDL2_RWops *SDLCALL
+SDL_DECLSPEC SDL2_RWops *SDLCALL
 SDL_RWFromConstMem(const void *mem, int size)
 {
     if (size < 0) { /* SDL3 already checks size == 0 */
@@ -2305,43 +2305,43 @@ SDL_RWFromConstMem(const void *mem, int size)
     return RWops3to2(SDL3_IOFromConstMem(mem, size), SDL_RWOPS_MEMORY_RO);
 }
 
-DECLSPEC Sint64 SDLCALL
+SDL_DECLSPEC Sint64 SDLCALL
 SDL_RWsize(SDL2_RWops *rwops2)
 {
     return rwops2->size(rwops2);
 }
 
-DECLSPEC Sint64 SDLCALL
+SDL_DECLSPEC Sint64 SDLCALL
 SDL_RWseek(SDL2_RWops *rwops2, Sint64 offset, int whence)
 {
     return rwops2->seek(rwops2, offset, whence);
 }
 
-DECLSPEC Sint64 SDLCALL
+SDL_DECLSPEC Sint64 SDLCALL
 SDL_RWtell(SDL2_RWops *rwops2)
 {
     return rwops2->seek(rwops2, 0, SDL_IO_SEEK_CUR);
 }
 
-DECLSPEC size_t SDLCALL
+SDL_DECLSPEC size_t SDLCALL
 SDL_RWread(SDL2_RWops *rwops2, void *ptr, size_t size, size_t maxnum)
 {
     return rwops2->read(rwops2, ptr, size, maxnum);
 }
 
-DECLSPEC size_t SDLCALL
+SDL_DECLSPEC size_t SDLCALL
 SDL_RWwrite(SDL2_RWops *rwops2, const void *ptr, size_t size, size_t num)
 {
     return rwops2->write(rwops2, ptr, size, num);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RWclose(SDL2_RWops *rwops2)
 {
     return rwops2->close(rwops2);
 }
 
-DECLSPEC Uint8 SDLCALL
+SDL_DECLSPEC Uint8 SDLCALL
 SDL_ReadU8(SDL2_RWops *rwops2)
 {
     Uint8 x = 0;
@@ -2349,21 +2349,21 @@ SDL_ReadU8(SDL2_RWops *rwops2)
     return x;
 }
 
-DECLSPEC size_t SDLCALL
+SDL_DECLSPEC size_t SDLCALL
 SDL_WriteU8(SDL2_RWops *rwops2, Uint8 x)
 {
     return SDL_RWwrite(rwops2, &x, sizeof(x), 1);
 }
 
 #define DO_RWOPS_ENDIAN(order, bits)          \
-DECLSPEC Uint##bits SDLCALL                 \
+SDL_DECLSPEC Uint##bits SDLCALL                 \
 SDL_Read##order##bits(SDL2_RWops *rwops2) { \
     Uint##bits x = 0;                       \
     SDL_RWread(rwops2, &x, sizeof (x), 1);  \
     return SDL_Swap##order##bits(x);        \
 } \
                                                            \
-DECLSPEC size_t SDLCALL                                    \
+SDL_DECLSPEC size_t SDLCALL                                    \
 SDL_Write##order##bits(SDL2_RWops *rwops2, Uint##bits x) { \
     x = SDL_Swap##order##bits(x);                          \
     return SDL_RWwrite(rwops2, &x, sizeof(x), 1);          \
@@ -2378,7 +2378,7 @@ DO_RWOPS_ENDIAN(BE, 64)
 
 /* stdio SDL_RWops was removed from SDL3, to prevent incompatible C runtime issues */
 #ifndef HAVE_STDIO_H
-DECLSPEC SDL2_RWops * SDLCALL
+SDL_DECLSPEC SDL2_RWops * SDLCALL
 SDL_RWFromFP(void *fp, SDL_bool autoclose)
 {
     SDL3_SetError("SDL not compiled with stdio support");
@@ -2480,7 +2480,7 @@ stdio_close(SDL2_RWops *rwops2)
     return status;
 }
 
-DECLSPEC SDL2_RWops * SDLCALL
+SDL_DECLSPEC SDL2_RWops * SDLCALL
 SDL_RWFromFP(FILE *fp, SDL_bool autoclose)
 {
     SDL2_RWops *rwops = SDL_AllocRW();
@@ -2551,7 +2551,7 @@ RWops2to3(SDL2_RWops *rwops2)
     return iostrm3;
 }
 
-DECLSPEC void *SDLCALL
+SDL_DECLSPEC void *SDLCALL
 SDL_LoadFile_RW(SDL2_RWops *rwops2, size_t *datasize, int freesrc)
 {
     void *retval = NULL;
@@ -2568,7 +2568,7 @@ SDL_LoadFile_RW(SDL2_RWops *rwops2, size_t *datasize, int freesrc)
     return retval;
 }
 
-DECLSPEC SDL2_AudioSpec *SDLCALL
+SDL_DECLSPEC SDL2_AudioSpec *SDLCALL
 SDL_LoadWAV_RW(SDL2_RWops *rwops2, int freesrc, SDL2_AudioSpec *spec2, Uint8 **audio_buf, Uint32 *audio_len)
 {
     SDL2_AudioSpec *retval = NULL;
@@ -2599,7 +2599,7 @@ SDL_LoadWAV_RW(SDL2_RWops *rwops2, int freesrc, SDL2_AudioSpec *spec2, Uint8 **a
     return retval;
 }
 
-DECLSPEC SDL_Surface *SDLCALL
+SDL_DECLSPEC SDL_Surface *SDLCALL
 SDL_LoadBMP_RW(SDL2_RWops *rwops2, int freesrc)
 {
     SDL_Surface *retval = NULL;
@@ -2613,7 +2613,7 @@ SDL_LoadBMP_RW(SDL2_RWops *rwops2, int freesrc)
     return retval;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_SaveBMP_RW(SDL_Surface *surface, SDL2_RWops *rwops2, int freedst)
 {
     int retval = -1;
@@ -2627,7 +2627,7 @@ SDL_SaveBMP_RW(SDL_Surface *surface, SDL2_RWops *rwops2, int freedst)
     return retval;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GameControllerAddMappingsFromRW(SDL2_RWops *rwops2, int freerw)
 {
     int retval = -1;
@@ -2646,13 +2646,13 @@ SDL_GameControllerAddMappingsFromRW(SDL2_RWops *rwops2, int freerw)
    in intrusive ways, and often didn't work on various platforms. These all
    just return failure now. */
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_SetWindowBrightness(SDL_Window *window, float brightness)
 {
     return SDL3_Unsupported();
 }
 
-DECLSPEC float SDLCALL
+SDL_DECLSPEC float SDLCALL
 SDL_GetWindowBrightness(SDL_Window *window)
 {
     if (!window) {
@@ -2661,13 +2661,13 @@ SDL_GetWindowBrightness(SDL_Window *window)
     return 1.0f;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_SetWindowGammaRamp(SDL_Window *window, const Uint16 *r, const Uint16 *g, const Uint16 *b)
 {
     return SDL3_Unsupported();
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_CalculateGammaRamp(float gamma, Uint16 *ramp)
 {
     int i;
@@ -2708,7 +2708,7 @@ SDL_CalculateGammaRamp(float gamma, Uint16 *ramp)
     }
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GetWindowGammaRamp(SDL_Window *window, Uint16 *red, Uint16 *blue, Uint16 *green)
 {
     Uint16 *buf;
@@ -2733,14 +2733,14 @@ SDL_GetWindowGammaRamp(SDL_Window *window, Uint16 *red, Uint16 *blue, Uint16 *gr
     return 0;
 }
 
-DECLSPEC SDL_Surface * SDLCALL
+SDL_DECLSPEC SDL_Surface * SDLCALL
 SDL_ConvertSurface(SDL_Surface *src, const SDL_PixelFormat *fmt, Uint32 flags)
 {
     (void) flags; /* SDL3 removed the (unused) `flags` argument */
     return SDL3_ConvertSurface(src, fmt);
 }
 
-DECLSPEC SDL_Surface * SDLCALL
+SDL_DECLSPEC SDL_Surface * SDLCALL
 SDL_ConvertSurfaceFormat(SDL_Surface * src, Uint32 pixel_format, Uint32 flags)
 {
     (void) flags; /* SDL3 removed the (unused) `flags` argument */
@@ -2751,19 +2751,19 @@ SDL_ConvertSurfaceFormat(SDL_Surface * src, Uint32 pixel_format, Uint32 flags)
 
 static SDL_YUV_CONVERSION_MODE SDL_YUV_ConversionMode = SDL_YUV_CONVERSION_BT601;
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_SetYUVConversionMode(SDL_YUV_CONVERSION_MODE mode)
 {
     SDL_YUV_ConversionMode = mode;
 }
 
-DECLSPEC SDL_YUV_CONVERSION_MODE SDLCALL
+SDL_DECLSPEC SDL_YUV_CONVERSION_MODE SDLCALL
 SDL_GetYUVConversionMode(void)
 {
     return SDL_YUV_ConversionMode;
 }
 
-DECLSPEC SDL_YUV_CONVERSION_MODE SDLCALL
+SDL_DECLSPEC SDL_YUV_CONVERSION_MODE SDLCALL
 SDL_GetYUVConversionModeForResolution(int width, int height)
 {
     SDL_YUV_CONVERSION_MODE mode = SDL_GetYUVConversionMode();
@@ -2794,7 +2794,7 @@ static SDL_Colorspace GetColorspaceForFormatAndSize(Uint32 format, int width, in
     return SDL_COLORSPACE_SRGB;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_ConvertPixels(int width, int height, Uint32 src_format, const void *src, int src_pitch, Uint32 dst_format, void *dst, int dst_pitch)
 {
     SDL_Colorspace src_colorspace = GetColorspaceForFormatAndSize(src_format, width, height);
@@ -2802,81 +2802,81 @@ SDL_ConvertPixels(int width, int height, Uint32 src_format, const void *src, int
     return SDL3_ConvertPixelsAndColorspace(width, height, (SDL_PixelFormatEnum)src_format, src_colorspace, 0, src, src_pitch, (SDL_PixelFormatEnum)dst_format, dst_colorspace, 0, dst, dst_pitch);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_PremultiplyAlpha(int width, int height, Uint32 src_format, const void * src, int src_pitch, Uint32 dst_format, void * dst, int dst_pitch)
 {
     return SDL3_PremultiplyAlpha(width, height, (SDL_PixelFormatEnum)src_format, src, src_pitch, (SDL_PixelFormatEnum)dst_format, dst, dst_pitch);
 }
 
-DECLSPEC SDL_Surface * SDLCALL
+SDL_DECLSPEC SDL_Surface * SDLCALL
 SDL_CreateRGBSurface(Uint32 flags, int width, int height, int depth, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
 {
     return SDL3_CreateSurface(width, height, SDL3_GetPixelFormatEnumForMasks(depth, Rmask, Gmask, Bmask, Amask));
 }
 
-DECLSPEC SDL_Surface * SDLCALL
+SDL_DECLSPEC SDL_Surface * SDLCALL
 SDL_CreateRGBSurfaceWithFormat(Uint32 flags, int width, int height, int depth, Uint32 format)
 {
     return SDL3_CreateSurface(width, height, (SDL_PixelFormatEnum)format);
 }
 
-DECLSPEC SDL_Surface * SDLCALL
+SDL_DECLSPEC SDL_Surface * SDLCALL
 SDL_CreateRGBSurfaceFrom(void *pixels, int width, int height, int depth, int pitch, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
 {
     return SDL3_CreateSurfaceFrom(pixels, width, height, pitch, SDL3_GetPixelFormatEnumForMasks(depth, Rmask, Gmask, Bmask, Amask));
 }
 
-DECLSPEC SDL_Surface * SDLCALL
+SDL_DECLSPEC SDL_Surface * SDLCALL
 SDL_CreateRGBSurfaceWithFormatFrom(void *pixels, int width, int height, int depth, int pitch, Uint32 format)
 {
     return SDL3_CreateSurfaceFrom(pixels, width, height, pitch, (SDL_PixelFormatEnum)format);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_LowerBlit(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect)
 {
     return SDL3_BlitSurfaceUnchecked(src, srcrect, dst, dstrect);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_LowerBlitScaled(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect)
 {
     return SDL3_BlitSurfaceUncheckedScaled(src, srcrect, dst, dstrect, SDL_SCALEMODE_NEAREST);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_UpperBlitScaled(SDL_Surface *src, const SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect)
 {
     return SDL3_BlitSurfaceScaled(src, srcrect, dst, dstrect, SDL_SCALEMODE_NEAREST);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_SoftStretch(SDL_Surface *src, const SDL_Rect *srcrect, SDL_Surface *dst, const SDL_Rect *dstrect)
 {
     return SDL3_SoftStretch(src, srcrect, dst, dstrect, SDL_SCALEMODE_NEAREST);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_SoftStretchLinear(SDL_Surface *src, const SDL_Rect *srcrect, SDL_Surface *dst, const SDL_Rect *dstrect)
 {
     return SDL3_SoftStretch(src, srcrect, dst, dstrect, SDL_SCALEMODE_LINEAR);
 }
 
 /* SDL_GetTicks is 64-bit in SDL3. Clamp it for SDL2. */
-DECLSPEC Uint32 SDLCALL
+SDL_DECLSPEC Uint32 SDLCALL
 SDL_GetTicks(void)
 {
     return (Uint32)SDL3_GetTicks();
 }
 
 /* SDL_GetTicks64 is gone in SDL3 because SDL_GetTicks is 64-bit. */
-DECLSPEC Uint64 SDLCALL
+SDL_DECLSPEC Uint64 SDLCALL
 SDL_GetTicks64(void)
 {
     return SDL3_GetTicks();
 }
 
-DECLSPEC SDL_bool SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWMinfo *info)
+SDL_DECLSPEC SDL_bool SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWMinfo *info)
 {
     const char *driver = SDL3_GetCurrentVideoDriver();
     SDL_PropertiesID props;
@@ -2978,20 +2978,20 @@ DECLSPEC SDL_bool SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWMinfo 
 
 
 /* this API was removed in SDL3; use sensor event timestamps instead! */
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GameControllerGetSensorDataWithTimestamp(SDL_GameController *gamecontroller, SDL_SensorType type, Uint64 *timestamp, float *data, int num_values)
 {
     return SDL3_Unsupported();  /* !!! FIXME: maybe try to track this from SDL3 events if something needs this? I can't imagine this was widely used. */
 }
 
 /* this API was removed in SDL3; use sensor event timestamps instead! */
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_SensorGetDataWithTimestamp(SDL_Sensor *sensor, Uint64 *timestamp, float *data, int num_values)
 {
     return SDL3_Unsupported();  /* !!! FIXME: maybe try to track this from SDL3 events if something needs this? I can't imagine this was widely used. */
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GetNumTouchDevices(void)
 {
     SDL3_free(TouchDevices);
@@ -2999,7 +2999,7 @@ SDL_GetNumTouchDevices(void)
     return NumTouchDevices;
 }
 
-DECLSPEC SDL_TouchID SDLCALL
+SDL_DECLSPEC SDL_TouchID SDLCALL
 SDL_GetTouchDevice(int idx)
 {
     if ((idx < 0) || (idx >= NumTouchDevices)) {
@@ -3009,14 +3009,14 @@ SDL_GetTouchDevice(int idx)
     return TouchDevices[idx];
 }
 
-DECLSPEC const char* SDLCALL
+SDL_DECLSPEC const char* SDLCALL
 SDL_GetTouchName(int idx)
 {
     SDL_TouchID tid = SDL_GetTouchDevice(idx);
     return tid ? SDL3_GetTouchDeviceName(tid) : NULL;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GetNumTouchFingers(SDL_TouchID touchID)
 {
     SDL3_free(TouchFingers);
@@ -3025,7 +3025,7 @@ SDL_GetNumTouchFingers(SDL_TouchID touchID)
     return NumTouchFingers;
 }
 
-DECLSPEC SDL_Finger * SDLCALL
+SDL_DECLSPEC SDL_Finger * SDLCALL
 SDL_GetTouchFinger(SDL_TouchID touchID, int idx)
 {
     if (touchID != TouchFingersDeviceID) {
@@ -3100,7 +3100,7 @@ GestureGetTouch(const SDL_TouchID touchId)
     return NULL;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RecordGesture(SDL_TouchID touchId)
 {
     int numtouchdevs = 0;
@@ -3193,7 +3193,7 @@ GestureSaveTemplate(GestureDollarTemplate *templ, SDL2_RWops *dst)
     return 1;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_SaveAllDollarTemplates(SDL2_RWops *dst)
 {
     int i, j, rtrn = 0;
@@ -3206,7 +3206,7 @@ SDL_SaveAllDollarTemplates(SDL2_RWops *dst)
     return rtrn;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_SaveDollarTemplate(SDL2_GestureID gestureId, SDL2_RWops *dst)
 {
     int i, j;
@@ -3266,7 +3266,7 @@ GestureAddDollar(GestureTouch *inTouch, SDL_FPoint *path)
     return GestureAddDollar_one(inTouch, path);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_LoadDollarTemplates(SDL_TouchID touchId, SDL2_RWops *src)
 {
     int i, loaded = 0;
@@ -3752,7 +3752,7 @@ static void SDL_CalculateShapeBitmap(SDL_WindowShapeMode mode, SDL_Surface *shap
 }
 
 
-DECLSPEC SDL_Window * SDLCALL
+SDL_DECLSPEC SDL_Window * SDLCALL
 SDL_CreateShapedWindow(const char *title, unsigned int x, unsigned int y, unsigned int w, unsigned int h, Uint32 flags)
 {
     flags |= (SDL_WINDOW_HIDDEN | SDL_WINDOW_TRANSPARENT);
@@ -3760,7 +3760,7 @@ SDL_CreateShapedWindow(const char *title, unsigned int x, unsigned int y, unsign
     return SDL_CreateWindow(title, (int)x, (int)y, (int)w, (int)h, flags);
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_IsShapedWindow(const SDL_Window *window)
 {
     if (SDL3_GetWindowFlags((SDL_Window *)window) & SDL_WINDOW_TRANSPARENT) {
@@ -3776,7 +3776,7 @@ static void SDLCALL CleanupFreeableProperty(void *userdata, void *value)
     SDL3_free(value);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_SetWindowShape(SDL_Window *window, SDL_Surface *shape, SDL_WindowShapeMode *shape_mode)
 {
     SDL_Surface *surface;
@@ -3821,7 +3821,7 @@ SDL_SetWindowShape(SDL_Window *window, SDL_Surface *shape, SDL_WindowShapeMode *
     return result;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GetShapedWindowMode(SDL_Window *window, SDL_WindowShapeMode *shape_mode)
 {
     SDL_WindowShapeMode *property = (SDL_WindowShapeMode *)SDL3_GetProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_SHAPE_MODE_POINTER, NULL);
@@ -3836,7 +3836,7 @@ SDL_GetShapedWindowMode(SDL_Window *window, SDL_WindowShapeMode *shape_mode)
 }
 
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GetRendererInfo(SDL_Renderer *renderer, SDL2_RendererInfo *info)
 {
     SDL_RendererInfo info3;
@@ -3874,7 +3874,7 @@ SDL_GetRendererInfo(SDL_Renderer *renderer, SDL2_RendererInfo *info)
     return 0;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GetRenderDriverInfo(int idx, SDL2_RendererInfo *info)
 {
     const char *name = SDL3_GetRenderDriver(idx);
@@ -3952,7 +3952,7 @@ static int FlushRendererIfNotBatching(SDL_Renderer *renderer)
 }
 
 /* Second parameter changed from an index to a string in SDL3. */
-DECLSPEC SDL_Renderer *SDLCALL
+SDL_DECLSPEC SDL_Renderer *SDLCALL
 SDL_CreateRenderer(SDL_Window *window, int idx, Uint32 flags)
 {
     SDL_PropertiesID props;
@@ -3993,32 +3993,32 @@ SDL_CreateRenderer(SDL_Window *window, int idx, Uint32 flags)
     return renderer;
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_RenderTargetSupported(SDL_Renderer *renderer)
 {
     /* All SDL3 renderers support target textures */
     return SDL_TRUE;
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_RenderGetViewport(SDL_Renderer *renderer, SDL_Rect *rect)
 {
     SDL3_GetRenderViewport(renderer, rect);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_RenderGetClipRect(SDL_Renderer *renderer, SDL_Rect *rect)
 {
     SDL3_GetRenderClipRect(renderer, rect);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_RenderGetScale(SDL_Renderer *renderer, float *scaleX, float *scaleY)
 {
     SDL3_GetRenderScale(renderer, scaleX, scaleY);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_RenderWindowToLogical(SDL_Renderer *renderer,
                           int windowX, int windowY,
                           float *logicalX, float *logicalY)
@@ -4026,7 +4026,7 @@ SDL_RenderWindowToLogical(SDL_Renderer *renderer,
     SDL3_RenderCoordinatesFromWindow(renderer, (float)windowX, (float)windowY, logicalX, logicalY);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_RenderLogicalToWindow(SDL_Renderer *renderer,
                           float logicalX, float logicalY,
                           int *windowX, int *windowY)
@@ -4037,7 +4037,7 @@ SDL_RenderLogicalToWindow(SDL_Renderer *renderer,
     if (windowY) *windowY = (int)y;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderSetLogicalSize(SDL_Renderer *renderer, int w, int h)
 {
     int retval;
@@ -4049,13 +4049,13 @@ SDL_RenderSetLogicalSize(SDL_Renderer *renderer, int w, int h)
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_RenderGetLogicalSize(SDL_Renderer *renderer, int *w, int *h)
 {
     SDL3_GetRenderLogicalPresentation(renderer, w, h, NULL, NULL);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderSetIntegerScale(SDL_Renderer *renderer, SDL_bool enable)
 {
     SDL_ScaleMode scale_mode;
@@ -4084,7 +4084,7 @@ SDL_RenderSetIntegerScale(SDL_Renderer *renderer, SDL_bool enable)
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_RenderGetIntegerScale(SDL_Renderer *renderer)
 {
     SDL_RendererLogicalPresentation mode;
@@ -4096,28 +4096,28 @@ SDL_RenderGetIntegerScale(SDL_Renderer *renderer)
     return SDL_FALSE;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderSetViewport(SDL_Renderer *renderer, const SDL_Rect *rect)
 {
     const int retval = SDL3_SetRenderViewport(renderer, rect);
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderSetClipRect(SDL_Renderer *renderer, const SDL_Rect *rect)
 {
     const int retval = SDL3_SetRenderClipRect(renderer, rect);
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderClear(SDL_Renderer *renderer)
 {
     const int retval = SDL3_RenderClear(renderer);
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderDrawPointF(SDL_Renderer *renderer, float x, float y)
 {
     int retval;
@@ -4128,13 +4128,13 @@ SDL_RenderDrawPointF(SDL_Renderer *renderer, float x, float y)
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderDrawPoint(SDL_Renderer *renderer, int x, int y)
 {
     return SDL_RenderDrawPointF(renderer, (float) x, (float) y);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderDrawPoints(SDL_Renderer *renderer,
                      const SDL_Point *points, int count)
 {
@@ -4163,14 +4163,14 @@ SDL_RenderDrawPoints(SDL_Renderer *renderer,
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderDrawPointsF(SDL_Renderer *renderer, const SDL_FPoint *points, int count)
 {
     const int retval = SDL3_RenderPoints(renderer, points, count);
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderDrawLineF(SDL_Renderer *renderer, float x1, float y1, float x2, float y2)
 {
     int retval;
@@ -4183,13 +4183,13 @@ SDL_RenderDrawLineF(SDL_Renderer *renderer, float x1, float y1, float x2, float 
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderDrawLine(SDL_Renderer *renderer, int x1, int y1, int x2, int y2)
 {
     return SDL_RenderDrawLineF(renderer, (float) x1, (float) y1, (float) x2, (float) y2);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderDrawLines(SDL_Renderer *renderer, const SDL_Point *points, int count)
 {
     SDL_FPoint *fpoints;
@@ -4220,14 +4220,14 @@ SDL_RenderDrawLines(SDL_Renderer *renderer, const SDL_Point *points, int count)
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderDrawLinesF(SDL_Renderer *renderer, const SDL_FPoint *points, int count)
 {
     const int retval = SDL3_RenderLines(renderer, points, count);
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderDrawRect(SDL_Renderer *renderer, const SDL_Rect *rect)
 {
     int retval;
@@ -4246,7 +4246,7 @@ SDL_RenderDrawRect(SDL_Renderer *renderer, const SDL_Rect *rect)
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderDrawRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
 {
     int i;
@@ -4266,21 +4266,21 @@ SDL_RenderDrawRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
     return 0;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderDrawRectF(SDL_Renderer *renderer, const SDL_FRect *rect)
 {
     const int retval = SDL3_RenderRect(renderer, rect);
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderDrawRectsF(SDL_Renderer *renderer, const SDL_FRect *rects, int count)
 {
     const int retval = SDL3_RenderRects(renderer, rects, count);
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderFillRect(SDL_Renderer *renderer, const SDL_Rect *rect)
 {
     int retval;
@@ -4296,7 +4296,7 @@ SDL_RenderFillRect(SDL_Renderer *renderer, const SDL_Rect *rect)
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderFillRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
 {
     SDL_FRect *frects;
@@ -4329,21 +4329,21 @@ SDL_RenderFillRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderFillRectF(SDL_Renderer *renderer, const SDL_FRect *rect)
 {
     const int retval = SDL3_RenderFillRect(renderer, rect);
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderFillRectsF(SDL_Renderer *renderer, const SDL_FRect *rects, int count)
 {
     const int retval = SDL3_RenderFillRects(renderer, rects, count);
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderCopy(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect *srcrect, const SDL_Rect *dstrect)
 {
     int retval;
@@ -4369,7 +4369,7 @@ SDL_RenderCopy(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect *src
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderCopyF(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect *srcrect, const SDL_FRect *dstrect)
 {
     int retval;
@@ -4386,7 +4386,7 @@ SDL_RenderCopyF(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect *sr
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderCopyEx(SDL_Renderer *renderer, SDL_Texture *texture,
                  const SDL_Rect *srcrect, const SDL_Rect *dstrect,
                  const double angle, const SDL_Point *center, const SDL_FlipMode flip)
@@ -4425,7 +4425,7 @@ SDL_RenderCopyEx(SDL_Renderer *renderer, SDL_Texture *texture,
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderCopyExF(SDL_Renderer *renderer, SDL_Texture *texture,
                   const SDL_Rect *srcrect, const SDL_FRect *dstrect,
                   const double angle, const SDL_FPoint *center, const SDL_FlipMode flip)
@@ -4446,7 +4446,7 @@ SDL_RenderCopyExF(SDL_Renderer *renderer, SDL_Texture *texture,
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderGeometry(SDL_Renderer *renderer, SDL_Texture *texture, const SDL2_Vertex *vertices, int num_vertices, const int *indices, int num_indices)
 {
     if (vertices) {
@@ -4462,14 +4462,14 @@ SDL_RenderGeometry(SDL_Renderer *renderer, SDL_Texture *texture, const SDL2_Vert
     return SDL3_InvalidParamError("vertices");
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderGeometryRaw(SDL_Renderer *renderer, SDL_Texture *texture, const float *xy, int xy_stride, const SDL_Color *color, int color_stride, const float *uv, int uv_stride, int num_vertices, const void *indices, int num_indices, int size_indices)
 {
     const int retval = SDL3_RenderGeometryRaw(renderer, texture, xy, xy_stride, color, color_stride, uv, uv_stride, num_vertices, indices, num_indices, size_indices);
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_RenderReadPixels(SDL_Renderer * renderer, const SDL_Rect * rect, Uint32 format, void *pixels, int pitch)
 {
     SDL_Colorspace surface_colorspace = SDL_COLORSPACE_UNKNOWN;
@@ -4490,7 +4490,7 @@ SDL_RenderReadPixels(SDL_Renderer * renderer, const SDL_Rect * rect, Uint32 form
     return result;
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_RenderPresent(SDL_Renderer *renderer)
 {
     SDL3_RenderPresent(renderer);
@@ -4511,7 +4511,7 @@ static SDL_ScaleMode SDL_GetScaleMode(void)
     }
 }
 
-DECLSPEC SDL_Texture * SDLCALL
+SDL_DECLSPEC SDL_Texture * SDLCALL
 SDL_CreateTexture(SDL_Renderer * renderer, Uint32 format, int access, int w, int h)
 {
     SDL_Texture *texture = SDL3_CreateTexture(renderer, (SDL_PixelFormatEnum)format, access, w, h);
@@ -4521,7 +4521,7 @@ SDL_CreateTexture(SDL_Renderer * renderer, Uint32 format, int access, int w, int
     return texture;
 }
 
-DECLSPEC SDL_Texture * SDLCALL
+SDL_DECLSPEC SDL_Texture * SDLCALL
 SDL_CreateTextureFromSurface(SDL_Renderer * renderer, SDL_Surface * surface)
 {
     SDL_Texture *texture = SDL3_CreateTextureFromSurface(renderer, surface);
@@ -4531,20 +4531,20 @@ SDL_CreateTextureFromSurface(SDL_Renderer * renderer, SDL_Surface * surface)
     return texture;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_QueryTexture(SDL_Texture * texture, Uint32 * format, int *access, int *w, int *h)
 {
     return SDL3_QueryTexture(texture, (SDL_PixelFormatEnum *)format, access, w, h);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_LockMutex(SDL_Mutex *a)
 {
     SDL3_LockMutex(a);
     return 0;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_UnlockMutex(SDL_Mutex *a)
 {
     SDL3_UnlockMutex(a);
@@ -4552,7 +4552,7 @@ SDL_UnlockMutex(SDL_Mutex *a)
 }
 
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_AudioInit(const char *driver_name)
 {
     if (driver_name) {
@@ -4561,13 +4561,13 @@ SDL_AudioInit(const char *driver_name)
     return SDL3_InitSubSystem(SDL_INIT_AUDIO);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_AudioQuit(void)
 {
     SDL3_QuitSubSystem(SDL_INIT_AUDIO);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_VideoInit(const char *driver_name)
 {
     int ret;
@@ -4586,13 +4586,13 @@ SDL_VideoInit(const char *driver_name)
     return ret;
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_VideoQuit(void)
 {
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_Init(Uint32 flags)
 {
     int ret;
@@ -4609,7 +4609,7 @@ SDL_Init(Uint32 flags)
     return ret;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_InitSubSystem(Uint32 flags)
 {
     int ret;
@@ -4625,7 +4625,7 @@ SDL_InitSubSystem(Uint32 flags)
     return ret;
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_Quit(void)
 {
     if (SDL3_WasInit(SDL_INIT_VIDEO)) {
@@ -4671,7 +4671,7 @@ SDL_Quit(void)
     SDL3_Quit();
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_QuitSubSystem(Uint32 flags)
 {
     if (flags & SDL_INIT_VIDEO) {
@@ -4683,7 +4683,7 @@ SDL_QuitSubSystem(Uint32 flags)
     SDL3_QuitSubSystem(flags);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GL_GetSwapInterval(void)
 {
     int val = 0;
@@ -4764,7 +4764,7 @@ static int GetNumAudioDevices(int iscapture)
     return num_devices;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GetNumAudioDevices(int iscapture)
 {
     int retval;
@@ -4779,7 +4779,7 @@ SDL_GetNumAudioDevices(int iscapture)
     return retval;
 }
 
-DECLSPEC const char * SDLCALL
+SDL_DECLSPEC const char * SDLCALL
 SDL_GetAudioDeviceName(int idx, int iscapture)
 {
     const char *retval = NULL;
@@ -4802,7 +4802,7 @@ SDL_GetAudioDeviceName(int idx, int iscapture)
     return retval;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GetAudioDeviceSpec(int idx, int iscapture, SDL2_AudioSpec *spec2)
 {
     AudioDeviceList *list;
@@ -4834,7 +4834,7 @@ SDL_GetAudioDeviceSpec(int idx, int iscapture, SDL2_AudioSpec *spec2)
     return retval;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GetDefaultAudioInfo(char **name, SDL2_AudioSpec *spec2, int iscapture)
 {
     SDL_AudioSpec spec3;
@@ -5165,13 +5165,13 @@ static SDL_AudioDeviceID OpenAudioDevice(const char *devicename, int iscapture,
 }
 
 
-DECLSPEC SDL_AudioDeviceID SDLCALL
+SDL_DECLSPEC SDL_AudioDeviceID SDLCALL
 SDL_OpenAudioDevice(const char *device, int iscapture, const SDL2_AudioSpec *desired2, SDL2_AudioSpec *obtained2, int allowed_changes)
 {
     return OpenAudioDevice(device, iscapture, desired2, obtained2, allowed_changes, 2);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_OpenAudio(SDL2_AudioSpec *desired2, SDL2_AudioSpec *obtained2)
 {
     SDL_AudioDeviceID id = 0;
@@ -5243,7 +5243,7 @@ static void AudioSi16SysToUi16MSB(Uint16 *dst, const Sint16 *src, const size_t n
     }
 }
 
-DECLSPEC SDL2_AudioStream * SDLCALL
+SDL_DECLSPEC SDL2_AudioStream * SDLCALL
 SDL_NewAudioStream(const SDL_AudioFormat real_src_format, const Uint8 src_channels, const int src_rate, const SDL_AudioFormat real_dst_format, const Uint8 dst_channels, const int dst_rate)
 {
     SDL_AudioFormat src_format = real_src_format;
@@ -5280,7 +5280,7 @@ SDL_NewAudioStream(const SDL_AudioFormat real_src_format, const Uint8 src_channe
     return retval;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_AudioStreamPut(SDL2_AudioStream *stream2, const void *buf, int len)
 {
     int retval;
@@ -5306,7 +5306,7 @@ SDL_AudioStreamPut(SDL2_AudioStream *stream2, const void *buf, int len)
     return retval;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_AudioStreamGet(SDL2_AudioStream *stream2, void *buf, int len)
 {
     const int retval = stream2 ? SDL3_GetAudioStreamData(stream2->stream3, buf, len) : SDL3_InvalidParamError("stream");
@@ -5328,19 +5328,19 @@ SDL_AudioStreamGet(SDL2_AudioStream *stream2, void *buf, int len)
     return retval;
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_AudioStreamClear(SDL2_AudioStream *stream2)
 {
     SDL3_ClearAudioStream(stream2 ? stream2->stream3 : NULL);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_AudioStreamAvailable(SDL2_AudioStream *stream2)
 {
     return SDL3_GetAudioStreamAvailable(stream2 ? stream2->stream3 : NULL);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_FreeAudioStream(SDL2_AudioStream *stream2)
 {
     if (stream2) {
@@ -5350,14 +5350,14 @@ SDL_FreeAudioStream(SDL2_AudioStream *stream2)
     }
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_AudioStreamFlush(SDL2_AudioStream *stream2)
 {
     return SDL3_FlushAudioStream(stream2 ? stream2->stream3 : NULL);
 }
 
 #define SDL2_MIX_MAXVOLUME 128.0f
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_MixAudioFormat(Uint8 *dst, const Uint8 *src, SDL_AudioFormat format, Uint32 len, int volume)
 {
     const float fvolume = volume / SDL2_MIX_MAXVOLUME;
@@ -5390,7 +5390,7 @@ static SDL2_AudioStream *GetOpenAudioDevice(SDL_AudioDeviceID id)
     return AudioOpenDevices[id];
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_MixAudio(Uint8 *dst, const Uint8 *src, Uint32 len, int volume)
 {
     SDL2_AudioStream *stream2 = GetOpenAudioDevice(1);
@@ -5399,14 +5399,14 @@ SDL_MixAudio(Uint8 *dst, const Uint8 *src, Uint32 len, int volume)
     }
 }
 
-DECLSPEC Uint32 SDLCALL
+SDL_DECLSPEC Uint32 SDLCALL
 SDL_GetQueuedAudioSize(SDL_AudioDeviceID dev)
 {
     SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
     return (stream2 && (stream2->dataqueue3 != NULL)) ? SDL3_GetAudioStreamAvailable(stream2->dataqueue3) : 0;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_QueueAudio(SDL_AudioDeviceID dev, const void *data, Uint32 len)
 {
     SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
@@ -5424,7 +5424,7 @@ SDL_QueueAudio(SDL_AudioDeviceID dev, const void *data, Uint32 len)
     return SDL3_PutAudioStreamData(stream2->dataqueue3, data, len);
 }
 
-DECLSPEC Uint32 SDLCALL
+SDL_DECLSPEC Uint32 SDLCALL
 SDL_DequeueAudio(SDL_AudioDeviceID dev, void *data, Uint32 len)
 {
     SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
@@ -5439,7 +5439,7 @@ SDL_DequeueAudio(SDL_AudioDeviceID dev, void *data, Uint32 len)
     return SDL3_GetAudioStreamData(stream2->dataqueue3, data, len);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_ClearQueuedAudio(SDL_AudioDeviceID dev)
 {
     SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
@@ -5448,7 +5448,7 @@ SDL_ClearQueuedAudio(SDL_AudioDeviceID dev)
     }
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_PauseAudioDevice(SDL_AudioDeviceID dev, int pause_on)
 {
     SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
@@ -5465,7 +5465,7 @@ SDL_PauseAudioDevice(SDL_AudioDeviceID dev, int pause_on)
     }
 }
 
-DECLSPEC SDL2_AudioStatus SDLCALL
+SDL_DECLSPEC SDL2_AudioStatus SDLCALL
 SDL_GetAudioDeviceStatus(SDL_AudioDeviceID dev)
 {
     SDL2_AudioStatus retval = SDL2_AUDIO_STOPPED;
@@ -5479,7 +5479,7 @@ SDL_GetAudioDeviceStatus(SDL_AudioDeviceID dev)
     return retval;
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_LockAudioDevice(SDL_AudioDeviceID dev)
 {
     SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
@@ -5488,7 +5488,7 @@ SDL_LockAudioDevice(SDL_AudioDeviceID dev)
     }
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_UnlockAudioDevice(SDL_AudioDeviceID dev)
 {
     SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
@@ -5497,7 +5497,7 @@ SDL_UnlockAudioDevice(SDL_AudioDeviceID dev)
     }
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_CloseAudioDevice(SDL_AudioDeviceID dev)
 {
     SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
@@ -5508,56 +5508,56 @@ SDL_CloseAudioDevice(SDL_AudioDeviceID dev)
     }
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_LockAudio(void)
 {
     SDL_LockAudioDevice(1);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_UnlockAudio(void)
 {
     SDL_UnlockAudioDevice(1);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_CloseAudio(void)
 {
     SDL_CloseAudioDevice(1);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_PauseAudio(int pause_on)
 {
     SDL_PauseAudioDevice(1, pause_on);
 }
 
-DECLSPEC SDL2_AudioStatus SDLCALL
+SDL_DECLSPEC SDL2_AudioStatus SDLCALL
 SDL_GetAudioStatus(void)
 {
     return SDL_GetAudioDeviceStatus(1);
 }
 
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_LockJoysticks(void)
 {
     SDL3_LockMutex(joystick_lock);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_UnlockJoysticks(void)
 {
     SDL3_UnlockMutex(joystick_lock);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_LockSensors(void)
 {
     SDL3_LockMutex(sensor_lock);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_UnlockSensors(void)
 {
     SDL3_UnlockMutex(sensor_lock);
@@ -5622,7 +5622,7 @@ Display_IndexToID(int displayIndex)
     return displayID;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GetNumVideoDisplays(void)
 {
     int count = 0;
@@ -5632,21 +5632,21 @@ SDL_GetNumVideoDisplays(void)
     return count;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GetWindowDisplayIndex(SDL_Window *window)
 {
     SDL_DisplayID displayID = SDL3_GetDisplayForWindow(window);
     return Display_IDToIndex(displayID);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GetPointDisplayIndex(const SDL_Point *point)
 {
     SDL_DisplayID displayID = SDL3_GetDisplayForPoint(point);
     return Display_IDToIndex(displayID);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GetRectDisplayIndex(const SDL_Rect *rect)
 {
     SDL_DisplayID displayID = SDL3_GetDisplayForRect(rect);
@@ -5712,21 +5712,21 @@ static const SDL_DisplayMode** SDL_GetDisplayModeList(SDL_DisplayID displayID, i
     return modes;
 }
 
-DECLSPEC const char * SDLCALL
+SDL_DECLSPEC const char * SDLCALL
 SDL_GetDisplayName(int displayIndex)
 {
     SDL_DisplayID displayID = Display_IndexToID(displayIndex);
     return SDL3_GetDisplayName(displayID);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GetDisplayBounds(int displayIndex, SDL_Rect *rect)
 {
     SDL_DisplayID displayID = Display_IndexToID(displayIndex);
     return SDL3_GetDisplayBounds(displayID, rect);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GetNumDisplayModes(int displayIndex)
 {
     SDL_DisplayID displayID = Display_IndexToID(displayIndex);
@@ -5740,7 +5740,7 @@ SDL_GetNumDisplayModes(int displayIndex)
     return -1;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GetDisplayDPI(int displayIndex, float *ddpi, float *hdpi, float *vdpi)
 {
     SDL_DisplayID displayID = Display_IndexToID(displayIndex);
@@ -5771,21 +5771,21 @@ SDL_GetDisplayDPI(int displayIndex, float *ddpi, float *hdpi, float *vdpi)
     return 0;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GetDisplayUsableBounds(int displayIndex, SDL_Rect *rect)
 {
     SDL_DisplayID displayID = Display_IndexToID(displayIndex);
     return SDL3_GetDisplayUsableBounds(displayID, rect);
 }
 
-DECLSPEC SDL_DisplayOrientation SDLCALL
+SDL_DECLSPEC SDL_DisplayOrientation SDLCALL
 SDL_GetDisplayOrientation(int displayIndex)
 {
     SDL_DisplayID displayID = Display_IndexToID(displayIndex);
     return SDL3_GetCurrentDisplayOrientation(displayID);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GetDisplayMode(int displayIndex, int modeIndex, SDL2_DisplayMode *mode)
 {
     SDL_DisplayID displayID = Display_IndexToID(displayIndex);
@@ -5803,7 +5803,7 @@ SDL_GetDisplayMode(int displayIndex, int modeIndex, SDL2_DisplayMode *mode)
     return ret;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GetCurrentDisplayMode(int displayIndex, SDL2_DisplayMode *mode)
 {
     const SDL_DisplayMode *dp = SDL3_GetCurrentDisplayMode(Display_IndexToID(displayIndex));
@@ -5816,7 +5816,7 @@ SDL_GetCurrentDisplayMode(int displayIndex, SDL2_DisplayMode *mode)
     return 0;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GetDesktopDisplayMode(int displayIndex, SDL2_DisplayMode *mode)
 {
     const SDL_DisplayMode *dp = SDL3_GetDesktopDisplayMode(Display_IndexToID(displayIndex));
@@ -5865,7 +5865,7 @@ ApplyFullscreenMode(SDL_Window *window)
     }
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GetWindowDisplayMode(SDL_Window *window, SDL2_DisplayMode *mode)
 {
     /* returns a pointer to the fullscreen mode to use or NULL for desktop mode */
@@ -5905,7 +5905,7 @@ SDL_GetWindowDisplayMode(SDL_Window *window, SDL2_DisplayMode *mode)
     return 0;
 }
 
-DECLSPEC SDL2_DisplayMode * SDLCALL
+SDL_DECLSPEC SDL2_DisplayMode * SDLCALL
 SDL_GetClosestDisplayMode(int displayIndex, const SDL2_DisplayMode *mode, SDL2_DisplayMode *closest)
 {
     const SDL_DisplayMode *ret3;
@@ -5938,7 +5938,7 @@ SDL_GetClosestDisplayMode(int displayIndex, const SDL2_DisplayMode *mode, SDL2_D
     return closest;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_SetWindowDisplayMode(SDL_Window *window, const SDL2_DisplayMode *mode)
 {
     int ret;
@@ -5992,7 +5992,7 @@ static SDL_bool SDL_Vulkan_GetInstanceExtensions_Helper(unsigned int *userCount,
 
 
 /* SDL3 simplified SDL_Vulkan_GetInstanceExtensions() extensively. */
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_Vulkan_GetInstanceExtensions(SDL_Window *window, unsigned int *puiCount, const char **pNames)
 {
     Uint32 ui32count = 0;
@@ -6014,7 +6014,7 @@ SDL_Vulkan_GetInstanceExtensions(SDL_Window *window, unsigned int *puiCount, con
 }
 
 /* SDL3 added a VkAllocationCallbacks* argument; SDL2 always uses the default (NULL) allocator */
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_Vulkan_CreateSurface(SDL_Window *window, VkInstance vkinst, VkSurfaceKHR *psurf)
 {
     return SDL3_Vulkan_CreateSurface(window, vkinst, NULL, psurf);
@@ -6166,7 +6166,7 @@ done:
     do { a = b = c = d = 0; (void) a; (void) b; (void) c; (void) d; } while (0)
 #endif
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_Has3DNow(void)
 {
     /* if there's no MMX, presumably there's no 3DNow. */
@@ -6182,7 +6182,7 @@ SDL_Has3DNow(void)
     return SDL_FALSE;
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_HasRDTSC(void)
 {
     static SDL_bool checked = SDL_FALSE;
@@ -6205,7 +6205,7 @@ SDL_HasRDTSC(void)
 
 
 /* This was always a basic wrapper over SDL_free; SDL3 removed it and says use SDL_free directly. */
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_FreeWAV(Uint8 *audio_buf)
 {
     SDL3_free(audio_buf);
@@ -6217,7 +6217,7 @@ SDL_FreeWAV(Uint8 *audio_buf)
  * the window is fullscreen. */
 /* SDL3 removed SDL_WINDOW_SHOWN as redundant to SDL_WINDOW_HIDDEN. */
 /* SDL3 removed SDL_WINDOW_SKIP_TASKBAR as redundant to SDL_WINDOW_UTILITY. */
-DECLSPEC Uint32 SDLCALL
+SDL_DECLSPEC Uint32 SDLCALL
 SDL_GetWindowFlags(SDL_Window *window)
 {
     Uint32 flags3 = (Uint32) SDL3_GetWindowFlags(window);
@@ -6241,7 +6241,7 @@ SDL_GetWindowFlags(SDL_Window *window)
 
 #define PROP_WINDOW_PARENT_POINTER "sdl2-compat.window.parent"
 
-DECLSPEC void* SDLCALL
+SDL_DECLSPEC void* SDLCALL
 SDL_GetWindowData(SDL_Window * window, const char *name)
 {
     if (!window) {
@@ -6257,7 +6257,7 @@ SDL_GetWindowData(SDL_Window * window, const char *name)
     return SDL3_GetProperty(SDL3_GetWindowProperties(window), name, NULL);
 }
 
-DECLSPEC void* SDLCALL
+SDL_DECLSPEC void* SDLCALL
 SDL_SetWindowData(SDL_Window * window, const char *name, void *userdata)
 {
     void *prev;
@@ -6279,13 +6279,13 @@ SDL_SetWindowData(SDL_Window * window, const char *name, void *userdata)
 
 #define PROP_TEXTURE_USERDATA_POINTER "sdl2-compat.texture.userdata"
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_SetTextureUserData(SDL_Texture * texture, void *userdata)
 {
     return SDL3_SetProperty(SDL3_GetTextureProperties(texture), PROP_TEXTURE_USERDATA_POINTER, userdata);
 }
 
-DECLSPEC void * SDLCALL
+SDL_DECLSPEC void * SDLCALL
 SDL_GetTextureUserData(SDL_Texture * texture)
 {
     return SDL3_GetProperty(SDL3_GetTextureProperties(texture), PROP_TEXTURE_USERDATA_POINTER, NULL);
@@ -6309,7 +6309,7 @@ WindowPos2To3(int *x, int *y)
     }
 }
 
-DECLSPEC SDL_Window * SDLCALL
+SDL_DECLSPEC SDL_Window * SDLCALL
 SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
 {
     const char *driver;
@@ -6368,7 +6368,7 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
     return window;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_CreateWindowAndRenderer(int width, int height, Uint32 window_flags,
                             SDL_Window **window, SDL_Renderer **renderer)
 {
@@ -6392,7 +6392,7 @@ SDL_CreateWindowAndRenderer(int width, int height, Uint32 window_flags,
     return 0;
 }
 
-DECLSPEC SDL_Window * SDLCALL
+SDL_DECLSPEC SDL_Window * SDLCALL
 SDL_CreateWindowFrom(const void *data)
 {
     SDL_Window *window;
@@ -6430,7 +6430,7 @@ SDL_CreateWindowFrom(const void *data)
     return window;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_SetWindowFullscreen(SDL_Window *window, Uint32 flags)
 {
     int ret = 0;
@@ -6448,25 +6448,25 @@ SDL_SetWindowFullscreen(SDL_Window *window, Uint32 flags)
     return ret;
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_SetWindowTitle(SDL_Window *window, const char *title)
 {
     SDL3_SetWindowTitle(window, title);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_SetWindowIcon(SDL_Window *window, SDL_Surface *icon)
 {
     SDL3_SetWindowIcon(window, icon);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_SetWindowSize(SDL_Window *window, int w, int h)
 {
     SDL3_SetWindowSize(window, w, h);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_SetWindowMinimumSize(SDL_Window *window, int min_w, int min_h)
 {
     if (!window) {
@@ -6484,7 +6484,7 @@ SDL_SetWindowMinimumSize(SDL_Window *window, int min_w, int min_h)
     SDL3_SetWindowMinimumSize(window, min_w, min_h);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_SetWindowMaximumSize(SDL_Window *window, int max_w, int max_h)
 {
     if (!window) {
@@ -6502,43 +6502,43 @@ SDL_SetWindowMaximumSize(SDL_Window *window, int max_w, int max_h)
     SDL3_SetWindowMaximumSize(window, max_w, max_h);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_JoystickSetPlayerIndex(SDL_Joystick *joystick, int player_index)
 {
     SDL3_SetJoystickPlayerIndex(joystick, player_index);
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_IsTextInputShown()
 {
     return SDL3_TextInputActive();
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_SetTextInputRect(const SDL_Rect *rect)
 {
     SDL3_SetTextInputRect(rect);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_SetCursor(SDL_Cursor * cursor)
 {
     SDL3_SetCursor(cursor);
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_PixelFormatEnumToMasks(Uint32 format, int *bpp, Uint32 * Rmask, Uint32 * Gmask, Uint32 * Bmask, Uint32 * Amask)
 {
     return SDL3_GetMasksForPixelFormatEnum((SDL_PixelFormatEnum)format, bpp, Rmask, Gmask, Bmask, Amask);
 }
 
-DECLSPEC Uint32 SDLCALL
+SDL_DECLSPEC Uint32 SDLCALL
 SDL_MasksToPixelFormatEnum(int bpp, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
 {
     return (Uint32)SDL3_GetPixelFormatEnumForMasks(bpp, Rmask, Gmask, Bmask, Amask);
 }
 
-DECLSPEC const char *
+SDL_DECLSPEC const char *
 SDL_GetPixelFormatName(Uint32 format)
 {
     switch (format) {
@@ -6551,37 +6551,37 @@ SDL_GetPixelFormatName(Uint32 format)
     }
 }
 
-DECLSPEC SDL_PixelFormat * SDLCALL
+SDL_DECLSPEC SDL_PixelFormat * SDLCALL
 SDL_AllocFormat(Uint32 pixel_format)
 {
     return SDL3_CreatePixelFormat((SDL_PixelFormatEnum)pixel_format);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_FreeFormat(SDL_PixelFormat *format)
 {
     SDL3_DestroyPixelFormat(format);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_FreePalette(SDL_Palette *palette)
 {
     SDL3_DestroyPalette(palette);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_UnionRect(const SDL_Rect *A, const SDL_Rect *B, SDL_Rect *result)
 {
     SDL3_GetRectUnion(A, B, result);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_UnionFRect(const SDL_FRect *A, const SDL_FRect *B, SDL_FRect *result)
 {
     SDL3_GetRectUnionFloat(A, B, result);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_SetWindowPosition(SDL_Window *window, int x, int y)
 {
     /* Popup windows need to be transformed from global to relative coordinates. */
@@ -6604,7 +6604,7 @@ SDL_SetWindowPosition(SDL_Window *window, int x, int y)
     SDL3_SetWindowPosition(window, x, y);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_GetWindowPosition(SDL_Window *window, int *x, int *y)
 {
     SDL3_GetWindowPosition(window, x, y);
@@ -6625,85 +6625,85 @@ SDL_GetWindowPosition(SDL_Window *window, int *x, int *y)
     }
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_GetWindowSize(SDL_Window *window, int *w, int *h)
 {
     SDL3_GetWindowSize(window, w, h);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_GetWindowSizeInPixels(SDL_Window *window, int *w, int *h)
 {
     SDL3_GetWindowSizeInPixels(window, w, h);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_GetWindowMinimumSize(SDL_Window *window, int *w, int *h)
 {
     SDL3_GetWindowMinimumSize(window, w, h);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_GetWindowMaximumSize(SDL_Window *window, int *w, int *h)
 {
     SDL3_GetWindowMaximumSize(window, w, h);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_SetWindowBordered(SDL_Window *window, SDL_bool bordered)
 {
     SDL3_SetWindowBordered(window, bordered);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_SetWindowResizable(SDL_Window *window, SDL_bool resizable)
 {
     SDL3_SetWindowResizable(window, resizable);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_SetWindowAlwaysOnTop(SDL_Window *window, SDL_bool on_top)
 {
     SDL3_SetWindowAlwaysOnTop(window, on_top);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_ShowWindow(SDL_Window *window)
 {
     SDL3_ShowWindow(window);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_HideWindow(SDL_Window *window)
 {
     SDL3_HideWindow(window);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_RaiseWindow(SDL_Window *window)
 {
     SDL3_RaiseWindow(window);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_MaximizeWindow(SDL_Window *window)
 {
     SDL3_MaximizeWindow(window);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_MinimizeWindow(SDL_Window *window)
 {
     SDL3_MinimizeWindow(window);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_RestoreWindow(SDL_Window *window)
 {
     SDL3_RestoreWindow(window);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_SetWindowGrab(SDL_Window *window, SDL_bool grabbed)
 {
     SDL3_SetWindowMouseGrab(window, grabbed);
@@ -6712,44 +6712,44 @@ SDL_SetWindowGrab(SDL_Window *window, SDL_bool grabbed)
     }
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_GetWindowGrab(SDL_Window *window)
 {
     return SDL3_GetWindowKeyboardGrab(window) || SDL3_GetWindowMouseGrab(window);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_SetWindowKeyboardGrab(SDL_Window *window, SDL_bool grabbed)
 {
     SDL3_SetWindowKeyboardGrab(window, grabbed);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_SetWindowMouseGrab(SDL_Window *window, SDL_bool grabbed)
 {
     SDL3_SetWindowMouseGrab(window, grabbed);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_GL_DeleteContext(SDL_GLContext context)
 {
     SDL3_GL_DeleteContext(context);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_EnableScreenSaver(void)
 {
     SDL3_EnableScreenSaver();
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_DisableScreenSaver(void)
 {
     SDL3_DisableScreenSaver();
 }
 
 /* SDL3 added a return value. We just throw it away for SDL2. */
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_GL_SwapWindow(SDL_Window *window)
 {
     (void) SDL3_GL_SwapWindow(window);
@@ -6777,7 +6777,7 @@ static void *getglfn(const char *fn, SDL_bool *okay)
 #define GLFN(fn) openglfn_##fn##_t p##fn = (openglfn_##fn##_t) getglfn(#fn, &okay)
 
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GL_BindTexture(SDL_Texture *texture, float *texw, float *texh)
 {
     SDL_PropertiesID props;
@@ -6872,7 +6872,7 @@ SDL_GL_BindTexture(SDL_Texture *texture, float *texw, float *texh)
     return 0;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GL_UnbindTexture(SDL_Texture *texture)
 {
     SDL_PropertiesID props;
@@ -6957,32 +6957,32 @@ SDL_GL_UnbindTexture(SDL_Texture *texture)
 
 #undef GLFN
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_GetClipRect(SDL_Surface *surface, SDL_Rect *rect)
 {
     SDL3_GetSurfaceClipRect(surface, rect);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_GameControllerSetPlayerIndex(SDL_GameController *gamecontroller, int player_index)
 {
     SDL3_SetGamepadPlayerIndex(gamecontroller, player_index);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_JoystickGetGUIDString(SDL_JoystickGUID guid, char *pszGUID, int cbGUID)
 {
     SDL3_GetJoystickGUIDString(guid, pszGUID, cbGUID);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_GUIDToString(SDL_GUID guid, char *pszGUID, int cbGUID)
 {
     SDL3_GUIDToString(guid, pszGUID, cbGUID);
 }
 
 /* SDL3 split this into getter/setter functions. */
-DECLSPEC Uint8 SDLCALL
+SDL_DECLSPEC Uint8 SDLCALL
 SDL_EventState(Uint32 type, int state)
 {
     const int retval = SDL3_EventEnabled(type) ? SDL2_ENABLE : SDL2_DISABLE;
@@ -6995,7 +6995,7 @@ SDL_EventState(Uint32 type, int state)
 }
 
 /* SDL3 split this into getter/setter functions. */
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_ShowCursor(int state)
 {
     int retval = SDL3_CursorVisible() ? SDL2_ENABLE : SDL2_DISABLE;
@@ -7008,7 +7008,7 @@ SDL_ShowCursor(int state)
 }
 
 /* SDL3 split this into getter/setter functions. */
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GameControllerEventState(int state)
 {
     int retval = state;
@@ -7023,7 +7023,7 @@ SDL_GameControllerEventState(int state)
 }
 
 /* SDL3 split this into getter/setter functions. */
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_JoystickEventState(int state)
 {
     int retval = state;
@@ -7052,7 +7052,7 @@ GetJoystickInstanceFromIndex(int idx)
 
 /* !!! FIXME: put a mutex on the joystick and sensor lists. Strictly speaking, this will break if you multithread it, but it doesn't have to crash. */
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_NumJoysticks(void)
 {
     SDL3_free(joystick_list);
@@ -7078,7 +7078,7 @@ GetIndexFromJoystickInstance(SDL_JoystickID jid) {
 }
 
 
-DECLSPEC SDL_JoystickGUID SDLCALL
+SDL_DECLSPEC SDL_JoystickGUID SDLCALL
 SDL_JoystickGetDeviceGUID(int idx)
 {
     SDL_JoystickGUID guid;
@@ -7091,49 +7091,49 @@ SDL_JoystickGetDeviceGUID(int idx)
     return guid;
 }
 
-DECLSPEC const char* SDLCALL
+SDL_DECLSPEC const char* SDLCALL
 SDL_JoystickNameForIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
     return jid ? SDL3_GetJoystickInstanceName(jid) : NULL;
 }
 
-DECLSPEC SDL_Joystick* SDLCALL
+SDL_DECLSPEC SDL_Joystick* SDLCALL
 SDL_JoystickOpen(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
     return jid ? SDL3_OpenJoystick(jid) : NULL;
 }
 
-DECLSPEC Uint16 SDLCALL
+SDL_DECLSPEC Uint16 SDLCALL
 SDL_JoystickGetDeviceVendor(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
     return jid ? SDL3_GetJoystickInstanceVendor(jid) : 0;
 }
 
-DECLSPEC Uint16 SDLCALL
+SDL_DECLSPEC Uint16 SDLCALL
 SDL_JoystickGetDeviceProduct(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
     return jid ? SDL3_GetJoystickInstanceProduct(jid) : 0;
 }
 
-DECLSPEC Uint16 SDLCALL
+SDL_DECLSPEC Uint16 SDLCALL
 SDL_JoystickGetDeviceProductVersion(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
     return jid ? SDL3_GetJoystickInstanceProductVersion(jid) : 0;
 }
 
-DECLSPEC SDL_JoystickType SDLCALL
+SDL_DECLSPEC SDL_JoystickType SDLCALL
 SDL_JoystickGetDeviceType(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
     return jid ? SDL3_GetJoystickInstanceType(jid) : SDL_JOYSTICK_TYPE_UNKNOWN;
 }
 
-DECLSPEC SDL2_JoystickID SDLCALL
+SDL_DECLSPEC SDL2_JoystickID SDLCALL
 SDL_JoystickGetDeviceInstanceID(int idx)
 {
     /* this counts on a Uint32 not overflowing an Sint32. */
@@ -7144,7 +7144,7 @@ SDL_JoystickGetDeviceInstanceID(int idx)
     return (SDL2_JoystickID)jid;
 }
 
-DECLSPEC SDL2_JoystickID SDLCALL
+SDL_DECLSPEC SDL2_JoystickID SDLCALL
 SDL_JoystickInstanceID(SDL_Joystick *joystick)
 {
     const SDL_JoystickID jid = SDL3_GetJoystickInstanceID(joystick);
@@ -7154,58 +7154,58 @@ SDL_JoystickInstanceID(SDL_Joystick *joystick)
     return (SDL2_JoystickID)jid;
 }
 
-DECLSPEC SDL_Joystick* SDLCALL
+SDL_DECLSPEC SDL_Joystick* SDLCALL
 SDL_JoystickFromInstanceID(SDL2_JoystickID jid)
 {
     return SDL3_GetJoystickFromInstanceID((SDL_JoystickID)jid);
 }
 
-DECLSPEC SDL_GameController* SDLCALL
+SDL_DECLSPEC SDL_GameController* SDLCALL
 SDL_GameControllerFromInstanceID(SDL2_JoystickID jid)
 {
     return SDL3_GetGamepadFromInstanceID((SDL_JoystickID)jid);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_JoystickGetDevicePlayerIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
     return jid ? SDL3_GetJoystickInstancePlayerIndex(jid) : -1;
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_JoystickIsVirtual(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
     return jid ? SDL3_IsJoystickVirtual(jid) : SDL_FALSE;
 }
 
-DECLSPEC const char* SDLCALL
+SDL_DECLSPEC const char* SDLCALL
 SDL_JoystickPathForIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
     return jid ? SDL3_GetJoystickInstancePath(jid) : NULL;
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_JoystickHasLED(SDL_Joystick *joystick)
 {
     return SDL3_GetBooleanProperty(SDL3_GetJoystickProperties(joystick), SDL_PROP_JOYSTICK_CAP_RGB_LED_BOOLEAN, SDL_FALSE);
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_JoystickHasRumble(SDL_Joystick *joystick)
 {
     return SDL3_GetBooleanProperty(SDL3_GetJoystickProperties(joystick), SDL_PROP_GAMEPAD_CAP_RUMBLE_BOOLEAN, SDL_FALSE);
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_JoystickHasRumbleTriggers(SDL_Joystick *joystick)
 {
     return SDL3_GetBooleanProperty(SDL3_GetJoystickProperties(joystick), SDL_PROP_GAMEPAD_CAP_TRIGGER_RUMBLE_BOOLEAN, SDL_FALSE);
 }
 
-DECLSPEC SDL_JoystickPowerLevel SDLCALL
+SDL_DECLSPEC SDL_JoystickPowerLevel SDLCALL
 SDL_JoystickCurrentPowerLevel(SDL_Joystick *joystick)
 {
     SDL_JoystickConnectionState connection_state;
@@ -7234,28 +7234,28 @@ SDL_JoystickCurrentPowerLevel(SDL_Joystick *joystick)
     }
 }
 
-DECLSPEC char* SDLCALL
+SDL_DECLSPEC char* SDLCALL
 SDL_GameControllerMappingForDeviceIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
     return jid ? SDL3_GetGamepadInstanceMapping(jid) : NULL;
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_IsGameController(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
     return jid ? SDL3_IsGamepad(jid) : SDL_FALSE;
 }
 
-DECLSPEC const char* SDLCALL
+SDL_DECLSPEC const char* SDLCALL
 SDL_GameControllerNameForIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
     return jid ? SDL3_GetGamepadInstanceName(jid) : NULL;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GameControllerNumMappings(void)
 {
     SDL3_free(GamepadMappings);
@@ -7263,7 +7263,7 @@ SDL_GameControllerNumMappings(void)
     return NumGamepadMappings;
 }
 
-DECLSPEC char* SDLCALL
+SDL_DECLSPEC char* SDLCALL
 SDL_GameControllerMappingForIndex(int idx)
 {
     char *retval = NULL;
@@ -7275,7 +7275,7 @@ SDL_GameControllerMappingForIndex(int idx)
     return retval;
 }
 
-DECLSPEC SDL_GameController* SDLCALL
+SDL_DECLSPEC SDL_GameController* SDLCALL
 SDL_GameControllerOpen(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
@@ -7328,27 +7328,27 @@ SDL2COMPAT_GetGamepadInstanceType(const SDL_JoystickID jid)
     }
 }
 
-DECLSPEC SDL_GameControllerType SDLCALL
+SDL_DECLSPEC SDL_GameControllerType SDLCALL
 SDL_GameControllerGetType(SDL_GameController *controller)
 {
     return SDL2COMPAT_GetGamepadInstanceType(SDL3_GetGamepadInstanceID(controller));
 }
 
-DECLSPEC SDL_GameControllerType SDLCALL
+SDL_DECLSPEC SDL_GameControllerType SDLCALL
 SDL_GameControllerTypeForIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
     return jid ? SDL2COMPAT_GetGamepadInstanceType(jid) : SDL_CONTROLLER_TYPE_UNKNOWN;
 }
 
-DECLSPEC const char* SDLCALL
+SDL_DECLSPEC const char* SDLCALL
 SDL_GameControllerPathForIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
     return jid ? SDL3_GetGamepadInstancePath(jid) : NULL;
 }
 
-DECLSPEC Uint8 SDLCALL SDL_GameControllerGetButton(SDL_GameController *controller, SDL_GameControllerButton button)
+SDL_DECLSPEC Uint8 SDLCALL SDL_GameControllerGetButton(SDL_GameController *controller, SDL_GameControllerButton button)
 {
     SDL_JoystickID instance_id = SDL3_GetGamepadInstanceID(controller);
 
@@ -7358,7 +7358,7 @@ DECLSPEC Uint8 SDLCALL SDL_GameControllerGetButton(SDL_GameController *controlle
     return SDL3_GetGamepadButton(controller, button);
 }
 
-DECLSPEC SDL_GameControllerButtonBind SDLCALL
+SDL_DECLSPEC SDL_GameControllerButtonBind SDLCALL
 SDL_GameControllerGetBindForAxis(SDL_GameController *controller,
                                  SDL_GameControllerAxis axis)
 {
@@ -7394,7 +7394,7 @@ SDL_GameControllerGetBindForAxis(SDL_GameController *controller,
     return bind;
 }
 
-DECLSPEC SDL_GameControllerButtonBind SDLCALL
+SDL_DECLSPEC SDL_GameControllerButtonBind SDLCALL
 SDL_GameControllerGetBindForButton(SDL_GameController *controller,
                                    SDL_GameControllerButton button)
 {
@@ -7429,25 +7429,25 @@ SDL_GameControllerGetBindForButton(SDL_GameController *controller,
     return bind;
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_GameControllerHasLED(SDL_Gamepad *gamepad)
 {
     return SDL3_GetBooleanProperty(SDL3_GetGamepadProperties(gamepad), SDL_PROP_GAMEPAD_CAP_RGB_LED_BOOLEAN, SDL_FALSE);
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_GameControllerHasRumble(SDL_Gamepad *gamepad)
 {
     return SDL3_GetBooleanProperty(SDL3_GetGamepadProperties(gamepad), SDL_PROP_GAMEPAD_CAP_RUMBLE_BOOLEAN, SDL_FALSE);
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_GameControllerHasRumbleTriggers(SDL_Gamepad *gamepad)
 {
     return SDL3_GetBooleanProperty(SDL3_GetGamepadProperties(gamepad), SDL_PROP_GAMEPAD_CAP_TRIGGER_RUMBLE_BOOLEAN, SDL_FALSE);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_JoystickAttachVirtual(SDL_JoystickType type, int naxes, int nbuttons, int nhats)
 {
     SDL_JoystickID jid;
@@ -7465,7 +7465,7 @@ SDL_JoystickAttachVirtual(SDL_JoystickType type, int naxes, int nbuttons, int nh
     return GetIndexFromJoystickInstance(jid);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_JoystickAttachVirtualEx(const SDL2_VirtualJoystickDesc *desc2)
 {
     SDL_JoystickID jid;
@@ -7502,7 +7502,7 @@ SDL_JoystickAttachVirtualEx(const SDL2_VirtualJoystickDesc *desc2)
     return GetIndexFromJoystickInstance(jid);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_JoystickDetachVirtual(int device_index)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(device_index);
@@ -7520,7 +7520,7 @@ GetSensorInstanceFromIndex(int idx)
     return sensor_list[idx];
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_NumSensors(void)
 {
     SDL3_free(sensor_list);
@@ -7532,28 +7532,28 @@ SDL_NumSensors(void)
     return num_sensors;
 }
 
-DECLSPEC const char* SDLCALL
+SDL_DECLSPEC const char* SDLCALL
 SDL_SensorGetDeviceName(int idx)
 {
     const SDL_SensorID sid = GetSensorInstanceFromIndex(idx);
     return sid ? SDL3_GetSensorInstanceName(sid) : NULL;
 }
 
-DECLSPEC SDL_SensorType SDLCALL
+SDL_DECLSPEC SDL_SensorType SDLCALL
 SDL_SensorGetDeviceType(int idx)
 {
     const SDL_SensorID sid = GetSensorInstanceFromIndex(idx);
     return sid ? SDL3_GetSensorInstanceType(sid) : SDL_SENSOR_INVALID;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_SensorGetDeviceNonPortableType(int idx)
 {
     const SDL_SensorID sid = GetSensorInstanceFromIndex(idx);
     return sid ? SDL3_GetSensorInstanceNonPortableType(sid) : -1;
 }
 
-DECLSPEC SDL2_SensorID SDLCALL
+SDL_DECLSPEC SDL2_SensorID SDLCALL
 SDL_SensorGetDeviceInstanceID(int idx)
 {
     /* this counts on a Uint32 not overflowing an Sint32. */
@@ -7564,7 +7564,7 @@ SDL_SensorGetDeviceInstanceID(int idx)
     return (SDL2_SensorID)sid;
 }
 
-DECLSPEC SDL2_SensorID SDLCALL
+SDL_DECLSPEC SDL2_SensorID SDLCALL
 SDL_SensorGetInstanceID(SDL_Sensor *sensor)
 {
     const SDL_SensorID sid = SDL3_GetSensorInstanceID(sensor);
@@ -7574,13 +7574,13 @@ SDL_SensorGetInstanceID(SDL_Sensor *sensor)
     return (SDL2_SensorID)sid;
 }
 
-DECLSPEC SDL_Sensor* SDLCALL
+SDL_DECLSPEC SDL_Sensor* SDLCALL
 SDL_SensorFromInstanceID(SDL2_SensorID sid)
 {
     return SDL3_GetSensorFromInstanceID((SDL_SensorID)sid);
 }
 
-DECLSPEC SDL_Sensor* SDLCALL
+SDL_DECLSPEC SDL_Sensor* SDLCALL
 SDL_SensorOpen(int idx)
 {
     const SDL_SensorID sid = GetSensorInstanceFromIndex(idx);
@@ -7598,7 +7598,7 @@ GetHapticInstanceFromIndex(int idx)
     return haptic_list[idx];
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_NumHaptics(void)
 {
     SDL3_free(haptic_list);
@@ -7610,14 +7610,14 @@ SDL_NumHaptics(void)
     return num_haptics;
 }
 
-DECLSPEC const char * SDLCALL
+SDL_DECLSPEC const char * SDLCALL
 SDL_HapticName(int device_index)
 {
     const SDL_HapticID instance_id = GetHapticInstanceFromIndex(device_index);
     return instance_id ? SDL3_GetHapticInstanceName(instance_id) : NULL;
 }
 
-DECLSPEC
+SDL_DECLSPEC
 SDL_Haptic * SDLCALL
 SDL_HapticOpen(int device_index)
 {
@@ -7625,7 +7625,7 @@ SDL_HapticOpen(int device_index)
     return SDL3_OpenHaptic(instance_id);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_HapticOpened(int device_index)
 {
     const SDL_HapticID instance_id = GetHapticInstanceFromIndex(device_index);
@@ -7635,7 +7635,7 @@ SDL_HapticOpened(int device_index)
     return 0;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_HapticIndex(SDL_Haptic *haptic)
 {
     const SDL_HapticID instance_id = SDL3_GetHapticInstanceID(haptic);
@@ -7767,13 +7767,13 @@ static void HapticEffect2to3(const SDL_HapticEffect *effect2, SDL_HapticEffect *
     effect3->type = (Uint16)HapticFeatures2to3(effect2->type);
 }
 
-DECLSPEC unsigned int SDLCALL
+SDL_DECLSPEC unsigned int SDLCALL
 SDL_HapticQuery(SDL_Haptic *haptic)
 {
     return HapticFeatures3to2(SDL3_GetHapticFeatures(haptic));
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_HapticEffectSupported(SDL_Haptic *haptic, SDL_HapticEffect *effect)
 {
     SDL_HapticEffect effect3;
@@ -7785,7 +7785,7 @@ SDL_HapticEffectSupported(SDL_Haptic *haptic, SDL_HapticEffect *effect)
     return SDL3_HapticEffectSupported(haptic, &effect3);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_HapticNewEffect(SDL_Haptic *haptic, SDL_HapticEffect *effect)
 {
     SDL_HapticEffect effect3;
@@ -7797,7 +7797,7 @@ SDL_HapticNewEffect(SDL_Haptic *haptic, SDL_HapticEffect *effect)
     return SDL3_CreateHapticEffect(haptic, &effect3);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_HapticUpdateEffect(SDL_Haptic *haptic, int effect, SDL_HapticEffect *data)
 {
     SDL_HapticEffect effect3;
@@ -7809,25 +7809,25 @@ SDL_HapticUpdateEffect(SDL_Haptic *haptic, int effect, SDL_HapticEffect *data)
     return SDL3_UpdateHapticEffect(haptic, effect, &effect3);
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_CondWaitTimeout(SDL_cond *cond, SDL_mutex *mutex, Uint32 ms)
 {
     return SDL3_WaitConditionTimeout(cond, mutex, (Sint32)ms);
 }
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_SemWaitTimeout(SDL_sem *sem, Uint32 ms)
 {
     return SDL3_WaitSemaphoreTimeout(sem, (Sint32)ms);
 }
 
 
-DECLSPEC void * SDLCALL
+SDL_DECLSPEC void * SDLCALL
 SDL_SIMDAlloc(const size_t len)
 {
     return SDL3_aligned_alloc(SDL3_GetSIMDAlignment(), len);
 }
 
-DECLSPEC void * SDLCALL
+SDL_DECLSPEC void * SDLCALL
 SDL_SIMDRealloc(void *mem, const size_t len)
 {
     const size_t alignment = SDL3_GetSIMDAlignment();
@@ -7880,7 +7880,7 @@ SDL_SIMDRealloc(void *mem, const size_t len)
     return retval;
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_SIMDFree(void *ptr)
 {
     SDL3_aligned_free(ptr);
@@ -7930,7 +7930,7 @@ typedef struct {
 #define RESAMPLER_SAMPLES_PER_ZERO_CROSSING (1 << ((RESAMPLER_BITS_PER_SAMPLE / 2) + 1))
 
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
                   SDL_AudioFormat src_format,
                   Uint8 src_channels,
@@ -8025,7 +8025,7 @@ SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
     return cvt->needed;
 }
 
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_ConvertAudio(SDL_AudioCVT *cvt)
 {
     SDL2_AudioStream *stream2;
@@ -8092,39 +8092,39 @@ failure:
     return -1;
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_GL_GetDrawableSize(SDL_Window *window, int *w, int *h)
 {
     SDL_GetWindowSizeInPixels(window, w, h);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_Vulkan_GetDrawableSize(SDL_Window *window, int *w, int *h)
 {
     SDL_GetWindowSizeInPixels(window, w, h);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_Metal_GetDrawableSize(SDL_Window *window, int *w, int *h)
 {
     SDL_GetWindowSizeInPixels(window, w, h);
 }
 
 
-DECLSPEC SDL_hid_device * SDLCALL
+SDL_DECLSPEC SDL_hid_device * SDLCALL
 SDL_hid_open_path(const char *path, int bExclusive)
 {
     (void) bExclusive;
     return SDL3_hid_open_path(path);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_hid_close(SDL_hid_device * dev)
 {
     SDL3_hid_close(dev);
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_hid_free_enumeration(SDL2_hid_device_info *devs)
 {
     while (devs) {
@@ -8138,7 +8138,7 @@ SDL_hid_free_enumeration(SDL2_hid_device_info *devs)
     }
 }
 
-DECLSPEC SDL2_hid_device_info * SDLCALL
+SDL_DECLSPEC SDL2_hid_device_info * SDLCALL
 SDL_hid_enumerate(unsigned short vendor_id, unsigned short product_id)
 {
     /* the struct is slightly different in SDL3, convert it. */
@@ -8192,7 +8192,7 @@ SDL_hid_enumerate(unsigned short vendor_id, unsigned short product_id)
 
 #if (defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)) && !defined(SDL_PLATFORM_WINRT)
 
-DECLSPEC SDL_Thread *SDLCALL
+SDL_DECLSPEC SDL_Thread *SDLCALL
 SDL_CreateThread(SDL_ThreadFunction fn, const char *name, void *data,
                  pfnSDL_CurrentBeginThread pfnBeginThread,
                  pfnSDL_CurrentEndThread pfnEndThread)
@@ -8207,7 +8207,7 @@ SDL_CreateThread(SDL_ThreadFunction fn, const char *name, void *data,
 
 #else
 
-DECLSPEC SDL_Thread *SDLCALL
+SDL_DECLSPEC SDL_Thread *SDLCALL
 SDL_CreateThread(SDL_ThreadFunction fn, const char *name, void *data)
 {
     size_t stacksize = 0;
@@ -8220,13 +8220,13 @@ SDL_CreateThread(SDL_ThreadFunction fn, const char *name, void *data)
 
 #endif /* (SDL_PLATFORM_WIN32 || SDL_PLATFORM_GDK) && !SDL_PLATFORM_WINRT */
 
-DECLSPEC unsigned long SDLCALL
+SDL_DECLSPEC unsigned long SDLCALL
 SDL_ThreadID(void)
 {
     return (unsigned long)SDL3_GetCurrentThreadID();
 }
 
-DECLSPEC unsigned long SDLCALL
+SDL_DECLSPEC unsigned long SDLCALL
 SDL_GetThreadID(SDL_Thread *thread)
 {
     return (unsigned long)SDL3_GetThreadID(thread);
@@ -8241,7 +8241,7 @@ static SDL_bool SDLCALL SDL3to2_WindowsMessageHook(void *userdata, MSG *msg)
     return SDL_TRUE;
 }
 
-DECLSPEC void SDLCALL
+SDL_DECLSPEC void SDLCALL
 SDL_SetWindowsMessageHook(SDL2_WindowsMessageHook callback, void *userdata)
 {
     SDL_WindowsMessageHook callback3 = (callback != NULL) ? SDL3to2_WindowsMessageHook : NULL;
@@ -8251,31 +8251,31 @@ SDL_SetWindowsMessageHook(SDL2_WindowsMessageHook callback, void *userdata)
 #endif
 
 #if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_WINGDK)
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_Direct3D9GetAdapterIndex(int displayIndex)
 {
     return SDL3_Direct3D9GetAdapterIndex(Display_IndexToID(displayIndex));
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_DXGIGetOutputInfo(int displayIndex, int *adapterIndex, int *outputIndex)
 {
     return SDL3_DXGIGetOutputInfo(Display_IndexToID(displayIndex), adapterIndex, outputIndex);
 }
 
-DECLSPEC IDirect3DDevice9* SDLCALL SDL_RenderGetD3D9Device(SDL_Renderer *renderer)
+SDL_DECLSPEC IDirect3DDevice9* SDLCALL SDL_RenderGetD3D9Device(SDL_Renderer *renderer)
 {
     return (IDirect3DDevice9 *)SDL3_GetProperty(SDL3_GetRendererProperties(renderer),
                                                 SDL_PROP_RENDERER_D3D9_DEVICE_POINTER, NULL);
 }
 
-DECLSPEC ID3D11Device* SDLCALL SDL_RenderGetD3D11Device(SDL_Renderer *renderer)
+SDL_DECLSPEC ID3D11Device* SDLCALL SDL_RenderGetD3D11Device(SDL_Renderer *renderer)
 {
     return (ID3D11Device *)SDL3_GetProperty(SDL3_GetRendererProperties(renderer),
                                             SDL_PROP_RENDERER_D3D11_DEVICE_POINTER, NULL);
 }
 
-DECLSPEC ID3D12Device* SDLCALL SDL_RenderGetD3D12Device(SDL_Renderer *renderer)
+SDL_DECLSPEC ID3D12Device* SDLCALL SDL_RenderGetD3D12Device(SDL_Renderer *renderer)
 {
     return (ID3D12Device *)SDL3_GetProperty(SDL3_GetRendererProperties(renderer),
                                             SDL_PROP_RENDERER_D3D12_DEVICE_POINTER, NULL);
@@ -8283,7 +8283,7 @@ DECLSPEC ID3D12Device* SDLCALL SDL_RenderGetD3D12Device(SDL_Renderer *renderer)
 #endif
 
 #ifdef SDL_PLATFORM_WINRT
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_WinRTRunApp(SDL_main_func mainFunction, void *reserved)
 {
     return SDL3_RunApp(0, NULL, mainFunction, reserved);
@@ -8291,7 +8291,7 @@ SDL_WinRTRunApp(SDL_main_func mainFunction, void *reserved)
 #endif
 
 #if defined(SDL_PLATFORM_GDK)
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_GDKRunApp(SDL_main_func mainFunction, void *reserved)
 {
     return SDL3_RunApp(0, NULL, mainFunction, reserved);
@@ -8299,7 +8299,7 @@ SDL_GDKRunApp(SDL_main_func mainFunction, void *reserved)
 #endif
 
 #ifdef SDL_PLATFORM_IOS
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_UIKitRunApp(int argc, char *argv[], SDL_main_func mainFunction)
 {
     return SDL3_RunApp(argc, argv, mainFunction, NULL);
@@ -8307,7 +8307,7 @@ SDL_UIKitRunApp(int argc, char *argv[], SDL_main_func mainFunction)
 #endif
 
 #ifdef SDL_PLATFORM_ANDROID
-DECLSPEC int SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_AndroidGetExternalStorageState(void)
 {
     Uint32 state = 0;
@@ -8322,7 +8322,7 @@ static void SDLCALL AndroidRequestPermissionBlockingCallback(void *userdata, con
     SDL3_AtomicSet((SDL_AtomicInt *) userdata, granted ? 1 : -1);
 }
 
-DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL_bool SDLCALL
 SDL_AndroidRequestPermission(const char *permission)
 {
     SDL_AtomicInt response;
@@ -8344,7 +8344,7 @@ SDL_AndroidRequestPermission(const char *permission)
 #ifdef SDL_PLATFORM_WINRT
 static wchar_t *winrt_getfspath_cached_strings[4];  // these need to be saved here, since we return a const string. These strings' memory leaks!
 
-DECLSPEC const wchar_t* SDLCALL
+SDL_DECLSPEC const wchar_t* SDLCALL
 SDL_WinRTGetFSPathUNICODE(int SDL_WinRT_Path pathType)
 {
     wchar_t *wstr = NULL;

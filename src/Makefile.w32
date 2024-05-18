@@ -32,9 +32,9 @@ CFLAGS_DLL = $(CFLAGS)
 CFLAGS_DLL+= -bd
 # the include paths :
 CFLAGS_DLL+= -I"$(SDL2INC)"
-# we override the DECLSPEC define in begin_code.h, because we are using
+# we override the SDL_DECLSPEC define in begin_code.h, because we are using
 # an exports file to remove the _cdecl '_' prefix from the symbol names
-CFLAGS_DLL+= -DDECLSPEC=
+CFLAGS_DLL+= -DSDL_DECLSPEC=
 
 object_files= sdl2_compat.obj SDL_dynapi.obj
 resource_obj= version.res
