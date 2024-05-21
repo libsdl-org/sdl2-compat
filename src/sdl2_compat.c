@@ -8194,15 +8194,15 @@ SDL_hid_enumerate(unsigned short vendor_id, unsigned short product_id)
 
 SDL_DECLSPEC SDL_Thread *SDLCALL
 SDL_CreateThread(SDL_ThreadFunction fn, const char *name, void *data,
-                 pfnSDL_CurrentBeginThread pfnBeginThread,
-                 pfnSDL_CurrentEndThread pfnEndThread)
+                 SDL_BeginThreadEx pfnBeginThread,
+                 SDL_EndThreadEx pfnEndThread)
 {
     size_t stacksize = 0;
     const char *hint = SDL3_GetHint("SDL_THREAD_STACK_SIZE");
     if (hint) {
         stacksize = (size_t)SDL3_strtoul(hint, NULL, 0);
     }
-    return SDL3_CreateThreadWithStackSize(fn, name, stacksize, data, pfnBeginThread, pfnEndThread);
+    return SDL3_CreateThreadWithStackSizeRuntime(fn, name, stacksize, data, (SDL_BeginThreadEx) pfnBeginThread, (SDL_EndThreadEx) pfnEndThread);
 }
 
 #else
@@ -8215,7 +8215,7 @@ SDL_CreateThread(SDL_ThreadFunction fn, const char *name, void *data)
     if (hint) {
         stacksize = (size_t)SDL3_strtoul(hint, NULL, 0);
     }
-    return SDL3_CreateThreadWithStackSize(fn, name, stacksize, data);
+    return SDL3_CreateThreadWithStackSizeRuntime(fn, name, stacksize, data, NULL, NULL);
 }
 
 #endif /* (SDL_PLATFORM_WIN32 || SDL_PLATFORM_GDK) && !SDL_PLATFORM_WINRT */
