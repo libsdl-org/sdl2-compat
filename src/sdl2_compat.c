@@ -8190,19 +8190,51 @@ SDL_hid_enumerate(unsigned short vendor_id, unsigned short product_id)
     return retval;
 }
 
-#if (defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)) && !defined(SDL_PLATFORM_WINRT)
 
-SDL_DECLSPEC SDL_Thread *SDLCALL
-SDL_CreateThread(SDL_ThreadFunction fn, const char *name, void *data,
-                 SDL_BeginThreadEx pfnBeginThread,
-                 SDL_EndThreadEx pfnEndThread)
+static SDL_Thread *SDL2_CreateThreadWithStackSize(SDL_ThreadFunction fn, const char *name, const size_t stacksize, void *userdata, SDL_FunctionPointer pfnBeginThread, SDL_FunctionPointer pfnEndThread)
+{
+    const SDL_PropertiesID props = SDL3_CreateProperties();
+    SDL_Thread *thread;
+    SDL3_SetProperty(props, SDL_PROP_THREAD_CREATE_ENTRY_FUNCTION_POINTER, (void *) fn);
+    SDL3_SetStringProperty(props, SDL_PROP_THREAD_CREATE_NAME_STRING, name);
+    SDL3_SetProperty(props, SDL_PROP_THREAD_CREATE_USERDATA_POINTER, userdata);
+    SDL3_SetNumberProperty(props, SDL_PROP_THREAD_CREATE_STACKSIZE_NUMBER, (Sint64) stacksize);
+    thread = SDL3_CreateThreadWithPropertiesRuntime(props, pfnBeginThread, pfnEndThread);
+    SDL3_DestroyProperties(props);
+    return thread;
+}
+
+static SDL_Thread *SDL2_CreateThread(SDL_ThreadFunction fn, const char *name, void *userdata, SDL_FunctionPointer pfnBeginThread, SDL_FunctionPointer pfnEndThread)
 {
     size_t stacksize = 0;
     const char *hint = SDL3_GetHint("SDL_THREAD_STACK_SIZE");
     if (hint) {
         stacksize = (size_t)SDL3_strtoul(hint, NULL, 0);
     }
-    return SDL3_CreateThreadWithStackSizeRuntime(fn, name, stacksize, data, (SDL_BeginThreadEx) pfnBeginThread, (SDL_EndThreadEx) pfnEndThread);
+    return SDL2_CreateThreadWithStackSize(fn, name, stacksize, userdata, pfnBeginThread, pfnEndThread);
+}
+
+#if (defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)) && !defined(SDL_PLATFORM_WINRT)
+
+typedef uintptr_t (__cdecl * pfnSDL_CurrentBeginThread)
+                   (void *, unsigned, unsigned (__stdcall *func)(void *),
+                    void * /*arg*/, unsigned, unsigned * /* threadID */);
+typedef void (__cdecl * pfnSDL_CurrentEndThread) (unsigned code);
+
+SDL_DECLSPEC SDL_Thread *SDLCALL
+SDL_CreateThread(SDL_ThreadFunction fn, const char *name, void *data,
+                 pfnSDL_CurrentBeginThread pfnBeginThread,
+                 pfnSDL_CurrentEndThread pfnEndThread)
+{
+    return SDL2_CreateThread(fn, name, data, (SDL_FunctionPointer) pfnBeginThread, (SDL_FunctionPointer) pfnEndThread);
+}
+
+extern SDL_DECLSPEC SDL_Thread *SDLCALL
+SDL_CreateThreadWithStackSize(SDL_ThreadFunction fn, const char *name, const size_t stacksize, void *data,
+                              pfnSDL_CurrentBeginThread pfnBeginThread,
+                              pfnSDL_CurrentEndThread pfnEndThread);
+{
+    return SDL2_CreateThreadWithStackSize(fn, name, stacksize, data, (SDL_FunctionPointer) pfnBeginThread, (SDL_FunctionPointer) pfnEndThread);
 }
 
 #else
@@ -8210,12 +8242,13 @@ SDL_CreateThread(SDL_ThreadFunction fn, const char *name, void *data,
 SDL_DECLSPEC SDL_Thread *SDLCALL
 SDL_CreateThread(SDL_ThreadFunction fn, const char *name, void *data)
 {
-    size_t stacksize = 0;
-    const char *hint = SDL3_GetHint("SDL_THREAD_STACK_SIZE");
-    if (hint) {
-        stacksize = (size_t)SDL3_strtoul(hint, NULL, 0);
-    }
-    return SDL3_CreateThreadWithStackSizeRuntime(fn, name, stacksize, data, NULL, NULL);
+    return SDL2_CreateThread(fn, name, data, NULL, NULL);
+}
+
+extern SDL_DECLSPEC SDL_Thread *SDLCALL
+SDL_CreateThreadWithStackSize(SDL_ThreadFunction fn, const char *name, const size_t stacksize, void *data)
+{
+    return SDL2_CreateThreadWithStackSize(fn, name, stacksize, data, NULL, NULL);
 }
 
 #endif /* (SDL_PLATFORM_WIN32 || SDL_PLATFORM_GDK) && !SDL_PLATFORM_WINRT */

@@ -117,7 +117,7 @@
 #define SDL_CreateTextureFromSurface IGNORE_THIS_VERSION_OF_SDL_CreateTextureFromSurface
 #define SDL_CreateTextureWithProperties IGNORE_THIS_VERSION_OF_SDL_CreateTextureWithProperties
 #define SDL_CreateThreadRuntime IGNORE_THIS_VERSION_OF_SDL_CreateThreadRuntime
-#define SDL_CreateThreadWithStackSizeRuntime IGNORE_THIS_VERSION_OF_SDL_CreateThreadWithStackSizeRuntime
+#define SDL_CreateThreadWithPropertiesRuntime IGNORE_THIS_VERSION_OF_SDL_CreateThreadWithPropertiesRuntime
 #define SDL_CreateWindow IGNORE_THIS_VERSION_OF_SDL_CreateWindow
 #define SDL_CreateWindowAndRenderer IGNORE_THIS_VERSION_OF_SDL_CreateWindowAndRenderer
 #define SDL_CreateWindowWithProperties IGNORE_THIS_VERSION_OF_SDL_CreateWindowWithProperties
@@ -1402,8 +1402,8 @@
 #undef SDL_CreateThreadRuntime
 #endif
 
-#ifdef SDL_CreateThreadWithStackSizeRuntime
-#undef SDL_CreateThreadWithStackSizeRuntime
+#ifdef SDL_CreateThreadWithPropertiesRuntime
+#undef SDL_CreateThreadWithPropertiesRuntime
 #endif
 
 /* dump the macro CreateThread versions, too. */
@@ -1411,8 +1411,8 @@
 #undef SDL_CreateThread
 #endif
 
-#ifdef SDL_CreateThreadWithStackSize
-#undef SDL_CreateThreadWithStackSize
+#ifdef SDL_CreateThreadWithProperties
+#undef SDL_CreateThreadWithProperties
 #endif
 
 #ifdef SDL_CreateWindow
