@@ -8216,23 +8216,16 @@ static SDL_Thread *SDL2_CreateThread(SDL_ThreadFunction fn, const char *name, vo
 
 #if (defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)) && !defined(SDL_PLATFORM_WINRT)
 
-typedef uintptr_t (__cdecl * pfnSDL_CurrentBeginThread)
-                   (void *, unsigned, unsigned (__stdcall *func)(void *),
-                    void * /*arg*/, unsigned, unsigned * /* threadID */);
-typedef void (__cdecl * pfnSDL_CurrentEndThread) (unsigned code);
-
 SDL_DECLSPEC SDL_Thread *SDLCALL
 SDL_CreateThread(SDL_ThreadFunction fn, const char *name, void *data,
-                 pfnSDL_CurrentBeginThread pfnBeginThread,
-                 pfnSDL_CurrentEndThread pfnEndThread)
+                 pfnSDL_CurrentBeginThread pfnBeginThread, pfnSDL_CurrentEndThread pfnEndThread)
 {
     return SDL2_CreateThread(fn, name, data, (SDL_FunctionPointer) pfnBeginThread, (SDL_FunctionPointer) pfnEndThread);
 }
 
-extern SDL_DECLSPEC SDL_Thread *SDLCALL
+SDL_DECLSPEC SDL_Thread *SDLCALL
 SDL_CreateThreadWithStackSize(SDL_ThreadFunction fn, const char *name, const size_t stacksize, void *data,
-                              pfnSDL_CurrentBeginThread pfnBeginThread,
-                              pfnSDL_CurrentEndThread pfnEndThread);
+                              pfnSDL_CurrentBeginThread pfnBeginThread, pfnSDL_CurrentEndThread pfnEndThread)
 {
     return SDL2_CreateThreadWithStackSize(fn, name, stacksize, data, (SDL_FunctionPointer) pfnBeginThread, (SDL_FunctionPointer) pfnEndThread);
 }
@@ -8245,7 +8238,7 @@ SDL_CreateThread(SDL_ThreadFunction fn, const char *name, void *data)
     return SDL2_CreateThread(fn, name, data, NULL, NULL);
 }
 
-extern SDL_DECLSPEC SDL_Thread *SDLCALL
+SDL_DECLSPEC SDL_Thread *SDLCALL
 SDL_CreateThreadWithStackSize(SDL_ThreadFunction fn, const char *name, const size_t stacksize, void *data)
 {
     return SDL2_CreateThreadWithStackSize(fn, name, stacksize, data, NULL, NULL);

@@ -217,6 +217,12 @@ typedef struct ID3D12Device ID3D12Device;
 typedef void (SDLCALL * SDL2_WindowsMessageHook)(void *userdata, void *hWnd, unsigned int message, Uint64 wParam, Sint64 lParam);
 #endif
 
+#if (defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)) && !defined(SDL_PLATFORM_WINRT)
+typedef uintptr_t (__cdecl * pfnSDL_CurrentBeginThread)
+                        (void *, unsigned, unsigned (__stdcall *func)(void *), void *, unsigned, unsigned *);
+typedef void (__cdecl * pfnSDL_CurrentEndThread) (unsigned);
+#endif
+
 typedef struct SDL2_version
 {
     Uint8 major;

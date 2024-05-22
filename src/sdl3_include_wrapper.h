@@ -1406,15 +1406,6 @@
 #undef SDL_CreateThreadWithPropertiesRuntime
 #endif
 
-/* dump the macro CreateThread versions, too. */
-#ifdef SDL_CreateThread
-#undef SDL_CreateThread
-#endif
-
-#ifdef SDL_CreateThreadWithProperties
-#undef SDL_CreateThreadWithProperties
-#endif
-
 #ifdef SDL_CreateWindow
 #undef SDL_CreateWindow
 #endif
@@ -5112,6 +5103,15 @@
 #endif
 
 #undef SDL_ThreadID /* see at top */
+
+/* dump the macro CreateThread versions, too. */
+#ifdef SDL_CreateThread
+#undef SDL_CreateThread
+#endif
+
+#ifdef SDL_CreateThreadWithProperties
+#undef SDL_CreateThreadWithProperties
+#endif
 
 /* undefine these macros, too: redefine as SDL3_xxx, if needed. */
 
