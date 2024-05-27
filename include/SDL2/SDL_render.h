@@ -20,29 +20,30 @@
 */
 
 /**
- *  \file SDL_render.h
+ * # CategoryRender
  *
- *  Header file for SDL 2D rendering functions.
+ * Header file for SDL 2D rendering functions.
  *
- *  This API supports the following features:
- *      * single pixel points
- *      * single pixel lines
- *      * filled rectangles
- *      * texture images
+ * This API supports the following features:
  *
- *  The primitives may be drawn in opaque, blended, or additive modes.
+ * - single pixel points
+ * - single pixel lines
+ * - filled rectangles
+ * - texture images
  *
- *  The texture images may be drawn in opaque, blended, or additive modes.
- *  They can have an additional color tint or alpha modulation applied to
- *  them, and may also be stretched with linear interpolation.
+ * The primitives may be drawn in opaque, blended, or additive modes.
  *
- *  This API is designed to accelerate simple 2D operations. You may
- *  want more functionality such as polygons and particle effects and
- *  in that case you should use SDL's OpenGL/Direct3D support or one
- *  of the many good 3D engines.
+ * The texture images may be drawn in opaque, blended, or additive modes. They
+ * can have an additional color tint or alpha modulation applied to them, and
+ * may also be stretched with linear interpolation.
  *
- *  These functions must be called from the main thread.
- *  See this bug for details: https://github.com/libsdl-org/SDL/issues/986
+ * This API is designed to accelerate simple 2D operations. You may want more
+ * functionality such as polygons and particle effects and in that case you
+ * should use SDL's OpenGL/Direct3D support or one of the many good 3D
+ * engines.
+ *
+ * These functions must be called from the main thread. See this bug for
+ * details: https://github.com/libsdl-org/SDL/issues/986
  */
 
 #ifndef SDL_render_h_
@@ -78,7 +79,7 @@ typedef enum SDL_RendererFlags
 typedef struct SDL_RendererInfo
 {
     const char *name;           /**< The name of the renderer */
-    Uint32 flags;               /**< Supported ::SDL_RendererFlags */
+    Uint32 flags;               /**< Supported SDL_RendererFlags */
     Uint32 num_texture_formats; /**< The number of available texture formats */
     Uint32 texture_formats[16]; /**< The available texture formats */
     int max_texture_width;      /**< The maximum texture width */
@@ -86,7 +87,7 @@ typedef struct SDL_RendererInfo
 } SDL_RendererInfo;
 
 /**
- *  Vertex structure
+ * Vertex structure
  */
 typedef struct SDL_Vertex
 {

@@ -20,9 +20,9 @@
 */
 
 /**
- *  \file SDL_surface.h
+ * # CategorySurface
  *
- *  Header file for ::SDL_Surface definition and management functions.
+ * Header file for SDL_Surface definition and management functions.
  */
 
 #ifndef SDL_surface_h_
@@ -43,7 +43,7 @@ extern "C" {
 /**
  *  \name Surface flags
  *
- *  These are the currently supported flags for the ::SDL_Surface.
+ *  These are the currently supported flags for the SDL_Surface.
  *
  *  \internal
  *  Used internally (read-only).
@@ -57,17 +57,17 @@ extern "C" {
 /* @} *//* Surface flags */
 
 /**
- *  Evaluates to true if the surface needs to be locked before access.
+ * Evaluates to true if the surface needs to be locked before access.
  */
 #define SDL_MUSTLOCK(S) (((S)->flags & SDL_RLEACCEL) != 0)
 
 typedef struct SDL_BlitMap SDL_BlitMap;  /* this is an opaque type. */
 
 /**
- * \brief A collection of pixels used in software blitting.
+ * A collection of pixels used in software blitting.
  *
- * \note  This structure should be treated as read-only, except for \c pixels,
- *        which, if not NULL, contains the raw pixel data for the surface.
+ * This structure should be treated as read-only, except for `pixels`, which,
+ * if not NULL, contains the raw pixel data for the surface.
  */
 typedef struct SDL_Surface
 {
@@ -97,13 +97,13 @@ typedef struct SDL_Surface
 } SDL_Surface;
 
 /**
- * \brief The type of function used for surface blitting functions.
+ * The type of function used for surface blitting functions.
  */
 typedef int (SDLCALL *SDL_blit) (struct SDL_Surface * src, SDL_Rect * srcrect,
                                  struct SDL_Surface * dst, SDL_Rect * dstrect);
 
 /**
- * \brief The formula used for converting between YUV and RGB
+ * The formula used for converting between YUV and RGB
  */
 typedef enum SDL_YUV_CONVERSION_MODE
 {
@@ -214,6 +214,7 @@ extern DECLSPEC SDL_Surface *SDLCALL SDL_CreateRGBSurfaceWithFormat
  *
  * \sa SDL_CreateRGBSurface
  * \sa SDL_CreateRGBSurfaceWithFormat
+ * \sa SDL_CreateRGBSurfaceWithFormatFrom
  * \sa SDL_FreeSurface
  */
 extern DECLSPEC SDL_Surface *SDLCALL SDL_CreateRGBSurfaceFrom(void *pixels,
@@ -378,9 +379,9 @@ extern DECLSPEC int SDLCALL SDL_SaveBMP_RW
     (SDL_Surface * surface, SDL_RWops * dst, int freedst);
 
 /**
- *  Save a surface to a file.
+ * Save a surface to a file.
  *
- *  Convenience macro.
+ * Convenience macro.
  */
 #define SDL_SaveBMP(surface, file) \
         SDL_SaveBMP_RW(surface, SDL_RWFromFile(file, "wb"), 1)
@@ -787,7 +788,7 @@ extern DECLSPEC int SDLCALL SDL_FillRect
  * of the clip rectangle and `rect`.
  *
  * \param dst the SDL_Surface structure that is the drawing target
- * \param rects an array of SDL_Rects representing the rectangles to fill.
+ * \param rects an array of SDL_Rect representing the rectangles to fill.
  * \param count the number of rectangles in the array
  * \param color the color to fill with
  * \returns 0 on success or a negative error code on failure; call
@@ -801,62 +802,64 @@ extern DECLSPEC int SDLCALL SDL_FillRects
     (SDL_Surface * dst, const SDL_Rect * rects, int count, Uint32 color);
 
 /* !!! FIXME: merge this documentation with the wiki */
+
 /**
- *  Performs a fast blit from the source surface to the destination surface.
+ * Performs a fast blit from the source surface to the destination surface.
  *
- *  This assumes that the source and destination rectangles are
- *  the same size.  If either \c srcrect or \c dstrect are NULL, the entire
- *  surface (\c src or \c dst) is copied.  The final blit rectangles are saved
- *  in \c srcrect and \c dstrect after all clipping is performed.
+ * This assumes that the source and destination rectangles are the same size.
+ * If either `srcrect` or `dstrect` are NULL, the entire surface (`src` or
+ * `dst`) is copied. The final blit rectangles are saved in `srcrect` and
+ * `dstrect` after all clipping is performed.
  *
- *  \returns 0 if the blit is successful, otherwise it returns -1.
+ * The blit function should not be called on a locked surface.
  *
- *  The blit function should not be called on a locked surface.
+ * The blit semantics for surfaces with and without blending and colorkey are
+ * defined as follows:
  *
- *  The blit semantics for surfaces with and without blending and colorkey
- *  are defined as follows:
- *  \verbatim
-    RGBA->RGB:
-      Source surface blend mode set to SDL_BLENDMODE_BLEND:
-        alpha-blend (using the source alpha-channel and per-surface alpha)
-        SDL_SRCCOLORKEY ignored.
-      Source surface blend mode set to SDL_BLENDMODE_NONE:
-        copy RGB.
-        if SDL_SRCCOLORKEY set, only copy the pixels matching the
-        RGB values of the source color key, ignoring alpha in the
-        comparison.
-
-    RGB->RGBA:
-      Source surface blend mode set to SDL_BLENDMODE_BLEND:
-        alpha-blend (using the source per-surface alpha)
-      Source surface blend mode set to SDL_BLENDMODE_NONE:
-        copy RGB, set destination alpha to source per-surface alpha value.
-      both:
-        if SDL_SRCCOLORKEY set, only copy the pixels matching the
-        source color key.
-
-    RGBA->RGBA:
-      Source surface blend mode set to SDL_BLENDMODE_BLEND:
-        alpha-blend (using the source alpha-channel and per-surface alpha)
-        SDL_SRCCOLORKEY ignored.
-      Source surface blend mode set to SDL_BLENDMODE_NONE:
-        copy all of RGBA to the destination.
-        if SDL_SRCCOLORKEY set, only copy the pixels matching the
-        RGB values of the source color key, ignoring alpha in the
-        comparison.
-
-    RGB->RGB:
-      Source surface blend mode set to SDL_BLENDMODE_BLEND:
-        alpha-blend (using the source per-surface alpha)
-      Source surface blend mode set to SDL_BLENDMODE_NONE:
-        copy RGB.
-      both:
-        if SDL_SRCCOLORKEY set, only copy the pixels matching the
-        source color key.
-    \endverbatim
+ * ```
+ *   RGBA->RGB:
+ *     Source surface blend mode set to SDL_BLENDMODE_BLEND:
+ *       alpha-blend (using the source alpha-channel and per-surface alpha)
+ *       SDL_SRCCOLORKEY ignored.
+ *     Source surface blend mode set to SDL_BLENDMODE_NONE:
+ *       copy RGB.
+ *       if SDL_SRCCOLORKEY set, only copy the pixels matching the
+ *       RGB values of the source color key, ignoring alpha in the
+ *       comparison.
  *
- *  You should call SDL_BlitSurface() unless you know exactly how SDL
- *  blitting works internally and how to use the other blit functions.
+ *   RGB->RGBA:
+ *     Source surface blend mode set to SDL_BLENDMODE_BLEND:
+ *       alpha-blend (using the source per-surface alpha)
+ *     Source surface blend mode set to SDL_BLENDMODE_NONE:
+ *       copy RGB, set destination alpha to source per-surface alpha value.
+ *     both:
+ *       if SDL_SRCCOLORKEY set, only copy the pixels matching the
+ *       source color key.
+ *
+ *   RGBA->RGBA:
+ *     Source surface blend mode set to SDL_BLENDMODE_BLEND:
+ *       alpha-blend (using the source alpha-channel and per-surface alpha)
+ *       SDL_SRCCOLORKEY ignored.
+ *     Source surface blend mode set to SDL_BLENDMODE_NONE:
+ *       copy all of RGBA to the destination.
+ *       if SDL_SRCCOLORKEY set, only copy the pixels matching the
+ *       RGB values of the source color key, ignoring alpha in the
+ *       comparison.
+ *
+ *   RGB->RGB:
+ *     Source surface blend mode set to SDL_BLENDMODE_BLEND:
+ *       alpha-blend (using the source per-surface alpha)
+ *     Source surface blend mode set to SDL_BLENDMODE_NONE:
+ *       copy RGB.
+ *     both:
+ *       if SDL_SRCCOLORKEY set, only copy the pixels matching the
+ *       source color key.
+ * ```
+ *
+ * You should call SDL_BlitSurface() unless you know exactly how SDL blitting
+ * works internally and how to use the other blit functions.
+ *
+ * \returns 0 if the blit is successful, otherwise it returns -1.
  */
 #define SDL_BlitSurface SDL_UpperBlit
 
@@ -925,8 +928,6 @@ extern DECLSPEC int SDLCALL SDL_SoftStretchLinear(SDL_Surface * src,
                                             const SDL_Rect * dstrect);
 
 
-#define SDL_BlitScaled SDL_UpperBlitScaled
-
 /**
  * Perform a scaled surface copy to a destination surface.
  *
@@ -940,6 +941,9 @@ extern DECLSPEC int SDLCALL SDL_SoftStretchLinear(SDL_Surface * src,
 extern DECLSPEC int SDLCALL SDL_UpperBlitScaled
     (SDL_Surface * src, const SDL_Rect * srcrect,
     SDL_Surface * dst, SDL_Rect * dstrect);
+
+#define SDL_BlitScaled SDL_UpperBlitScaled
+
 
 /**
  * Perform low-level surface scaled blitting only.

@@ -20,22 +20,26 @@
 */
 
 /**
- *  \file SDL_joystick.h
+ * # CategoryJoystick
  *
- *  Include file for SDL joystick event handling
+ * Include file for SDL joystick event handling
  *
- * The term "device_index" identifies currently plugged in joystick devices between 0 and SDL_NumJoysticks(), with the exact joystick
- *   behind a device_index changing as joysticks are plugged and unplugged.
+ * The term "device_index" identifies currently plugged in joystick devices
+ * between 0 and SDL_NumJoysticks(), with the exact joystick behind a
+ * device_index changing as joysticks are plugged and unplugged.
  *
- * The term "instance_id" is the current instantiation of a joystick device in the system, if the joystick is removed and then re-inserted
- *   then it will get a new instance_id, instance_id's are monotonically increasing identifiers of a joystick plugged in.
+ * The term "instance_id" is the current instantiation of a joystick device in
+ * the system, if the joystick is removed and then re-inserted then it will
+ * get a new instance_id, instance_id's are monotonically increasing
+ * identifiers of a joystick plugged in.
  *
  * The term "player_index" is the number assigned to a player on a specific
- *   controller. For XInput controllers this returns the XInput user index.
- *   Many joysticks will not be able to supply this information.
+ * controller. For XInput controllers this returns the XInput user index. Many
+ * joysticks will not be able to supply this information.
  *
- * The term JoystickGUID is a stable 128-bit identifier for a joystick device that does not change over time, it identifies class of
- *   the device (a X360 wired controller for example). This identifier is platform dependent.
+ * The term JoystickGUID is a stable 128-bit identifier for a joystick device
+ * that does not change over time, it identifies class of the device (a X360
+ * wired controller for example). This identifier is platform dependent.
  */
 
 #ifndef SDL_joystick_h_
@@ -56,7 +60,7 @@ extern "C" {
  *  \file SDL_joystick.h
  *
  *  In order to use these functions, SDL_Init() must have been called
- *  with the ::SDL_INIT_JOYSTICK flag.  This causes SDL to scan the system
+ *  with the SDL_INIT_JOYSTICK flag.  This causes SDL to scan the system
  *  for joysticks, and load appropriate drivers.
  *
  *  If you would like to receive joystick updates while the application
@@ -77,11 +81,13 @@ typedef struct _SDL_Joystick SDL_Joystick;
 typedef SDL_GUID SDL_JoystickGUID;
 
 /**
- * This is a unique ID for a joystick for the time it is connected to the system,
- * and is never reused for the lifetime of the application. If the joystick is
- * disconnected and reconnected, it will get a new ID.
+ * This is a unique ID for a joystick for the time it is connected to the
+ * system, and is never reused for the lifetime of the application.
  *
- * The ID value starts at 0 and increments from there. The value -1 is an invalid ID.
+ * If the joystick is disconnected and reconnected, it will get a new ID.
+ *
+ * The ID value starts at 0 and increments from there. The value -1 is an
+ * invalid ID.
  */
 typedef Sint32 SDL_JoystickID;
 
@@ -358,8 +364,10 @@ extern DECLSPEC int SDLCALL SDL_JoystickAttachVirtual(SDL_JoystickType type,
 /**
  * The structure that defines an extended virtual joystick description
  *
- * The caller must zero the structure and then initialize the version with `SDL_VIRTUAL_JOYSTICK_DESC_VERSION` before passing it to SDL_JoystickAttachVirtualEx()
- *  All other elements of this structure are optional and can be left 0.
+ * The caller must zero the structure and then initialize the version with
+ * `SDL_VIRTUAL_JOYSTICK_DESC_VERSION` before passing it to
+ * SDL_JoystickAttachVirtualEx() All other elements of this structure are
+ * optional and can be left 0.
  *
  * \sa SDL_JoystickAttachVirtualEx
  */
@@ -390,7 +398,7 @@ typedef struct SDL_VirtualJoystickDesc
 } SDL_VirtualJoystickDesc;
 
 /**
- * \brief The current version of the SDL_VirtualJoystickDesc structure
+ * The current version of the SDL_VirtualJoystickDesc structure
  */
 #define SDL_VIRTUAL_JOYSTICK_DESC_VERSION   1
 
@@ -790,12 +798,17 @@ extern DECLSPEC void SDLCALL SDL_JoystickUpdate(void);
  * **WARNING**: Calling this function may delete all events currently in SDL's
  * event queue.
  *
- * \param state can be one of `SDL_QUERY`, `SDL_IGNORE`, or `SDL_ENABLE`
- * \returns 1 if enabled, 0 if disabled, or a negative error code on failure;
- *          call SDL_GetError() for more information.
+ * While `param` is meant to be one of `SDL_QUERY`, `SDL_IGNORE`, or
+ * `SDL_ENABLE`, this function accepts any value, with any non-zero value that
+ * isn't `SDL_QUERY` being treated as `SDL_ENABLE`.
  *
- *          If `state` is `SDL_QUERY` then the current state is returned,
- *          otherwise the new processing state is returned.
+ * If SDL was built with events disabled (extremely uncommon!), this will do
+ * nothing and always return `SDL_IGNORE`.
+ *
+ * \param state can be one of `SDL_QUERY`, `SDL_IGNORE`, or `SDL_ENABLE`
+ * \returns If `state` is `SDL_QUERY` then the current state is returned,
+ *          otherwise `state` is returned (even if it was not one of the
+ *          allowed values).
  *
  * \since This function is available since SDL 2.0.0.
  *
@@ -803,6 +816,7 @@ extern DECLSPEC void SDLCALL SDL_JoystickUpdate(void);
  */
 extern DECLSPEC int SDLCALL SDL_JoystickEventState(int state);
 
+/* Limits for joystick axes... */
 #define SDL_JOYSTICK_AXIS_MAX   32767
 #define SDL_JOYSTICK_AXIS_MIN   -32768
 

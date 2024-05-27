@@ -20,9 +20,10 @@
 */
 
 /**
- *  \file SDL_metal.h
+ * # CategoryMetal
  *
- *  Header file for functions to creating Metal layers and views on SDL windows.
+ * Header file for functions to creating Metal layers and views on SDL
+ * windows.
  */
 
 #ifndef SDL_metal_h_
@@ -37,9 +38,9 @@ extern "C" {
 #endif
 
 /**
- *  \brief A handle to a CAMetalLayer-backed NSView (macOS) or UIView (iOS/tvOS).
+ * A handle to a CAMetalLayer-backed NSView (macOS) or UIView (iOS/tvOS).
  *
- *  \note This can be cast directly to an NSView or UIView.
+ * This can be cast directly to an NSView or UIView.
  */
 typedef void *SDL_MetalView;
 

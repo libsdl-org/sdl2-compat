@@ -20,9 +20,9 @@
 */
 
 /**
- *  \file SDL_system.h
+ * # CategorySystem
  *
- *  Include file for platform specific SDL API functions
+ * Include file for platform specific SDL API functions
  */
 
 #ifndef SDL_system_h_
@@ -188,8 +188,6 @@ extern DECLSPEC int SDLCALL SDL_LinuxSetThreadPriorityAndPolicy(Sint64 threadID,
 /* Platform specific functions for iOS */
 #ifdef __IPHONEOS__
 
-#define SDL_iOSSetAnimationCallback(window, interval, callback, callbackParam) SDL_iPhoneSetAnimationCallback(window, interval, callback, callbackParam)
-
 /**
  * Use this function to set the animation callback on Apple iOS.
  *
@@ -224,7 +222,8 @@ extern DECLSPEC int SDLCALL SDL_LinuxSetThreadPriorityAndPolicy(Sint64 threadID,
  */
 extern DECLSPEC int SDLCALL SDL_iPhoneSetAnimationCallback(SDL_Window * window, int interval, void (SDLCALL *callback)(void*), void *callbackParam);
 
-#define SDL_iOSSetEventPump(enabled) SDL_iPhoneSetEventPump(enabled)
+#define SDL_iOSSetAnimationCallback(window, interval, callback, callbackParam) SDL_iPhoneSetAnimationCallback(window, interval, callback, callbackParam)
+
 
 /**
  * Use this function to enable or disable the SDL event pump on Apple iOS.
@@ -242,6 +241,9 @@ extern DECLSPEC int SDLCALL SDL_iPhoneSetAnimationCallback(SDL_Window * window, 
  */
 extern DECLSPEC void SDLCALL SDL_iPhoneSetEventPump(SDL_bool enabled);
 
+#define SDL_iOSSetEventPump(enabled) SDL_iPhoneSetEventPump(enabled)
+
+/* end of iOS-specific functions. */
 #endif /* __IPHONEOS__ */
 
 
@@ -356,9 +358,9 @@ extern DECLSPEC SDL_bool SDLCALL SDL_IsDeXMode(void);
 extern DECLSPEC void SDLCALL SDL_AndroidBackButton(void);
 
 /**
-   See the official Android developer guide for more information:
-   http://developer.android.com/guide/topics/data/data-storage.html
-*/
+ * See the official Android developer guide for more information:
+ * http://developer.android.com/guide/topics/data/data-storage.html
+ */
 #define SDL_ANDROID_EXTERNAL_STORAGE_READ   0x01
 #define SDL_ANDROID_EXTERNAL_STORAGE_WRITE  0x02
 
@@ -470,7 +472,7 @@ extern DECLSPEC int SDLCALL SDL_AndroidSendMessage(Uint32 command, int param);
 #ifdef __WINRT__
 
 /**
- *  \brief WinRT / Windows Phone path types
+ * WinRT / Windows Phone path types
  */
 typedef enum SDL_WinRT_Path
 {
@@ -494,7 +496,7 @@ typedef enum SDL_WinRT_Path
 
 
 /**
- *  \brief WinRT Device Family
+ * WinRT Device Family
  */
 typedef enum SDL_WinRT_DeviceFamily
 {

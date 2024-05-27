@@ -62,8 +62,6 @@ typedef unsigned int uintptr_t;
 #define HAVE_GCC_SYNC_LOCK_TEST_AND_SET 1
 #endif
 
-#if 0 /* Don't mark subsystems disabled for SDL applications */
-
 /* Enable the dummy audio driver (src/audio/dummy/\*.c) */
 #define SDL_AUDIO_DRIVER_DUMMY  1
 
@@ -93,7 +91,5 @@ typedef unsigned int uintptr_t;
 
 /* Enable the dummy filesystem driver (src/filesystem/dummy/\*.c) */
 #define SDL_FILESYSTEM_DUMMY  1
-
-#endif /* 0 */
 
 #endif /* SDL_config_minimal_h_ */

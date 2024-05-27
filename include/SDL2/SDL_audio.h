@@ -22,9 +22,9 @@
 /* !!! FIXME: several functions in here need Doxygen comments. */
 
 /**
- *  \file SDL_audio.h
+ * # CategoryAudio
  *
- *  Access to the raw audio mixing buffer for the SDL library.
+ * Access to the raw audio mixing buffer for the SDL library.
  */
 
 #ifndef SDL_audio_h_
@@ -149,33 +149,30 @@ typedef Uint16 SDL_AudioFormat;
 /* @} *//* Audio flags */
 
 /**
- *  This function is called when the audio device needs more data.
+ * This function is called when the audio device needs more data.
  *
- *  \param userdata An application-specific parameter saved in
- *                  the SDL_AudioSpec structure
- *  \param stream A pointer to the audio data buffer.
- *  \param len    The length of that buffer in bytes.
- *
- *  Once the callback returns, the buffer will no longer be valid.
- *  Stereo samples are stored in a LRLRLR ordering.
- *
- *  You can choose to avoid callbacks and use SDL_QueueAudio() instead, if
- *  you like. Just open your audio device with a NULL callback.
+ * \param userdata An application-specific parameter saved in the
+ *                 SDL_AudioSpec structure
+ * \param stream A pointer to the audio data buffer.
+ * \param len Length of **stream** in bytes.
  */
 typedef void (SDLCALL * SDL_AudioCallback) (void *userdata, Uint8 * stream,
                                             int len);
 
 /**
- *  The calculated values in this structure are calculated by SDL_OpenAudio().
+ * The calculated values in this structure are calculated by SDL_OpenAudio().
  *
- *  For multi-channel audio, the default SDL channel mapping is:
- *  2:  FL  FR                          (stereo)
- *  3:  FL  FR LFE                      (2.1 surround)
- *  4:  FL  FR  BL  BR                  (quad)
- *  5:  FL  FR LFE  BL  BR              (4.1 surround)
- *  6:  FL  FR  FC LFE  SL  SR          (5.1 surround - last two can also be BL BR)
- *  7:  FL  FR  FC LFE  BC  SL  SR      (6.1 surround)
- *  8:  FL  FR  FC LFE  BL  BR  SL  SR  (7.1 surround)
+ * For multi-channel audio, the default SDL channel mapping is:
+ *
+ * ```
+ * 2:  FL  FR                          (stereo)
+ * 3:  FL  FR LFE                      (2.1 surround)
+ * 4:  FL  FR  BL  BR                  (quad)
+ * 5:  FL  FR LFE  BL  BR              (4.1 surround)
+ * 6:  FL  FR  FC LFE  SL  SR          (5.1 surround - last two can also be BL BR)
+ * 7:  FL  FR  FC LFE  BC  SL  SR      (6.1 surround)
+ * 8:  FL  FR  FC LFE  BL  BR  SL  SR  (7.1 surround)
+ * ```
  */
 typedef struct SDL_AudioSpec
 {
@@ -196,11 +193,11 @@ typedef void (SDLCALL * SDL_AudioFilter) (struct SDL_AudioCVT * cvt,
                                           SDL_AudioFormat format);
 
 /**
- *  \brief Upper limit of filters in SDL_AudioCVT
+ * Upper limit of filters in SDL_AudioCVT
  *
- *  The maximum number of SDL_AudioFilter functions in SDL_AudioCVT is
- *  currently limited to 9. The SDL_AudioCVT.filters array has 10 pointers,
- *  one of which is the terminating NULL pointer.
+ * The maximum number of SDL_AudioFilter functions in SDL_AudioCVT is
+ * currently limited to 9. The SDL_AudioCVT.filters array has 10 pointers, one
+ * of which is the terminating NULL pointer.
  */
 #define SDL_AUDIOCVT_MAX_FILTERS 9
 
@@ -408,13 +405,13 @@ extern DECLSPEC int SDLCALL SDL_OpenAudio(SDL_AudioSpec * desired,
                                           SDL_AudioSpec * obtained);
 
 /**
- *  SDL Audio Device IDs.
+ * SDL Audio Device IDs.
  *
- *  A successful call to SDL_OpenAudio() is always device id 1, and legacy
- *  SDL audio APIs assume you want this device ID. SDL_OpenAudioDevice() calls
- *  always returns devices >= 2 on success. The legacy calls are good both
- *  for backwards compatibility and when you don't care about multiple,
- *  specific, or capture devices.
+ * A successful call to SDL_OpenAudio() is always device id 1, and legacy SDL
+ * audio APIs assume you want this device ID. SDL_OpenAudioDevice() calls
+ * always returns devices >= 2 on success. The legacy calls are good both for
+ * backwards compatibility and when you don't care about multiple, specific,
+ * or capture devices.
  */
 typedef Uint32 SDL_AudioDeviceID;
 
@@ -874,8 +871,9 @@ extern DECLSPEC SDL_AudioSpec *SDLCALL SDL_LoadWAV_RW(SDL_RWops * src,
                                                       Uint32 * audio_len);
 
 /**
- *  Loads a WAV from a file.
- *  Compatibility convenience function.
+ * Loads a WAV from a file.
+ *
+ * Compatibility convenience function.
  */
 #define SDL_LoadWAV(file, spec, audio_buf, audio_len) \
     SDL_LoadWAV_RW(SDL_RWFromFile(file, "rb"),1, spec,audio_buf,audio_len)
@@ -1118,6 +1116,9 @@ extern DECLSPEC void SDLCALL SDL_AudioStreamClear(SDL_AudioStream *stream);
  */
 extern DECLSPEC void SDLCALL SDL_FreeAudioStream(SDL_AudioStream *stream);
 
+/**
+ * Maximum volume allowed in calls to SDL_MixAudio and SDL_MixAudioFormat.
+ */
 #define SDL_MIX_MAXVOLUME 128
 
 /**
@@ -1170,8 +1171,9 @@ extern DECLSPEC void SDLCALL SDL_MixAudio(Uint8 * dst, const Uint8 * src,
  * \param format the SDL_AudioFormat structure representing the desired audio
  *               format
  * \param len the length of the audio buffer in bytes
- * \param volume ranges from 0 - 128, and should be set to SDL_MIX_MAXVOLUME
- *               for full audio volume
+ * \param volume ranges from -128 - ∞ (at -128, the volume is at 0%, at 0 -
+ *               100% and the higher the number, the bigger the %), and should
+ *               be set to SDL_MIX_MAXVOLUME for full audio volume
  *
  * \since This function is available since SDL 2.0.0.
  */

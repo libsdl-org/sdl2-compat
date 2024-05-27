@@ -23,9 +23,9 @@
 #define SDL_power_h_
 
 /**
- *  \file SDL_power.h
+ * # CategoryPower
  *
- *  Header for the SDL power management routines.
+ * Header for the SDL power management routines.
  */
 
 #include "SDL_stdinc.h"
@@ -37,7 +37,7 @@ extern "C" {
 #endif
 
 /**
- *  The basic state for the system's power supply.
+ * The basic state for the system's power supply.
  */
 typedef enum SDL_PowerState
 {
