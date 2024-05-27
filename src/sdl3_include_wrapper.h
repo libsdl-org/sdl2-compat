@@ -41,6 +41,7 @@
 #define SDL_AddGamepadMappingsFromIO IGNORE_THIS_VERSION_OF_SDL_AddGamepadMappingsFromIO
 #define SDL_AddHintCallback IGNORE_THIS_VERSION_OF_SDL_AddHintCallback
 #define SDL_AddTimer IGNORE_THIS_VERSION_OF_SDL_AddTimer
+#define SDL_AddTimerNS IGNORE_THIS_VERSION_OF_SDL_AddTimerNS
 #define SDL_AddVulkanRenderSemaphores IGNORE_THIS_VERSION_OF_SDL_AddVulkanRenderSemaphores
 #define SDL_AllocateEventMemory IGNORE_THIS_VERSION_OF_SDL_AllocateEventMemory
 #define SDL_AndroidBackButton IGNORE_THIS_VERSION_OF_SDL_AndroidBackButton
@@ -505,6 +506,7 @@
 #define SDL_GetWindowSize IGNORE_THIS_VERSION_OF_SDL_GetWindowSize
 #define SDL_GetWindowSizeInPixels IGNORE_THIS_VERSION_OF_SDL_GetWindowSizeInPixels
 #define SDL_GetWindowSurface IGNORE_THIS_VERSION_OF_SDL_GetWindowSurface
+#define SDL_GetWindowSurfaceVSync IGNORE_THIS_VERSION_OF_SDL_GetWindowSurfaceVSync
 #define SDL_GetWindowTitle IGNORE_THIS_VERSION_OF_SDL_GetWindowTitle
 #define SDL_GlobDirectory IGNORE_THIS_VERSION_OF_SDL_GlobDirectory
 #define SDL_GlobStorageDirectory IGNORE_THIS_VERSION_OF_SDL_GlobStorageDirectory
@@ -621,6 +623,7 @@
 #define SDL_OpenUserStorage IGNORE_THIS_VERSION_OF_SDL_OpenUserStorage
 #define SDL_OutOfMemory IGNORE_THIS_VERSION_OF_SDL_OutOfMemory
 #define SDL_PauseAudioDevice IGNORE_THIS_VERSION_OF_SDL_PauseAudioDevice
+#define SDL_PauseAudioStreamDevice IGNORE_THIS_VERSION_OF_SDL_PauseAudioStreamDevice
 #define SDL_PauseHaptic IGNORE_THIS_VERSION_OF_SDL_PauseHaptic
 #define SDL_PeepEvents IGNORE_THIS_VERSION_OF_SDL_PeepEvents
 #define SDL_PenConnected IGNORE_THIS_VERSION_OF_SDL_PenConnected
@@ -688,6 +691,7 @@
 #define SDL_ResetLogPriorities IGNORE_THIS_VERSION_OF_SDL_ResetLogPriorities
 #define SDL_RestoreWindow IGNORE_THIS_VERSION_OF_SDL_RestoreWindow
 #define SDL_ResumeAudioDevice IGNORE_THIS_VERSION_OF_SDL_ResumeAudioDevice
+#define SDL_ResumeAudioStreamDevice IGNORE_THIS_VERSION_OF_SDL_ResumeAudioStreamDevice
 #define SDL_ResumeHaptic IGNORE_THIS_VERSION_OF_SDL_ResumeHaptic
 #define SDL_RumbleGamepad IGNORE_THIS_VERSION_OF_SDL_RumbleGamepad
 #define SDL_RumbleGamepadTriggers IGNORE_THIS_VERSION_OF_SDL_RumbleGamepadTriggers
@@ -794,6 +798,7 @@
 #define SDL_SetWindowResizable IGNORE_THIS_VERSION_OF_SDL_SetWindowResizable
 #define SDL_SetWindowShape IGNORE_THIS_VERSION_OF_SDL_SetWindowShape
 #define SDL_SetWindowSize IGNORE_THIS_VERSION_OF_SDL_SetWindowSize
+#define SDL_SetWindowSurfaceVSync IGNORE_THIS_VERSION_OF_SDL_SetWindowSurfaceVSync
 #define SDL_SetWindowTitle IGNORE_THIS_VERSION_OF_SDL_SetWindowTitle
 #define SDL_SetWindowsMessageHook IGNORE_THIS_VERSION_OF_SDL_SetWindowsMessageHook
 #define SDL_SetX11EventHook IGNORE_THIS_VERSION_OF_SDL_SetX11EventHook
@@ -1096,6 +1101,10 @@
 
 #ifdef SDL_AddTimer
 #undef SDL_AddTimer
+#endif
+
+#ifdef SDL_AddTimerNS
+#undef SDL_AddTimerNS
 #endif
 
 #ifdef SDL_AddVulkanRenderSemaphores
@@ -2954,6 +2963,10 @@
 #undef SDL_GetWindowSurface
 #endif
 
+#ifdef SDL_GetWindowSurfaceVSync
+#undef SDL_GetWindowSurfaceVSync
+#endif
+
 #ifdef SDL_GetWindowTitle
 #undef SDL_GetWindowTitle
 #endif
@@ -3418,6 +3431,10 @@
 #undef SDL_PauseAudioDevice
 #endif
 
+#ifdef SDL_PauseAudioStreamDevice
+#undef SDL_PauseAudioStreamDevice
+#endif
+
 #ifdef SDL_PauseHaptic
 #undef SDL_PauseHaptic
 #endif
@@ -3684,6 +3701,10 @@
 
 #ifdef SDL_ResumeAudioDevice
 #undef SDL_ResumeAudioDevice
+#endif
+
+#ifdef SDL_ResumeAudioStreamDevice
+#undef SDL_ResumeAudioStreamDevice
 #endif
 
 #ifdef SDL_ResumeHaptic
@@ -4108,6 +4129,10 @@
 
 #ifdef SDL_SetWindowSize
 #undef SDL_SetWindowSize
+#endif
+
+#ifdef SDL_SetWindowSurfaceVSync
+#undef SDL_SetWindowSurfaceVSync
 #endif
 
 #ifdef SDL_SetWindowTitle
