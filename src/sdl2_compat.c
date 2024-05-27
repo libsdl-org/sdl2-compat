@@ -1257,6 +1257,8 @@ static SDL_TouchID TouchFingersDeviceID = 0;
 static SDL_Finger **TouchFingers = NULL;
 static int NumTouchFingers = 0;
 
+static SDL_PropertiesID timers = 0;
+
 /* Functions! */
 
 /* this stuff _might_ move to SDL_Init later */
@@ -4551,6 +4553,73 @@ SDL_UnlockMutex(SDL_Mutex *a)
     return 0;
 }
 
+#define PROP_TIMER_CALLBACK_POINTER "sdl2-compat.timer.callback"
+#define PROP_TIMER_USERDATA_POINTER "sdl2-compat.timer.userdata"
+
+static void SDLCALL CleanupTimerProperties(void *userdata, void *value)
+{
+    SDL_PropertiesID props = (SDL_PropertiesID)(uintptr_t)value;
+    SDL3_DestroyProperties(props);
+}
+
+static Uint32 SDLCALL CompatTimerCallback(void *userdata, SDL_TimerID timerID, Uint32 interval)
+{
+    SDL_PropertiesID props = (SDL_PropertiesID)(uintptr_t)userdata;
+    SDL2_TimerCallback callback = (SDL2_TimerCallback)SDL3_GetProperty(props, PROP_TIMER_CALLBACK_POINTER, NULL);
+    void *param = SDL3_GetProperty(props, PROP_TIMER_USERDATA_POINTER, NULL);
+    if (callback) {
+        return callback(interval, param);
+    } else {
+        return 0;
+    }
+}
+
+SDL_DECLSPEC SDL2_TimerID SDLCALL
+SDL_AddTimer(Uint32 interval, SDL2_TimerCallback callback, void *param)
+{
+    SDL_TimerID timerID;
+    SDL_PropertiesID props;
+
+    if (!timers) {
+        timers = SDL3_CreateProperties();
+        if (!timers) {
+            return 0;
+        }
+    }
+
+    props = SDL3_CreateProperties();
+    if (!props) {
+        return 0;
+    }
+    SDL3_SetProperty(props, PROP_TIMER_CALLBACK_POINTER, (void *)callback);
+    SDL3_SetProperty(props, PROP_TIMER_USERDATA_POINTER, param);
+    timerID = SDL3_AddTimer(interval, CompatTimerCallback, (void *)(uintptr_t)props);
+    if (timerID) {
+        char name[32];
+
+        SDL3_snprintf(name, sizeof(name), "%" SDL_PRIu32, timerID);
+        SDL3_SetPropertyWithCleanup(timers, name, (void *)(uintptr_t)props, CleanupTimerProperties, NULL);
+    } else {
+        SDL3_DestroyProperties(props);
+    }
+    return (SDL2_TimerID)timerID;
+}
+
+SDL_DECLSPEC SDL_bool SDLCALL
+SDL_RemoveTimer(SDL2_TimerID id)
+{
+    char name[32];
+
+    SDL3_snprintf(name, sizeof(name), "%" SDL_PRIu32, id);
+    SDL3_ClearProperty(timers, name);
+
+    if (SDL3_RemoveTimer((SDL_TimerID)id) == 0) {
+        return SDL_TRUE;
+    } else {
+        return SDL_FALSE;
+    }
+}
+
 
 SDL_DECLSPEC int SDLCALL
 SDL_AudioInit(const char *driver_name)
@@ -4667,6 +4736,11 @@ SDL_Quit(void)
     SDL3_free(TouchFingers);
     TouchFingers = NULL;
     NumTouchFingers = 0;
+
+    if (timers) {
+        SDL3_DestroyProperties(timers);
+        timers = 0;
+    }
 
     SDL3_Quit();
 }

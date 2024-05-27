@@ -447,8 +447,8 @@ SDL3_SYM(Uint64,GetTicks,(void),(),return)
 SDL3_SYM_PASSTHROUGH(Uint64,GetPerformanceCounter,(void),(),return)
 SDL3_SYM_PASSTHROUGH(Uint64,GetPerformanceFrequency,(void),(),return)
 SDL3_SYM_PASSTHROUGH(void,Delay,(Uint32 a),(a),)
-SDL3_SYM_PASSTHROUGH(SDL_TimerID,AddTimer,(Uint32 a, SDL_TimerCallback b, void *c),(a,b,c),return)
-SDL3_SYM_PASSTHROUGH(SDL_bool,RemoveTimer,(SDL_TimerID a),(a),return)
+SDL3_SYM(SDL_TimerID,AddTimer,(Uint32 a, SDL_TimerCallback b, void *c),(a,b,c),return)
+SDL3_SYM(int,RemoveTimer,(SDL_TimerID a),(a),return)
 SDL3_SYM(SDL_TouchID*,GetTouchDevices,(int *a),(a),return)
 SDL3_SYM(SDL_Finger**,GetTouchFingers,(SDL_TouchID a, int *b),(a,b),return)
 SDL3_SYM(int,GetVersion,(void),(),return)
@@ -849,6 +849,7 @@ SDL3_SYM(SDL_PropertiesID,GetGamepadProperties,(SDL_GameController *a),(a),retur
 SDL3_SYM(int,GetSurfaceColorspace,(SDL_Surface *a, SDL_Colorspace *b),(a,b),return)
 SDL3_SYM(int,SetWindowShape,(SDL_Window *a, SDL_Surface *b),(a,b),return)
 SDL3_SYM(SDL_PropertiesID,GetSurfaceProperties,(SDL_Surface *a),(a),return)
+SDL3_SYM(int,ClearProperty,(SDL_PropertiesID a, const char *b),(a,b),return)
 
 #undef SDL3_SYM
 #undef SDL3_SYM_PASSTHROUGH
