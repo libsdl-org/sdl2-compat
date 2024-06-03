@@ -4801,11 +4801,11 @@ static int GetNumAudioDevices(int iscapture)
         }
 
         for (i = 0; i < num_devices; i++) {
-            char *newname = SDL3_GetAudioDeviceName(devices[i]);
+            const char *newname = SDL3_GetAudioDeviceName(devices[i]);
             char *fullname = NULL;
             if (newname == NULL) {
                 /* ugh, whatever, just make up a name. */
-                newname = SDL3_strdup("Unidentified device");
+                newname = "Unidentified device";
             }
 
             /* Device names must be unique in SDL2, as that's how we open them.
@@ -4818,12 +4818,10 @@ static int GetNumAudioDevices(int iscapture)
                     SDL3_free(newlist.devices[i].name);
                 }
                 SDL3_free(devices);
-                SDL3_free(newname);
                 SDL3_free(fullname);
                 return list->num_devices;  /* just return the existing one for now. Oh well. */
             }
 
-            SDL3_free(newname);
             newlist.devices[i].devid = devices[i];
             newlist.devices[i].name = fullname;
         }
