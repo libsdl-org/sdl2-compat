@@ -241,6 +241,7 @@
 #define SDL_GetDaysInMonth IGNORE_THIS_VERSION_OF_SDL_GetDaysInMonth
 #define SDL_GetDefaultAssertionHandler IGNORE_THIS_VERSION_OF_SDL_GetDefaultAssertionHandler
 #define SDL_GetDefaultCursor IGNORE_THIS_VERSION_OF_SDL_GetDefaultCursor
+#define SDL_GetDefaultKeyFromScancode IGNORE_THIS_VERSION_OF_SDL_GetDefaultKeyFromScancode
 #define SDL_GetDesktopDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetDesktopDisplayMode
 #define SDL_GetDisplayBounds IGNORE_THIS_VERSION_OF_SDL_GetDisplayBounds
 #define SDL_GetDisplayContentScale IGNORE_THIS_VERSION_OF_SDL_GetDisplayContentScale
@@ -485,6 +486,7 @@
 #define SDL_GetUserFolder IGNORE_THIS_VERSION_OF_SDL_GetUserFolder
 #define SDL_GetVersion IGNORE_THIS_VERSION_OF_SDL_GetVersion
 #define SDL_GetVideoDriver IGNORE_THIS_VERSION_OF_SDL_GetVideoDriver
+#define SDL_GetWindowAspectRatio IGNORE_THIS_VERSION_OF_SDL_GetWindowAspectRatio
 #define SDL_GetWindowBordersSize IGNORE_THIS_VERSION_OF_SDL_GetWindowBordersSize
 #define SDL_GetWindowDisplayScale IGNORE_THIS_VERSION_OF_SDL_GetWindowDisplayScale
 #define SDL_GetWindowFlags IGNORE_THIS_VERSION_OF_SDL_GetWindowFlags
@@ -780,6 +782,7 @@
 #define SDL_SetTextureScaleMode IGNORE_THIS_VERSION_OF_SDL_SetTextureScaleMode
 #define SDL_SetThreadPriority IGNORE_THIS_VERSION_OF_SDL_SetThreadPriority
 #define SDL_SetWindowAlwaysOnTop IGNORE_THIS_VERSION_OF_SDL_SetWindowAlwaysOnTop
+#define SDL_SetWindowAspectRatio IGNORE_THIS_VERSION_OF_SDL_SetWindowAspectRatio
 #define SDL_SetWindowBordered IGNORE_THIS_VERSION_OF_SDL_SetWindowBordered
 #define SDL_SetWindowFocusable IGNORE_THIS_VERSION_OF_SDL_SetWindowFocusable
 #define SDL_SetWindowFullscreen IGNORE_THIS_VERSION_OF_SDL_SetWindowFullscreen
@@ -1903,6 +1906,10 @@
 #undef SDL_GetDefaultCursor
 #endif
 
+#ifdef SDL_GetDefaultKeyFromScancode
+#undef SDL_GetDefaultKeyFromScancode
+#endif
+
 #ifdef SDL_GetDesktopDisplayMode
 #undef SDL_GetDesktopDisplayMode
 #endif
@@ -2877,6 +2884,10 @@
 
 #ifdef SDL_GetVideoDriver
 #undef SDL_GetVideoDriver
+#endif
+
+#ifdef SDL_GetWindowAspectRatio
+#undef SDL_GetWindowAspectRatio
 #endif
 
 #ifdef SDL_GetWindowBordersSize
@@ -4057,6 +4068,10 @@
 
 #ifdef SDL_SetWindowAlwaysOnTop
 #undef SDL_SetWindowAlwaysOnTop
+#endif
+
+#ifdef SDL_SetWindowAspectRatio
+#undef SDL_SetWindowAspectRatio
 #endif
 
 #ifdef SDL_SetWindowBordered
