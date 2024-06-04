@@ -3841,19 +3841,15 @@ SDL_GetShapedWindowMode(SDL_Window *window, SDL_WindowShapeMode *shape_mode)
 SDL_DECLSPEC int SDLCALL
 SDL_GetRendererInfo(SDL_Renderer *renderer, SDL2_RendererInfo *info)
 {
-    SDL_RendererInfo info3;
     SDL_PropertiesID props;
     unsigned int i;
+    const SDL_PixelFormatEnum *formats;
 
     SDL3_zerop(info);
-    if (SDL3_GetRendererInfo(renderer, &info3) < 0) {
-        return -1;
-    }
 
     props = SDL3_GetRendererProperties(renderer);
 
-    info->name = info3.name;
-    info->num_texture_formats = info3.num_texture_formats;
+    info->name = SDL3_GetRendererName(renderer);
     info->max_texture_width = (int)SDL3_GetNumberProperty(props, SDL_PROP_RENDERER_MAX_TEXTURE_SIZE_NUMBER, 0);
     info->max_texture_height = info->max_texture_width;
 
@@ -3866,12 +3862,11 @@ SDL_GetRendererInfo(SDL_Renderer *renderer, SDL2_RendererInfo *info)
         info->flags |= SDL2_RENDERER_PRESENTVSYNC;
     }
 
-    if (info->num_texture_formats > 16) {
-        info->num_texture_formats = 16;
+    formats = (const SDL_PixelFormatEnum *)SDL3_GetProperty(props, SDL_PROP_RENDERER_TEXTURE_FORMATS_POINTER, NULL);
+    for (i = 0; i < 16 && formats[i]; ++i) {
+        info->texture_formats[i] = formats[i];
     }
-    for (i = 0; i < info->num_texture_formats; ++i) {
-        info->texture_formats[i] = info3.texture_formats[i];
-    }
+    info->num_texture_formats = i;
 
     return 0;
 }

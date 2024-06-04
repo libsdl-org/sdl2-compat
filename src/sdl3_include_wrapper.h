@@ -434,7 +434,7 @@
 #define SDL_GetRenderWindow IGNORE_THIS_VERSION_OF_SDL_GetRenderWindow
 #define SDL_GetRenderer IGNORE_THIS_VERSION_OF_SDL_GetRenderer
 #define SDL_GetRendererFromTexture IGNORE_THIS_VERSION_OF_SDL_GetRendererFromTexture
-#define SDL_GetRendererInfo IGNORE_THIS_VERSION_OF_SDL_GetRendererInfo
+#define SDL_GetRendererName IGNORE_THIS_VERSION_OF_SDL_GetRendererName
 #define SDL_GetRendererProperties IGNORE_THIS_VERSION_OF_SDL_GetRendererProperties
 #define SDL_GetRevision IGNORE_THIS_VERSION_OF_SDL_GetRevision
 #define SDL_GetSIMDAlignment IGNORE_THIS_VERSION_OF_SDL_GetSIMDAlignment
@@ -2678,8 +2678,8 @@
 #undef SDL_GetRendererFromTexture
 #endif
 
-#ifdef SDL_GetRendererInfo
-#undef SDL_GetRendererInfo
+#ifdef SDL_GetRendererName
+#undef SDL_GetRendererName
 #endif
 
 #ifdef SDL_GetRendererProperties

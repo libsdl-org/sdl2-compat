@@ -299,7 +299,7 @@ SDL3_SYM(int,CreateWindowAndRenderer,(const char *a, int b, int c, SDL_WindowFla
 SDL3_SYM(SDL_Renderer*,CreateRenderer,(SDL_Window *a, const char *b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(SDL_Renderer*,CreateSoftwareRenderer,(SDL_Surface *a),(a),return)
 SDL3_SYM_PASSTHROUGH(SDL_Renderer*,GetRenderer,(SDL_Window *a),(a),return)
-SDL3_SYM(int,GetRendererInfo,(SDL_Renderer *a, SDL_RendererInfo *b),(a,b),return)
+SDL3_SYM(const char*,GetRendererName,(SDL_Renderer *a),(a),return)
 SDL3_SYM_RENAMED(int,GetRendererOutputSize,GetRenderOutputSize,(SDL_Renderer *a, int *b, int *c),(a,b,c),return)
 SDL3_SYM(SDL_Texture*,CreateTexture,(SDL_Renderer *a, SDL_PixelFormatEnum b, int c, int d, int e),(a,b,c,d,e),return)
 SDL3_SYM(SDL_Texture*,CreateTextureFromSurface,(SDL_Renderer *a, SDL_Surface *b),(a,b),return)
