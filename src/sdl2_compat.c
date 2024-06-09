@@ -2197,7 +2197,7 @@ RWops3to2_size(SDL2_RWops *rwops2)
 static Sint64 SDLCALL
 RWops3to2_seek(SDL2_RWops *rwops2, Sint64 offset, int whence)
 {
-    return SDL3_SeekIO(rwops2->hidden.sdl3.iostrm, offset, whence);
+    return SDL3_SeekIO(rwops2->hidden.sdl3.iostrm, offset, (SDL_IOWhence) whence);
 }
 
 static size_t SDLCALL
@@ -2507,7 +2507,7 @@ RWops2to3_size(void *userdata)
 }
 
 static Sint64 SDLCALL
-RWops2to3_seek(void *userdata, Sint64 offset, int whence)
+RWops2to3_seek(void *userdata, Sint64 offset, SDL_IOWhence whence)
 {
     return SDL_RWseek((SDL2_RWops *) userdata, offset, whence);
 }
