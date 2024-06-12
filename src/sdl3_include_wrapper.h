@@ -475,6 +475,7 @@
 #define SDL_GetTextureColorModFloat IGNORE_THIS_VERSION_OF_SDL_GetTextureColorModFloat
 #define SDL_GetTextureProperties IGNORE_THIS_VERSION_OF_SDL_GetTextureProperties
 #define SDL_GetTextureScaleMode IGNORE_THIS_VERSION_OF_SDL_GetTextureScaleMode
+#define SDL_GetTextureSize IGNORE_THIS_VERSION_OF_SDL_GetTextureSize
 #define SDL_GetThreadID IGNORE_THIS_VERSION_OF_SDL_GetThreadID
 #define SDL_GetThreadName IGNORE_THIS_VERSION_OF_SDL_GetThreadName
 #define SDL_GetTicks IGNORE_THIS_VERSION_OF_SDL_GetTicks
@@ -636,7 +637,6 @@
 #define SDL_PumpEvents IGNORE_THIS_VERSION_OF_SDL_PumpEvents
 #define SDL_PushEvent IGNORE_THIS_VERSION_OF_SDL_PushEvent
 #define SDL_PutAudioStreamData IGNORE_THIS_VERSION_OF_SDL_PutAudioStreamData
-#define SDL_QueryTexture IGNORE_THIS_VERSION_OF_SDL_QueryTexture
 #define SDL_Quit IGNORE_THIS_VERSION_OF_SDL_Quit
 #define SDL_QuitSubSystem IGNORE_THIS_VERSION_OF_SDL_QuitSubSystem
 #define SDL_RaiseWindow IGNORE_THIS_VERSION_OF_SDL_RaiseWindow
@@ -2842,6 +2842,10 @@
 #undef SDL_GetTextureScaleMode
 #endif
 
+#ifdef SDL_GetTextureSize
+#undef SDL_GetTextureSize
+#endif
+
 #ifdef SDL_GetThreadID
 #undef SDL_GetThreadID
 #endif
@@ -3484,10 +3488,6 @@
 
 #ifdef SDL_PutAudioStreamData
 #undef SDL_PutAudioStreamData
-#endif
-
-#ifdef SDL_QueryTexture
-#undef SDL_QueryTexture
 #endif
 
 #ifdef SDL_Quit
