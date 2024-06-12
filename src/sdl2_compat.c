@@ -2357,17 +2357,17 @@ SDL_WriteU8(SDL2_RWops *rwops2, Uint8 x)
     return SDL_RWwrite(rwops2, &x, sizeof(x), 1);
 }
 
-#define DO_RWOPS_ENDIAN(order, bits)          \
-SDL_DECLSPEC Uint##bits SDLCALL                 \
+#define DO_RWOPS_ENDIAN(order, bits)        \
+SDL_DECLSPEC Uint##bits SDLCALL             \
 SDL_Read##order##bits(SDL2_RWops *rwops2) { \
     Uint##bits x = 0;                       \
     SDL_RWread(rwops2, &x, sizeof (x), 1);  \
-    return SDL_Swap##order##bits(x);        \
+    return SDL_Swap##bits##order(x);        \
 } \
                                                            \
-SDL_DECLSPEC size_t SDLCALL                                    \
+SDL_DECLSPEC size_t SDLCALL                                \
 SDL_Write##order##bits(SDL2_RWops *rwops2, Uint##bits x) { \
-    x = SDL_Swap##order##bits(x);                          \
+    x = SDL_Swap##bits##order(x);                          \
     return SDL_RWwrite(rwops2, &x, sizeof(x), 1);          \
 }
 DO_RWOPS_ENDIAN(LE, 16)
@@ -5279,7 +5279,7 @@ static void AudioUi16LSBToSi16Sys(Sint16 *dst, const Uint16 *src, const size_t n
 {
     size_t i;
     for (i = 0; i < num_samples; i++) {
-        dst[i] = (Sint16) (SDL_SwapLE16(src[i]) ^ 0x8000);
+        dst[i] = (Sint16) (SDL_Swap16LE(src[i]) ^ 0x8000);
     }
 }
 
@@ -5288,7 +5288,7 @@ static void AudioUi16MSBToSi16Sys(Sint16 *dst, const Uint16 *src, const size_t n
 {
     size_t i;
     for (i = 0; i < num_samples; i++) {
-        dst[i] = (Sint16) (SDL_SwapBE16(src[i]) ^ 0x8000);
+        dst[i] = (Sint16) (SDL_Swap16BE(src[i]) ^ 0x8000);
     }
 }
 
@@ -5297,7 +5297,7 @@ static void AudioSi16SysToUi16LSB(Uint16 *dst, const Sint16 *src, const size_t n
 {
     size_t i;
     for (i = 0; i < num_samples; i++) {
-        dst[i] = SDL_SwapLE16(((Uint16) src[i]) ^ 0x8000);
+        dst[i] = SDL_Swap16LE(((Uint16) src[i]) ^ 0x8000);
     }
 }
 
@@ -5306,7 +5306,7 @@ static void AudioSi16SysToUi16MSB(Uint16 *dst, const Sint16 *src, const size_t n
 {
     size_t i;
     for (i = 0; i < num_samples; i++) {
-        dst[i] = SDL_SwapBE16(((Uint16) src[i]) ^ 0x8000);
+        dst[i] = SDL_Swap16BE(((Uint16) src[i]) ^ 0x8000);
     }
 }
 
