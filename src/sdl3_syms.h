@@ -69,7 +69,7 @@ SDL3_SYM_PASSTHROUGH(SDL_WinRT_DeviceFamily,WinRTGetDeviceFamily,(void),(),retur
 #endif
 
 #ifdef SDL_PLATFORM_IOS
-SDL3_SYM_RENAMED(int,iPhoneSetAnimationCallback,iOSSetAnimationCallback,(SDL_Window *a, int b, void (SDLCALL *c)(void *), void *d),(a,b,c,d),return)
+SDL3_SYM_RENAMED(int,iPhoneSetAnimationCallback,iOSSetAnimationCallback,(SDL_Window *a, int b, SDL_iOSAnimationCallback c, void *d),(a,b,c,d),return)
 SDL3_SYM_RENAMED(void,iPhoneSetEventPump,iOSSetEventPump,(SDL_bool a),(a),)
 SDL3_SYM_PASSTHROUGH(void,OnApplicationDidChangeStatusBarOrientation,(void),(),)
 #endif
