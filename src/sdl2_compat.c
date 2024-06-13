@@ -3872,22 +3872,6 @@ SDL_GetRendererInfo(SDL_Renderer *renderer, SDL2_RendererInfo *info)
 }
 
 SDL_DECLSPEC int SDLCALL
-SDL_GetRendererOutputSize(SDL_Renderer * renderer, int *w, int *h)
-{
-    float fw = 0.0f, fh = 0.0f;
-    if (SDL3_GetRenderOutputSize(renderer, &fw, &fh) < 0) {
-        return -1;
-    }
-    if (w) {
-        *w = (int)fw;
-    }
-    if (h) {
-        *h = (int)fh;
-    }
-    return 0;
-}
-
-SDL_DECLSPEC int SDLCALL
 SDL_GetRenderDriverInfo(int idx, SDL2_RendererInfo *info)
 {
     const char *name = SDL3_GetRenderDriver(idx);
@@ -4016,27 +4000,13 @@ SDL_RenderTargetSupported(SDL_Renderer *renderer)
 SDL_DECLSPEC void SDLCALL
 SDL_RenderGetViewport(SDL_Renderer *renderer, SDL_Rect *rect)
 {
-    SDL_FRect frect;
-    SDL3_GetRenderViewport(renderer, &frect);
-    if (rect) {
-        rect->x = (int)frect.x;
-        rect->y = (int)frect.y;
-        rect->w = (int)frect.w;
-        rect->h = (int)frect.h;
-    }
+    SDL3_GetRenderViewport(renderer, rect);
 }
 
 SDL_DECLSPEC void SDLCALL
 SDL_RenderGetClipRect(SDL_Renderer *renderer, SDL_Rect *rect)
 {
-    SDL_FRect frect;
-    SDL3_GetRenderClipRect(renderer, &frect);
-    if (rect) {
-        rect->x = (int)frect.x;
-        rect->y = (int)frect.y;
-        rect->w = (int)frect.w;
-        rect->h = (int)frect.h;
-    }
+    SDL3_GetRenderClipRect(renderer, rect);
 }
 
 SDL_DECLSPEC void SDLCALL
@@ -4069,9 +4039,9 @@ SDL_RenderSetLogicalSize(SDL_Renderer *renderer, int w, int h)
 {
     int retval;
     if (w == 0 && h == 0) {
-        retval = SDL3_SetRenderLogicalPresentation(renderer, 0.0f, 0.0f, SDL_LOGICAL_PRESENTATION_DISABLED, SDL_SCALEMODE_NEAREST);
+        retval = SDL3_SetRenderLogicalPresentation(renderer, 0, 0, SDL_LOGICAL_PRESENTATION_DISABLED, SDL_SCALEMODE_NEAREST);
     } else {
-        retval = SDL3_SetRenderLogicalPresentation(renderer, (float)w, (float)h, SDL_LOGICAL_PRESENTATION_LETTERBOX, SDL_SCALEMODE_LINEAR);
+        retval = SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_LETTERBOX, SDL_SCALEMODE_LINEAR);
     }
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
@@ -4079,14 +4049,7 @@ SDL_RenderSetLogicalSize(SDL_Renderer *renderer, int w, int h)
 SDL_DECLSPEC void SDLCALL
 SDL_RenderGetLogicalSize(SDL_Renderer *renderer, int *w, int *h)
 {
-    float fw, fh;
-    SDL3_GetRenderLogicalPresentation(renderer, &fw, &fh, NULL, NULL);
-    if (w) {
-        *w = (int)fw;
-    }
-    if (h) {
-        *h = (int)fh;
-    }
+    SDL3_GetRenderLogicalPresentation(renderer, w, h, NULL, NULL);
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -4094,7 +4057,7 @@ SDL_RenderSetIntegerScale(SDL_Renderer *renderer, SDL_bool enable)
 {
     SDL_ScaleMode scale_mode;
     SDL_RendererLogicalPresentation mode;
-    float w, h;
+    int w, h;
     int retval;
 
     retval = SDL3_GetRenderLogicalPresentation(renderer, &w, &h, &mode, &scale_mode);
@@ -4133,34 +4096,14 @@ SDL_RenderGetIntegerScale(SDL_Renderer *renderer)
 SDL_DECLSPEC int SDLCALL
 SDL_RenderSetViewport(SDL_Renderer *renderer, const SDL_Rect *rect)
 {
-    int retval;
-    if (rect) {
-        SDL_FRect frect;
-        frect.x = (float)rect->x;
-        frect.y = (float)rect->y;
-        frect.w = (float)rect->w;
-        frect.h = (float)rect->h;
-        retval = SDL3_SetRenderViewport(renderer, &frect);
-    } else {
-        retval = SDL3_SetRenderViewport(renderer, NULL);
-    }
+    const int retval = SDL3_SetRenderViewport(renderer, rect);
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_RenderSetClipRect(SDL_Renderer *renderer, const SDL_Rect *rect)
 {
-    int retval;
-    if (rect) {
-        SDL_FRect frect;
-        frect.x = (float)rect->x;
-        frect.y = (float)rect->y;
-        frect.w = (float)rect->w;
-        frect.h = (float)rect->h;
-        retval = SDL3_SetRenderClipRect(renderer, &frect);
-    } else {
-        retval = SDL3_SetRenderClipRect(renderer, NULL);
-    }
+    const int retval = SDL3_SetRenderClipRect(renderer, rect);
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
