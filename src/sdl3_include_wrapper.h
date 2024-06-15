@@ -198,11 +198,11 @@
 #define SDL_GetAndroidSDKVersion IGNORE_THIS_VERSION_OF_SDL_GetAndroidSDKVersion
 #define SDL_GetAssertionHandler IGNORE_THIS_VERSION_OF_SDL_GetAssertionHandler
 #define SDL_GetAssertionReport IGNORE_THIS_VERSION_OF_SDL_GetAssertionReport
-#define SDL_GetAudioCaptureDevices IGNORE_THIS_VERSION_OF_SDL_GetAudioCaptureDevices
+#define SDL_GetAudioRecordingDevices IGNORE_THIS_VERSION_OF_SDL_GetAudioRecordingDevices
 #define SDL_GetAudioDeviceFormat IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceFormat
 #define SDL_GetAudioDeviceName IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceName
 #define SDL_GetAudioDriver IGNORE_THIS_VERSION_OF_SDL_GetAudioDriver
-#define SDL_GetAudioOutputDevices IGNORE_THIS_VERSION_OF_SDL_GetAudioOutputDevices
+#define SDL_GetAudioPlaybackDevices IGNORE_THIS_VERSION_OF_SDL_GetAudioPlaybackDevices
 #define SDL_GetAudioStreamAvailable IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamAvailable
 #define SDL_GetAudioStreamData IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamData
 #define SDL_GetAudioStreamDevice IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamDevice
@@ -1734,8 +1734,8 @@
 #undef SDL_GetAssertionReport
 #endif
 
-#ifdef SDL_GetAudioCaptureDevices
-#undef SDL_GetAudioCaptureDevices
+#ifdef SDL_GetAudioRecordingDevices
+#undef SDL_GetAudioRecordingDevices
 #endif
 
 #ifdef SDL_GetAudioDeviceFormat
@@ -1750,8 +1750,8 @@
 #undef SDL_GetAudioDriver
 #endif
 
-#ifdef SDL_GetAudioOutputDevices
-#undef SDL_GetAudioOutputDevices
+#ifdef SDL_GetAudioPlaybackDevices
+#undef SDL_GetAudioPlaybackDevices
 #endif
 
 #ifdef SDL_GetAudioStreamAvailable

@@ -1245,8 +1245,8 @@ static SDL_mutex *sensor_lock = NULL;
 
 static SDL_Mutex *AudioDeviceLock = NULL;
 static SDL2_AudioStream *AudioOpenDevices[16];  /* SDL2 had a limit of 16 simultaneous devices opens (and the first slot was for the 1.2 legacy interface). We track these as _SDL2_ audio streams. */
-static AudioDeviceList AudioSDL3OutputDevices;
-static AudioDeviceList AudioSDL3CaptureDevices;
+static AudioDeviceList AudioSDL3PlaybackDevices;
+static AudioDeviceList AudioSDL3RecordingDevices;
 
 static char **GamepadMappings = NULL;
 static int NumGamepadMappings = 0;
@@ -4792,13 +4792,13 @@ static Uint16 GetDefaultSamplesFromFreq(int freq)
 static int GetNumAudioDevices(int iscapture)
 {
     AudioDeviceList newlist;
-    AudioDeviceList *list = iscapture ? &AudioSDL3CaptureDevices : &AudioSDL3OutputDevices;
+    AudioDeviceList *list = iscapture ? &AudioSDL3RecordingDevices : &AudioSDL3PlaybackDevices;
     SDL_AudioDeviceID *devices;
     int num_devices;
     int i;
 
     /* SDL_GetNumAudioDevices triggers a device redetect in SDL2, so we'll just build our list from here. */
-    devices = iscapture ? SDL3_GetAudioCaptureDevices(&num_devices) : SDL3_GetAudioOutputDevices(&num_devices);
+    devices = iscapture ? SDL3_GetAudioRecordingDevices(&num_devices) : SDL3_GetAudioPlaybackDevices(&num_devices);
     if (!devices) {
         return list->num_devices;  /* just return the existing one for now. Oh well. */
     }
@@ -4875,7 +4875,7 @@ SDL_GetAudioDeviceName(int idx, int iscapture)
     }
 
     SDL3_LockMutex(AudioDeviceLock);
-    list = iscapture ? &AudioSDL3CaptureDevices : &AudioSDL3OutputDevices;
+    list = iscapture ? &AudioSDL3RecordingDevices : &AudioSDL3PlaybackDevices;
     if ((idx < 0) || (idx >= list->num_devices)) {
         SDL3_InvalidParamError("index");
     } else {
@@ -4900,7 +4900,7 @@ SDL_GetAudioDeviceSpec(int idx, int iscapture, SDL2_AudioSpec *spec2)
     }
 
     SDL3_LockMutex(AudioDeviceLock);
-    list = iscapture ? &AudioSDL3CaptureDevices : &AudioSDL3OutputDevices;
+    list = iscapture ? &AudioSDL3RecordingDevices : &AudioSDL3PlaybackDevices;
     if ((idx < 0) || (idx >= list->num_devices)) {
         SDL3_InvalidParamError("index");
     } else {
@@ -4930,7 +4930,7 @@ SDL_GetDefaultAudioInfo(char **name, SDL2_AudioSpec *spec2, int iscapture)
         return SDL3_SetError("Audio subsystem is not initialized");
     }
 
-    retval = SDL3_GetAudioDeviceFormat(iscapture ? SDL_AUDIO_DEVICE_DEFAULT_CAPTURE : SDL_AUDIO_DEVICE_DEFAULT_OUTPUT, &spec3, NULL);
+    retval = SDL3_GetAudioDeviceFormat(iscapture ? SDL_AUDIO_DEVICE_DEFAULT_RECORDING : SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec3, NULL);
     if (retval == 0) {
         if (name) {
             *name = SDL3_strdup("System default");  /* the default device can change to different physical hardware on-the-fly in SDL3, so we don't provide a name for it. */
@@ -5133,9 +5133,9 @@ static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devicename, int iscap
     }
 
     if (devicename == NULL) {
-        device3 = iscapture ? SDL_AUDIO_DEVICE_DEFAULT_CAPTURE : SDL_AUDIO_DEVICE_DEFAULT_OUTPUT;
+        device3 = iscapture ? SDL_AUDIO_DEVICE_DEFAULT_RECORDING : SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK;
     } else {
-        AudioDeviceList *list = iscapture ? &AudioSDL3CaptureDevices : &AudioSDL3OutputDevices;
+        AudioDeviceList *list = iscapture ? &AudioSDL3RecordingDevices : &AudioSDL3PlaybackDevices;
         const int total = list->num_devices;
         int i;
         for (i = 0; i < total; i++) {
