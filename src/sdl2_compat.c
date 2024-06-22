@@ -1288,6 +1288,7 @@ SDL2Compat_InitOnStartup(void)
     SDL3_SetHint("SDL_WINDOWS_DPI_AWARENESS", "unaware");
     SDL3_SetHint("SDL_BORDERLESS_WINDOWED_STYLE", "0");
     SDL3_SetHint("SDL_VIDEO_SYNC_WINDOW_OPERATIONS", "1");
+    SDL3_SetHint(SDL_HINT_KEYCODE_OPTIONS, "unmodified,french_numbers");
     SDL3_SetHint(SDL_HINT_WINDOWS_RAW_KEYBOARD, "0");
 
     return 1;
