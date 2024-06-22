@@ -850,7 +850,7 @@ typedef struct SDL2_KeyboardEvent
     Uint8 repeat;
     Uint8 padding2;
     Uint8 padding3;
-    SDL_Keysym keysym;
+    SDL2_Keysym keysym;
 } SDL2_KeyboardEvent;
 
 #define SDL2_TEXTEDITINGEVENT_TEXT_SIZE (32)
@@ -1534,6 +1534,68 @@ static Uint8 SwapGamepadButton(Uint8 button)
     }
 }
 
+static SDL_Scancode SDL2ScancodeToSDL3Scancode(SDL2_Scancode scancode)
+{
+    if (scancode <= SDL2_SCANCODE_MODE) {
+        // They're the same
+        return (SDL_Scancode)scancode;
+    }
+
+    switch (scancode) {
+    case SDL2_SCANCODE_AUDIOFASTFORWARD:
+        return SDL_SCANCODE_MEDIA_FAST_FORWARD;
+    case SDL2_SCANCODE_AUDIOMUTE:
+        return SDL_SCANCODE_MUTE;
+    case SDL2_SCANCODE_AUDIONEXT:
+        return SDL_SCANCODE_MEDIA_NEXT_TRACK;
+    case SDL2_SCANCODE_AUDIOPLAY:
+        return SDL_SCANCODE_MEDIA_PLAY;
+    case SDL2_SCANCODE_AUDIOPREV:
+        return SDL_SCANCODE_MEDIA_PREVIOUS_TRACK;
+    case SDL2_SCANCODE_AUDIOREWIND:
+        return SDL_SCANCODE_MEDIA_REWIND;
+    case SDL2_SCANCODE_AUDIOSTOP:
+        return SDL_SCANCODE_MEDIA_STOP;
+    case SDL2_SCANCODE_EJECT:
+        return SDL_SCANCODE_MEDIA_EJECT;
+    case SDL2_SCANCODE_MEDIASELECT:
+        return SDL_SCANCODE_MEDIA_SELECT;
+    default:
+        return SDL_SCANCODE_UNKNOWN;
+    }
+}
+
+static SDL2_Scancode SDL3ScancodeToSDL2Scancode(SDL_Scancode scancode)
+{
+    if (scancode <= SDL_SCANCODE_MODE) {
+        // They're the same
+        return (SDL2_Scancode)scancode;
+    }
+
+    switch (scancode) {
+    case SDL_SCANCODE_MEDIA_FAST_FORWARD:
+        return SDL2_SCANCODE_AUDIOFASTFORWARD;
+    case SDL_SCANCODE_MUTE:
+        return SDL2_SCANCODE_AUDIOMUTE;
+    case SDL_SCANCODE_MEDIA_NEXT_TRACK:
+        return SDL2_SCANCODE_AUDIONEXT;
+    case SDL_SCANCODE_MEDIA_PLAY:
+        return SDL2_SCANCODE_AUDIOPLAY;
+    case SDL_SCANCODE_MEDIA_PREVIOUS_TRACK:
+        return SDL2_SCANCODE_AUDIOPREV;
+    case SDL_SCANCODE_MEDIA_REWIND:
+        return SDL2_SCANCODE_AUDIOREWIND;
+    case SDL_SCANCODE_MEDIA_STOP:
+        return SDL2_SCANCODE_AUDIOSTOP;
+    case SDL_SCANCODE_MEDIA_EJECT:
+        return SDL2_SCANCODE_EJECT;
+    case SDL_SCANCODE_MEDIA_SELECT:
+        return SDL2_SCANCODE_MEDIASELECT;
+    default:
+        return SDL2_SCANCODE_UNKNOWN;
+    }
+}
+
 /* (current) strategy for SDL_Events:
    in sdl12-compat, we built our own event queue, so when the SDL2 queue is pumped, we
    took the events we cared about and added them to the sdl12-compat queue, and otherwise
@@ -1574,9 +1636,11 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     switch (event3->type) {
     case SDL_EVENT_KEY_DOWN:
     case SDL_EVENT_KEY_UP:
+        event2->key.keysym.scancode = SDL3ScancodeToSDL2Scancode(event3->key.scancode);
+        event2->key.keysym.sym = event3->key.key;
+        event2->key.keysym.mod = event3->key.mod;
         event2->key.state = event3->key.state;
         event2->key.repeat = event3->key.repeat;
-        event2->key.keysym = event3->key.keysym;
         break;
     case SDL_EVENT_TEXT_INPUT:
         SDL3_strlcpy(event2->text.text, event3->text.text, sizeof(event2->text.text));
@@ -1720,15 +1784,20 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
     case SDL_EVENT_TEXT_INPUT: {
         const size_t len = SDL3_strlen(event2->text.text) + 1;
         event3->text.text = (char *)SDL3_AllocateEventMemory(len);
-        SDL3_memcpy(event3->text.text, event3->text.text, len);
+        if (event3->text.text) {
+            SDL3_memcpy((char *)event3->text.text, event3->text.text, len);
+        }
         break;
     }
     case SDL_EVENT_KEY_DOWN:
     case SDL_EVENT_KEY_UP:
         event3->key.which = 0;
+        event3->key.scancode = SDL2ScancodeToSDL3Scancode(event2->key.keysym.scancode);
+        event3->key.key = event2->key.keysym.sym;
+        event3->key.mod = event2->key.keysym.mod;
+        event3->key.raw = 0;
         event3->key.state = event2->key.state;
         event3->key.repeat = event2->key.repeat;
-        event3->key.keysym = event2->key.keysym;
         break;
     #if 0 /* FIXME: Can this ever happen? */
     case SDL_EVENT_TEXT_EDITING: {
@@ -2037,6 +2106,167 @@ SDL_SetModState(SDL2_Keymod modstate)
     SDL3_SetModState((SDL_Keymod)modstate);
 }
 
+SDL_DECLSPEC SDL_Keycode SDLCALL
+SDL_GetKeyFromScancode(SDL2_Scancode scancode)
+{
+    if (((int)scancode) < SDL2_SCANCODE_UNKNOWN || scancode >= SDL2_NUM_SCANCODES) {
+        SDL3_InvalidParamError("scancode");
+        return 0;
+    }
+
+    if (scancode <= SDL2_SCANCODE_MODE) {
+        // They're the same
+        return SDL3_GetKeyFromScancode(SDL2ScancodeToSDL3Scancode(scancode), SDL_KMOD_NONE);
+    } else {
+        return SDL_SCANCODE_TO_KEYCODE(scancode);
+    }
+}
+
+SDL_DECLSPEC SDL2_Scancode SDLCALL
+SDL_GetScancodeFromKey(SDL_Keycode key)
+{
+    SDL_Keymod modstate = SDL_KMOD_NONE;
+    SDL_Scancode scancode = SDL3_GetScancodeFromKey(key, &modstate);
+    if (modstate != SDL_KMOD_NONE) {
+        return SDL2_SCANCODE_UNKNOWN;
+    }
+    return SDL3ScancodeToSDL2Scancode(scancode);
+}
+
+static const char *SDL2_scancode_names[] = {
+    /* 258 */ "AudioNext",
+    /* 259 */ "AudioPrev",
+    /* 260 */ "AudioStop",
+    /* 261 */ "AudioPlay",
+    /* 262 */ "AudioMute",
+    /* 263 */ "MediaSelect",
+    /* 264 */ "WWW",
+    /* 265 */ "Mail",
+    /* 266 */ "Calculator",
+    /* 267 */ "Computer",
+    /* 268 */ "AC Search",
+    /* 269 */ "AC Home",
+    /* 270 */ "AC Back",
+    /* 271 */ "AC Forward",
+    /* 272 */ "AC Stop",
+    /* 273 */ "AC Refresh",
+    /* 274 */ "AC Bookmarks",
+    /* 275 */ "BrightnessDown",
+    /* 276 */ "BrightnessUp",
+    /* 277 */ "DisplaySwitch",
+    /* 278 */ "KBDIllumToggle",
+    /* 279 */ "KBDIllumDown",
+    /* 280 */ "KBDIllumUp",
+    /* 281 */ "Eject",
+    /* 282 */ "Sleep",
+    /* 283 */ "App1",
+    /* 284 */ "App2",
+    /* 285 */ "AudioRewind",
+    /* 286 */ "AudioFastForward",
+    /* 287 */ "SoftLeft",
+    /* 288 */ "SoftRight",
+    /* 289 */ "Call",
+    /* 290 */ "EndCall",
+};
+
+SDL_DECLSPEC const char *SDLCALL
+SDL_GetScancodeName(SDL2_Scancode scancode)
+{
+    unsigned int i;
+
+    if (scancode <= SDL2_SCANCODE_MODE) {
+        // They're the same
+        return SDL3_GetScancodeName(SDL2ScancodeToSDL3Scancode(scancode));
+    }
+
+    i = (unsigned int)scancode - (SDL2_SCANCODE_MODE + 1);
+    if (i >= SDL_arraysize(SDL2_scancode_names)) {
+        SDL3_InvalidParamError("scancode");
+        return "";
+    }
+    return SDL2_scancode_names[i];
+}
+
+SDL_DECLSPEC SDL2_Scancode SDLCALL
+SDL_GetScancodeFromName(const char *name)
+{
+    int i;
+
+    if (!name || !*name) {
+        SDL3_InvalidParamError("name");
+        return SDL2_SCANCODE_UNKNOWN;
+    }
+
+    for (i = 0; i < SDL2_NUM_SCANCODES; ++i) {
+        if (SDL3_strcasecmp(name, SDL_GetScancodeName((SDL2_Scancode)i)) == 0) {
+            return (SDL2_Scancode)i;
+        }
+    }
+
+    SDL3_InvalidParamError("name");
+    return SDL2_SCANCODE_UNKNOWN;
+}
+
+SDL_DECLSPEC const char * SDLCALL
+SDL_GetKeyName(SDL_Keycode key)
+{
+    if (key & SDLK_SCANCODE_MASK) {
+        return SDL_GetScancodeName((SDL2_Scancode)(key & ~SDLK_SCANCODE_MASK));
+    }
+    return SDL3_GetKeyName(key);
+}
+
+SDL_DECLSPEC SDL_Keycode SDLCALL
+SDL_GetKeyFromName(const char *name)
+{
+    SDL_Keycode key;
+
+    /* Check input */
+    if (!name) {
+        return SDLK_UNKNOWN;
+    }
+
+    /* If it's a single UTF-8 character, then that's the keycode itself */
+    key = *(const unsigned char *)name;
+    if (key >= 0xF0) {
+        if (SDL_strlen(name) == 4) {
+            int i = 0;
+            key = (Uint16)(name[i] & 0x07) << 18;
+            key |= (Uint16)(name[++i] & 0x3F) << 12;
+            key |= (Uint16)(name[++i] & 0x3F) << 6;
+            key |= (Uint16)(name[++i] & 0x3F);
+            return key;
+        }
+        return SDLK_UNKNOWN;
+    } else if (key >= 0xE0) {
+        if (SDL_strlen(name) == 3) {
+            int i = 0;
+            key = (Uint16)(name[i] & 0x0F) << 12;
+            key |= (Uint16)(name[++i] & 0x3F) << 6;
+            key |= (Uint16)(name[++i] & 0x3F);
+            return key;
+        }
+        return SDLK_UNKNOWN;
+    } else if (key >= 0xC0) {
+        if (SDL_strlen(name) == 2) {
+            int i = 0;
+            key = (Uint16)(name[i] & 0x1F) << 6;
+            key |= (Uint16)(name[++i] & 0x3F);
+            return key;
+        }
+        return SDLK_UNKNOWN;
+    } else {
+        if (SDL_strlen(name) == 1) {
+            if (key >= 'A' && key <= 'Z') {
+                key += 32;
+            }
+            return key;
+        }
+
+        /* Get the scancode for this name, and the associated keycode */
+        return SDL_GetKeyFromScancode(SDL_GetScancodeFromName(name));
+    }
+}
 
 /* Several SDL3 video backends have had their names lower-cased, map to the SDL2 equivalent name. */
 static const char *ReplaceVideoBackendName(const char *name)
