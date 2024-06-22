@@ -242,6 +242,7 @@
 #define SDL_GetDefaultAssertionHandler IGNORE_THIS_VERSION_OF_SDL_GetDefaultAssertionHandler
 #define SDL_GetDefaultCursor IGNORE_THIS_VERSION_OF_SDL_GetDefaultCursor
 #define SDL_GetDefaultKeyFromScancode IGNORE_THIS_VERSION_OF_SDL_GetDefaultKeyFromScancode
+#define SDL_GetDefaultScancodeFromKey IGNORE_THIS_VERSION_OF_SDL_GetDefaultScancodeFromKey
 #define SDL_GetDesktopDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetDesktopDisplayMode
 #define SDL_GetDisplayBounds IGNORE_THIS_VERSION_OF_SDL_GetDisplayBounds
 #define SDL_GetDisplayContentScale IGNORE_THIS_VERSION_OF_SDL_GetDisplayContentScale
@@ -764,6 +765,7 @@
 #define SDL_SetRenderVSync IGNORE_THIS_VERSION_OF_SDL_SetRenderVSync
 #define SDL_SetRenderViewport IGNORE_THIS_VERSION_OF_SDL_SetRenderViewport
 #define SDL_SetStringProperty IGNORE_THIS_VERSION_OF_SDL_SetStringProperty
+#define SDL_SetScancodeName IGNORE_THIS_VERSION_OF_SDL_SetScancodeName
 #define SDL_SetSurfaceAlphaMod IGNORE_THIS_VERSION_OF_SDL_SetSurfaceAlphaMod
 #define SDL_SetSurfaceBlendMode IGNORE_THIS_VERSION_OF_SDL_SetSurfaceBlendMode
 #define SDL_SetSurfaceClipRect IGNORE_THIS_VERSION_OF_SDL_SetSurfaceClipRect
@@ -1908,6 +1910,10 @@
 
 #ifdef SDL_GetDefaultKeyFromScancode
 #undef SDL_GetDefaultKeyFromScancode
+#endif
+
+#ifdef SDL_GetDefaultScancodeFromKey
+#undef SDL_GetDefaultScancodeFromKey
 #endif
 
 #ifdef SDL_GetDesktopDisplayMode
@@ -3996,6 +4002,10 @@
 
 #ifdef SDL_SetStringProperty
 #undef SDL_SetStringProperty
+#endif
+
+#ifdef SDL_SetScancodeName
+#undef SDL_SetScancodeName
 #endif
 
 #ifdef SDL_SetSurfaceAlphaMod
