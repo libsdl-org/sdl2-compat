@@ -198,11 +198,11 @@
 #define SDL_GetAndroidSDKVersion IGNORE_THIS_VERSION_OF_SDL_GetAndroidSDKVersion
 #define SDL_GetAssertionHandler IGNORE_THIS_VERSION_OF_SDL_GetAssertionHandler
 #define SDL_GetAssertionReport IGNORE_THIS_VERSION_OF_SDL_GetAssertionReport
-#define SDL_GetAudioRecordingDevices IGNORE_THIS_VERSION_OF_SDL_GetAudioRecordingDevices
 #define SDL_GetAudioDeviceFormat IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceFormat
 #define SDL_GetAudioDeviceName IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceName
 #define SDL_GetAudioDriver IGNORE_THIS_VERSION_OF_SDL_GetAudioDriver
 #define SDL_GetAudioPlaybackDevices IGNORE_THIS_VERSION_OF_SDL_GetAudioPlaybackDevices
+#define SDL_GetAudioRecordingDevices IGNORE_THIS_VERSION_OF_SDL_GetAudioRecordingDevices
 #define SDL_GetAudioStreamAvailable IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamAvailable
 #define SDL_GetAudioStreamData IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamData
 #define SDL_GetAudioStreamDevice IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamDevice
@@ -512,6 +512,7 @@
 #define SDL_GetWindowSurface IGNORE_THIS_VERSION_OF_SDL_GetWindowSurface
 #define SDL_GetWindowSurfaceVSync IGNORE_THIS_VERSION_OF_SDL_GetWindowSurfaceVSync
 #define SDL_GetWindowTitle IGNORE_THIS_VERSION_OF_SDL_GetWindowTitle
+#define SDL_GetWindows IGNORE_THIS_VERSION_OF_SDL_GetWindows
 #define SDL_GlobDirectory IGNORE_THIS_VERSION_OF_SDL_GlobDirectory
 #define SDL_GlobStorageDirectory IGNORE_THIS_VERSION_OF_SDL_GlobStorageDirectory
 #define SDL_HapticEffectSupported IGNORE_THIS_VERSION_OF_SDL_HapticEffectSupported
@@ -648,6 +649,7 @@
 #define SDL_ReadS32LE IGNORE_THIS_VERSION_OF_SDL_ReadS32LE
 #define SDL_ReadS64BE IGNORE_THIS_VERSION_OF_SDL_ReadS64BE
 #define SDL_ReadS64LE IGNORE_THIS_VERSION_OF_SDL_ReadS64LE
+#define SDL_ReadS8 IGNORE_THIS_VERSION_OF_SDL_ReadS8
 #define SDL_ReadStorageFile IGNORE_THIS_VERSION_OF_SDL_ReadStorageFile
 #define SDL_ReadSurfacePixel IGNORE_THIS_VERSION_OF_SDL_ReadSurfacePixel
 #define SDL_ReadU16BE IGNORE_THIS_VERSION_OF_SDL_ReadU16BE
@@ -764,8 +766,8 @@
 #define SDL_SetRenderTarget IGNORE_THIS_VERSION_OF_SDL_SetRenderTarget
 #define SDL_SetRenderVSync IGNORE_THIS_VERSION_OF_SDL_SetRenderVSync
 #define SDL_SetRenderViewport IGNORE_THIS_VERSION_OF_SDL_SetRenderViewport
-#define SDL_SetStringProperty IGNORE_THIS_VERSION_OF_SDL_SetStringProperty
 #define SDL_SetScancodeName IGNORE_THIS_VERSION_OF_SDL_SetScancodeName
+#define SDL_SetStringProperty IGNORE_THIS_VERSION_OF_SDL_SetStringProperty
 #define SDL_SetSurfaceAlphaMod IGNORE_THIS_VERSION_OF_SDL_SetSurfaceAlphaMod
 #define SDL_SetSurfaceBlendMode IGNORE_THIS_VERSION_OF_SDL_SetSurfaceBlendMode
 #define SDL_SetSurfaceClipRect IGNORE_THIS_VERSION_OF_SDL_SetSurfaceClipRect
@@ -883,6 +885,7 @@
 #define SDL_WriteS32LE IGNORE_THIS_VERSION_OF_SDL_WriteS32LE
 #define SDL_WriteS64BE IGNORE_THIS_VERSION_OF_SDL_WriteS64BE
 #define SDL_WriteS64LE IGNORE_THIS_VERSION_OF_SDL_WriteS64LE
+#define SDL_WriteS8 IGNORE_THIS_VERSION_OF_SDL_WriteS8
 #define SDL_WriteStorageFile IGNORE_THIS_VERSION_OF_SDL_WriteStorageFile
 #define SDL_WriteU16BE IGNORE_THIS_VERSION_OF_SDL_WriteU16BE
 #define SDL_WriteU16LE IGNORE_THIS_VERSION_OF_SDL_WriteU16LE
@@ -960,7 +963,11 @@
 #define SDL_iscntrl IGNORE_THIS_VERSION_OF_SDL_iscntrl
 #define SDL_isdigit IGNORE_THIS_VERSION_OF_SDL_isdigit
 #define SDL_isgraph IGNORE_THIS_VERSION_OF_SDL_isgraph
+#define SDL_isinf IGNORE_THIS_VERSION_OF_SDL_isinf
+#define SDL_isinff IGNORE_THIS_VERSION_OF_SDL_isinff
 #define SDL_islower IGNORE_THIS_VERSION_OF_SDL_islower
+#define SDL_isnan IGNORE_THIS_VERSION_OF_SDL_isnan
+#define SDL_isnanf IGNORE_THIS_VERSION_OF_SDL_isnanf
 #define SDL_isprint IGNORE_THIS_VERSION_OF_SDL_isprint
 #define SDL_ispunct IGNORE_THIS_VERSION_OF_SDL_ispunct
 #define SDL_isspace IGNORE_THIS_VERSION_OF_SDL_isspace
@@ -987,6 +994,12 @@
 #define SDL_powf IGNORE_THIS_VERSION_OF_SDL_powf
 #define SDL_qsort IGNORE_THIS_VERSION_OF_SDL_qsort
 #define SDL_qsort_r IGNORE_THIS_VERSION_OF_SDL_qsort_r
+#define SDL_rand IGNORE_THIS_VERSION_OF_SDL_rand
+#define SDL_rand_bits IGNORE_THIS_VERSION_OF_SDL_rand_bits
+#define SDL_rand_bits_r IGNORE_THIS_VERSION_OF_SDL_rand_bits_r
+#define SDL_rand_r IGNORE_THIS_VERSION_OF_SDL_rand_r
+#define SDL_randf IGNORE_THIS_VERSION_OF_SDL_randf
+#define SDL_randf_r IGNORE_THIS_VERSION_OF_SDL_randf_r
 #define SDL_realloc IGNORE_THIS_VERSION_OF_SDL_realloc
 #define SDL_round IGNORE_THIS_VERSION_OF_SDL_round
 #define SDL_roundf IGNORE_THIS_VERSION_OF_SDL_roundf
@@ -998,6 +1011,7 @@
 #define SDL_snprintf IGNORE_THIS_VERSION_OF_SDL_snprintf
 #define SDL_sqrt IGNORE_THIS_VERSION_OF_SDL_sqrt
 #define SDL_sqrtf IGNORE_THIS_VERSION_OF_SDL_sqrtf
+#define SDL_srand IGNORE_THIS_VERSION_OF_SDL_srand
 #define SDL_sscanf IGNORE_THIS_VERSION_OF_SDL_sscanf
 #define SDL_strcasecmp IGNORE_THIS_VERSION_OF_SDL_strcasecmp
 #define SDL_strcasestr IGNORE_THIS_VERSION_OF_SDL_strcasestr
@@ -1736,10 +1750,6 @@
 #undef SDL_GetAssertionReport
 #endif
 
-#ifdef SDL_GetAudioRecordingDevices
-#undef SDL_GetAudioRecordingDevices
-#endif
-
 #ifdef SDL_GetAudioDeviceFormat
 #undef SDL_GetAudioDeviceFormat
 #endif
@@ -1754,6 +1764,10 @@
 
 #ifdef SDL_GetAudioPlaybackDevices
 #undef SDL_GetAudioPlaybackDevices
+#endif
+
+#ifdef SDL_GetAudioRecordingDevices
+#undef SDL_GetAudioRecordingDevices
 #endif
 
 #ifdef SDL_GetAudioStreamAvailable
@@ -2992,6 +3006,10 @@
 #undef SDL_GetWindowTitle
 #endif
 
+#ifdef SDL_GetWindows
+#undef SDL_GetWindows
+#endif
+
 #ifdef SDL_GlobDirectory
 #undef SDL_GlobDirectory
 #endif
@@ -3536,6 +3554,10 @@
 #undef SDL_ReadS64LE
 #endif
 
+#ifdef SDL_ReadS8
+#undef SDL_ReadS8
+#endif
+
 #ifdef SDL_ReadStorageFile
 #undef SDL_ReadStorageFile
 #endif
@@ -4000,12 +4022,12 @@
 #undef SDL_SetRenderViewport
 #endif
 
-#ifdef SDL_SetStringProperty
-#undef SDL_SetStringProperty
-#endif
-
 #ifdef SDL_SetScancodeName
 #undef SDL_SetScancodeName
+#endif
+
+#ifdef SDL_SetStringProperty
+#undef SDL_SetStringProperty
 #endif
 
 #ifdef SDL_SetSurfaceAlphaMod
@@ -4476,6 +4498,10 @@
 #undef SDL_WriteS64LE
 #endif
 
+#ifdef SDL_WriteS8
+#undef SDL_WriteS8
+#endif
+
 #ifdef SDL_WriteStorageFile
 #undef SDL_WriteStorageFile
 #endif
@@ -4784,8 +4810,24 @@
 #undef SDL_isgraph
 #endif
 
+#ifdef SDL_isinf
+#undef SDL_isinf
+#endif
+
+#ifdef SDL_isinff
+#undef SDL_isinff
+#endif
+
 #ifdef SDL_islower
 #undef SDL_islower
+#endif
+
+#ifdef SDL_isnan
+#undef SDL_isnan
+#endif
+
+#ifdef SDL_isnanf
+#undef SDL_isnanf
 #endif
 
 #ifdef SDL_isprint
@@ -4892,6 +4934,30 @@
 #undef SDL_qsort_r
 #endif
 
+#ifdef SDL_rand
+#undef SDL_rand
+#endif
+
+#ifdef SDL_rand_bits
+#undef SDL_rand_bits
+#endif
+
+#ifdef SDL_rand_bits_r
+#undef SDL_rand_bits_r
+#endif
+
+#ifdef SDL_rand_r
+#undef SDL_rand_r
+#endif
+
+#ifdef SDL_randf
+#undef SDL_randf
+#endif
+
+#ifdef SDL_randf_r
+#undef SDL_randf_r
+#endif
+
 #ifdef SDL_realloc
 #undef SDL_realloc
 #endif
@@ -4934,6 +5000,10 @@
 
 #ifdef SDL_sqrtf
 #undef SDL_sqrtf
+#endif
+
+#ifdef SDL_srand
+#undef SDL_srand
 #endif
 
 #ifdef SDL_sscanf

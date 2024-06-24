@@ -6823,16 +6823,92 @@ SDL_JoystickSetPlayerIndex(SDL_Joystick *joystick, int player_index)
     SDL3_SetJoystickPlayerIndex(joystick, player_index);
 }
 
+SDL_DECLSPEC void SDLCALL
+SDL_StartTextInput(void)
+{
+    SDL_Window **windows = SDL3_GetWindows(NULL);
+    if (windows) {
+        int i;
+
+        for (i = 0; windows[i]; ++i) {
+            SDL3_StartTextInput(windows[i]);
+        }
+        SDL_free(windows);
+    }
+}
+
+SDL_DECLSPEC SDL_bool SDLCALL
+SDL_IsTextInputActive(void)
+{
+    SDL_bool result = SDL_FALSE;
+    SDL_Window **windows = SDL3_GetWindows(NULL);
+    if (windows) {
+        int i;
+
+        for (i = 0; windows[i]; ++i) {
+            if (SDL3_TextInputActive(windows[i])) {
+                result = SDL_TRUE;
+                break;
+            }
+        }
+        SDL_free(windows);
+    }
+    return result;
+}
+
+SDL_DECLSPEC void SDLCALL
+SDL_StopTextInput(void)
+{
+    SDL_Window **windows = SDL3_GetWindows(NULL);
+    if (windows) {
+        int i;
+
+        for (i = 0; windows[i]; ++i) {
+            SDL3_StopTextInput(windows[i]);
+        }
+        SDL_free(windows);
+    }
+}
+
+SDL_DECLSPEC void SDLCALL
+SDL_ClearComposition(void)
+{
+    SDL_Window **windows = SDL3_GetWindows(NULL);
+    if (windows) {
+        int i;
+
+        for (i = 0; windows[i]; ++i) {
+            SDL3_ClearComposition(windows[i]);
+        }
+        SDL_free(windows);
+    }
+}
+
 SDL_DECLSPEC SDL_bool SDLCALL
 SDL_IsTextInputShown()
 {
-    return SDL3_TextInputActive();
+    return SDL_IsTextInputActive();
 }
 
 SDL_DECLSPEC void SDLCALL
 SDL_SetTextInputRect(const SDL_Rect *rect)
 {
-    SDL3_SetTextInputRect(rect);
+    SDL_Window **windows;
+
+    if (!rect) {
+        SDL3_InvalidParamError("rect");
+        return;
+    }
+
+    windows = SDL3_GetWindows(NULL);
+    if (windows) {
+        int i;
+
+        for ( i = 0; windows[i]; ++i ) {
+            SDL3_SetTextInputRect(windows[i], rect);
+        }
+        SDL_free( windows );
+    }
 }
 
 SDL_DECLSPEC void SDLCALL
