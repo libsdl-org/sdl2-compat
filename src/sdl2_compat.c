@@ -6329,10 +6329,11 @@ SDL_Vulkan_GetInstanceExtensions(SDL_Window *window, unsigned int *puiCount, con
 }
 
 /* SDL3 added a VkAllocationCallbacks* argument; SDL2 always uses the default (NULL) allocator */
+/* SDL3 also changed the return type from SDL_bool to int (with usual 0==success, -1==error semantics) */
 SDL_DECLSPEC SDL_bool SDLCALL
 SDL_Vulkan_CreateSurface(SDL_Window *window, VkInstance vkinst, VkSurfaceKHR *psurf)
 {
-    return SDL3_Vulkan_CreateSurface(window, vkinst, NULL, psurf);
+    return (SDL3_Vulkan_CreateSurface(window, vkinst, NULL, psurf) == 0) ? SDL_TRUE : SDL_FALSE;
 }
 
 
