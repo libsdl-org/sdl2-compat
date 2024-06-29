@@ -4934,19 +4934,19 @@ SDL_InitSubSystem(Uint32 flags)
 #if defined(SDL_PLATFORM_WIN32)
         old_hint = SDL_GetHint("SDL_IME_SHOW_UI");
         if (old_hint && *old_hint == '1') {
-            hint = "candidates";
+            hint = "composition";
         } else {
-            hint = "0";
+            hint = "composition,candidates";
         }
 #else
         old_hint = SDL_GetHint("SDL_IME_INTERNAL_EDITING");
         if (old_hint && *old_hint == '1') {
-            hint = "1";
+            hint = "0";
         } else {
-            hint = "candidates";
+            hint = "composition";
         }
 #endif
-        SDL_SetHint(SDL_HINT_IME_NATIVE_UI, hint);
+        SDL_SetHint(SDL_HINT_IME_IMPLEMENTED_UI, hint);
     }
 
     ret = SDL3_InitSubSystem(flags);
