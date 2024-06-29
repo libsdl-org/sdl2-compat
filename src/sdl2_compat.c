@@ -433,8 +433,8 @@ static struct {
     const char *old_hint;
     const char *new_hint;
 } renamed_hints[] = {
-    { "SDL_AUDIODRIVER", "SDL_AUDIO_DRIVER" },
     { "SDL_ALLOW_TOPMOST", "SDL_WINDOW_ALLOW_TOPMOST" },
+    { "SDL_AUDIODRIVER", "SDL_AUDIO_DRIVER" },
     { "SDL_DIRECTINPUT_ENABLED", "SDL_JOYSTICK_DIRECTINPUT" },
     { "SDL_GDK_TEXTINPUT_DEFAULT", "SDL_GDK_TEXTINPUT_DEFAULT_TEXT" },
     { "SDL_JOYSTICK_GAMECUBE_RUMBLE_BRAKE", "SDL_JOYSTICK_HIDAPI_GAMECUBE_RUMBLE_BRAKE" },
@@ -4926,6 +4926,29 @@ SDL_InitSubSystem(Uint32 flags)
 {
     int ret;
 
+    /* Update IME UI hint */
+    if (flags & SDL_INIT_VIDEO) {
+        const char *old_hint;
+        const char *hint;
+
+#if defined(SDL_PLATFORM_WIN32)
+        old_hint = SDL_GetHint("SDL_IME_SHOW_UI");
+        if (old_hint && *old_hint == '1') {
+            hint = "candidates";
+        } else {
+            hint = "0";
+        }
+#else
+        old_hint = SDL_GetHint("SDL_IME_INTERNAL_EDITING");
+        if (old_hint && *old_hint == '1') {
+            hint = "1";
+        } else {
+            hint = "candidates";
+        }
+#endif
+        SDL_SetHint(SDL_HINT_IME_NATIVE_UI, hint);
+    }
+
     ret = SDL3_InitSubSystem(flags);
     if (flags & SDL_INIT_VIDEO) {
         /* default SDL2 GL attributes */
@@ -6906,7 +6929,7 @@ SDL_SetTextInputRect(const SDL_Rect *rect)
         int i;
 
         for ( i = 0; windows[i]; ++i ) {
-            SDL3_SetTextInputRect(windows[i], rect);
+            SDL3_SetTextInputArea(windows[i], rect, 0);
         }
         SDL_free( windows );
     }
