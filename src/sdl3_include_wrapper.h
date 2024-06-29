@@ -469,6 +469,7 @@
 #define SDL_GetSystemRAM IGNORE_THIS_VERSION_OF_SDL_GetSystemRAM
 #define SDL_GetSystemTheme IGNORE_THIS_VERSION_OF_SDL_GetSystemTheme
 #define SDL_GetTLS IGNORE_THIS_VERSION_OF_SDL_GetTLS
+#define SDL_GetTextInputArea IGNORE_THIS_VERSION_OF_SDL_GetTextInputArea
 #define SDL_GetTextureAlphaMod IGNORE_THIS_VERSION_OF_SDL_GetTextureAlphaMod
 #define SDL_GetTextureAlphaModFloat IGNORE_THIS_VERSION_OF_SDL_GetTextureAlphaModFloat
 #define SDL_GetTextureBlendMode IGNORE_THIS_VERSION_OF_SDL_GetTextureBlendMode
@@ -777,7 +778,7 @@
 #define SDL_SetSurfacePalette IGNORE_THIS_VERSION_OF_SDL_SetSurfacePalette
 #define SDL_SetSurfaceRLE IGNORE_THIS_VERSION_OF_SDL_SetSurfaceRLE
 #define SDL_SetTLS IGNORE_THIS_VERSION_OF_SDL_SetTLS
-#define SDL_SetTextInputRect IGNORE_THIS_VERSION_OF_SDL_SetTextInputRect
+#define SDL_SetTextInputArea IGNORE_THIS_VERSION_OF_SDL_SetTextInputArea
 #define SDL_SetTextureAlphaMod IGNORE_THIS_VERSION_OF_SDL_SetTextureAlphaMod
 #define SDL_SetTextureAlphaModFloat IGNORE_THIS_VERSION_OF_SDL_SetTextureAlphaModFloat
 #define SDL_SetTextureBlendMode IGNORE_THIS_VERSION_OF_SDL_SetTextureBlendMode
@@ -820,6 +821,7 @@
 #define SDL_SignalCondition IGNORE_THIS_VERSION_OF_SDL_SignalCondition
 #define SDL_SoftStretch IGNORE_THIS_VERSION_OF_SDL_SoftStretch
 #define SDL_StartTextInput IGNORE_THIS_VERSION_OF_SDL_StartTextInput
+#define SDL_StepUTF8 IGNORE_THIS_VERSION_OF_SDL_StepUTF8
 #define SDL_StopHapticEffect IGNORE_THIS_VERSION_OF_SDL_StopHapticEffect
 #define SDL_StopHapticEffects IGNORE_THIS_VERSION_OF_SDL_StopHapticEffects
 #define SDL_StopHapticRumble IGNORE_THIS_VERSION_OF_SDL_StopHapticRumble
@@ -2834,6 +2836,10 @@
 #undef SDL_GetTLS
 #endif
 
+#ifdef SDL_GetTextInputArea
+#undef SDL_GetTextInputArea
+#endif
+
 #ifdef SDL_GetTextureAlphaMod
 #undef SDL_GetTextureAlphaMod
 #endif
@@ -4066,8 +4072,8 @@
 #undef SDL_SetTLS
 #endif
 
-#ifdef SDL_SetTextInputRect
-#undef SDL_SetTextInputRect
+#ifdef SDL_SetTextInputArea
+#undef SDL_SetTextInputArea
 #endif
 
 #ifdef SDL_SetTextureAlphaMod
@@ -4236,6 +4242,10 @@
 
 #ifdef SDL_StartTextInput
 #undef SDL_StartTextInput
+#endif
+
+#ifdef SDL_StepUTF8
+#undef SDL_StepUTF8
 #endif
 
 #ifdef SDL_StopHapticEffect
