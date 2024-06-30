@@ -59,6 +59,15 @@ _m_prefetch(void *__P)
 #ifdef __linux__
 #include <endian.h>
 #define SDL_BYTEORDER  __BYTE_ORDER
+#elif defined(__sun) && defined(__SVR4)  /* Solaris */
+#include <sys/byteorder.h>
+#if defined(_LITTLE_ENDIAN)
+#define SDL_BYTEORDER   SDL_LIL_ENDIAN
+#elif defined(_BIG_ENDIAN)
+#define SDL_BYTEORDER   SDL_BIG_ENDIAN
+#else
+#error Unsupported endianness
+#endif
 #elif defined(__OpenBSD__) || defined(__DragonFly__)
 #include <endian.h>
 #define SDL_BYTEORDER  BYTE_ORDER
@@ -79,7 +88,7 @@ _m_prefetch(void *__P)
     defined(__m68k__) || defined(mc68000) || defined(_M_M68K) || \
     (defined(__MIPS__) && defined(__MIPSEB__)) || \
     defined(__ppc__) || defined(__POWERPC__) || defined(__powerpc__) || defined(__PPC__) || \
-    defined(__sparc__)
+    defined(__sparc__) || defined(__sparc)
 #define SDL_BYTEORDER   SDL_BIG_ENDIAN
 #else
 #define SDL_BYTEORDER   SDL_LIL_ENDIAN
@@ -184,7 +193,7 @@ extern __inline Uint16 SDL_Swap16(Uint16);
 /**
  * Use this function to swap the byte order of a 16-bit value.
  *
- * \param x the value to be swapped
+ * \param x the value to be swapped.
  * \returns the swapped value.
  *
  * \sa SDL_SwapBE16
@@ -245,7 +254,7 @@ extern __inline Uint32 SDL_Swap32(Uint32);
 /**
  * Use this function to swap the byte order of a 32-bit value.
  *
- * \param x the value to be swapped
+ * \param x the value to be swapped.
  * \returns the swapped value.
  *
  * \sa SDL_SwapBE32
@@ -300,7 +309,7 @@ extern __inline Uint64 SDL_Swap64(Uint64);
 /**
  * Use this function to swap the byte order of a 64-bit value.
  *
- * \param x the value to be swapped
+ * \param x the value to be swapped.
  * \returns the swapped value.
  *
  * \sa SDL_SwapBE64
@@ -326,7 +335,7 @@ SDL_Swap64(Uint64 x)
 /**
  * Use this function to swap the byte order of a floating point value.
  *
- * \param x the value to be swapped
+ * \param x the value to be swapped.
  * \returns the swapped value.
  *
  * \sa SDL_SwapFloatBE
