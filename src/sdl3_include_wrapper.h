@@ -425,6 +425,7 @@
 #define SDL_GetRenderDrawColorFloat IGNORE_THIS_VERSION_OF_SDL_GetRenderDrawColorFloat
 #define SDL_GetRenderDriver IGNORE_THIS_VERSION_OF_SDL_GetRenderDriver
 #define SDL_GetRenderLogicalPresentation IGNORE_THIS_VERSION_OF_SDL_GetRenderLogicalPresentation
+#define SDL_GetRenderLogicalPresentationRect IGNORE_THIS_VERSION_OF_SDL_GetRenderLogicalPresentationRect
 #define SDL_GetRenderMetalCommandEncoder IGNORE_THIS_VERSION_OF_SDL_GetRenderMetalCommandEncoder
 #define SDL_GetRenderMetalLayer IGNORE_THIS_VERSION_OF_SDL_GetRenderMetalLayer
 #define SDL_GetRenderOutputSize IGNORE_THIS_VERSION_OF_SDL_GetRenderOutputSize
@@ -677,7 +678,6 @@
 #define SDL_RenderFillRects IGNORE_THIS_VERSION_OF_SDL_RenderFillRects
 #define SDL_RenderGeometry IGNORE_THIS_VERSION_OF_SDL_RenderGeometry
 #define SDL_RenderGeometryRaw IGNORE_THIS_VERSION_OF_SDL_RenderGeometryRaw
-#define SDL_RenderGeometryRawFloat IGNORE_THIS_VERSION_OF_SDL_RenderGeometryRawFloat
 #define SDL_RenderLine IGNORE_THIS_VERSION_OF_SDL_RenderLine
 #define SDL_RenderLines IGNORE_THIS_VERSION_OF_SDL_RenderLines
 #define SDL_RenderPoint IGNORE_THIS_VERSION_OF_SDL_RenderPoint
@@ -2660,6 +2660,10 @@
 #undef SDL_GetRenderLogicalPresentation
 #endif
 
+#ifdef SDL_GetRenderLogicalPresentationRect
+#undef SDL_GetRenderLogicalPresentationRect
+#endif
+
 #ifdef SDL_GetRenderMetalCommandEncoder
 #undef SDL_GetRenderMetalCommandEncoder
 #endif
@@ -3666,10 +3670,6 @@
 
 #ifdef SDL_RenderGeometryRaw
 #undef SDL_RenderGeometryRaw
-#endif
-
-#ifdef SDL_RenderGeometryRawFloat
-#undef SDL_RenderGeometryRawFloat
 #endif
 
 #ifdef SDL_RenderLine
