@@ -1852,6 +1852,22 @@ SDL_PushEvent(SDL2_Event *event2)
 
 static int Display_IDToIndex(SDL_DisplayID displayID);
 
+static Uint8
+WindowEventType3To2(Uint32 event_type3)
+{
+    Uint8 event_type2 = (Uint8) (event_type3 - (Uint32) SDL_EVENT_WINDOW_SHOWN + 1);
+
+    /* SDL_EVENT_WINDOW_TAKE_FOCUS (formerly event 528, now SDL_EVENT_WINDOW_HIT_TEST) was removed from SDL3.
+     * SDL_EVENT_WINDOW_HIT_TEST and higher need the offset adjusted by an additional +1 when mapping to SDL2
+     * to account for the difference.
+     */
+    if (event_type3 >= SDL_EVENT_WINDOW_HIT_TEST) {
+        event_type2 += 1;
+    }
+
+    return event_type2;
+}
+
 static int SDLCALL
 EventFilter3to2(void *userdata, SDL_Event *event3)
 {
@@ -1919,15 +1935,16 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
         case SDL_EVENT_WINDOW_FOCUS_GAINED:
         case SDL_EVENT_WINDOW_FOCUS_LOST:
         case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
-        case SDL_EVENT_WINDOW_TAKE_FOCUS:
         case SDL_EVENT_WINDOW_HIT_TEST:
         case SDL_EVENT_WINDOW_ICCPROF_CHANGED:
         case SDL_EVENT_WINDOW_DISPLAY_CHANGED:
             if (SDL3_EventEnabled(SDL2_WINDOWEVENT)) {
+
+
                 event2.window.type = SDL2_WINDOWEVENT;
                 event2.window.timestamp = (Uint32) SDL_NS_TO_MS(event3->window.timestamp);
                 event2.window.windowID = event3->window.windowID;
-                event2.window.event = (Uint8) ((event3->type - ((Uint32) SDL_EVENT_WINDOW_SHOWN)) + 1);
+                event2.window.event = WindowEventType3To2(event3->type);
                 event2.window.padding1 = 0;
                 event2.window.padding2 = 0;
                 event2.window.padding3 = 0;
@@ -7131,6 +7148,12 @@ SDL_DECLSPEC void SDLCALL
 SDL_RaiseWindow(SDL_Window *window)
 {
     SDL3_RaiseWindow(window);
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_SetWindowInputFocus(SDL_Window *window)
+{
+    return SDL3_RaiseWindow(window);
 }
 
 SDL_DECLSPEC void SDLCALL
