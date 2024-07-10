@@ -171,7 +171,7 @@
 #define SDL_GDKGetTaskQueue IGNORE_THIS_VERSION_OF_SDL_GDKGetTaskQueue
 #define SDL_GDKSuspendComplete IGNORE_THIS_VERSION_OF_SDL_GDKSuspendComplete
 #define SDL_GL_CreateContext IGNORE_THIS_VERSION_OF_SDL_GL_CreateContext
-#define SDL_GL_DeleteContext IGNORE_THIS_VERSION_OF_SDL_GL_DeleteContext
+#define SDL_GL_DestroyContext IGNORE_THIS_VERSION_OF_SDL_GL_DestroyContext
 #define SDL_GL_ExtensionSupported IGNORE_THIS_VERSION_OF_SDL_GL_ExtensionSupported
 #define SDL_GL_GetAttribute IGNORE_THIS_VERSION_OF_SDL_GL_GetAttribute
 #define SDL_GL_GetCurrentContext IGNORE_THIS_VERSION_OF_SDL_GL_GetCurrentContext
@@ -1649,8 +1649,8 @@
 #undef SDL_GL_CreateContext
 #endif
 
-#ifdef SDL_GL_DeleteContext
-#undef SDL_GL_DeleteContext
+#ifdef SDL_GL_DestroyContext
+#undef SDL_GL_DestroyContext
 #endif
 
 #ifdef SDL_GL_ExtensionSupported

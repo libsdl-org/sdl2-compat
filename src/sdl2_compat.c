@@ -7411,10 +7411,11 @@ SDL_SetWindowMouseGrab(SDL_Window *window, SDL_bool grabbed)
     SDL3_SetWindowMouseGrab(window, grabbed);
 }
 
+/* SDL3 added a return value and renamed this. We just throw the value away for SDL2. */
 SDL_DECLSPEC void SDLCALL
 SDL_GL_DeleteContext(SDL_GLContext context)
 {
-    SDL3_GL_DeleteContext(context);
+    (void) SDL3_GL_DestroyContext(context);
 }
 
 SDL_DECLSPEC void SDLCALL
