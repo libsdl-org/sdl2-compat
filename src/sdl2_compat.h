@@ -796,6 +796,65 @@ typedef struct SDL2_RendererInfo
     int max_texture_height;     /**< The maximum texture height */
 } SDL2_RendererInfo;
 
+
+typedef struct SDL2_PixelFormat
+{
+    Uint32 format;
+    SDL_Palette *palette;
+    Uint8 BitsPerPixel;
+    Uint8 BytesPerPixel;
+    Uint8 padding[2];
+    Uint32 Rmask;
+    Uint32 Gmask;
+    Uint32 Bmask;
+    Uint32 Amask;
+    Uint8 Rloss;
+    Uint8 Gloss;
+    Uint8 Bloss;
+    Uint8 Aloss;
+    Uint8 Rshift;
+    Uint8 Gshift;
+    Uint8 Bshift;
+    Uint8 Ashift;
+    int refcount;
+    struct SDL2_PixelFormat *next;
+} SDL2_PixelFormat;
+
+#define SDL_PREALLOC                0x00000001u /**< Surface uses preallocated memory */
+#define SDL_RLEACCEL                0x00000002u /**< Surface is RLE encoded */
+#define SDL_DONTFREE                0x00000004u /**< Surface is referenced internally */
+#define SDL_SIMD_ALIGNED            0x00000008u /**< Surface uses aligned memory */
+#define SHARED_SURFACE_FLAGS        (SDL_PREALLOC | SDL_RLEACCEL | SDL_SIMD_ALIGNED)
+
+typedef struct SDL_BlitMap SDL_BlitMap;
+
+typedef struct SDL2_Surface
+{
+    Uint32 flags;               /**< Read-only */
+    SDL2_PixelFormat *format;   /**< Read-only */
+    int w, h;                   /**< Read-only */
+    int pitch;                  /**< Read-only */
+    void *pixels;               /**< Read-write */
+
+    /** Application data associated with the surface */
+    void *userdata;             /**< Read-write */
+
+    /** information needed for surfaces requiring locks */
+    int locked;                 /**< Read-only */
+
+    /** list of BlitMap that hold a reference to this surface */
+    void *list_blitmap;         /**< Private */
+
+    /** clipping information */
+    SDL_Rect clip_rect;         /**< Read-only */
+
+    /** info for fast blit mapping to other surfaces */
+    SDL_BlitMap *map;           /**< Private */
+
+    /** Reference count -- used when freeing surface */
+    int refcount;               /**< Read-mostly */
+} SDL2_Surface;
+
 #define SDL_VIRTUAL_JOYSTICK_DESC_VERSION 1
 
 typedef struct SDL2_VirtualJoystickDesc

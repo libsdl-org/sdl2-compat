@@ -2848,7 +2848,111 @@ SDL_LoadWAV_RW(SDL2_RWops *rwops2, int freesrc, SDL2_AudioSpec *spec2, Uint8 **a
     return retval;
 }
 
-SDL_DECLSPEC SDL_Surface *SDLCALL
+#define PROP_SURFACE2 "sdl2-compat.surface2"
+
+static void SDLCALL CleanupSurface2(void *userdata, void *value)
+{
+    SDL2_Surface *surface = (SDL2_Surface *)value;
+
+    if (surface->format) {
+        SDL_SetPixelFormatPalette(surface->format, NULL);
+        SDL_FreeFormat(surface->format);
+        surface->format = NULL;
+    }
+    SDL_free(surface);
+}
+
+static SDL2_Surface *CreateSurface2from3(SDL_Surface *surface3)
+{
+    /* Allocate the surface */
+    SDL2_Surface *surface = (SDL2_Surface *)SDL3_calloc(1, sizeof(*surface));
+    if (!surface) {
+        SDL3_OutOfMemory();
+        return NULL;
+    }
+
+    /* Link the surfaces */
+    surface->map = (SDL_BlitMap *)surface3;
+    SDL3_SetPropertyWithCleanup(SDL3_GetSurfaceProperties(surface3), PROP_SURFACE2, surface, CleanupSurface2, NULL);
+
+    surface->format = SDL_AllocFormat(surface3->format);
+    if (!surface->format) {
+        SDL_FreeSurface(surface);
+        return NULL;
+    }
+    surface->flags = (surface3->flags & SHARED_SURFACE_FLAGS);
+    surface->w = surface3->w;
+    surface->h = surface3->h;
+    surface->pixels = surface3->pixels;
+    surface->pitch = surface3->pitch;
+
+    SDL3_GetSurfaceClipRect(surface3, &surface->clip_rect);
+
+    if (SDL_ISPIXELFORMAT_INDEXED(surface->format->format)) {
+        SDL_Palette *palette = SDL3_GetSurfacePalette(surface3);
+        if (palette) {
+            ++palette->refcount;
+        } else {
+            palette = SDL3_CreatePalette((1 << surface->format->BitsPerPixel));
+        }
+        if (!palette) {
+            SDL_FreeSurface(surface);
+            return NULL;
+        }
+        if (palette->ncolors == 2) {
+            /* Create a black and white bitmap palette */
+            palette->colors[0].r = 0xFF;
+            palette->colors[0].g = 0xFF;
+            palette->colors[0].b = 0xFF;
+            palette->colors[1].r = 0x00;
+            palette->colors[1].g = 0x00;
+            palette->colors[1].b = 0x00;
+        }
+        SDL_SetSurfacePalette(surface, palette);
+        SDL3_DestroyPalette(palette);
+    }
+
+    /* The surface is ready to go */
+    surface->refcount = 1;
+    return surface;
+}
+
+static SDL2_Surface *Surface3to2(SDL_Surface *surface)
+{
+    SDL2_Surface *surface2 = NULL;
+
+    if (surface) {
+        surface2 = (SDL2_Surface *)SDL3_GetProperty(SDL3_GetSurfaceProperties(surface), PROP_SURFACE2, NULL);
+        if (!surface2) {
+            surface2 = CreateSurface2from3(surface);
+        }
+    }
+    return surface2;
+}
+
+static SDL_Surface *Surface2to3(SDL2_Surface *surface)
+{
+    SDL_Surface *surface3 = NULL;
+
+    if (surface) {
+        surface3 = (SDL_Surface *)surface->map;
+        SDL_assert(surface3 != NULL);
+
+        /* Synchronize any changes made by the application to the SDL2 surface
+         * The application might have changed memory allocation, e.g.:
+         * https://github.com/libsdl-org/SDL_ttf/blob/7e4a456bf463b887b94c191030dd742d7654d6ff/SDL_ttf.c#L1476-L1478
+         */
+        SDL_assert(surface->w == surface3->w);
+        SDL_assert(surface->h == surface3->h);
+        surface3->flags &= ~(surface->flags & SHARED_SURFACE_FLAGS);
+        surface3->flags |= (surface->flags & SHARED_SURFACE_FLAGS);
+        surface3->pixels = surface->pixels;
+        surface3->pitch = surface->pitch;
+    }
+    return surface3;
+}
+
+SDL_DECLSPEC SDL2_Surface *SDLCALL
 SDL_LoadBMP_RW(SDL2_RWops *rwops2, int freesrc)
 {
     SDL_Surface *retval = NULL;
@@ -2859,19 +2963,19 @@ SDL_LoadBMP_RW(SDL2_RWops *rwops2, int freesrc)
     if (rwops2 && freesrc) {
         SDL_RWclose(rwops2);
     }
-    return retval;
+    return Surface3to2(retval);
 }
 
 SDL_DECLSPEC int SDLCALL
-SDL_SaveBMP_RW(SDL_Surface *surface, SDL2_RWops *rwops2, int freedst)
+SDL_SaveBMP_RW(SDL2_Surface *surface, SDL2_RWops *rwops, int freedst)
 {
     int retval = -1;
-    SDL_IOStream *iostrm3 = RWops2to3(rwops2);
-    if (iostrm3) {
-        retval = SDL3_SaveBMP_IO(surface, iostrm3, SDL_TRUE);    /* always close the iostrm3 bridge object. */
+    SDL_IOStream *iostream = RWops2to3(rwops);
+    if (iostream) {
+        retval = SDL3_SaveBMP_IO(Surface2to3(surface), iostream, SDL_TRUE);    /* always close the iostrm3 bridge object. */
     }
-    if (rwops2 && freedst) {
-        SDL_RWclose(rwops2);
+    if (rwops && freedst) {
+        SDL_RWclose(rwops);
     }
     return retval;
 }
@@ -2982,18 +3086,34 @@ SDL_GetWindowGammaRamp(SDL_Window *window, Uint16 *red, Uint16 *blue, Uint16 *gr
     return 0;
 }
 
-SDL_DECLSPEC SDL_Surface * SDLCALL
-SDL_ConvertSurface(SDL_Surface *src, const SDL_PixelFormat *fmt, Uint32 flags)
+SDL_DECLSPEC SDL2_Surface * SDLCALL
+SDL_ConvertSurface(SDL2_Surface *surface, const SDL2_PixelFormat *format, Uint32 flags)
 {
     (void) flags; /* SDL3 removed the (unused) `flags` argument */
-    return SDL3_ConvertSurface(src, fmt);
+
+    if (!surface) {
+        SDL3_InvalidParamError("surface");
+        return NULL;
+    }
+    if (!format) {
+        SDL3_InvalidParamError("format");
+        return NULL;
+    }
+
+    return Surface3to2(SDL3_ConvertSurfaceAndColorspace(Surface2to3(surface), (SDL_PixelFormat)format->format, format->palette, SDL_COLORSPACE_SRGB, 0));
 }
 
-SDL_DECLSPEC SDL_Surface * SDLCALL
-SDL_ConvertSurfaceFormat(SDL_Surface * src, Uint32 pixel_format, Uint32 flags)
+SDL_DECLSPEC SDL2_Surface * SDLCALL
+SDL_DuplicateSurface(SDL2_Surface *surface)
+{
+    return Surface3to2(SDL3_DuplicateSurface(Surface2to3(surface)));
+}
+
+SDL_DECLSPEC SDL2_Surface * SDLCALL
+SDL_ConvertSurfaceFormat(SDL2_Surface *surface, Uint32 pixel_format, Uint32 flags)
 {
     (void) flags; /* SDL3 removed the (unused) `flags` argument */
-    return SDL3_ConvertSurfaceFormat(src, (SDL_PixelFormatEnum)pixel_format);
+    return Surface3to2(SDL3_ConvertSurface(Surface2to3(surface), (SDL_PixelFormat)pixel_format));
 }
 
 #define SDL_YUV_SD_THRESHOLD 576
@@ -3048,67 +3168,99 @@ SDL_ConvertPixels(int width, int height, Uint32 src_format, const void *src, int
 {
     SDL_Colorspace src_colorspace = GetColorspaceForFormatAndSize(src_format, width, height);
     SDL_Colorspace dst_colorspace = GetColorspaceForFormatAndSize(dst_format, width, height);
-    return SDL3_ConvertPixelsAndColorspace(width, height, (SDL_PixelFormatEnum)src_format, src_colorspace, 0, src, src_pitch, (SDL_PixelFormatEnum)dst_format, dst_colorspace, 0, dst, dst_pitch);
+    return SDL3_ConvertPixelsAndColorspace(width, height, (SDL_PixelFormat)src_format, src_colorspace, 0, src, src_pitch, (SDL_PixelFormat)dst_format, dst_colorspace, 0, dst, dst_pitch);
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_PremultiplyAlpha(int width, int height, Uint32 src_format, const void * src, int src_pitch, Uint32 dst_format, void * dst, int dst_pitch)
 {
-    return SDL3_PremultiplyAlpha(width, height, (SDL_PixelFormatEnum)src_format, src, src_pitch, (SDL_PixelFormatEnum)dst_format, dst, dst_pitch);
+    return SDL3_PremultiplyAlpha(width, height, (SDL_PixelFormat)src_format, src, src_pitch, (SDL_PixelFormat)dst_format, dst, dst_pitch);
 }
 
-SDL_DECLSPEC SDL_Surface * SDLCALL
+SDL_DECLSPEC SDL2_Surface * SDLCALL
 SDL_CreateRGBSurface(Uint32 flags, int width, int height, int depth, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
 {
-    return SDL3_CreateSurface(width, height, SDL3_GetPixelFormatEnumForMasks(depth, Rmask, Gmask, Bmask, Amask));
+    return Surface3to2(SDL3_CreateSurface(width, height, SDL3_GetPixelFormatForMasks(depth, Rmask, Gmask, Bmask, Amask)));
 }
 
-SDL_DECLSPEC SDL_Surface * SDLCALL
+SDL_DECLSPEC SDL2_Surface * SDLCALL
 SDL_CreateRGBSurfaceWithFormat(Uint32 flags, int width, int height, int depth, Uint32 format)
 {
-    return SDL3_CreateSurface(width, height, (SDL_PixelFormatEnum)format);
+    return Surface3to2(SDL3_CreateSurface(width, height, (SDL_PixelFormat)format));
 }
 
-SDL_DECLSPEC SDL_Surface * SDLCALL
+SDL_DECLSPEC SDL2_Surface * SDLCALL
 SDL_CreateRGBSurfaceFrom(void *pixels, int width, int height, int depth, int pitch, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
 {
-    return SDL3_CreateSurfaceFrom(pixels, width, height, pitch, SDL3_GetPixelFormatEnumForMasks(depth, Rmask, Gmask, Bmask, Amask));
+    return Surface3to2(SDL3_CreateSurfaceFrom(width, height, SDL3_GetPixelFormatForMasks(depth, Rmask, Gmask, Bmask, Amask), pixels, pitch));
 }
 
-SDL_DECLSPEC SDL_Surface * SDLCALL
+SDL_DECLSPEC SDL2_Surface * SDLCALL
 SDL_CreateRGBSurfaceWithFormatFrom(void *pixels, int width, int height, int depth, int pitch, Uint32 format)
 {
-    return SDL3_CreateSurfaceFrom(pixels, width, height, pitch, (SDL_PixelFormatEnum)format);
+    return Surface3to2(SDL3_CreateSurfaceFrom(width, height, (SDL_PixelFormat)format, pixels, pitch));
+}
+
+SDL_DECLSPEC void SDLCALL
+SDL_FreeSurface(SDL2_Surface *surface)
+{
+    if (!surface) {
+        return;
+    }
+
+    if (--surface->refcount > 0) {
+        return;
+    }
+
+    SDL3_DestroySurface(Surface2to3(surface));
 }
 
 SDL_DECLSPEC int SDLCALL
-SDL_LowerBlit(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect)
+SDL_FillRect(SDL2_Surface *dst, const SDL_Rect *rect, Uint32 color)
 {
-    return SDL3_BlitSurfaceUnchecked(src, srcrect, dst, dstrect);
+    return SDL3_FillSurfaceRect(Surface2to3(dst), rect, color);
 }
 
 SDL_DECLSPEC int SDLCALL
-SDL_LowerBlitScaled(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect)
+SDL_FillRects(SDL2_Surface *dst, const SDL_Rect *rects, int count, Uint32 color)
 {
-    return SDL3_BlitSurfaceUncheckedScaled(src, srcrect, dst, dstrect, SDL_SCALEMODE_NEAREST);
+    return SDL3_FillSurfaceRects(Surface2to3(dst), rects, count, color);
 }
 
 SDL_DECLSPEC int SDLCALL
-SDL_UpperBlitScaled(SDL_Surface *src, const SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect)
+SDL_UpperBlit(SDL2_Surface *src, const SDL_Rect *srcrect, SDL2_Surface *dst, SDL_Rect *dstrect)
 {
-    return SDL3_BlitSurfaceScaled(src, srcrect, dst, dstrect, SDL_SCALEMODE_NEAREST);
+    return SDL3_BlitSurface(Surface2to3(src), srcrect, Surface2to3(dst), dstrect);
 }
 
 SDL_DECLSPEC int SDLCALL
-SDL_SoftStretch(SDL_Surface *src, const SDL_Rect *srcrect, SDL_Surface *dst, const SDL_Rect *dstrect)
+SDL_LowerBlit(SDL2_Surface *src, SDL_Rect *srcrect, SDL2_Surface *dst, SDL_Rect *dstrect)
 {
-    return SDL3_SoftStretch(src, srcrect, dst, dstrect, SDL_SCALEMODE_NEAREST);
+    return SDL3_BlitSurfaceUnchecked(Surface2to3(src), srcrect, Surface2to3(dst), dstrect);
 }
 
 SDL_DECLSPEC int SDLCALL
-SDL_SoftStretchLinear(SDL_Surface *src, const SDL_Rect *srcrect, SDL_Surface *dst, const SDL_Rect *dstrect)
+SDL_LowerBlitScaled(SDL2_Surface *src, SDL_Rect *srcrect, SDL2_Surface *dst, SDL_Rect *dstrect)
 {
-    return SDL3_SoftStretch(src, srcrect, dst, dstrect, SDL_SCALEMODE_LINEAR);
+    return SDL3_BlitSurfaceUncheckedScaled(Surface2to3(src), srcrect, Surface2to3(dst), dstrect, SDL_SCALEMODE_NEAREST);
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_UpperBlitScaled(SDL2_Surface *src, const SDL_Rect *srcrect, SDL2_Surface *dst, SDL_Rect *dstrect)
+{
+    return SDL3_BlitSurfaceScaled(Surface2to3(src), srcrect, Surface2to3(dst), dstrect, SDL_SCALEMODE_NEAREST);
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_SoftStretch(SDL2_Surface *src, const SDL_Rect *srcrect, SDL2_Surface *dst, const SDL_Rect *dstrect)
+{
+    return SDL3_SoftStretch(Surface2to3(src), srcrect, Surface2to3(dst), dstrect, SDL_SCALEMODE_NEAREST);
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_SoftStretchLinear(SDL2_Surface *src, const SDL_Rect *srcrect, SDL2_Surface *dst, const SDL_Rect *dstrect)
+{
+    return SDL3_SoftStretch(Surface2to3(src), srcrect, Surface2to3(dst), dstrect, SDL_SCALEMODE_LINEAR);
 }
 
 /* SDL_GetTicks is 64-bit in SDL3. Clamp it for SDL2. */
@@ -3950,7 +4102,7 @@ GestureProcessEvent(const SDL_Event *event3)
 
 
 /* REQUIRES that bitmap point to a w-by-h bitmap with ppb pixels-per-byte. */
-static void SDL_CalculateShapeBitmap(SDL_WindowShapeMode mode, SDL_Surface *shape, Uint32 *pixels, int pitch)
+static void SDL_CalculateShapeBitmap(SDL_WindowShapeMode mode, SDL2_Surface *shape, Uint32 *pixels, int pitch)
 {
     int x = 0;
     int y = 0;
@@ -3963,8 +4115,8 @@ static void SDL_CalculateShapeBitmap(SDL_WindowShapeMode mode, SDL_Surface *shap
         for (x = 0; x < shape->w; x++) {
             alpha = 0;
             pixel_value = 0;
-            pixel = (Uint8 *)(shape->pixels) + (y * shape->pitch) + (x * shape->format->bytes_per_pixel);
-            switch (shape->format->bytes_per_pixel) {
+            pixel = (Uint8 *)(shape->pixels) + (y * shape->pitch) + (x * shape->format->BytesPerPixel);
+            switch (shape->format->BytesPerPixel) {
             case 1:
                 pixel_value = *pixel;
                 break;
@@ -3978,7 +4130,7 @@ static void SDL_CalculateShapeBitmap(SDL_WindowShapeMode mode, SDL_Surface *shap
                 pixel_value = *(Uint32 *)pixel;
                 break;
             }
-            SDL3_GetRGBA(pixel_value, shape->format, &r, &g, &b, &alpha);
+            SDL_GetRGBA(pixel_value, shape->format, &r, &g, &b, &alpha);
             switch (mode.mode) {
             case (ShapeModeDefault):
                 mask_value = (alpha >= 1 ? 0xFFFFFFFF : 0);
@@ -4026,7 +4178,7 @@ static void SDLCALL CleanupFreeableProperty(void *userdata, void *value)
 }
 
 SDL_DECLSPEC int SDLCALL
-SDL_SetWindowShape(SDL_Window *window, SDL_Surface *shape, SDL_WindowShapeMode *shape_mode)
+SDL_SetWindowShape(SDL_Window *window, SDL2_Surface *shape, SDL_WindowShapeMode *shape_mode)
 {
     SDL_Surface *surface;
     int result;
@@ -4090,7 +4242,7 @@ SDL_GetRendererInfo(SDL_Renderer *renderer, SDL2_RendererInfo *info)
 {
     SDL_PropertiesID props;
     unsigned int i;
-    const SDL_PixelFormatEnum *formats;
+    const SDL_PixelFormat *formats;
 
     SDL3_zerop(info);
 
@@ -4109,7 +4261,7 @@ SDL_GetRendererInfo(SDL_Renderer *renderer, SDL2_RendererInfo *info)
         info->flags |= SDL2_RENDERER_PRESENTVSYNC;
     }
 
-    formats = (const SDL_PixelFormatEnum *)SDL3_GetProperty(props, SDL_PROP_RENDERER_TEXTURE_FORMATS_POINTER, NULL);
+    formats = (const SDL_PixelFormat *)SDL3_GetProperty(props, SDL_PROP_RENDERER_TEXTURE_FORMATS_POINTER, NULL);
     for (i = 0; i < 16 && formats[i]; ++i) {
         info->texture_formats[i] = formats[i];
     }
@@ -4248,6 +4400,32 @@ SDL_DECLSPEC void SDLCALL
 SDL_RenderGetViewport(SDL_Renderer *renderer, SDL_Rect *rect)
 {
     SDL3_GetRenderViewport(renderer, rect);
+}
+
+SDL_DECLSPEC SDL_bool SDLCALL
+SDL_SetClipRect(SDL2_Surface *surface, const SDL_Rect *rect)
+{
+    SDL_Rect full_rect;
+
+    /* Don't do anything if there's no surface to act on */
+    if (!surface) {
+        return SDL_FALSE;
+    }
+
+    SDL3_SetSurfaceClipRect(Surface2to3(surface), rect);
+
+    /* Set up the full surface rectangle */
+    full_rect.x = 0;
+    full_rect.y = 0;
+    full_rect.w = surface->w;
+    full_rect.h = surface->h;
+
+    /* Set the clipping rectangle */
+    if (!rect) {
+        surface->clip_rect = full_rect;
+        return SDL_TRUE;
+    }
+    return SDL_IntersectRect(rect, &full_rect, &surface->clip_rect);
 }
 
 SDL_DECLSPEC void SDLCALL
@@ -4742,7 +4920,6 @@ SDL_RenderGeometryRaw(SDL_Renderer *renderer, SDL_Texture *texture, const float 
 SDL_DECLSPEC int SDLCALL
 SDL_RenderReadPixels(SDL_Renderer * renderer, const SDL_Rect * rect, Uint32 format, void *pixels, int pitch)
 {
-    SDL_Colorspace surface_colorspace = SDL_COLORSPACE_UNKNOWN;
     int result = -1;
 
     SDL_Surface *surface = SDL3_RenderReadPixels(renderer, rect);
@@ -4750,8 +4927,7 @@ SDL_RenderReadPixels(SDL_Renderer * renderer, const SDL_Rect * rect, Uint32 form
         return -1;
     }
 
-    if (SDL3_GetSurfaceColorspace(surface, &surface_colorspace) == 0 &&
-        SDL3_ConvertPixelsAndColorspace(surface->w, surface->h, surface->format->format, surface_colorspace, SDL3_GetSurfaceProperties(surface), surface->pixels, surface->pitch, (SDL_PixelFormatEnum)format, SDL_COLORSPACE_SRGB, 0, pixels, pitch) == 0 ) {
+    if (SDL3_ConvertPixelsAndColorspace(surface->w, surface->h, surface->format, SDL3_GetSurfaceColorspace(surface), SDL3_GetSurfaceProperties(surface), surface->pixels, surface->pitch, (SDL_PixelFormat)format, SDL_COLORSPACE_SRGB, 0, pixels, pitch) == 0) {
         result = 0;
     }
 
@@ -4784,7 +4960,7 @@ static SDL_ScaleMode SDL_GetScaleMode(void)
 SDL_DECLSPEC SDL_Texture * SDLCALL
 SDL_CreateTexture(SDL_Renderer * renderer, Uint32 format, int access, int w, int h)
 {
-    SDL_Texture *texture = SDL3_CreateTexture(renderer, (SDL_PixelFormatEnum)format, access, w, h);
+    SDL_Texture *texture = SDL3_CreateTexture(renderer, (SDL_PixelFormat)format, access, w, h);
     if (texture) {
         SDL3_SetTextureScaleMode(texture, SDL_GetScaleMode());
     }
@@ -4792,9 +4968,9 @@ SDL_CreateTexture(SDL_Renderer * renderer, Uint32 format, int access, int w, int
 }
 
 SDL_DECLSPEC SDL_Texture * SDLCALL
-SDL_CreateTextureFromSurface(SDL_Renderer * renderer, SDL_Surface * surface)
+SDL_CreateTextureFromSurface(SDL_Renderer *renderer, SDL2_Surface *surface)
 {
-    SDL_Texture *texture = SDL3_CreateTextureFromSurface(renderer, surface);
+    SDL_Texture *texture = SDL3_CreateTextureFromSurface(renderer, Surface2to3(surface));
     if (texture) {
         SDL3_SetTextureScaleMode(texture, SDL_GetScaleMode());
     }
@@ -5956,7 +6132,7 @@ struct SDL2_DisplayMode
 static void
 DisplayMode_2to3(const SDL2_DisplayMode *in, SDL_DisplayMode *out) {
     if (in && out) {
-        out->format = (SDL_PixelFormatEnum)in->format;
+        out->format = (SDL_PixelFormat)in->format;
         out->w = in->w;
         out->h = in->h;
         out->refresh_rate = (float) in->refresh_rate;
@@ -6836,9 +7012,9 @@ SDL_SetWindowTitle(SDL_Window *window, const char *title)
 }
 
 SDL_DECLSPEC void SDLCALL
-SDL_SetWindowIcon(SDL_Window *window, SDL_Surface *icon)
+SDL_SetWindowIcon(SDL_Window *window, SDL2_Surface *icon)
 {
-    SDL3_SetWindowIcon(window, icon);
+    SDL3_SetWindowIcon(window, Surface2to3(icon));
 }
 
 SDL_DECLSPEC void SDLCALL
@@ -6986,13 +7162,13 @@ SDL_SetCursor(SDL_Cursor * cursor)
 SDL_DECLSPEC SDL_bool SDLCALL
 SDL_PixelFormatEnumToMasks(Uint32 format, int *bpp, Uint32 * Rmask, Uint32 * Gmask, Uint32 * Bmask, Uint32 * Amask)
 {
-    return SDL3_GetMasksForPixelFormatEnum((SDL_PixelFormatEnum)format, bpp, Rmask, Gmask, Bmask, Amask);
+    return SDL3_GetMasksForPixelFormat((SDL_PixelFormat)format, bpp, Rmask, Gmask, Bmask, Amask);
 }
 
 SDL_DECLSPEC Uint32 SDLCALL
 SDL_MasksToPixelFormatEnum(int bpp, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
 {
-    return (Uint32)SDL3_GetPixelFormatEnumForMasks(bpp, Rmask, Gmask, Bmask, Amask);
+    return (Uint32)SDL3_GetPixelFormatForMasks(bpp, Rmask, Gmask, Bmask, Amask);
 }
 
 SDL_DECLSPEC const char *
@@ -7012,20 +7188,54 @@ SDL_GetPixelFormatName(Uint32 format)
     case SDL_PIXELFORMAT_XBGR1555:
         return "SDL_PIXELFORMAT_BGR555";
     default:
-        return SDL3_GetPixelFormatName((SDL_PixelFormatEnum)format);
+        return SDL3_GetPixelFormatName((SDL_PixelFormat)format);
     }
 }
 
-SDL_DECLSPEC SDL_PixelFormat * SDLCALL
+SDL_DECLSPEC SDL2_PixelFormat * SDLCALL
 SDL_AllocFormat(Uint32 pixel_format)
 {
-    return SDL3_CreatePixelFormat((SDL_PixelFormatEnum)pixel_format);
+    SDL2_PixelFormat *format;
+
+    const SDL_PixelFormatDetails *details = SDL3_GetPixelFormatDetails((SDL_PixelFormat)pixel_format);
+    if (!details) {
+        return NULL;
+    }
+
+    /* Allocate an empty pixel format structure, and initialize it */
+    format = (SDL2_PixelFormat *)SDL3_calloc(1, sizeof(*format));
+    format->format = details->format;
+    format->BitsPerPixel = details->bits_per_pixel;
+    format->BytesPerPixel = details->bytes_per_pixel;
+    format->Rmask = details->Rmask;
+    format->Gmask = details->Gmask;
+    format->Bmask = details->Bmask;
+    format->Amask = details->Amask;
+    format->Rloss = (8 - details->Rbits);
+    format->Gloss = (8 - details->Gbits);
+    format->Bloss = (8 - details->Bbits);
+    format->Aloss = (8 - details->Abits);
+    format->Rshift = details->Rshift;
+    format->Gshift = details->Gshift;
+    format->Bshift = details->Bshift;
+    format->Ashift = details->Ashift;
+    format->refcount = 1;
+
+    return format;
 }
 
 SDL_DECLSPEC void SDLCALL
-SDL_FreeFormat(SDL_PixelFormat *format)
+SDL_FreeFormat(SDL2_PixelFormat *format)
 {
-    SDL3_DestroyPixelFormat(format);
+    if (!format) {
+        SDL3_InvalidParamError("format");
+        return;
+    }
+
+    if (format->palette) {
+        SDL_FreePalette(format->palette);
+    }
+    SDL_free(format);
 }
 
 SDL_DECLSPEC void SDLCALL
@@ -7429,10 +7639,244 @@ SDL_GL_UnbindTexture(SDL_Texture *texture)
 #undef GLFN
 
 SDL_DECLSPEC void SDLCALL
-SDL_GetClipRect(SDL_Surface *surface, SDL_Rect *rect)
+SDL_GetClipRect(SDL2_Surface *surface, SDL_Rect *rect)
 {
-    SDL3_GetSurfaceClipRect(surface, rect);
+    SDL3_GetSurfaceClipRect(Surface2to3(surface), rect);
 }
+
+SDL_DECLSPEC SDL_Cursor * SDLCALL
+SDL_CreateColorCursor(SDL2_Surface *surface, int hot_x, int hot_y)
+{
+    return SDL3_CreateColorCursor(Surface2to3(surface), hot_x, hot_y);
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_SetPixelFormatPalette(SDL2_PixelFormat *format, SDL_Palette *palette)
+{
+    if (!format) {
+        return SDL3_InvalidParamError("SDL_SetPixelFormatPalette(): format");
+    }
+
+    if (palette && palette->ncolors > (1 << format->BitsPerPixel)) {
+        return SDL3_SetError("SDL_SetPixelFormatPalette() passed a palette that doesn't match the format");
+    }
+
+    if (format->palette == palette) {
+        return 0;
+    }
+
+    if (format->palette) {
+        SDL_FreePalette(format->palette);
+    }
+
+    format->palette = palette;
+
+    if (format->palette) {
+        ++format->palette->refcount;
+    }
+
+    return 0;
+}
+
+SDL_DECLSPEC Uint32 SDLCALL
+SDL_MapRGB(const SDL2_PixelFormat *format2, Uint8 r, Uint8 g, Uint8 b)
+{
+    const SDL_PixelFormatDetails *format = SDL3_GetPixelFormatDetails((SDL_PixelFormat)format2->format);
+    if (!format) {
+        return 0;
+    }
+    return SDL3_MapRGB(format, format2->palette, r, g, b);
+}
+
+SDL_DECLSPEC Uint32 SDLCALL
+SDL_MapRGBA(const SDL2_PixelFormat *format2, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+{
+    const SDL_PixelFormatDetails *format = SDL3_GetPixelFormatDetails((SDL_PixelFormat)format2->format);
+    if (!format) {
+        return 0;
+    }
+    return SDL3_MapRGBA(format, format2->palette, r, g, b, a);
+}
+
+SDL_DECLSPEC void SDLCALL
+SDL_GetRGB(Uint32 pixel, const SDL2_PixelFormat *format2, Uint8 * r, Uint8 * g, Uint8 * b)
+{
+    const SDL_PixelFormatDetails *format = SDL3_GetPixelFormatDetails((SDL_PixelFormat)format2->format);
+    if (!format) {
+        *r = *g = *b = 0;
+        return;
+    }
+    SDL3_GetRGB(pixel, format, format2->palette, r, g, b);
+}
+
+SDL_DECLSPEC void SDLCALL
+SDL_GetRGBA(Uint32 pixel, const SDL2_PixelFormat *format2, Uint8 * r, Uint8 * g, Uint8 * b, Uint8 *a)
+{
+    const SDL_PixelFormatDetails *format = SDL3_GetPixelFormatDetails((SDL_PixelFormat)format2->format);
+    if (!format) {
+        *r = *g = *b = *a = 0;
+        return;
+    }
+    SDL3_GetRGBA(pixel, format, format2->palette, r, g, b, a);
+}
+
+SDL_DECLSPEC SDL_Renderer * SDLCALL
+SDL_CreateSoftwareRenderer(SDL2_Surface *surface)
+{
+    return SDL3_CreateSoftwareRenderer(Surface2to3(surface));
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_SetSurfacePalette(SDL2_Surface *surface, SDL_Palette *palette)
+{
+    if (!surface) {
+        return SDL3_InvalidParamError("SDL_SetSurfacePalette(): surface");
+    }
+    if (SDL_SetPixelFormatPalette(surface->format, palette) < 0) {
+        return -1;
+    }
+    if (SDL3_SetSurfacePalette(Surface2to3(surface), palette) < 0) {
+        return -1;
+    }
+    return 0;
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_LockSurface(SDL2_Surface *surface)
+{
+    if (!surface->locked) {
+        /* Perform the lock */
+        SDL_Surface *surface3 = Surface2to3(surface);
+        if (SDL3_LockSurface(surface3) < 0) {
+            return -1;
+        }
+        surface->pixels = surface3->pixels;
+        surface->pitch = surface3->pitch;
+    }
+
+    /* Increment the surface lock count, for recursive locks */
+    ++surface->locked;
+
+    /* Ready to go.. */
+    return 0;
+}
+
+SDL_DECLSPEC void SDLCALL
+SDL_UnlockSurface(SDL2_Surface *surface)
+{
+    SDL_Surface *surface3 = Surface2to3(surface);
+
+    /* Only perform an unlock if we are locked */
+    if (!surface->locked || (--surface->locked > 0)) {
+        return;
+    }
+
+    SDL3_UnlockSurface(surface3);
+
+    surface->pixels = surface3->pixels;
+    surface->pitch = surface3->pitch;
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_SetSurfaceRLE(SDL2_Surface *surface, int flag)
+{
+    SDL_Surface *surface3 = Surface2to3(surface);
+    if (!surface3) {
+        return SDL3_InvalidParamError("surface");
+    }
+
+    if (SDL3_SetSurfaceRLE(surface3, flag ? SDL_TRUE : SDL_FALSE) < 0) {
+        return -1;
+    }
+
+    if (SDL3_SurfaceHasRLE(surface3)) {
+        surface->flags |= SDL_RLEACCEL;
+    } else {
+        surface->flags &= ~SDL_RLEACCEL;
+    }
+    return 0;
+}
+
+SDL_DECLSPEC SDL_bool SDLCALL
+SDL_HasSurfaceRLE(SDL2_Surface *surface)
+{
+    return SDL3_SurfaceHasRLE(Surface2to3(surface));
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_SetColorKey(SDL2_Surface *surface, int flag, Uint32 key)
+{
+    if (flag & SDL_RLEACCEL) {
+        SDL_SetSurfaceRLE(surface, 1);
+    }
+    return SDL3_SetSurfaceColorKey(Surface2to3(surface), flag ? SDL_TRUE : SDL_FALSE, key);
+}
+
+SDL_DECLSPEC SDL_bool SDLCALL
+SDL_HasColorKey(SDL2_Surface *surface)
+{
+    return SDL3_SurfaceHasColorKey(Surface2to3(surface));
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_GetColorKey(SDL2_Surface *surface, Uint32 *key)
+{
+    return SDL3_GetSurfaceColorKey(Surface2to3(surface), key);
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_SetSurfaceColorMod(SDL2_Surface *surface, Uint8 r, Uint8 g, Uint8 b)
+{
+    return SDL3_SetSurfaceColorMod(Surface2to3(surface), r, g, b);
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_GetSurfaceColorMod(SDL2_Surface *surface, Uint8 *r, Uint8 *g, Uint8 *b)
+{
+    return SDL3_GetSurfaceColorMod(Surface2to3(surface), r, g, b);
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_SetSurfaceAlphaMod(SDL2_Surface *surface, Uint8 alpha)
+{
+    return SDL3_SetSurfaceAlphaMod(Surface2to3(surface), alpha);
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_GetSurfaceAlphaMod(SDL2_Surface *surface, Uint8 *alpha)
+{
+    return SDL3_GetSurfaceAlphaMod(Surface2to3(surface), alpha);
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_SetSurfaceBlendMode(SDL2_Surface *surface, SDL_BlendMode blendMode)
+{
+    return SDL3_SetSurfaceBlendMode(Surface2to3(surface), blendMode);
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_GetSurfaceBlendMode(SDL2_Surface *surface, SDL_BlendMode *blendMode)
+{
+    return SDL3_GetSurfaceBlendMode(Surface2to3(surface), blendMode);
+}
+
+SDL_DECLSPEC SDL2_Surface * SDLCALL
+SDL_GetWindowSurface(SDL_Window *window)
+{
+    return Surface3to2(SDL3_GetWindowSurface(window));
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_LockTextureToSurface(SDL_Texture *texture, const SDL_Rect *rect, SDL2_Surface **surface)
+{
+    SDL_Surface *surface3 = NULL;
+    if (SDL3_LockTextureToSurface(texture, rect, &surface3) < 0) {
+        return -1;
+    }
+    *surface = Surface3to2(surface3);
+    return 0;
+}
+
 
 SDL_DECLSPEC void SDLCALL
 SDL_GameControllerSetPlayerIndex(SDL_GameController *gamecontroller, int player_index)

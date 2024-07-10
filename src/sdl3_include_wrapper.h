@@ -90,8 +90,7 @@
 #define SDL_ConvertPixels IGNORE_THIS_VERSION_OF_SDL_ConvertPixels
 #define SDL_ConvertPixelsAndColorspace IGNORE_THIS_VERSION_OF_SDL_ConvertPixelsAndColorspace
 #define SDL_ConvertSurface IGNORE_THIS_VERSION_OF_SDL_ConvertSurface
-#define SDL_ConvertSurfaceFormat IGNORE_THIS_VERSION_OF_SDL_ConvertSurfaceFormat
-#define SDL_ConvertSurfaceFormatAndColorspace IGNORE_THIS_VERSION_OF_SDL_ConvertSurfaceFormatAndColorspace
+#define SDL_ConvertSurfaceAndColorspace IGNORE_THIS_VERSION_OF_SDL_ConvertSurfaceAndColorspace
 #define SDL_CopyProperties IGNORE_THIS_VERSION_OF_SDL_CopyProperties
 #define SDL_CreateAudioStream IGNORE_THIS_VERSION_OF_SDL_CreateAudioStream
 #define SDL_CreateColorCursor IGNORE_THIS_VERSION_OF_SDL_CreateColorCursor
@@ -101,7 +100,6 @@
 #define SDL_CreateHapticEffect IGNORE_THIS_VERSION_OF_SDL_CreateHapticEffect
 #define SDL_CreateMutex IGNORE_THIS_VERSION_OF_SDL_CreateMutex
 #define SDL_CreatePalette IGNORE_THIS_VERSION_OF_SDL_CreatePalette
-#define SDL_CreatePixelFormat IGNORE_THIS_VERSION_OF_SDL_CreatePixelFormat
 #define SDL_CreatePopupWindow IGNORE_THIS_VERSION_OF_SDL_CreatePopupWindow
 #define SDL_CreateProperties IGNORE_THIS_VERSION_OF_SDL_CreateProperties
 #define SDL_CreateRWLock IGNORE_THIS_VERSION_OF_SDL_CreateRWLock
@@ -199,6 +197,7 @@
 #define SDL_GetAssertionHandler IGNORE_THIS_VERSION_OF_SDL_GetAssertionHandler
 #define SDL_GetAssertionReport IGNORE_THIS_VERSION_OF_SDL_GetAssertionReport
 #define SDL_GetAudioDeviceFormat IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceFormat
+#define SDL_GetAudioDeviceGain IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceGain
 #define SDL_GetAudioDeviceName IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceName
 #define SDL_GetAudioDriver IGNORE_THIS_VERSION_OF_SDL_GetAudioDriver
 #define SDL_GetAudioPlaybackDevices IGNORE_THIS_VERSION_OF_SDL_GetAudioPlaybackDevices
@@ -208,6 +207,7 @@
 #define SDL_GetAudioStreamDevice IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamDevice
 #define SDL_GetAudioStreamFormat IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamFormat
 #define SDL_GetAudioStreamFrequencyRatio IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamFrequencyRatio
+#define SDL_GetAudioStreamGain IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamGain
 #define SDL_GetAudioStreamProperties IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamProperties
 #define SDL_GetAudioStreamQueued IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamQueued
 #define SDL_GetBasePath IGNORE_THIS_VERSION_OF_SDL_GetBasePath
@@ -360,7 +360,7 @@
 #define SDL_GetKeyboards IGNORE_THIS_VERSION_OF_SDL_GetKeyboards
 #define SDL_GetLogOutputFunction IGNORE_THIS_VERSION_OF_SDL_GetLogOutputFunction
 #define SDL_GetLogPriority IGNORE_THIS_VERSION_OF_SDL_GetLogPriority
-#define SDL_GetMasksForPixelFormatEnum IGNORE_THIS_VERSION_OF_SDL_GetMasksForPixelFormatEnum
+#define SDL_GetMasksForPixelFormat IGNORE_THIS_VERSION_OF_SDL_GetMasksForPixelFormat
 #define SDL_GetMaxHapticEffects IGNORE_THIS_VERSION_OF_SDL_GetMaxHapticEffects
 #define SDL_GetMaxHapticEffectsPlaying IGNORE_THIS_VERSION_OF_SDL_GetMaxHapticEffectsPlaying
 #define SDL_GetMemoryFunctions IGNORE_THIS_VERSION_OF_SDL_GetMemoryFunctions
@@ -394,7 +394,8 @@
 #define SDL_GetPens IGNORE_THIS_VERSION_OF_SDL_GetPens
 #define SDL_GetPerformanceCounter IGNORE_THIS_VERSION_OF_SDL_GetPerformanceCounter
 #define SDL_GetPerformanceFrequency IGNORE_THIS_VERSION_OF_SDL_GetPerformanceFrequency
-#define SDL_GetPixelFormatEnumForMasks IGNORE_THIS_VERSION_OF_SDL_GetPixelFormatEnumForMasks
+#define SDL_GetPixelFormatDetails IGNORE_THIS_VERSION_OF_SDL_GetPixelFormatDetails
+#define SDL_GetPixelFormatForMasks IGNORE_THIS_VERSION_OF_SDL_GetPixelFormatForMasks
 #define SDL_GetPixelFormatName IGNORE_THIS_VERSION_OF_SDL_GetPixelFormatName
 #define SDL_GetPlatform IGNORE_THIS_VERSION_OF_SDL_GetPlatform
 #define SDL_GetPowerInfo IGNORE_THIS_VERSION_OF_SDL_GetPowerInfo
@@ -466,6 +467,7 @@
 #define SDL_GetSurfaceColorKey IGNORE_THIS_VERSION_OF_SDL_GetSurfaceColorKey
 #define SDL_GetSurfaceColorMod IGNORE_THIS_VERSION_OF_SDL_GetSurfaceColorMod
 #define SDL_GetSurfaceColorspace IGNORE_THIS_VERSION_OF_SDL_GetSurfaceColorspace
+#define SDL_GetSurfacePalette IGNORE_THIS_VERSION_OF_SDL_GetSurfacePalette
 #define SDL_GetSurfaceProperties IGNORE_THIS_VERSION_OF_SDL_GetSurfaceProperties
 #define SDL_GetSystemRAM IGNORE_THIS_VERSION_OF_SDL_GetSystemRAM
 #define SDL_GetSystemTheme IGNORE_THIS_VERSION_OF_SDL_GetSystemTheme
@@ -598,6 +600,8 @@
 #define SDL_LogWarn IGNORE_THIS_VERSION_OF_SDL_LogWarn
 #define SDL_MapRGB IGNORE_THIS_VERSION_OF_SDL_MapRGB
 #define SDL_MapRGBA IGNORE_THIS_VERSION_OF_SDL_MapRGBA
+#define SDL_MapSurfaceRGB IGNORE_THIS_VERSION_OF_SDL_MapSurfaceRGB
+#define SDL_MapSurfaceRGBA IGNORE_THIS_VERSION_OF_SDL_MapSurfaceRGBA
 #define SDL_MaximizeWindow IGNORE_THIS_VERSION_OF_SDL_MaximizeWindow
 #define SDL_MemoryBarrierAcquireFunction IGNORE_THIS_VERSION_OF_SDL_MemoryBarrierAcquireFunction
 #define SDL_MemoryBarrierReleaseFunction IGNORE_THIS_VERSION_OF_SDL_MemoryBarrierReleaseFunction
@@ -714,9 +718,11 @@
 #define SDL_SendJoystickEffect IGNORE_THIS_VERSION_OF_SDL_SendJoystickEffect
 #define SDL_SendJoystickVirtualSensorData IGNORE_THIS_VERSION_OF_SDL_SendJoystickVirtualSensorData
 #define SDL_SetAssertionHandler IGNORE_THIS_VERSION_OF_SDL_SetAssertionHandler
+#define SDL_SetAudioDeviceGain IGNORE_THIS_VERSION_OF_SDL_SetAudioDeviceGain
 #define SDL_SetAudioPostmixCallback IGNORE_THIS_VERSION_OF_SDL_SetAudioPostmixCallback
 #define SDL_SetAudioStreamFormat IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamFormat
 #define SDL_SetAudioStreamFrequencyRatio IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamFrequencyRatio
+#define SDL_SetAudioStreamGain IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamGain
 #define SDL_SetAudioStreamGetCallback IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamGetCallback
 #define SDL_SetAudioStreamPutCallback IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamPutCallback
 #define SDL_SetBooleanProperty IGNORE_THIS_VERSION_OF_SDL_SetBooleanProperty
@@ -752,7 +758,6 @@
 #define SDL_SetModState IGNORE_THIS_VERSION_OF_SDL_SetModState
 #define SDL_SetNumberProperty IGNORE_THIS_VERSION_OF_SDL_SetNumberProperty
 #define SDL_SetPaletteColors IGNORE_THIS_VERSION_OF_SDL_SetPaletteColors
-#define SDL_SetPixelFormatPalette IGNORE_THIS_VERSION_OF_SDL_SetPixelFormatPalette
 #define SDL_SetPrimarySelectionText IGNORE_THIS_VERSION_OF_SDL_SetPrimarySelectionText
 #define SDL_SetProperty IGNORE_THIS_VERSION_OF_SDL_SetProperty
 #define SDL_SetPropertyWithCleanup IGNORE_THIS_VERSION_OF_SDL_SetPropertyWithCleanup
@@ -839,6 +844,7 @@
 #define SDL_TryLockRWLockForWriting IGNORE_THIS_VERSION_OF_SDL_TryLockRWLockForWriting
 #define SDL_TryLockSpinlock IGNORE_THIS_VERSION_OF_SDL_TryLockSpinlock
 #define SDL_TryWaitSemaphore IGNORE_THIS_VERSION_OF_SDL_TryWaitSemaphore
+#define SDL_UCS4ToUTF8 IGNORE_THIS_VERSION_OF_SDL_UCS4ToUTF8
 #define SDL_UnbindAudioStream IGNORE_THIS_VERSION_OF_SDL_UnbindAudioStream
 #define SDL_UnbindAudioStreams IGNORE_THIS_VERSION_OF_SDL_UnbindAudioStreams
 #define SDL_UnloadObject IGNORE_THIS_VERSION_OF_SDL_UnloadObject
@@ -1319,12 +1325,8 @@
 #undef SDL_ConvertSurface
 #endif
 
-#ifdef SDL_ConvertSurfaceFormat
-#undef SDL_ConvertSurfaceFormat
-#endif
-
-#ifdef SDL_ConvertSurfaceFormatAndColorspace
-#undef SDL_ConvertSurfaceFormatAndColorspace
+#ifdef SDL_ConvertSurfaceAndColorspace
+#undef SDL_ConvertSurfaceAndColorspace
 #endif
 
 #ifdef SDL_CopyProperties
@@ -1361,10 +1363,6 @@
 
 #ifdef SDL_CreatePalette
 #undef SDL_CreatePalette
-#endif
-
-#ifdef SDL_CreatePixelFormat
-#undef SDL_CreatePixelFormat
 #endif
 
 #ifdef SDL_CreatePopupWindow
@@ -1755,6 +1753,10 @@
 #undef SDL_GetAudioDeviceFormat
 #endif
 
+#ifdef SDL_GetAudioDeviceGain
+#undef SDL_GetAudioDeviceGain
+#endif
+
 #ifdef SDL_GetAudioDeviceName
 #undef SDL_GetAudioDeviceName
 #endif
@@ -1789,6 +1791,10 @@
 
 #ifdef SDL_GetAudioStreamFrequencyRatio
 #undef SDL_GetAudioStreamFrequencyRatio
+#endif
+
+#ifdef SDL_GetAudioStreamGain
+#undef SDL_GetAudioStreamGain
 #endif
 
 #ifdef SDL_GetAudioStreamProperties
@@ -2399,8 +2405,8 @@
 #undef SDL_GetLogPriority
 #endif
 
-#ifdef SDL_GetMasksForPixelFormatEnum
-#undef SDL_GetMasksForPixelFormatEnum
+#ifdef SDL_GetMasksForPixelFormat
+#undef SDL_GetMasksForPixelFormat
 #endif
 
 #ifdef SDL_GetMaxHapticEffects
@@ -2535,8 +2541,12 @@
 #undef SDL_GetPerformanceFrequency
 #endif
 
-#ifdef SDL_GetPixelFormatEnumForMasks
-#undef SDL_GetPixelFormatEnumForMasks
+#ifdef SDL_GetPixelFormatDetails
+#undef SDL_GetPixelFormatDetails
+#endif
+
+#ifdef SDL_GetPixelFormatForMasks
+#undef SDL_GetPixelFormatForMasks
 #endif
 
 #ifdef SDL_GetPixelFormatName
@@ -2821,6 +2831,10 @@
 
 #ifdef SDL_GetSurfaceColorspace
 #undef SDL_GetSurfaceColorspace
+#endif
+
+#ifdef SDL_GetSurfacePalette
+#undef SDL_GetSurfacePalette
 #endif
 
 #ifdef SDL_GetSurfaceProperties
@@ -3351,6 +3365,14 @@
 #undef SDL_MapRGBA
 #endif
 
+#ifdef SDL_MapSurfaceRGB
+#undef SDL_MapSurfaceRGB
+#endif
+
+#ifdef SDL_MapSurfaceRGBA
+#undef SDL_MapSurfaceRGBA
+#endif
+
 #ifdef SDL_MaximizeWindow
 #undef SDL_MaximizeWindow
 #endif
@@ -3815,6 +3837,10 @@
 #undef SDL_SetAssertionHandler
 #endif
 
+#ifdef SDL_SetAudioDeviceGain
+#undef SDL_SetAudioDeviceGain
+#endif
+
 #ifdef SDL_SetAudioPostmixCallback
 #undef SDL_SetAudioPostmixCallback
 #endif
@@ -3825,6 +3851,10 @@
 
 #ifdef SDL_SetAudioStreamFrequencyRatio
 #undef SDL_SetAudioStreamFrequencyRatio
+#endif
+
+#ifdef SDL_SetAudioStreamGain
+#undef SDL_SetAudioStreamGain
 #endif
 
 #ifdef SDL_SetAudioStreamGetCallback
@@ -3965,10 +3995,6 @@
 
 #ifdef SDL_SetPaletteColors
 #undef SDL_SetPaletteColors
-#endif
-
-#ifdef SDL_SetPixelFormatPalette
-#undef SDL_SetPixelFormatPalette
 #endif
 
 #ifdef SDL_SetPrimarySelectionText
@@ -4133,10 +4159,6 @@
 
 #ifdef SDL_SetWindowIcon
 #undef SDL_SetWindowIcon
-#endif
-
-#ifdef SDL_SetWindowInputFocus
-#undef SDL_SetWindowInputFocus
 #endif
 
 #ifdef SDL_SetWindowKeyboardGrab
@@ -4317,6 +4339,10 @@
 
 #ifdef SDL_TryWaitSemaphore
 #undef SDL_TryWaitSemaphore
+#endif
+
+#ifdef SDL_UCS4ToUTF8
+#undef SDL_UCS4ToUTF8
 #endif
 
 #ifdef SDL_UnbindAudioStream
