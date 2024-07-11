@@ -133,7 +133,6 @@
 #define SDL_DestroyHapticEffect IGNORE_THIS_VERSION_OF_SDL_DestroyHapticEffect
 #define SDL_DestroyMutex IGNORE_THIS_VERSION_OF_SDL_DestroyMutex
 #define SDL_DestroyPalette IGNORE_THIS_VERSION_OF_SDL_DestroyPalette
-#define SDL_DestroyPixelFormat IGNORE_THIS_VERSION_OF_SDL_DestroyPixelFormat
 #define SDL_DestroyProperties IGNORE_THIS_VERSION_OF_SDL_DestroyProperties
 #define SDL_DestroyRWLock IGNORE_THIS_VERSION_OF_SDL_DestroyRWLock
 #define SDL_DestroyRenderer IGNORE_THIS_VERSION_OF_SDL_DestroyRenderer
@@ -196,6 +195,7 @@
 #define SDL_GetAndroidSDKVersion IGNORE_THIS_VERSION_OF_SDL_GetAndroidSDKVersion
 #define SDL_GetAssertionHandler IGNORE_THIS_VERSION_OF_SDL_GetAssertionHandler
 #define SDL_GetAssertionReport IGNORE_THIS_VERSION_OF_SDL_GetAssertionReport
+#define SDL_GetAudioDeviceChannelMap IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceChannelMap
 #define SDL_GetAudioDeviceFormat IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceFormat
 #define SDL_GetAudioDeviceGain IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceGain
 #define SDL_GetAudioDeviceName IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceName
@@ -208,6 +208,8 @@
 #define SDL_GetAudioStreamFormat IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamFormat
 #define SDL_GetAudioStreamFrequencyRatio IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamFrequencyRatio
 #define SDL_GetAudioStreamGain IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamGain
+#define SDL_GetAudioStreamInputChannelMap IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamInputChannelMap
+#define SDL_GetAudioStreamOutputChannelMap IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamOutputChannelMap
 #define SDL_GetAudioStreamProperties IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamProperties
 #define SDL_GetAudioStreamQueued IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamQueued
 #define SDL_GetBasePath IGNORE_THIS_VERSION_OF_SDL_GetBasePath
@@ -724,6 +726,8 @@
 #define SDL_SetAudioStreamFrequencyRatio IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamFrequencyRatio
 #define SDL_SetAudioStreamGain IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamGain
 #define SDL_SetAudioStreamGetCallback IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamGetCallback
+#define SDL_SetAudioStreamInputChannelMap IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamInputChannelMap
+#define SDL_SetAudioStreamOutputChannelMap IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamOutputChannelMap
 #define SDL_SetAudioStreamPutCallback IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamPutCallback
 #define SDL_SetBooleanProperty IGNORE_THIS_VERSION_OF_SDL_SetBooleanProperty
 #define SDL_SetClipboardData IGNORE_THIS_VERSION_OF_SDL_SetClipboardData
@@ -1497,10 +1501,6 @@
 #undef SDL_DestroyPalette
 #endif
 
-#ifdef SDL_DestroyPixelFormat
-#undef SDL_DestroyPixelFormat
-#endif
-
 #ifdef SDL_DestroyProperties
 #undef SDL_DestroyProperties
 #endif
@@ -1749,6 +1749,10 @@
 #undef SDL_GetAssertionReport
 #endif
 
+#ifdef SDL_GetAudioDeviceChannelMap
+#undef SDL_GetAudioDeviceChannelMap
+#endif
+
 #ifdef SDL_GetAudioDeviceFormat
 #undef SDL_GetAudioDeviceFormat
 #endif
@@ -1795,6 +1799,14 @@
 
 #ifdef SDL_GetAudioStreamGain
 #undef SDL_GetAudioStreamGain
+#endif
+
+#ifdef SDL_GetAudioStreamInputChannelMap
+#undef SDL_GetAudioStreamInputChannelMap
+#endif
+
+#ifdef SDL_GetAudioStreamOutputChannelMap
+#undef SDL_GetAudioStreamOutputChannelMap
 #endif
 
 #ifdef SDL_GetAudioStreamProperties
@@ -3859,6 +3871,14 @@
 
 #ifdef SDL_SetAudioStreamGetCallback
 #undef SDL_SetAudioStreamGetCallback
+#endif
+
+#ifdef SDL_SetAudioStreamInputChannelMap
+#undef SDL_SetAudioStreamInputChannelMap
+#endif
+
+#ifdef SDL_SetAudioStreamOutputChannelMap
+#undef SDL_SetAudioStreamOutputChannelMap
 #endif
 
 #ifdef SDL_SetAudioStreamPutCallback
