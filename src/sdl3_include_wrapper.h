@@ -400,12 +400,12 @@
 #define SDL_GetPixelFormatForMasks IGNORE_THIS_VERSION_OF_SDL_GetPixelFormatForMasks
 #define SDL_GetPixelFormatName IGNORE_THIS_VERSION_OF_SDL_GetPixelFormatName
 #define SDL_GetPlatform IGNORE_THIS_VERSION_OF_SDL_GetPlatform
+#define SDL_GetPointerProperty IGNORE_THIS_VERSION_OF_SDL_GetPointerProperty
 #define SDL_GetPowerInfo IGNORE_THIS_VERSION_OF_SDL_GetPowerInfo
 #define SDL_GetPrefPath IGNORE_THIS_VERSION_OF_SDL_GetPrefPath
 #define SDL_GetPreferredLocales IGNORE_THIS_VERSION_OF_SDL_GetPreferredLocales
 #define SDL_GetPrimaryDisplay IGNORE_THIS_VERSION_OF_SDL_GetPrimaryDisplay
 #define SDL_GetPrimarySelectionText IGNORE_THIS_VERSION_OF_SDL_GetPrimarySelectionText
-#define SDL_GetProperty IGNORE_THIS_VERSION_OF_SDL_GetProperty
 #define SDL_GetPropertyType IGNORE_THIS_VERSION_OF_SDL_GetPropertyType
 #define SDL_GetRGB IGNORE_THIS_VERSION_OF_SDL_GetRGB
 #define SDL_GetRGBA IGNORE_THIS_VERSION_OF_SDL_GetRGBA
@@ -762,9 +762,9 @@
 #define SDL_SetModState IGNORE_THIS_VERSION_OF_SDL_SetModState
 #define SDL_SetNumberProperty IGNORE_THIS_VERSION_OF_SDL_SetNumberProperty
 #define SDL_SetPaletteColors IGNORE_THIS_VERSION_OF_SDL_SetPaletteColors
+#define SDL_SetPointerProperty IGNORE_THIS_VERSION_OF_SDL_SetPointerProperty
+#define SDL_SetPointerPropertyWithCleanup IGNORE_THIS_VERSION_OF_SDL_SetPointerPropertyWithCleanup
 #define SDL_SetPrimarySelectionText IGNORE_THIS_VERSION_OF_SDL_SetPrimarySelectionText
-#define SDL_SetProperty IGNORE_THIS_VERSION_OF_SDL_SetProperty
-#define SDL_SetPropertyWithCleanup IGNORE_THIS_VERSION_OF_SDL_SetPropertyWithCleanup
 #define SDL_SetRelativeMouseMode IGNORE_THIS_VERSION_OF_SDL_SetRelativeMouseMode
 #define SDL_SetRenderClipRect IGNORE_THIS_VERSION_OF_SDL_SetRenderClipRect
 #define SDL_SetRenderColorScale IGNORE_THIS_VERSION_OF_SDL_SetRenderColorScale
@@ -873,6 +873,7 @@
 #define SDL_Vulkan_CreateSurface IGNORE_THIS_VERSION_OF_SDL_Vulkan_CreateSurface
 #define SDL_Vulkan_DestroySurface IGNORE_THIS_VERSION_OF_SDL_Vulkan_DestroySurface
 #define SDL_Vulkan_GetInstanceExtensions IGNORE_THIS_VERSION_OF_SDL_Vulkan_GetInstanceExtensions
+#define SDL_Vulkan_GetPresentationSupport IGNORE_THIS_VERSION_OF_SDL_Vulkan_GetPresentationSupport
 #define SDL_Vulkan_GetVkGetInstanceProcAddr IGNORE_THIS_VERSION_OF_SDL_Vulkan_GetVkGetInstanceProcAddr
 #define SDL_Vulkan_LoadLibrary IGNORE_THIS_VERSION_OF_SDL_Vulkan_LoadLibrary
 #define SDL_Vulkan_UnloadLibrary IGNORE_THIS_VERSION_OF_SDL_Vulkan_UnloadLibrary
@@ -1092,7 +1093,7 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL_vulkan.h>
 
-#ifdef _WIN32
+#ifdef _WIN32 /**/
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
 #endif
@@ -2569,6 +2570,10 @@
 #undef SDL_GetPlatform
 #endif
 
+#ifdef SDL_GetPointerProperty
+#undef SDL_GetPointerProperty
+#endif
+
 #ifdef SDL_GetPowerInfo
 #undef SDL_GetPowerInfo
 #endif
@@ -2587,10 +2592,6 @@
 
 #ifdef SDL_GetPrimarySelectionText
 #undef SDL_GetPrimarySelectionText
-#endif
-
-#ifdef SDL_GetProperty
-#undef SDL_GetProperty
 #endif
 
 #ifdef SDL_GetPropertyType
@@ -4017,16 +4018,16 @@
 #undef SDL_SetPaletteColors
 #endif
 
+#ifdef SDL_SetPointerProperty
+#undef SDL_SetPointerProperty
+#endif
+
+#ifdef SDL_SetPointerPropertyWithCleanup
+#undef SDL_SetPointerPropertyWithCleanup
+#endif
+
 #ifdef SDL_SetPrimarySelectionText
 #undef SDL_SetPrimarySelectionText
-#endif
-
-#ifdef SDL_SetProperty
-#undef SDL_SetProperty
-#endif
-
-#ifdef SDL_SetPropertyWithCleanup
-#undef SDL_SetPropertyWithCleanup
 #endif
 
 #ifdef SDL_SetRelativeMouseMode
@@ -4459,6 +4460,10 @@
 
 #ifdef SDL_Vulkan_GetInstanceExtensions
 #undef SDL_Vulkan_GetInstanceExtensions
+#endif
+
+#ifdef SDL_Vulkan_GetPresentationSupport
+#undef SDL_Vulkan_GetPresentationSupport
 #endif
 
 #ifdef SDL_Vulkan_GetVkGetInstanceProcAddr
