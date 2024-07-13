@@ -46,6 +46,7 @@
 #define SDL_AllocateEventMemory IGNORE_THIS_VERSION_OF_SDL_AllocateEventMemory
 #define SDL_AndroidBackButton IGNORE_THIS_VERSION_OF_SDL_AndroidBackButton
 #define SDL_AndroidGetActivity IGNORE_THIS_VERSION_OF_SDL_AndroidGetActivity
+#define SDL_AndroidGetCachePath IGNORE_THIS_VERSION_OF_SDL_AndroidGetCachePath
 #define SDL_AndroidGetExternalStoragePath IGNORE_THIS_VERSION_OF_SDL_AndroidGetExternalStoragePath
 #define SDL_AndroidGetExternalStorageState IGNORE_THIS_VERSION_OF_SDL_AndroidGetExternalStorageState
 #define SDL_AndroidGetInternalStoragePath IGNORE_THIS_VERSION_OF_SDL_AndroidGetInternalStoragePath
@@ -110,6 +111,7 @@
 #define SDL_CreateStorageDirectory IGNORE_THIS_VERSION_OF_SDL_CreateStorageDirectory
 #define SDL_CreateSurface IGNORE_THIS_VERSION_OF_SDL_CreateSurface
 #define SDL_CreateSurfaceFrom IGNORE_THIS_VERSION_OF_SDL_CreateSurfaceFrom
+#define SDL_CreateSurfacePalette IGNORE_THIS_VERSION_OF_SDL_CreateSurfacePalette
 #define SDL_CreateSystemCursor IGNORE_THIS_VERSION_OF_SDL_CreateSystemCursor
 #define SDL_CreateTLS IGNORE_THIS_VERSION_OF_SDL_CreateTLS
 #define SDL_CreateTexture IGNORE_THIS_VERSION_OF_SDL_CreateTexture
@@ -1154,6 +1156,10 @@
 #undef SDL_AndroidGetActivity
 #endif
 
+#ifdef SDL_AndroidGetCachePath
+#undef SDL_AndroidGetCachePath
+#endif
+
 #ifdef SDL_AndroidGetExternalStoragePath
 #undef SDL_AndroidGetExternalStoragePath
 #endif
@@ -1408,6 +1414,10 @@
 
 #ifdef SDL_CreateSurfaceFrom
 #undef SDL_CreateSurfaceFrom
+#endif
+
+#ifdef SDL_CreateSurfacePalette
+#undef SDL_CreateSurfacePalette
 #endif
 
 #ifdef SDL_CreateSystemCursor

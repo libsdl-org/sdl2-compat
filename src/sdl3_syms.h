@@ -847,7 +847,7 @@ SDL3_SYM(int,ClearProperty,(SDL_PropertiesID a, const char *b),(a,b),return)
 SDL3_SYM(SDL_Window **,GetWindows,(int *a),(a),return)
 SDL3_SYM(const SDL_PixelFormatDetails *,GetPixelFormatDetails,(SDL_PixelFormat a),(a),return)
 SDL3_SYM(SDL_Surface *,ConvertSurfaceAndColorspace,(SDL_Surface *a, SDL_PixelFormat b, const SDL_Palette *c, SDL_Colorspace d, SDL_PropertiesID e),(a,b,c,d,e),return)
-SDL3_SYM(SDL_Palette *,GetSurfacePalette,(SDL_Surface *a),(a),return)
+SDL3_SYM(SDL_Palette *,CreateSurfacePalette,(SDL_Surface *a),(a),return)
 
 #undef SDL3_SYM
 #undef SDL3_SYM_PASSTHROUGH
