@@ -8063,13 +8063,13 @@ SDL_JoystickInstanceID(SDL_Joystick *joystick)
 SDL_DECLSPEC SDL_Joystick* SDLCALL
 SDL_JoystickFromInstanceID(SDL2_JoystickID jid)
 {
-    return SDL3_GetJoystickFromInstanceID((SDL_JoystickID)jid);
+    return SDL3_GetJoystickFromID((SDL_JoystickID)jid);
 }
 
 SDL_DECLSPEC SDL_GameController* SDLCALL
 SDL_GameControllerFromInstanceID(SDL2_JoystickID jid)
 {
-    return SDL3_GetGamepadFromInstanceID((SDL_JoystickID)jid);
+    return SDL3_GetGamepadFromID((SDL_JoystickID)jid);
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -8483,7 +8483,7 @@ SDL_SensorGetInstanceID(SDL_Sensor *sensor)
 SDL_DECLSPEC SDL_Sensor* SDLCALL
 SDL_SensorFromInstanceID(SDL2_SensorID sid)
 {
-    return SDL3_GetSensorFromInstanceID((SDL_SensorID)sid);
+    return SDL3_GetSensorFromID((SDL_SensorID)sid);
 }
 
 SDL_DECLSPEC SDL_Sensor* SDLCALL
@@ -8535,7 +8535,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_HapticOpened(int device_index)
 {
     const SDL_HapticID instance_id = GetHapticInstanceFromIndex(device_index);
-    if (SDL3_GetHapticFromInstanceID(instance_id) != NULL) {
+    if (SDL3_GetHapticFromID(instance_id) != NULL) {
         return 1;
     }
     return 0;
