@@ -218,15 +218,15 @@
 #define SDL_GetBooleanProperty IGNORE_THIS_VERSION_OF_SDL_GetBooleanProperty
 #define SDL_GetCPUCacheLineSize IGNORE_THIS_VERSION_OF_SDL_GetCPUCacheLineSize
 #define SDL_GetCPUCount IGNORE_THIS_VERSION_OF_SDL_GetCPUCount
-#define SDL_GetCameraDeviceName IGNORE_THIS_VERSION_OF_SDL_GetCameraDeviceName
-#define SDL_GetCameraDevicePosition IGNORE_THIS_VERSION_OF_SDL_GetCameraDevicePosition
-#define SDL_GetCameraDeviceSupportedFormats IGNORE_THIS_VERSION_OF_SDL_GetCameraDeviceSupportedFormats
-#define SDL_GetCameraDevices IGNORE_THIS_VERSION_OF_SDL_GetCameraDevices
 #define SDL_GetCameraDriver IGNORE_THIS_VERSION_OF_SDL_GetCameraDriver
 #define SDL_GetCameraFormat IGNORE_THIS_VERSION_OF_SDL_GetCameraFormat
-#define SDL_GetCameraInstanceID IGNORE_THIS_VERSION_OF_SDL_GetCameraInstanceID
+#define SDL_GetCameraID IGNORE_THIS_VERSION_OF_SDL_GetCameraID
+#define SDL_GetCameraName IGNORE_THIS_VERSION_OF_SDL_GetCameraName
 #define SDL_GetCameraPermissionState IGNORE_THIS_VERSION_OF_SDL_GetCameraPermissionState
+#define SDL_GetCameraPosition IGNORE_THIS_VERSION_OF_SDL_GetCameraPosition
 #define SDL_GetCameraProperties IGNORE_THIS_VERSION_OF_SDL_GetCameraProperties
+#define SDL_GetCameraSupportedFormats IGNORE_THIS_VERSION_OF_SDL_GetCameraSupportedFormats
+#define SDL_GetCameras IGNORE_THIS_VERSION_OF_SDL_GetCameras
 #define SDL_GetClipboardData IGNORE_THIS_VERSION_OF_SDL_GetClipboardData
 #define SDL_GetClipboardText IGNORE_THIS_VERSION_OF_SDL_GetClipboardText
 #define SDL_GetClosestFullscreenDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetClosestFullscreenDisplayMode
@@ -272,7 +272,7 @@
 #define SDL_GetGamepadButtonLabelForType IGNORE_THIS_VERSION_OF_SDL_GetGamepadButtonLabelForType
 #define SDL_GetGamepadConnectionState IGNORE_THIS_VERSION_OF_SDL_GetGamepadConnectionState
 #define SDL_GetGamepadFirmwareVersion IGNORE_THIS_VERSION_OF_SDL_GetGamepadFirmwareVersion
-#define SDL_GetGamepadFromInstanceID IGNORE_THIS_VERSION_OF_SDL_GetGamepadFromInstanceID
+#define SDL_GetGamepadFromID IGNORE_THIS_VERSION_OF_SDL_GetGamepadFromID
 #define SDL_GetGamepadFromPlayerIndex IGNORE_THIS_VERSION_OF_SDL_GetGamepadFromPlayerIndex
 #define SDL_GetGamepadGUIDFromID IGNORE_THIS_VERSION_OF_SDL_GetGamepadGUIDFromID
 #define SDL_GetGamepadID IGNORE_THIS_VERSION_OF_SDL_GetGamepadID
@@ -312,7 +312,7 @@
 #define SDL_GetGrabbedWindow IGNORE_THIS_VERSION_OF_SDL_GetGrabbedWindow
 #define SDL_GetHapticEffectStatus IGNORE_THIS_VERSION_OF_SDL_GetHapticEffectStatus
 #define SDL_GetHapticFeatures IGNORE_THIS_VERSION_OF_SDL_GetHapticFeatures
-#define SDL_GetHapticFromInstanceID IGNORE_THIS_VERSION_OF_SDL_GetHapticFromInstanceID
+#define SDL_GetHapticFromID IGNORE_THIS_VERSION_OF_SDL_GetHapticFromID
 #define SDL_GetHapticID IGNORE_THIS_VERSION_OF_SDL_GetHapticID
 #define SDL_GetHapticName IGNORE_THIS_VERSION_OF_SDL_GetHapticName
 #define SDL_GetHapticNameFromID IGNORE_THIS_VERSION_OF_SDL_GetHapticNameFromID
@@ -328,7 +328,7 @@
 #define SDL_GetJoystickButton IGNORE_THIS_VERSION_OF_SDL_GetJoystickButton
 #define SDL_GetJoystickConnectionState IGNORE_THIS_VERSION_OF_SDL_GetJoystickConnectionState
 #define SDL_GetJoystickFirmwareVersion IGNORE_THIS_VERSION_OF_SDL_GetJoystickFirmwareVersion
-#define SDL_GetJoystickFromInstanceID IGNORE_THIS_VERSION_OF_SDL_GetJoystickFromInstanceID
+#define SDL_GetJoystickFromID IGNORE_THIS_VERSION_OF_SDL_GetJoystickFromID
 #define SDL_GetJoystickFromPlayerIndex IGNORE_THIS_VERSION_OF_SDL_GetJoystickFromPlayerIndex
 #define SDL_GetJoystickGUID IGNORE_THIS_VERSION_OF_SDL_GetJoystickGUID
 #define SDL_GetJoystickGUIDFromID IGNORE_THIS_VERSION_OF_SDL_GetJoystickGUIDFromID
@@ -359,7 +359,7 @@
 #define SDL_GetKeyFromScancode IGNORE_THIS_VERSION_OF_SDL_GetKeyFromScancode
 #define SDL_GetKeyName IGNORE_THIS_VERSION_OF_SDL_GetKeyName
 #define SDL_GetKeyboardFocus IGNORE_THIS_VERSION_OF_SDL_GetKeyboardFocus
-#define SDL_GetKeyboardInstanceName IGNORE_THIS_VERSION_OF_SDL_GetKeyboardInstanceName
+#define SDL_GetKeyboardNameFromID IGNORE_THIS_VERSION_OF_SDL_GetKeyboardNameFromID
 #define SDL_GetKeyboardState IGNORE_THIS_VERSION_OF_SDL_GetKeyboardState
 #define SDL_GetKeyboards IGNORE_THIS_VERSION_OF_SDL_GetKeyboards
 #define SDL_GetLogOutputFunction IGNORE_THIS_VERSION_OF_SDL_GetLogOutputFunction
@@ -371,7 +371,7 @@
 #define SDL_GetMice IGNORE_THIS_VERSION_OF_SDL_GetMice
 #define SDL_GetModState IGNORE_THIS_VERSION_OF_SDL_GetModState
 #define SDL_GetMouseFocus IGNORE_THIS_VERSION_OF_SDL_GetMouseFocus
-#define SDL_GetMouseInstanceName IGNORE_THIS_VERSION_OF_SDL_GetMouseInstanceName
+#define SDL_GetMouseNameFromID IGNORE_THIS_VERSION_OF_SDL_GetMouseNameFromID
 #define SDL_GetMouseState IGNORE_THIS_VERSION_OF_SDL_GetMouseState
 #define SDL_GetNaturalDisplayOrientation IGNORE_THIS_VERSION_OF_SDL_GetNaturalDisplayOrientation
 #define SDL_GetNumAllocations IGNORE_THIS_VERSION_OF_SDL_GetNumAllocations
@@ -411,8 +411,8 @@
 #define SDL_GetPropertyType IGNORE_THIS_VERSION_OF_SDL_GetPropertyType
 #define SDL_GetRGB IGNORE_THIS_VERSION_OF_SDL_GetRGB
 #define SDL_GetRGBA IGNORE_THIS_VERSION_OF_SDL_GetRGBA
-#define SDL_GetRealGamepadInstanceType IGNORE_THIS_VERSION_OF_SDL_GetRealGamepadInstanceType
 #define SDL_GetRealGamepadType IGNORE_THIS_VERSION_OF_SDL_GetRealGamepadType
+#define SDL_GetRealGamepadTypeFromID IGNORE_THIS_VERSION_OF_SDL_GetRealGamepadTypeFromID
 #define SDL_GetRectAndLineIntersection IGNORE_THIS_VERSION_OF_SDL_GetRectAndLineIntersection
 #define SDL_GetRectAndLineIntersectionFloat IGNORE_THIS_VERSION_OF_SDL_GetRectAndLineIntersectionFloat
 #define SDL_GetRectEnclosingPoints IGNORE_THIS_VERSION_OF_SDL_GetRectEnclosingPoints
@@ -450,7 +450,7 @@
 #define SDL_GetScancodeName IGNORE_THIS_VERSION_OF_SDL_GetScancodeName
 #define SDL_GetSemaphoreValue IGNORE_THIS_VERSION_OF_SDL_GetSemaphoreValue
 #define SDL_GetSensorData IGNORE_THIS_VERSION_OF_SDL_GetSensorData
-#define SDL_GetSensorFromInstanceID IGNORE_THIS_VERSION_OF_SDL_GetSensorFromInstanceID
+#define SDL_GetSensorFromID IGNORE_THIS_VERSION_OF_SDL_GetSensorFromID
 #define SDL_GetSensorID IGNORE_THIS_VERSION_OF_SDL_GetSensorID
 #define SDL_GetSensorName IGNORE_THIS_VERSION_OF_SDL_GetSensorName
 #define SDL_GetSensorNameFromID IGNORE_THIS_VERSION_OF_SDL_GetSensorNameFromID
@@ -623,7 +623,7 @@
 #define SDL_OnApplicationWillTerminate IGNORE_THIS_VERSION_OF_SDL_OnApplicationWillTerminate
 #define SDL_OpenAudioDevice IGNORE_THIS_VERSION_OF_SDL_OpenAudioDevice
 #define SDL_OpenAudioDeviceStream IGNORE_THIS_VERSION_OF_SDL_OpenAudioDeviceStream
-#define SDL_OpenCameraDevice IGNORE_THIS_VERSION_OF_SDL_OpenCameraDevice
+#define SDL_OpenCamera IGNORE_THIS_VERSION_OF_SDL_OpenCamera
 #define SDL_OpenFileStorage IGNORE_THIS_VERSION_OF_SDL_OpenFileStorage
 #define SDL_OpenGamepad IGNORE_THIS_VERSION_OF_SDL_OpenGamepad
 #define SDL_OpenHaptic IGNORE_THIS_VERSION_OF_SDL_OpenHaptic
@@ -1844,22 +1844,6 @@
 #undef SDL_GetCPUCount
 #endif
 
-#ifdef SDL_GetCameraDeviceName
-#undef SDL_GetCameraDeviceName
-#endif
-
-#ifdef SDL_GetCameraDevicePosition
-#undef SDL_GetCameraDevicePosition
-#endif
-
-#ifdef SDL_GetCameraDeviceSupportedFormats
-#undef SDL_GetCameraDeviceSupportedFormats
-#endif
-
-#ifdef SDL_GetCameraDevices
-#undef SDL_GetCameraDevices
-#endif
-
 #ifdef SDL_GetCameraDriver
 #undef SDL_GetCameraDriver
 #endif
@@ -1868,16 +1852,32 @@
 #undef SDL_GetCameraFormat
 #endif
 
-#ifdef SDL_GetCameraInstanceID
-#undef SDL_GetCameraInstanceID
+#ifdef SDL_GetCameraID
+#undef SDL_GetCameraID
+#endif
+
+#ifdef SDL_GetCameraName
+#undef SDL_GetCameraName
 #endif
 
 #ifdef SDL_GetCameraPermissionState
 #undef SDL_GetCameraPermissionState
 #endif
 
+#ifdef SDL_GetCameraPosition
+#undef SDL_GetCameraPosition
+#endif
+
 #ifdef SDL_GetCameraProperties
 #undef SDL_GetCameraProperties
+#endif
+
+#ifdef SDL_GetCameraSupportedFormats
+#undef SDL_GetCameraSupportedFormats
+#endif
+
+#ifdef SDL_GetCameras
+#undef SDL_GetCameras
 #endif
 
 #ifdef SDL_GetClipboardData
@@ -2060,8 +2060,8 @@
 #undef SDL_GetGamepadFirmwareVersion
 #endif
 
-#ifdef SDL_GetGamepadFromInstanceID
-#undef SDL_GetGamepadFromInstanceID
+#ifdef SDL_GetGamepadFromID
+#undef SDL_GetGamepadFromID
 #endif
 
 #ifdef SDL_GetGamepadFromPlayerIndex
@@ -2220,8 +2220,8 @@
 #undef SDL_GetHapticFeatures
 #endif
 
-#ifdef SDL_GetHapticFromInstanceID
-#undef SDL_GetHapticFromInstanceID
+#ifdef SDL_GetHapticFromID
+#undef SDL_GetHapticFromID
 #endif
 
 #ifdef SDL_GetHapticID
@@ -2284,8 +2284,8 @@
 #undef SDL_GetJoystickFirmwareVersion
 #endif
 
-#ifdef SDL_GetJoystickFromInstanceID
-#undef SDL_GetJoystickFromInstanceID
+#ifdef SDL_GetJoystickFromID
+#undef SDL_GetJoystickFromID
 #endif
 
 #ifdef SDL_GetJoystickFromPlayerIndex
@@ -2408,8 +2408,8 @@
 #undef SDL_GetKeyboardFocus
 #endif
 
-#ifdef SDL_GetKeyboardInstanceName
-#undef SDL_GetKeyboardInstanceName
+#ifdef SDL_GetKeyboardNameFromID
+#undef SDL_GetKeyboardNameFromID
 #endif
 
 #ifdef SDL_GetKeyboardState
@@ -2456,8 +2456,8 @@
 #undef SDL_GetMouseFocus
 #endif
 
-#ifdef SDL_GetMouseInstanceName
-#undef SDL_GetMouseInstanceName
+#ifdef SDL_GetMouseNameFromID
+#undef SDL_GetMouseNameFromID
 #endif
 
 #ifdef SDL_GetMouseState
@@ -2616,12 +2616,12 @@
 #undef SDL_GetRGBA
 #endif
 
-#ifdef SDL_GetRealGamepadInstanceType
-#undef SDL_GetRealGamepadInstanceType
-#endif
-
 #ifdef SDL_GetRealGamepadType
 #undef SDL_GetRealGamepadType
+#endif
+
+#ifdef SDL_GetRealGamepadTypeFromID
+#undef SDL_GetRealGamepadTypeFromID
 #endif
 
 #ifdef SDL_GetRectAndLineIntersection
@@ -2772,8 +2772,8 @@
 #undef SDL_GetSensorData
 #endif
 
-#ifdef SDL_GetSensorFromInstanceID
-#undef SDL_GetSensorFromInstanceID
+#ifdef SDL_GetSensorFromID
+#undef SDL_GetSensorFromID
 #endif
 
 #ifdef SDL_GetSensorID
@@ -3464,8 +3464,8 @@
 #undef SDL_OpenAudioDeviceStream
 #endif
 
-#ifdef SDL_OpenCameraDevice
-#undef SDL_OpenCameraDevice
+#ifdef SDL_OpenCamera
+#undef SDL_OpenCamera
 #endif
 
 #ifdef SDL_OpenFileStorage
