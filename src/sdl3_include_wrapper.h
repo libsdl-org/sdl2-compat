@@ -274,26 +274,24 @@
 #define SDL_GetGamepadFirmwareVersion IGNORE_THIS_VERSION_OF_SDL_GetGamepadFirmwareVersion
 #define SDL_GetGamepadFromInstanceID IGNORE_THIS_VERSION_OF_SDL_GetGamepadFromInstanceID
 #define SDL_GetGamepadFromPlayerIndex IGNORE_THIS_VERSION_OF_SDL_GetGamepadFromPlayerIndex
-#define SDL_GetGamepadInstanceGUID IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstanceGUID
-#define SDL_GetGamepadInstanceID IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstanceID
-#define SDL_GetGamepadInstanceMapping IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstanceMapping
-#define SDL_GetGamepadInstanceName IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstanceName
-#define SDL_GetGamepadInstancePath IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstancePath
-#define SDL_GetGamepadInstancePlayerIndex IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstancePlayerIndex
-#define SDL_GetGamepadInstanceProduct IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstanceProduct
-#define SDL_GetGamepadInstanceProductVersion IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstanceProductVersion
-#define SDL_GetGamepadInstanceType IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstanceType
-#define SDL_GetGamepadInstanceVendor IGNORE_THIS_VERSION_OF_SDL_GetGamepadInstanceVendor
+#define SDL_GetGamepadGUIDFromID IGNORE_THIS_VERSION_OF_SDL_GetGamepadGUIDFromID
+#define SDL_GetGamepadID IGNORE_THIS_VERSION_OF_SDL_GetGamepadID
 #define SDL_GetGamepadJoystick IGNORE_THIS_VERSION_OF_SDL_GetGamepadJoystick
 #define SDL_GetGamepadMapping IGNORE_THIS_VERSION_OF_SDL_GetGamepadMapping
 #define SDL_GetGamepadMappingForGUID IGNORE_THIS_VERSION_OF_SDL_GetGamepadMappingForGUID
+#define SDL_GetGamepadMappingFromID IGNORE_THIS_VERSION_OF_SDL_GetGamepadMappingFromID
 #define SDL_GetGamepadMappings IGNORE_THIS_VERSION_OF_SDL_GetGamepadMappings
 #define SDL_GetGamepadName IGNORE_THIS_VERSION_OF_SDL_GetGamepadName
+#define SDL_GetGamepadNameFromID IGNORE_THIS_VERSION_OF_SDL_GetGamepadNameFromID
 #define SDL_GetGamepadPath IGNORE_THIS_VERSION_OF_SDL_GetGamepadPath
+#define SDL_GetGamepadPathFromID IGNORE_THIS_VERSION_OF_SDL_GetGamepadPathFromID
 #define SDL_GetGamepadPlayerIndex IGNORE_THIS_VERSION_OF_SDL_GetGamepadPlayerIndex
+#define SDL_GetGamepadPlayerIndexFromID IGNORE_THIS_VERSION_OF_SDL_GetGamepadPlayerIndexFromID
 #define SDL_GetGamepadPowerInfo IGNORE_THIS_VERSION_OF_SDL_GetGamepadPowerInfo
 #define SDL_GetGamepadProduct IGNORE_THIS_VERSION_OF_SDL_GetGamepadProduct
+#define SDL_GetGamepadProductFromID IGNORE_THIS_VERSION_OF_SDL_GetGamepadProductFromID
 #define SDL_GetGamepadProductVersion IGNORE_THIS_VERSION_OF_SDL_GetGamepadProductVersion
+#define SDL_GetGamepadProductVersionFromID IGNORE_THIS_VERSION_OF_SDL_GetGamepadProductVersionFromID
 #define SDL_GetGamepadProperties IGNORE_THIS_VERSION_OF_SDL_GetGamepadProperties
 #define SDL_GetGamepadSensorData IGNORE_THIS_VERSION_OF_SDL_GetGamepadSensorData
 #define SDL_GetGamepadSensorDataRate IGNORE_THIS_VERSION_OF_SDL_GetGamepadSensorDataRate
@@ -304,8 +302,10 @@
 #define SDL_GetGamepadStringForType IGNORE_THIS_VERSION_OF_SDL_GetGamepadStringForType
 #define SDL_GetGamepadTouchpadFinger IGNORE_THIS_VERSION_OF_SDL_GetGamepadTouchpadFinger
 #define SDL_GetGamepadType IGNORE_THIS_VERSION_OF_SDL_GetGamepadType
+#define SDL_GetGamepadTypeFromID IGNORE_THIS_VERSION_OF_SDL_GetGamepadTypeFromID
 #define SDL_GetGamepadTypeFromString IGNORE_THIS_VERSION_OF_SDL_GetGamepadTypeFromString
 #define SDL_GetGamepadVendor IGNORE_THIS_VERSION_OF_SDL_GetGamepadVendor
+#define SDL_GetGamepadVendorFromID IGNORE_THIS_VERSION_OF_SDL_GetGamepadVendorFromID
 #define SDL_GetGamepads IGNORE_THIS_VERSION_OF_SDL_GetGamepads
 #define SDL_GetGlobalMouseState IGNORE_THIS_VERSION_OF_SDL_GetGlobalMouseState
 #define SDL_GetGlobalProperties IGNORE_THIS_VERSION_OF_SDL_GetGlobalProperties
@@ -313,9 +313,9 @@
 #define SDL_GetHapticEffectStatus IGNORE_THIS_VERSION_OF_SDL_GetHapticEffectStatus
 #define SDL_GetHapticFeatures IGNORE_THIS_VERSION_OF_SDL_GetHapticFeatures
 #define SDL_GetHapticFromInstanceID IGNORE_THIS_VERSION_OF_SDL_GetHapticFromInstanceID
-#define SDL_GetHapticInstanceID IGNORE_THIS_VERSION_OF_SDL_GetHapticInstanceID
-#define SDL_GetHapticInstanceName IGNORE_THIS_VERSION_OF_SDL_GetHapticInstanceName
+#define SDL_GetHapticID IGNORE_THIS_VERSION_OF_SDL_GetHapticID
 #define SDL_GetHapticName IGNORE_THIS_VERSION_OF_SDL_GetHapticName
+#define SDL_GetHapticNameFromID IGNORE_THIS_VERSION_OF_SDL_GetHapticNameFromID
 #define SDL_GetHaptics IGNORE_THIS_VERSION_OF_SDL_GetHaptics
 #define SDL_GetHint IGNORE_THIS_VERSION_OF_SDL_GetHint
 #define SDL_GetHintBoolean IGNORE_THIS_VERSION_OF_SDL_GetHintBoolean
@@ -331,29 +331,29 @@
 #define SDL_GetJoystickFromInstanceID IGNORE_THIS_VERSION_OF_SDL_GetJoystickFromInstanceID
 #define SDL_GetJoystickFromPlayerIndex IGNORE_THIS_VERSION_OF_SDL_GetJoystickFromPlayerIndex
 #define SDL_GetJoystickGUID IGNORE_THIS_VERSION_OF_SDL_GetJoystickGUID
+#define SDL_GetJoystickGUIDFromID IGNORE_THIS_VERSION_OF_SDL_GetJoystickGUIDFromID
 #define SDL_GetJoystickGUIDFromString IGNORE_THIS_VERSION_OF_SDL_GetJoystickGUIDFromString
 #define SDL_GetJoystickGUIDInfo IGNORE_THIS_VERSION_OF_SDL_GetJoystickGUIDInfo
 #define SDL_GetJoystickGUIDString IGNORE_THIS_VERSION_OF_SDL_GetJoystickGUIDString
 #define SDL_GetJoystickHat IGNORE_THIS_VERSION_OF_SDL_GetJoystickHat
-#define SDL_GetJoystickInstanceGUID IGNORE_THIS_VERSION_OF_SDL_GetJoystickInstanceGUID
-#define SDL_GetJoystickInstanceID IGNORE_THIS_VERSION_OF_SDL_GetJoystickInstanceID
-#define SDL_GetJoystickInstanceName IGNORE_THIS_VERSION_OF_SDL_GetJoystickInstanceName
-#define SDL_GetJoystickInstancePath IGNORE_THIS_VERSION_OF_SDL_GetJoystickInstancePath
-#define SDL_GetJoystickInstancePlayerIndex IGNORE_THIS_VERSION_OF_SDL_GetJoystickInstancePlayerIndex
-#define SDL_GetJoystickInstanceProduct IGNORE_THIS_VERSION_OF_SDL_GetJoystickInstanceProduct
-#define SDL_GetJoystickInstanceProductVersion IGNORE_THIS_VERSION_OF_SDL_GetJoystickInstanceProductVersion
-#define SDL_GetJoystickInstanceType IGNORE_THIS_VERSION_OF_SDL_GetJoystickInstanceType
-#define SDL_GetJoystickInstanceVendor IGNORE_THIS_VERSION_OF_SDL_GetJoystickInstanceVendor
+#define SDL_GetJoystickID IGNORE_THIS_VERSION_OF_SDL_GetJoystickID
 #define SDL_GetJoystickName IGNORE_THIS_VERSION_OF_SDL_GetJoystickName
+#define SDL_GetJoystickNameFromID IGNORE_THIS_VERSION_OF_SDL_GetJoystickNameFromID
 #define SDL_GetJoystickPath IGNORE_THIS_VERSION_OF_SDL_GetJoystickPath
+#define SDL_GetJoystickPathFromID IGNORE_THIS_VERSION_OF_SDL_GetJoystickPathFromID
 #define SDL_GetJoystickPlayerIndex IGNORE_THIS_VERSION_OF_SDL_GetJoystickPlayerIndex
+#define SDL_GetJoystickPlayerIndexFromID IGNORE_THIS_VERSION_OF_SDL_GetJoystickPlayerIndexFromID
 #define SDL_GetJoystickPowerInfo IGNORE_THIS_VERSION_OF_SDL_GetJoystickPowerInfo
 #define SDL_GetJoystickProduct IGNORE_THIS_VERSION_OF_SDL_GetJoystickProduct
+#define SDL_GetJoystickProductFromID IGNORE_THIS_VERSION_OF_SDL_GetJoystickProductFromID
 #define SDL_GetJoystickProductVersion IGNORE_THIS_VERSION_OF_SDL_GetJoystickProductVersion
+#define SDL_GetJoystickProductVersionFromID IGNORE_THIS_VERSION_OF_SDL_GetJoystickProductVersionFromID
 #define SDL_GetJoystickProperties IGNORE_THIS_VERSION_OF_SDL_GetJoystickProperties
 #define SDL_GetJoystickSerial IGNORE_THIS_VERSION_OF_SDL_GetJoystickSerial
 #define SDL_GetJoystickType IGNORE_THIS_VERSION_OF_SDL_GetJoystickType
+#define SDL_GetJoystickTypeFromID IGNORE_THIS_VERSION_OF_SDL_GetJoystickTypeFromID
 #define SDL_GetJoystickVendor IGNORE_THIS_VERSION_OF_SDL_GetJoystickVendor
+#define SDL_GetJoystickVendorFromID IGNORE_THIS_VERSION_OF_SDL_GetJoystickVendorFromID
 #define SDL_GetJoysticks IGNORE_THIS_VERSION_OF_SDL_GetJoysticks
 #define SDL_GetKeyFromName IGNORE_THIS_VERSION_OF_SDL_GetKeyFromName
 #define SDL_GetKeyFromScancode IGNORE_THIS_VERSION_OF_SDL_GetKeyFromScancode
@@ -451,14 +451,14 @@
 #define SDL_GetSemaphoreValue IGNORE_THIS_VERSION_OF_SDL_GetSemaphoreValue
 #define SDL_GetSensorData IGNORE_THIS_VERSION_OF_SDL_GetSensorData
 #define SDL_GetSensorFromInstanceID IGNORE_THIS_VERSION_OF_SDL_GetSensorFromInstanceID
-#define SDL_GetSensorInstanceID IGNORE_THIS_VERSION_OF_SDL_GetSensorInstanceID
-#define SDL_GetSensorInstanceName IGNORE_THIS_VERSION_OF_SDL_GetSensorInstanceName
-#define SDL_GetSensorInstanceNonPortableType IGNORE_THIS_VERSION_OF_SDL_GetSensorInstanceNonPortableType
-#define SDL_GetSensorInstanceType IGNORE_THIS_VERSION_OF_SDL_GetSensorInstanceType
+#define SDL_GetSensorID IGNORE_THIS_VERSION_OF_SDL_GetSensorID
 #define SDL_GetSensorName IGNORE_THIS_VERSION_OF_SDL_GetSensorName
+#define SDL_GetSensorNameFromID IGNORE_THIS_VERSION_OF_SDL_GetSensorNameFromID
 #define SDL_GetSensorNonPortableType IGNORE_THIS_VERSION_OF_SDL_GetSensorNonPortableType
+#define SDL_GetSensorNonPortableTypeFromID IGNORE_THIS_VERSION_OF_SDL_GetSensorNonPortableTypeFromID
 #define SDL_GetSensorProperties IGNORE_THIS_VERSION_OF_SDL_GetSensorProperties
 #define SDL_GetSensorType IGNORE_THIS_VERSION_OF_SDL_GetSensorType
+#define SDL_GetSensorTypeFromID IGNORE_THIS_VERSION_OF_SDL_GetSensorTypeFromID
 #define SDL_GetSensors IGNORE_THIS_VERSION_OF_SDL_GetSensors
 #define SDL_GetSilenceValueForFormat IGNORE_THIS_VERSION_OF_SDL_GetSilenceValueForFormat
 #define SDL_GetStorageFileSize IGNORE_THIS_VERSION_OF_SDL_GetStorageFileSize
@@ -2068,44 +2068,12 @@
 #undef SDL_GetGamepadFromPlayerIndex
 #endif
 
-#ifdef SDL_GetGamepadInstanceGUID
-#undef SDL_GetGamepadInstanceGUID
+#ifdef SDL_GetGamepadGUIDFromID
+#undef SDL_GetGamepadGUIDFromID
 #endif
 
-#ifdef SDL_GetGamepadInstanceID
-#undef SDL_GetGamepadInstanceID
-#endif
-
-#ifdef SDL_GetGamepadInstanceMapping
-#undef SDL_GetGamepadInstanceMapping
-#endif
-
-#ifdef SDL_GetGamepadInstanceName
-#undef SDL_GetGamepadInstanceName
-#endif
-
-#ifdef SDL_GetGamepadInstancePath
-#undef SDL_GetGamepadInstancePath
-#endif
-
-#ifdef SDL_GetGamepadInstancePlayerIndex
-#undef SDL_GetGamepadInstancePlayerIndex
-#endif
-
-#ifdef SDL_GetGamepadInstanceProduct
-#undef SDL_GetGamepadInstanceProduct
-#endif
-
-#ifdef SDL_GetGamepadInstanceProductVersion
-#undef SDL_GetGamepadInstanceProductVersion
-#endif
-
-#ifdef SDL_GetGamepadInstanceType
-#undef SDL_GetGamepadInstanceType
-#endif
-
-#ifdef SDL_GetGamepadInstanceVendor
-#undef SDL_GetGamepadInstanceVendor
+#ifdef SDL_GetGamepadID
+#undef SDL_GetGamepadID
 #endif
 
 #ifdef SDL_GetGamepadJoystick
@@ -2120,6 +2088,10 @@
 #undef SDL_GetGamepadMappingForGUID
 #endif
 
+#ifdef SDL_GetGamepadMappingFromID
+#undef SDL_GetGamepadMappingFromID
+#endif
+
 #ifdef SDL_GetGamepadMappings
 #undef SDL_GetGamepadMappings
 #endif
@@ -2128,12 +2100,24 @@
 #undef SDL_GetGamepadName
 #endif
 
+#ifdef SDL_GetGamepadNameFromID
+#undef SDL_GetGamepadNameFromID
+#endif
+
 #ifdef SDL_GetGamepadPath
 #undef SDL_GetGamepadPath
 #endif
 
+#ifdef SDL_GetGamepadPathFromID
+#undef SDL_GetGamepadPathFromID
+#endif
+
 #ifdef SDL_GetGamepadPlayerIndex
 #undef SDL_GetGamepadPlayerIndex
+#endif
+
+#ifdef SDL_GetGamepadPlayerIndexFromID
+#undef SDL_GetGamepadPlayerIndexFromID
 #endif
 
 #ifdef SDL_GetGamepadPowerInfo
@@ -2144,8 +2128,16 @@
 #undef SDL_GetGamepadProduct
 #endif
 
+#ifdef SDL_GetGamepadProductFromID
+#undef SDL_GetGamepadProductFromID
+#endif
+
 #ifdef SDL_GetGamepadProductVersion
 #undef SDL_GetGamepadProductVersion
+#endif
+
+#ifdef SDL_GetGamepadProductVersionFromID
+#undef SDL_GetGamepadProductVersionFromID
 #endif
 
 #ifdef SDL_GetGamepadProperties
@@ -2188,12 +2180,20 @@
 #undef SDL_GetGamepadType
 #endif
 
+#ifdef SDL_GetGamepadTypeFromID
+#undef SDL_GetGamepadTypeFromID
+#endif
+
 #ifdef SDL_GetGamepadTypeFromString
 #undef SDL_GetGamepadTypeFromString
 #endif
 
 #ifdef SDL_GetGamepadVendor
 #undef SDL_GetGamepadVendor
+#endif
+
+#ifdef SDL_GetGamepadVendorFromID
+#undef SDL_GetGamepadVendorFromID
 #endif
 
 #ifdef SDL_GetGamepads
@@ -2224,16 +2224,16 @@
 #undef SDL_GetHapticFromInstanceID
 #endif
 
-#ifdef SDL_GetHapticInstanceID
-#undef SDL_GetHapticInstanceID
-#endif
-
-#ifdef SDL_GetHapticInstanceName
-#undef SDL_GetHapticInstanceName
+#ifdef SDL_GetHapticID
+#undef SDL_GetHapticID
 #endif
 
 #ifdef SDL_GetHapticName
 #undef SDL_GetHapticName
+#endif
+
+#ifdef SDL_GetHapticNameFromID
+#undef SDL_GetHapticNameFromID
 #endif
 
 #ifdef SDL_GetHaptics
@@ -2296,6 +2296,10 @@
 #undef SDL_GetJoystickGUID
 #endif
 
+#ifdef SDL_GetJoystickGUIDFromID
+#undef SDL_GetJoystickGUIDFromID
+#endif
+
 #ifdef SDL_GetJoystickGUIDFromString
 #undef SDL_GetJoystickGUIDFromString
 #endif
@@ -2312,52 +2316,32 @@
 #undef SDL_GetJoystickHat
 #endif
 
-#ifdef SDL_GetJoystickInstanceGUID
-#undef SDL_GetJoystickInstanceGUID
-#endif
-
-#ifdef SDL_GetJoystickInstanceID
-#undef SDL_GetJoystickInstanceID
-#endif
-
-#ifdef SDL_GetJoystickInstanceName
-#undef SDL_GetJoystickInstanceName
-#endif
-
-#ifdef SDL_GetJoystickInstancePath
-#undef SDL_GetJoystickInstancePath
-#endif
-
-#ifdef SDL_GetJoystickInstancePlayerIndex
-#undef SDL_GetJoystickInstancePlayerIndex
-#endif
-
-#ifdef SDL_GetJoystickInstanceProduct
-#undef SDL_GetJoystickInstanceProduct
-#endif
-
-#ifdef SDL_GetJoystickInstanceProductVersion
-#undef SDL_GetJoystickInstanceProductVersion
-#endif
-
-#ifdef SDL_GetJoystickInstanceType
-#undef SDL_GetJoystickInstanceType
-#endif
-
-#ifdef SDL_GetJoystickInstanceVendor
-#undef SDL_GetJoystickInstanceVendor
+#ifdef SDL_GetJoystickID
+#undef SDL_GetJoystickID
 #endif
 
 #ifdef SDL_GetJoystickName
 #undef SDL_GetJoystickName
 #endif
 
+#ifdef SDL_GetJoystickNameFromID
+#undef SDL_GetJoystickNameFromID
+#endif
+
 #ifdef SDL_GetJoystickPath
 #undef SDL_GetJoystickPath
 #endif
 
+#ifdef SDL_GetJoystickPathFromID
+#undef SDL_GetJoystickPathFromID
+#endif
+
 #ifdef SDL_GetJoystickPlayerIndex
 #undef SDL_GetJoystickPlayerIndex
+#endif
+
+#ifdef SDL_GetJoystickPlayerIndexFromID
+#undef SDL_GetJoystickPlayerIndexFromID
 #endif
 
 #ifdef SDL_GetJoystickPowerInfo
@@ -2368,8 +2352,16 @@
 #undef SDL_GetJoystickProduct
 #endif
 
+#ifdef SDL_GetJoystickProductFromID
+#undef SDL_GetJoystickProductFromID
+#endif
+
 #ifdef SDL_GetJoystickProductVersion
 #undef SDL_GetJoystickProductVersion
+#endif
+
+#ifdef SDL_GetJoystickProductVersionFromID
+#undef SDL_GetJoystickProductVersionFromID
 #endif
 
 #ifdef SDL_GetJoystickProperties
@@ -2384,8 +2376,16 @@
 #undef SDL_GetJoystickType
 #endif
 
+#ifdef SDL_GetJoystickTypeFromID
+#undef SDL_GetJoystickTypeFromID
+#endif
+
 #ifdef SDL_GetJoystickVendor
 #undef SDL_GetJoystickVendor
+#endif
+
+#ifdef SDL_GetJoystickVendorFromID
+#undef SDL_GetJoystickVendorFromID
 #endif
 
 #ifdef SDL_GetJoysticks
@@ -2776,28 +2776,24 @@
 #undef SDL_GetSensorFromInstanceID
 #endif
 
-#ifdef SDL_GetSensorInstanceID
-#undef SDL_GetSensorInstanceID
-#endif
-
-#ifdef SDL_GetSensorInstanceName
-#undef SDL_GetSensorInstanceName
-#endif
-
-#ifdef SDL_GetSensorInstanceNonPortableType
-#undef SDL_GetSensorInstanceNonPortableType
-#endif
-
-#ifdef SDL_GetSensorInstanceType
-#undef SDL_GetSensorInstanceType
+#ifdef SDL_GetSensorID
+#undef SDL_GetSensorID
 #endif
 
 #ifdef SDL_GetSensorName
 #undef SDL_GetSensorName
 #endif
 
+#ifdef SDL_GetSensorNameFromID
+#undef SDL_GetSensorNameFromID
+#endif
+
 #ifdef SDL_GetSensorNonPortableType
 #undef SDL_GetSensorNonPortableType
+#endif
+
+#ifdef SDL_GetSensorNonPortableTypeFromID
+#undef SDL_GetSensorNonPortableTypeFromID
 #endif
 
 #ifdef SDL_GetSensorProperties
@@ -2806,6 +2802,10 @@
 
 #ifdef SDL_GetSensorType
 #undef SDL_GetSensorType
+#endif
+
+#ifdef SDL_GetSensorTypeFromID
+#undef SDL_GetSensorTypeFromID
 #endif
 
 #ifdef SDL_GetSensors
