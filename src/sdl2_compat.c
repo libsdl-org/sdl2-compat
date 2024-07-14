@@ -7992,7 +7992,7 @@ SDL_JoystickGetDeviceGUID(int idx)
     if (!jid) {
         SDL3_zero(guid);
     } else {
-        guid = SDL3_GetJoystickGUIDFromID(jid);
+        guid = SDL3_GetJoystickGUIDForID(jid);
     }
     return guid;
 }
@@ -8001,7 +8001,7 @@ SDL_DECLSPEC const char* SDLCALL
 SDL_JoystickNameForIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_GetJoystickNameFromID(jid) : NULL;
+    return jid ? SDL3_GetJoystickNameForID(jid) : NULL;
 }
 
 SDL_DECLSPEC SDL_Joystick* SDLCALL
@@ -8015,28 +8015,28 @@ SDL_DECLSPEC Uint16 SDLCALL
 SDL_JoystickGetDeviceVendor(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_GetJoystickVendorFromID(jid) : 0;
+    return jid ? SDL3_GetJoystickVendorForID(jid) : 0;
 }
 
 SDL_DECLSPEC Uint16 SDLCALL
 SDL_JoystickGetDeviceProduct(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_GetJoystickProductFromID(jid) : 0;
+    return jid ? SDL3_GetJoystickProductForID(jid) : 0;
 }
 
 SDL_DECLSPEC Uint16 SDLCALL
 SDL_JoystickGetDeviceProductVersion(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_GetJoystickProductVersionFromID(jid) : 0;
+    return jid ? SDL3_GetJoystickProductVersionForID(jid) : 0;
 }
 
 SDL_DECLSPEC SDL_JoystickType SDLCALL
 SDL_JoystickGetDeviceType(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_GetJoystickTypeFromID(jid) : SDL_JOYSTICK_TYPE_UNKNOWN;
+    return jid ? SDL3_GetJoystickTypeForID(jid) : SDL_JOYSTICK_TYPE_UNKNOWN;
 }
 
 SDL_DECLSPEC SDL2_JoystickID SDLCALL
@@ -8076,7 +8076,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_JoystickGetDevicePlayerIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_GetJoystickPlayerIndexFromID(jid) : -1;
+    return jid ? SDL3_GetJoystickPlayerIndexForID(jid) : -1;
 }
 
 SDL_DECLSPEC SDL_bool SDLCALL
@@ -8090,7 +8090,7 @@ SDL_DECLSPEC const char* SDLCALL
 SDL_JoystickPathForIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_GetJoystickPathFromID(jid) : NULL;
+    return jid ? SDL3_GetJoystickPathForID(jid) : NULL;
 }
 
 SDL_DECLSPEC SDL_bool SDLCALL
@@ -8144,7 +8144,7 @@ SDL_DECLSPEC char* SDLCALL
 SDL_GameControllerMappingForDeviceIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_GetGamepadMappingFromID(jid) : NULL;
+    return jid ? SDL3_GetGamepadMappingForID(jid) : NULL;
 }
 
 SDL_DECLSPEC SDL_bool SDLCALL
@@ -8158,7 +8158,7 @@ SDL_DECLSPEC const char* SDLCALL
 SDL_GameControllerNameForIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_GetGamepadNameFromID(jid) : NULL;
+    return jid ? SDL3_GetGamepadNameForID(jid) : NULL;
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -8193,10 +8193,10 @@ SDL_GameControllerOpen(int idx)
 }
 
 static SDL_GameControllerType SDLCALL
-SDL2COMPAT_GetGamepadTypeFromID(const SDL_JoystickID jid)
+SDL2COMPAT_GetGamepadTypeForID(const SDL_JoystickID jid)
 {
-    const Uint16 vid = SDL3_GetJoystickVendorFromID(jid);
-    const Uint16 pid = SDL3_GetJoystickProductFromID(jid);
+    const Uint16 vid = SDL3_GetJoystickVendorForID(jid);
+    const Uint16 pid = SDL3_GetJoystickProductForID(jid);
     if (SDL3_IsJoystickVirtual(jid)) {
         return SDL_CONTROLLER_TYPE_VIRTUAL;
     }
@@ -8210,7 +8210,7 @@ SDL2COMPAT_GetGamepadTypeFromID(const SDL_JoystickID jid)
     if (vid == 0x0955 && (pid == 0x7210 || pid == 0x7214)) {
         return SDL_CONTROLLER_TYPE_NVIDIA_SHIELD;
     }
-    switch (SDL3_GetGamepadTypeFromID(jid)) {
+    switch (SDL3_GetGamepadTypeForID(jid)) {
     case SDL_GAMEPAD_TYPE_XBOX360:
         return SDL_CONTROLLER_TYPE_XBOX360;
     case SDL_GAMEPAD_TYPE_XBOXONE:
@@ -8237,21 +8237,21 @@ SDL2COMPAT_GetGamepadTypeFromID(const SDL_JoystickID jid)
 SDL_DECLSPEC SDL_GameControllerType SDLCALL
 SDL_GameControllerGetType(SDL_GameController *controller)
 {
-    return SDL2COMPAT_GetGamepadTypeFromID(SDL3_GetGamepadID(controller));
+    return SDL2COMPAT_GetGamepadTypeForID(SDL3_GetGamepadID(controller));
 }
 
 SDL_DECLSPEC SDL_GameControllerType SDLCALL
 SDL_GameControllerTypeForIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL2COMPAT_GetGamepadTypeFromID(jid) : SDL_CONTROLLER_TYPE_UNKNOWN;
+    return jid ? SDL2COMPAT_GetGamepadTypeForID(jid) : SDL_CONTROLLER_TYPE_UNKNOWN;
 }
 
 SDL_DECLSPEC const char* SDLCALL
 SDL_GameControllerPathForIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_GetGamepadPathFromID(jid) : NULL;
+    return jid ? SDL3_GetGamepadPathForID(jid) : NULL;
 }
 
 SDL_DECLSPEC Uint8 SDLCALL SDL_GameControllerGetButton(SDL_GameController *controller, SDL_GameControllerButton button)
@@ -8442,21 +8442,21 @@ SDL_DECLSPEC const char* SDLCALL
 SDL_SensorGetDeviceName(int idx)
 {
     const SDL_SensorID sid = GetSensorInstanceFromIndex(idx);
-    return sid ? SDL3_GetSensorNameFromID(sid) : NULL;
+    return sid ? SDL3_GetSensorNameForID(sid) : NULL;
 }
 
 SDL_DECLSPEC SDL_SensorType SDLCALL
 SDL_SensorGetDeviceType(int idx)
 {
     const SDL_SensorID sid = GetSensorInstanceFromIndex(idx);
-    return sid ? SDL3_GetSensorTypeFromID(sid) : SDL_SENSOR_INVALID;
+    return sid ? SDL3_GetSensorTypeForID(sid) : SDL_SENSOR_INVALID;
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_SensorGetDeviceNonPortableType(int idx)
 {
     const SDL_SensorID sid = GetSensorInstanceFromIndex(idx);
-    return sid ? SDL3_GetSensorNonPortableTypeFromID(sid) : -1;
+    return sid ? SDL3_GetSensorNonPortableTypeForID(sid) : -1;
 }
 
 SDL_DECLSPEC SDL2_SensorID SDLCALL
@@ -8520,7 +8520,7 @@ SDL_DECLSPEC const char * SDLCALL
 SDL_HapticName(int device_index)
 {
     const SDL_HapticID instance_id = GetHapticInstanceFromIndex(device_index);
-    return instance_id ? SDL3_GetHapticNameFromID(instance_id) : NULL;
+    return instance_id ? SDL3_GetHapticNameForID(instance_id) : NULL;
 }
 
 SDL_DECLSPEC
