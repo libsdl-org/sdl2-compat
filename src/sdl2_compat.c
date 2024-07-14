@@ -1465,7 +1465,7 @@ SDL_LOG_IMPL(Critical, CRITICAL)
 static void UpdateGamepadButtonSwap(SDL_Gamepad *gamepad)
 {
     int i;
-    SDL_JoystickID instance_id = SDL3_GetGamepadInstanceID(gamepad);
+    SDL_JoystickID instance_id = SDL3_GetGamepadID(gamepad);
     SDL_bool swap_buttons = SDL_FALSE;
 
     if (SDL3_GetHintBoolean("SDL_GAMECONTROLLER_USE_BUTTON_LABELS", SDL_TRUE)) {
@@ -6971,6 +6971,12 @@ SDL_CreateWindowFrom(const void *data)
     return window;
 }
 
+SDL_DECLSPEC Uint32 SDLCALL
+SDL_GetWindowPixelFormat(SDL_Window *window)
+{
+    return (Uint32)SDL3_GetWindowPixelFormat(window);
+}
+
 SDL_DECLSPEC int SDLCALL
 SDL_SetWindowFullscreen(SDL_Window *window, Uint32 flags)
 {
@@ -7986,7 +7992,7 @@ SDL_JoystickGetDeviceGUID(int idx)
     if (!jid) {
         SDL3_zero(guid);
     } else {
-        guid = SDL3_GetJoystickInstanceGUID(jid);
+        guid = SDL3_GetJoystickGUIDFromID(jid);
     }
     return guid;
 }
@@ -7995,7 +8001,7 @@ SDL_DECLSPEC const char* SDLCALL
 SDL_JoystickNameForIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_GetJoystickInstanceName(jid) : NULL;
+    return jid ? SDL3_GetJoystickNameFromID(jid) : NULL;
 }
 
 SDL_DECLSPEC SDL_Joystick* SDLCALL
@@ -8009,28 +8015,28 @@ SDL_DECLSPEC Uint16 SDLCALL
 SDL_JoystickGetDeviceVendor(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_GetJoystickInstanceVendor(jid) : 0;
+    return jid ? SDL3_GetJoystickVendorFromID(jid) : 0;
 }
 
 SDL_DECLSPEC Uint16 SDLCALL
 SDL_JoystickGetDeviceProduct(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_GetJoystickInstanceProduct(jid) : 0;
+    return jid ? SDL3_GetJoystickProductFromID(jid) : 0;
 }
 
 SDL_DECLSPEC Uint16 SDLCALL
 SDL_JoystickGetDeviceProductVersion(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_GetJoystickInstanceProductVersion(jid) : 0;
+    return jid ? SDL3_GetJoystickProductVersionFromID(jid) : 0;
 }
 
 SDL_DECLSPEC SDL_JoystickType SDLCALL
 SDL_JoystickGetDeviceType(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_GetJoystickInstanceType(jid) : SDL_JOYSTICK_TYPE_UNKNOWN;
+    return jid ? SDL3_GetJoystickTypeFromID(jid) : SDL_JOYSTICK_TYPE_UNKNOWN;
 }
 
 SDL_DECLSPEC SDL2_JoystickID SDLCALL
@@ -8047,7 +8053,7 @@ SDL_JoystickGetDeviceInstanceID(int idx)
 SDL_DECLSPEC SDL2_JoystickID SDLCALL
 SDL_JoystickInstanceID(SDL_Joystick *joystick)
 {
-    const SDL_JoystickID jid = SDL3_GetJoystickInstanceID(joystick);
+    const SDL_JoystickID jid = SDL3_GetJoystickID(joystick);
     if (!jid) {
         return -1;
     }
@@ -8070,7 +8076,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_JoystickGetDevicePlayerIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_GetJoystickInstancePlayerIndex(jid) : -1;
+    return jid ? SDL3_GetJoystickPlayerIndexFromID(jid) : -1;
 }
 
 SDL_DECLSPEC SDL_bool SDLCALL
@@ -8084,7 +8090,7 @@ SDL_DECLSPEC const char* SDLCALL
 SDL_JoystickPathForIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_GetJoystickInstancePath(jid) : NULL;
+    return jid ? SDL3_GetJoystickPathFromID(jid) : NULL;
 }
 
 SDL_DECLSPEC SDL_bool SDLCALL
@@ -8138,7 +8144,7 @@ SDL_DECLSPEC char* SDLCALL
 SDL_GameControllerMappingForDeviceIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_GetGamepadInstanceMapping(jid) : NULL;
+    return jid ? SDL3_GetGamepadMappingFromID(jid) : NULL;
 }
 
 SDL_DECLSPEC SDL_bool SDLCALL
@@ -8152,7 +8158,7 @@ SDL_DECLSPEC const char* SDLCALL
 SDL_GameControllerNameForIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_GetGamepadInstanceName(jid) : NULL;
+    return jid ? SDL3_GetGamepadNameFromID(jid) : NULL;
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -8187,10 +8193,10 @@ SDL_GameControllerOpen(int idx)
 }
 
 static SDL_GameControllerType SDLCALL
-SDL2COMPAT_GetGamepadInstanceType(const SDL_JoystickID jid)
+SDL2COMPAT_GetGamepadTypeFromID(const SDL_JoystickID jid)
 {
-    const Uint16 vid = SDL3_GetJoystickInstanceVendor(jid);
-    const Uint16 pid = SDL3_GetJoystickInstanceProduct(jid);
+    const Uint16 vid = SDL3_GetJoystickVendorFromID(jid);
+    const Uint16 pid = SDL3_GetJoystickProductFromID(jid);
     if (SDL3_IsJoystickVirtual(jid)) {
         return SDL_CONTROLLER_TYPE_VIRTUAL;
     }
@@ -8204,7 +8210,7 @@ SDL2COMPAT_GetGamepadInstanceType(const SDL_JoystickID jid)
     if (vid == 0x0955 && (pid == 0x7210 || pid == 0x7214)) {
         return SDL_CONTROLLER_TYPE_NVIDIA_SHIELD;
     }
-    switch (SDL3_GetGamepadInstanceType(jid)) {
+    switch (SDL3_GetGamepadTypeFromID(jid)) {
     case SDL_GAMEPAD_TYPE_XBOX360:
         return SDL_CONTROLLER_TYPE_XBOX360;
     case SDL_GAMEPAD_TYPE_XBOXONE:
@@ -8231,26 +8237,26 @@ SDL2COMPAT_GetGamepadInstanceType(const SDL_JoystickID jid)
 SDL_DECLSPEC SDL_GameControllerType SDLCALL
 SDL_GameControllerGetType(SDL_GameController *controller)
 {
-    return SDL2COMPAT_GetGamepadInstanceType(SDL3_GetGamepadInstanceID(controller));
+    return SDL2COMPAT_GetGamepadTypeFromID(SDL3_GetGamepadID(controller));
 }
 
 SDL_DECLSPEC SDL_GameControllerType SDLCALL
 SDL_GameControllerTypeForIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL2COMPAT_GetGamepadInstanceType(jid) : SDL_CONTROLLER_TYPE_UNKNOWN;
+    return jid ? SDL2COMPAT_GetGamepadTypeFromID(jid) : SDL_CONTROLLER_TYPE_UNKNOWN;
 }
 
 SDL_DECLSPEC const char* SDLCALL
 SDL_GameControllerPathForIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_GetGamepadInstancePath(jid) : NULL;
+    return jid ? SDL3_GetGamepadPathFromID(jid) : NULL;
 }
 
 SDL_DECLSPEC Uint8 SDLCALL SDL_GameControllerGetButton(SDL_GameController *controller, SDL_GameControllerButton button)
 {
-    SDL_JoystickID instance_id = SDL3_GetGamepadInstanceID(controller);
+    SDL_JoystickID instance_id = SDL3_GetGamepadID(controller);
 
     if (ShouldSwapGamepadButtons(instance_id)) {
         button = (SDL_GameControllerButton)SwapGamepadButton(button);
@@ -8436,21 +8442,21 @@ SDL_DECLSPEC const char* SDLCALL
 SDL_SensorGetDeviceName(int idx)
 {
     const SDL_SensorID sid = GetSensorInstanceFromIndex(idx);
-    return sid ? SDL3_GetSensorInstanceName(sid) : NULL;
+    return sid ? SDL3_GetSensorNameFromID(sid) : NULL;
 }
 
 SDL_DECLSPEC SDL_SensorType SDLCALL
 SDL_SensorGetDeviceType(int idx)
 {
     const SDL_SensorID sid = GetSensorInstanceFromIndex(idx);
-    return sid ? SDL3_GetSensorInstanceType(sid) : SDL_SENSOR_INVALID;
+    return sid ? SDL3_GetSensorTypeFromID(sid) : SDL_SENSOR_INVALID;
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_SensorGetDeviceNonPortableType(int idx)
 {
     const SDL_SensorID sid = GetSensorInstanceFromIndex(idx);
-    return sid ? SDL3_GetSensorInstanceNonPortableType(sid) : -1;
+    return sid ? SDL3_GetSensorNonPortableTypeFromID(sid) : -1;
 }
 
 SDL_DECLSPEC SDL2_SensorID SDLCALL
@@ -8467,7 +8473,7 @@ SDL_SensorGetDeviceInstanceID(int idx)
 SDL_DECLSPEC SDL2_SensorID SDLCALL
 SDL_SensorGetInstanceID(SDL_Sensor *sensor)
 {
-    const SDL_SensorID sid = SDL3_GetSensorInstanceID(sensor);
+    const SDL_SensorID sid = SDL3_GetSensorID(sensor);
     if (!sid) {
         return -1;
     }
@@ -8514,7 +8520,7 @@ SDL_DECLSPEC const char * SDLCALL
 SDL_HapticName(int device_index)
 {
     const SDL_HapticID instance_id = GetHapticInstanceFromIndex(device_index);
-    return instance_id ? SDL3_GetHapticInstanceName(instance_id) : NULL;
+    return instance_id ? SDL3_GetHapticNameFromID(instance_id) : NULL;
 }
 
 SDL_DECLSPEC
@@ -8538,7 +8544,7 @@ SDL_HapticOpened(int device_index)
 SDL_DECLSPEC int SDLCALL
 SDL_HapticIndex(SDL_Haptic *haptic)
 {
-    const SDL_HapticID instance_id = SDL3_GetHapticInstanceID(haptic);
+    const SDL_HapticID instance_id = SDL3_GetHapticID(haptic);
     int i;
 
     for (i = 0; i < num_haptics; ++i) {
