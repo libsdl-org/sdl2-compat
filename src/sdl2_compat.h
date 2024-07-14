@@ -516,8 +516,10 @@ typedef SDL_EventAction SDL_eventaction;
 typedef union SDL2_Event SDL2_Event;
 typedef int (SDLCALL *SDL2_EventFilter) (void *userdata, SDL2_Event *event);
 
+typedef Uint16 SDL2_AudioFormat;
+
 struct SDL_AudioCVT;
-typedef void (SDLCALL * SDL_AudioFilter) (struct SDL_AudioCVT *cvt, SDL_AudioFormat format);
+typedef void (SDLCALL * SDL_AudioFilter) (struct SDL_AudioCVT *cvt, SDL2_AudioFormat format);
 
 typedef void (SDLCALL * SDL2_AudioCallback) (void *userdata, Uint8 * stream, int len);
 
@@ -531,7 +533,7 @@ typedef enum
 typedef struct SDL2_AudioSpec
 {
     int freq;                    /**< DSP frequency -- samples per second */
-    SDL_AudioFormat format;      /**< Audio data format */
+    SDL2_AudioFormat format;     /**< Audio data format */
     Uint8 channels;              /**< Number of channels: 1 mono, 2 stereo */
     Uint8 silence;               /**< Audio buffer silence value (calculated) */
     Uint16 samples;              /**< Audio buffer size in sample FRAMES (total samples divided by channel count) */
@@ -577,8 +579,8 @@ typedef struct SDL2_AudioSpec
 typedef struct SDL_AudioCVT
 {
     int needed;                 /**< Set to 1 if conversion possible */
-    SDL_AudioFormat src_format; /**< Source audio format */
-    SDL_AudioFormat dst_format; /**< Target audio format */
+    SDL2_AudioFormat src_format; /**< Source audio format */
+    SDL2_AudioFormat dst_format; /**< Target audio format */
     double rate_incr;           /**< Rate conversion increment */
     Uint8 *buf;                 /**< Buffer to hold entire audio data */
     int len;                    /**< Length of original audio buffer */
@@ -592,8 +594,8 @@ typedef struct SDL_AudioCVT
 typedef struct SDL2_AudioStream
 {
     SDL_AudioStream *stream3;
-    SDL_AudioFormat src_format;
-    SDL_AudioFormat dst_format;
+    SDL2_AudioFormat src_format;
+    SDL2_AudioFormat dst_format;
 
     /* these are used when this stream is powering an opened audio device, and not when just used as an SDL2 audio stream. */
     SDL2_AudioCallback callback2;

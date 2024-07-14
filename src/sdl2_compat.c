@@ -5404,7 +5404,7 @@ SDL_GetDefaultAudioInfo(char **name, SDL2_AudioSpec *spec2, int iscapture)
     return retval;
 }
 
-static SDL_AudioFormat ParseAudioFormat(const char *string)
+static SDL2_AudioFormat ParseAudioFormat(const char *string)
 {
 #define CHECK_FMT_STRING(x) if (SDL3_strcmp(string, #x) == 0) { return SDL_AUDIO_##x; }
 #define CHECK_FMT_STRING2(x, y) if (SDL3_strcmp(string, #x) == 0) { return y; }
@@ -5448,7 +5448,7 @@ static int PrepareAudiospec(const SDL2_AudioSpec *orig2, SDL2_AudioSpec *prepare
     if (orig2->format == 0) {
         const char *env = SDL3_getenv("SDL_AUDIO_FORMAT");
         if (env != NULL) {
-            const SDL_AudioFormat format = ParseAudioFormat(env);
+            const SDL2_AudioFormat format = ParseAudioFormat(env);
             prepared2->format = format != 0 ? format : SDL_AUDIO_S16;
         } else {
             prepared2->format = SDL_AUDIO_S16;
@@ -5606,7 +5606,7 @@ static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devicename, int iscap
         }
     }
 
-    spec3.format = obtained2->format;
+    spec3.format = (SDL_AudioFormat)obtained2->format;
     spec3.channels = obtained2->channels;
     spec3.freq = obtained2->freq;
 
@@ -5625,8 +5625,8 @@ static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devicename, int iscap
     SDL3_PauseAudioDevice(device3);  /* they start paused in SDL2 */
     SDL3_GetAudioDeviceFormat(device3, &spec3, NULL);
 
-    if ((spec3.format != obtained2->format) && (allowed_changes & SDL2_AUDIO_ALLOW_FORMAT_CHANGE)) {
-        obtained2->format = spec3.format;
+    if ((spec3.format != (SDL_AudioFormat)obtained2->format) && (allowed_changes & SDL2_AUDIO_ALLOW_FORMAT_CHANGE)) {
+        obtained2->format = (SDL2_AudioFormat)spec3.format;
     }
     if ((spec3.channels != obtained2->channels) && (allowed_changes & SDL2_AUDIO_ALLOW_CHANNELS_CHANGE)) {
         obtained2->freq = spec3.channels;
@@ -5636,9 +5636,9 @@ static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devicename, int iscap
     }
 
     if (iscapture) {
-        stream2 = SDL_NewAudioStream(spec3.format, spec3.channels, spec3.freq, obtained2->format, obtained2->channels, obtained2->freq);
+        stream2 = SDL_NewAudioStream((SDL2_AudioFormat)spec3.format, spec3.channels, spec3.freq, obtained2->format, obtained2->channels, obtained2->freq);
     } else {
-        stream2 = SDL_NewAudioStream(obtained2->format, obtained2->channels, obtained2->freq, spec3.format, spec3.channels, spec3.freq);
+        stream2 = SDL_NewAudioStream(obtained2->format, obtained2->channels, obtained2->freq, (SDL2_AudioFormat)spec3.format, spec3.channels, spec3.freq);
     }
 
     if (!stream2) {
@@ -5784,10 +5784,10 @@ static void AudioSi16SysToUi16MSB(Uint16 *dst, const Sint16 *src, const size_t n
 }
 
 SDL_DECLSPEC SDL2_AudioStream * SDLCALL
-SDL_NewAudioStream(const SDL_AudioFormat real_src_format, const Uint8 src_channels, const int src_rate, const SDL_AudioFormat real_dst_format, const Uint8 dst_channels, const int dst_rate)
+SDL_NewAudioStream(const SDL2_AudioFormat real_src_format, const Uint8 src_channels, const int src_rate, const SDL2_AudioFormat real_dst_format, const Uint8 dst_channels, const int dst_rate)
 {
-    SDL_AudioFormat src_format = real_src_format;
-    SDL_AudioFormat dst_format = real_dst_format;
+    SDL2_AudioFormat src_format = real_src_format;
+    SDL2_AudioFormat dst_format = real_dst_format;
     SDL2_AudioStream *retval = (SDL2_AudioStream *) SDL3_calloc(1, sizeof (SDL2_AudioStream));
     SDL_AudioSpec srcspec3, dstspec3;
 
@@ -5803,10 +5803,10 @@ SDL_NewAudioStream(const SDL_AudioFormat real_src_format, const Uint8 src_channe
         dst_format = SDL_AUDIO_S16;
     }
 
-    srcspec3.format = src_format;
+    srcspec3.format = (SDL_AudioFormat)src_format;
     srcspec3.channels = src_channels;
     srcspec3.freq = src_rate;
-    dstspec3.format = dst_format;
+    dstspec3.format = (SDL_AudioFormat)dst_format;
     dstspec3.channels = dst_channels;
     dstspec3.freq = dst_rate;
     retval->stream3 = SDL3_CreateAudioStream(&srcspec3, &dstspec3);
@@ -5898,7 +5898,7 @@ SDL_AudioStreamFlush(SDL2_AudioStream *stream2)
 
 #define SDL2_MIX_MAXVOLUME 128.0f
 SDL_DECLSPEC void SDLCALL
-SDL_MixAudioFormat(Uint8 *dst, const Uint8 *src, SDL_AudioFormat format, Uint32 len, int volume)
+SDL_MixAudioFormat(Uint8 *dst, const Uint8 *src, SDL2_AudioFormat format, Uint32 len, int volume)
 {
     const float fvolume = volume / SDL2_MIX_MAXVOLUME;
 
@@ -5916,7 +5916,7 @@ SDL_MixAudioFormat(Uint8 *dst, const Uint8 *src, SDL_AudioFormat format, Uint32 
             SDL3_free(tmpbuf);
         }
     } else {
-        SDL3_MixAudio(dst, src, format, len, fvolume);
+        SDL3_MixAudio(dst, src, (SDL_AudioFormat)format, len, fvolume);
     }
 }
 
@@ -8795,7 +8795,7 @@ SDL_SIMDFree(void *ptr)
 
 /* !!! FIXME: move this all up with the other audio functions */
 static SDL_bool
-SDL_IsSupportedAudioFormat(const SDL_AudioFormat fmt)
+SDL_IsSupportedAudioFormat(const SDL2_AudioFormat fmt)
 {
     switch (fmt) {
     case SDL_AUDIO_U8:
@@ -8824,10 +8824,10 @@ static SDL_bool SDL_IsSupportedChannelCount(const int channels)
 
 
 typedef struct {
-    SDL_AudioFormat src_format;
+    SDL2_AudioFormat src_format;
     Uint8 src_channels;
     int src_rate;
-    SDL_AudioFormat dst_format;
+    SDL2_AudioFormat dst_format;
     Uint8 dst_channels;
     int dst_rate;
 } AudioParam;
@@ -8838,10 +8838,10 @@ typedef struct {
 
 SDL_DECLSPEC int SDLCALL
 SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
-                  SDL_AudioFormat src_format,
+                  SDL2_AudioFormat src_format,
                   Uint8 src_channels,
                   int src_rate,
-                  SDL_AudioFormat dst_format,
+                  SDL2_AudioFormat dst_format,
                   Uint8 dst_channels,
                   int dst_rate)
 {
@@ -8935,7 +8935,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_ConvertAudio(SDL_AudioCVT *cvt)
 {
     SDL2_AudioStream *stream2;
-    SDL_AudioFormat src_format, dst_format;
+    SDL2_AudioFormat src_format, dst_format;
     int src_channels, src_rate;
     int dst_channels, dst_rate;
 
