@@ -45,12 +45,6 @@
 #define SDL_AddVulkanRenderSemaphores IGNORE_THIS_VERSION_OF_SDL_AddVulkanRenderSemaphores
 #define SDL_AllocateEventMemory IGNORE_THIS_VERSION_OF_SDL_AllocateEventMemory
 #define SDL_AndroidBackButton IGNORE_THIS_VERSION_OF_SDL_AndroidBackButton
-#define SDL_AndroidGetActivity IGNORE_THIS_VERSION_OF_SDL_AndroidGetActivity
-#define SDL_AndroidGetCachePath IGNORE_THIS_VERSION_OF_SDL_AndroidGetCachePath
-#define SDL_AndroidGetExternalStoragePath IGNORE_THIS_VERSION_OF_SDL_AndroidGetExternalStoragePath
-#define SDL_AndroidGetExternalStorageState IGNORE_THIS_VERSION_OF_SDL_AndroidGetExternalStorageState
-#define SDL_AndroidGetInternalStoragePath IGNORE_THIS_VERSION_OF_SDL_AndroidGetInternalStoragePath
-#define SDL_AndroidGetJNIEnv IGNORE_THIS_VERSION_OF_SDL_AndroidGetJNIEnv
 #define SDL_AndroidRequestPermission IGNORE_THIS_VERSION_OF_SDL_AndroidRequestPermission
 #define SDL_AndroidSendMessage IGNORE_THIS_VERSION_OF_SDL_AndroidSendMessage
 #define SDL_AndroidShowToast IGNORE_THIS_VERSION_OF_SDL_AndroidShowToast
@@ -145,7 +139,6 @@
 #define SDL_DestroyWindowSurface IGNORE_THIS_VERSION_OF_SDL_DestroyWindowSurface
 #define SDL_DetachThread IGNORE_THIS_VERSION_OF_SDL_DetachThread
 #define SDL_DetachVirtualJoystick IGNORE_THIS_VERSION_OF_SDL_DetachVirtualJoystick
-#define SDL_Direct3D9GetAdapterIndex IGNORE_THIS_VERSION_OF_SDL_Direct3D9GetAdapterIndex
 #define SDL_DisableScreenSaver IGNORE_THIS_VERSION_OF_SDL_DisableScreenSaver
 #define SDL_DuplicateSurface IGNORE_THIS_VERSION_OF_SDL_DuplicateSurface
 #define SDL_EGL_GetCurrentEGLConfig IGNORE_THIS_VERSION_OF_SDL_EGL_GetCurrentEGLConfig
@@ -168,8 +161,6 @@
 #define SDL_FlushEvent IGNORE_THIS_VERSION_OF_SDL_FlushEvent
 #define SDL_FlushEvents IGNORE_THIS_VERSION_OF_SDL_FlushEvents
 #define SDL_FlushRenderer IGNORE_THIS_VERSION_OF_SDL_FlushRenderer
-#define SDL_GDKGetDefaultUser IGNORE_THIS_VERSION_OF_SDL_GDKGetDefaultUser
-#define SDL_GDKGetTaskQueue IGNORE_THIS_VERSION_OF_SDL_GDKGetTaskQueue
 #define SDL_GDKSuspendComplete IGNORE_THIS_VERSION_OF_SDL_GDKSuspendComplete
 #define SDL_GL_CreateContext IGNORE_THIS_VERSION_OF_SDL_GL_CreateContext
 #define SDL_GL_DestroyContext IGNORE_THIS_VERSION_OF_SDL_GL_DestroyContext
@@ -194,6 +185,12 @@
 #define SDL_GamepadHasButton IGNORE_THIS_VERSION_OF_SDL_GamepadHasButton
 #define SDL_GamepadHasSensor IGNORE_THIS_VERSION_OF_SDL_GamepadHasSensor
 #define SDL_GamepadSensorEnabled IGNORE_THIS_VERSION_OF_SDL_GamepadSensorEnabled
+#define SDL_GetAndroidActivity IGNORE_THIS_VERSION_OF_SDL_GetAndroidActivity
+#define SDL_GetAndroidCachePath IGNORE_THIS_VERSION_OF_SDL_GetAndroidCachePath
+#define SDL_GetAndroidExternalStoragePath IGNORE_THIS_VERSION_OF_SDL_GetAndroidExternalStoragePath
+#define SDL_GetAndroidExternalStorageState IGNORE_THIS_VERSION_OF_SDL_GetAndroidExternalStorageState
+#define SDL_GetAndroidInternalStoragePath IGNORE_THIS_VERSION_OF_SDL_GetAndroidInternalStoragePath
+#define SDL_GetAndroidJNIEnv IGNORE_THIS_VERSION_OF_SDL_GetAndroidJNIEnv
 #define SDL_GetAndroidSDKVersion IGNORE_THIS_VERSION_OF_SDL_GetAndroidSDKVersion
 #define SDL_GetAssertionHandler IGNORE_THIS_VERSION_OF_SDL_GetAssertionHandler
 #define SDL_GetAssertionReport IGNORE_THIS_VERSION_OF_SDL_GetAssertionReport
@@ -248,6 +245,7 @@
 #define SDL_GetDefaultKeyFromScancode IGNORE_THIS_VERSION_OF_SDL_GetDefaultKeyFromScancode
 #define SDL_GetDefaultScancodeFromKey IGNORE_THIS_VERSION_OF_SDL_GetDefaultScancodeFromKey
 #define SDL_GetDesktopDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetDesktopDisplayMode
+#define SDL_GetDirect3D9AdapterIndex IGNORE_THIS_VERSION_OF_SDL_GetDirect3D9AdapterIndex
 #define SDL_GetDisplayBounds IGNORE_THIS_VERSION_OF_SDL_GetDisplayBounds
 #define SDL_GetDisplayContentScale IGNORE_THIS_VERSION_OF_SDL_GetDisplayContentScale
 #define SDL_GetDisplayForPoint IGNORE_THIS_VERSION_OF_SDL_GetDisplayForPoint
@@ -261,6 +259,8 @@
 #define SDL_GetEventFilter IGNORE_THIS_VERSION_OF_SDL_GetEventFilter
 #define SDL_GetFloatProperty IGNORE_THIS_VERSION_OF_SDL_GetFloatProperty
 #define SDL_GetFullscreenDisplayModes IGNORE_THIS_VERSION_OF_SDL_GetFullscreenDisplayModes
+#define SDL_GetGDKDefaultUser IGNORE_THIS_VERSION_OF_SDL_GetGDKDefaultUser
+#define SDL_GetGDKTaskQueue IGNORE_THIS_VERSION_OF_SDL_GetGDKTaskQueue
 #define SDL_GetGamepadAppleSFSymbolsNameForAxis IGNORE_THIS_VERSION_OF_SDL_GetGamepadAppleSFSymbolsNameForAxis
 #define SDL_GetGamepadAppleSFSymbolsNameForButton IGNORE_THIS_VERSION_OF_SDL_GetGamepadAppleSFSymbolsNameForButton
 #define SDL_GetGamepadAxis IGNORE_THIS_VERSION_OF_SDL_GetGamepadAxis
@@ -496,6 +496,8 @@
 #define SDL_GetUserFolder IGNORE_THIS_VERSION_OF_SDL_GetUserFolder
 #define SDL_GetVersion IGNORE_THIS_VERSION_OF_SDL_GetVersion
 #define SDL_GetVideoDriver IGNORE_THIS_VERSION_OF_SDL_GetVideoDriver
+#define SDL_GetWinRTDeviceFamily IGNORE_THIS_VERSION_OF_SDL_GetWinRTDeviceFamily
+#define SDL_GetWinRTFSPath IGNORE_THIS_VERSION_OF_SDL_GetWinRTFSPath
 #define SDL_GetWindowAspectRatio IGNORE_THIS_VERSION_OF_SDL_GetWindowAspectRatio
 #define SDL_GetWindowBordersSize IGNORE_THIS_VERSION_OF_SDL_GetWindowBordersSize
 #define SDL_GetWindowDisplayScale IGNORE_THIS_VERSION_OF_SDL_GetWindowDisplayScale
@@ -573,8 +575,6 @@
 #define SDL_IsTablet IGNORE_THIS_VERSION_OF_SDL_IsTablet
 #define SDL_JoystickConnected IGNORE_THIS_VERSION_OF_SDL_JoystickConnected
 #define SDL_JoystickEventsEnabled IGNORE_THIS_VERSION_OF_SDL_JoystickEventsEnabled
-#define SDL_LinuxSetThreadPriority IGNORE_THIS_VERSION_OF_SDL_LinuxSetThreadPriority
-#define SDL_LinuxSetThreadPriorityAndPolicy IGNORE_THIS_VERSION_OF_SDL_LinuxSetThreadPriorityAndPolicy
 #define SDL_LoadBMP IGNORE_THIS_VERSION_OF_SDL_LoadBMP
 #define SDL_LoadBMP_IO IGNORE_THIS_VERSION_OF_SDL_LoadBMP_IO
 #define SDL_LoadFile IGNORE_THIS_VERSION_OF_SDL_LoadFile
@@ -756,6 +756,8 @@
 #define SDL_SetJoystickVirtualButton IGNORE_THIS_VERSION_OF_SDL_SetJoystickVirtualButton
 #define SDL_SetJoystickVirtualHat IGNORE_THIS_VERSION_OF_SDL_SetJoystickVirtualHat
 #define SDL_SetJoystickVirtualTouchpad IGNORE_THIS_VERSION_OF_SDL_SetJoystickVirtualTouchpad
+#define SDL_SetLinuxThreadPriority IGNORE_THIS_VERSION_OF_SDL_SetLinuxThreadPriority
+#define SDL_SetLinuxThreadPriorityAndPolicy IGNORE_THIS_VERSION_OF_SDL_SetLinuxThreadPriorityAndPolicy
 #define SDL_SetLogOutputFunction IGNORE_THIS_VERSION_OF_SDL_SetLogOutputFunction
 #define SDL_SetLogPriorities IGNORE_THIS_VERSION_OF_SDL_SetLogPriorities
 #define SDL_SetLogPriority IGNORE_THIS_VERSION_OF_SDL_SetLogPriority
@@ -820,6 +822,8 @@
 #define SDL_SetWindowTitle IGNORE_THIS_VERSION_OF_SDL_SetWindowTitle
 #define SDL_SetWindowsMessageHook IGNORE_THIS_VERSION_OF_SDL_SetWindowsMessageHook
 #define SDL_SetX11EventHook IGNORE_THIS_VERSION_OF_SDL_SetX11EventHook
+#define SDL_SetiOSAnimationCallback IGNORE_THIS_VERSION_OF_SDL_SetiOSAnimationCallback
+#define SDL_SetiOSEventPump IGNORE_THIS_VERSION_OF_SDL_SetiOSEventPump
 #define SDL_ShowCursor IGNORE_THIS_VERSION_OF_SDL_ShowCursor
 #define SDL_ShowMessageBox IGNORE_THIS_VERSION_OF_SDL_ShowMessageBox
 #define SDL_ShowOpenFileDialog IGNORE_THIS_VERSION_OF_SDL_ShowOpenFileDialog
@@ -889,8 +893,6 @@
 #define SDL_WarpMouseGlobal IGNORE_THIS_VERSION_OF_SDL_WarpMouseGlobal
 #define SDL_WarpMouseInWindow IGNORE_THIS_VERSION_OF_SDL_WarpMouseInWindow
 #define SDL_WasInit IGNORE_THIS_VERSION_OF_SDL_WasInit
-#define SDL_WinRTGetDeviceFamily IGNORE_THIS_VERSION_OF_SDL_WinRTGetDeviceFamily
-#define SDL_WinRTGetFSPath IGNORE_THIS_VERSION_OF_SDL_WinRTGetFSPath
 #define SDL_WindowHasSurface IGNORE_THIS_VERSION_OF_SDL_WindowHasSurface
 #define SDL_WriteIO IGNORE_THIS_VERSION_OF_SDL_WriteIO
 #define SDL_WriteS16BE IGNORE_THIS_VERSION_OF_SDL_WriteS16BE
@@ -965,8 +967,6 @@
 #define SDL_hid_send_feature_report IGNORE_THIS_VERSION_OF_SDL_hid_send_feature_report
 #define SDL_hid_set_nonblocking IGNORE_THIS_VERSION_OF_SDL_hid_set_nonblocking
 #define SDL_hid_write IGNORE_THIS_VERSION_OF_SDL_hid_write
-#define SDL_iOSSetAnimationCallback IGNORE_THIS_VERSION_OF_SDL_iOSSetAnimationCallback
-#define SDL_iOSSetEventPump IGNORE_THIS_VERSION_OF_SDL_iOSSetEventPump
 #define SDL_iconv IGNORE_THIS_VERSION_OF_SDL_iconv
 #define SDL_iconv_close IGNORE_THIS_VERSION_OF_SDL_iconv_close
 #define SDL_iconv_open IGNORE_THIS_VERSION_OF_SDL_iconv_open
@@ -1150,30 +1150,6 @@
 
 #ifdef SDL_AndroidBackButton
 #undef SDL_AndroidBackButton
-#endif
-
-#ifdef SDL_AndroidGetActivity
-#undef SDL_AndroidGetActivity
-#endif
-
-#ifdef SDL_AndroidGetCachePath
-#undef SDL_AndroidGetCachePath
-#endif
-
-#ifdef SDL_AndroidGetExternalStoragePath
-#undef SDL_AndroidGetExternalStoragePath
-#endif
-
-#ifdef SDL_AndroidGetExternalStorageState
-#undef SDL_AndroidGetExternalStorageState
-#endif
-
-#ifdef SDL_AndroidGetInternalStoragePath
-#undef SDL_AndroidGetInternalStoragePath
-#endif
-
-#ifdef SDL_AndroidGetJNIEnv
-#undef SDL_AndroidGetJNIEnv
 #endif
 
 #ifdef SDL_AndroidRequestPermission
@@ -1552,10 +1528,6 @@
 #undef SDL_DetachVirtualJoystick
 #endif
 
-#ifdef SDL_Direct3D9GetAdapterIndex
-#undef SDL_Direct3D9GetAdapterIndex
-#endif
-
 #ifdef SDL_DisableScreenSaver
 #undef SDL_DisableScreenSaver
 #endif
@@ -1642,14 +1614,6 @@
 
 #ifdef SDL_FlushRenderer
 #undef SDL_FlushRenderer
-#endif
-
-#ifdef SDL_GDKGetDefaultUser
-#undef SDL_GDKGetDefaultUser
-#endif
-
-#ifdef SDL_GDKGetTaskQueue
-#undef SDL_GDKGetTaskQueue
 #endif
 
 #ifdef SDL_GDKSuspendComplete
@@ -1746,6 +1710,30 @@
 
 #ifdef SDL_GamepadSensorEnabled
 #undef SDL_GamepadSensorEnabled
+#endif
+
+#ifdef SDL_GetAndroidActivity
+#undef SDL_GetAndroidActivity
+#endif
+
+#ifdef SDL_GetAndroidCachePath
+#undef SDL_GetAndroidCachePath
+#endif
+
+#ifdef SDL_GetAndroidExternalStoragePath
+#undef SDL_GetAndroidExternalStoragePath
+#endif
+
+#ifdef SDL_GetAndroidExternalStorageState
+#undef SDL_GetAndroidExternalStorageState
+#endif
+
+#ifdef SDL_GetAndroidInternalStoragePath
+#undef SDL_GetAndroidInternalStoragePath
+#endif
+
+#ifdef SDL_GetAndroidJNIEnv
+#undef SDL_GetAndroidJNIEnv
 #endif
 
 #ifdef SDL_GetAndroidSDKVersion
@@ -1964,6 +1952,10 @@
 #undef SDL_GetDesktopDisplayMode
 #endif
 
+#ifdef SDL_GetDirect3D9AdapterIndex
+#undef SDL_GetDirect3D9AdapterIndex
+#endif
+
 #ifdef SDL_GetDisplayBounds
 #undef SDL_GetDisplayBounds
 #endif
@@ -2014,6 +2006,14 @@
 
 #ifdef SDL_GetFullscreenDisplayModes
 #undef SDL_GetFullscreenDisplayModes
+#endif
+
+#ifdef SDL_GetGDKDefaultUser
+#undef SDL_GetGDKDefaultUser
+#endif
+
+#ifdef SDL_GetGDKTaskQueue
+#undef SDL_GetGDKTaskQueue
 #endif
 
 #ifdef SDL_GetGamepadAppleSFSymbolsNameForAxis
@@ -2956,6 +2956,14 @@
 #undef SDL_GetVideoDriver
 #endif
 
+#ifdef SDL_GetWinRTDeviceFamily
+#undef SDL_GetWinRTDeviceFamily
+#endif
+
+#ifdef SDL_GetWinRTFSPath
+#undef SDL_GetWinRTFSPath
+#endif
+
 #ifdef SDL_GetWindowAspectRatio
 #undef SDL_GetWindowAspectRatio
 #endif
@@ -3262,14 +3270,6 @@
 
 #ifdef SDL_JoystickEventsEnabled
 #undef SDL_JoystickEventsEnabled
-#endif
-
-#ifdef SDL_LinuxSetThreadPriority
-#undef SDL_LinuxSetThreadPriority
-#endif
-
-#ifdef SDL_LinuxSetThreadPriorityAndPolicy
-#undef SDL_LinuxSetThreadPriorityAndPolicy
 #endif
 
 #ifdef SDL_LoadBMP
@@ -3996,6 +3996,14 @@
 #undef SDL_SetJoystickVirtualTouchpad
 #endif
 
+#ifdef SDL_SetLinuxThreadPriority
+#undef SDL_SetLinuxThreadPriority
+#endif
+
+#ifdef SDL_SetLinuxThreadPriorityAndPolicy
+#undef SDL_SetLinuxThreadPriorityAndPolicy
+#endif
+
 #ifdef SDL_SetLogOutputFunction
 #undef SDL_SetLogOutputFunction
 #endif
@@ -4250,6 +4258,14 @@
 
 #ifdef SDL_SetX11EventHook
 #undef SDL_SetX11EventHook
+#endif
+
+#ifdef SDL_SetiOSAnimationCallback
+#undef SDL_SetiOSAnimationCallback
+#endif
+
+#ifdef SDL_SetiOSEventPump
+#undef SDL_SetiOSEventPump
 #endif
 
 #ifdef SDL_ShowCursor
@@ -4526,14 +4542,6 @@
 
 #ifdef SDL_WasInit
 #undef SDL_WasInit
-#endif
-
-#ifdef SDL_WinRTGetDeviceFamily
-#undef SDL_WinRTGetDeviceFamily
-#endif
-
-#ifdef SDL_WinRTGetFSPath
-#undef SDL_WinRTGetFSPath
 #endif
 
 #ifdef SDL_WindowHasSurface
@@ -4830,14 +4838,6 @@
 
 #ifdef SDL_hid_write
 #undef SDL_hid_write
-#endif
-
-#ifdef SDL_iOSSetAnimationCallback
-#undef SDL_iOSSetAnimationCallback
-#endif
-
-#ifdef SDL_iOSSetEventPump
-#undef SDL_iOSSetEventPump
 #endif
 
 #ifdef SDL_iconv

@@ -9186,7 +9186,7 @@ SDL_SetWindowsMessageHook(SDL2_WindowsMessageHook callback, void *userdata)
 SDL_DECLSPEC int SDLCALL
 SDL_Direct3D9GetAdapterIndex(int displayIndex)
 {
-    return SDL3_Direct3D9GetAdapterIndex(Display_IndexToID(displayIndex));
+    return SDL3_GetDirect3D9AdapterIndex(Display_IndexToID(displayIndex));
 }
 
 SDL_DECLSPEC SDL_bool SDLCALL
@@ -9243,7 +9243,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_AndroidGetExternalStorageState(void)
 {
     Uint32 state = 0;
-    if (SDL3_AndroidGetExternalStorageState(&state) < 0) {
+    if (SDL3_GetAndroidExternalStorageState(&state) < 0) {
         return 0;
     }
     return state;
@@ -9286,7 +9286,7 @@ SDL_WinRTGetFSPathUNICODE(int SDL_WinRT_Path pathType)
     } else {
         wstr = winrt_getfspath_cached_strings[pathType];
         if (!wstr) {
-            const char *utf8 = SDL3_WinRTGetFSPath(pathType);
+            const char *utf8 = SDL3_GetWinRTFSPath(pathType);
             if (utf8) {
                 wstr = (wchar_t *) SDL3_iconv_string("UTF-16LE", "UTF-8", (const char *)(utf8), SDL3_strlen(utf8) + 1);
                 winrt_getfspath_cached_strings[pathType] = wstr;

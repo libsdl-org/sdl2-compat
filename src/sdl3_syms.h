@@ -54,37 +54,37 @@ SDL3_SYM(void,SetWindowsMessageHook,(SDL_WindowsMessageHook a, void *b),(a,b),)
 #endif
 
 #if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_WINGDK)
-SDL3_SYM(int,Direct3D9GetAdapterIndex,(SDL_DisplayID a),(a),return)
+SDL3_SYM(int,GetDirect3D9AdapterIndex,(SDL_DisplayID a),(a),return)
 SDL3_SYM(SDL_bool,DXGIGetOutputInfo,(SDL_DisplayID a,int *b, int *c),(a,b,c),return)
 #endif
 
 #ifdef SDL_PLATFORM_GDK
-SDL3_SYM_PASSTHROUGH(int,GDKGetTaskQueue,(XTaskQueueHandle *a),(a),return)
-SDL3_SYM_PASSTHROUGH(int,GDKGetDefaultUser,(XUserHandle *a),(a),return)
+SDL3_SYM_RENAMED(int,GDKGetTaskQueue,GetGDKTaskQueue,(XTaskQueueHandle *a),(a),return)
+SDL3_SYM_RENAMED(int,GDKGetDefaultUser,GetGDKDefaultUser,(XUserHandle *a),(a),return)
 #endif
 
 #ifdef SDL_PLATFORM_WINRT
-SDL3_SYM_RENAMED(const char*,WinRTGetFSPathUTF8,WinRTGetFSPath,(SDL_WinRT_Path a),(a),return)
-SDL3_SYM_PASSTHROUGH(SDL_WinRT_DeviceFamily,WinRTGetDeviceFamily,(void),(),return)
+SDL3_SYM_RENAMED(const char*,WinRTGetFSPathUTF8,GetWinRTFSPath,(SDL_WinRT_Path a),(a),return)
+SDL3_SYM_RENAMED(SDL_WinRT_DeviceFamily,WinRTGetDeviceFamily,GetWinRTDeviceFamily,(void),(),return)
 #endif
 
 #ifdef SDL_PLATFORM_IOS
-SDL3_SYM_RENAMED(int,iPhoneSetAnimationCallback,iOSSetAnimationCallback,(SDL_Window *a, int b, SDL_iOSAnimationCallback c, void *d),(a,b,c,d),return)
-SDL3_SYM_RENAMED(void,iPhoneSetEventPump,iOSSetEventPump,(SDL_bool a),(a),)
+SDL3_SYM_RENAMED(int,iPhoneSetAnimationCallback,SetiOSAnimationCallback,(SDL_Window *a, int b, SDL_iOSAnimationCallback c, void *d),(a,b,c,d),return)
+SDL3_SYM_RENAMED(void,iPhoneSetEventPump,SetiOSEventPump,(SDL_bool a),(a),)
 SDL3_SYM_PASSTHROUGH(void,OnApplicationDidChangeStatusBarOrientation,(void),(),)
 #endif
 
 #ifdef SDL_PLATFORM_LINUX
-SDL3_SYM_PASSTHROUGH(int,LinuxSetThreadPriority,(Sint64 a, int b),(a,b),return)
-SDL3_SYM_PASSTHROUGH(int,LinuxSetThreadPriorityAndPolicy,(Sint64 a, int b, int c),(a,b,c),return)
+SDL3_SYM_RENAMED(int,LinuxSetThreadPriority,SetLinuxThreadPriority,(Sint64 a, int b),(a,b),return)
+SDL3_SYM_RENAMED(int,LinuxSetThreadPriorityAndPolicy,SetLinuxThreadPriorityAndPolicy,(Sint64 a, int b, int c),(a,b,c),return)
 #endif
 
 #ifdef SDL_PLATFORM_ANDROID
-SDL3_SYM_PASSTHROUGH(void*,AndroidGetJNIEnv,(void),(),return)
-SDL3_SYM_PASSTHROUGH(void*,AndroidGetActivity,(void),(),return)
-SDL3_SYM_PASSTHROUGH(const char*,AndroidGetInternalStoragePath,(void),(),return)
-SDL3_SYM(int,AndroidGetExternalStorageState,(Uint32 *a),(a),return)
-SDL3_SYM_PASSTHROUGH(const char*,AndroidGetExternalStoragePath,(void),(),return)
+SDL3_SYM_RENAMED(void*,AndroidGetJNIEnv,GetAndroidJNIEnv,(void),(),return)
+SDL3_SYM_RENAMED(void*,AndroidGetActivity,GetAndroidActivity,(void),(),return)
+SDL3_SYM_RENAMED(const char*,AndroidGetInternalStoragePath,GetAndroidInternalStoragePath,(void),(),return)
+SDL3_SYM(int,GetAndroidExternalStorageState,(Uint32 *a),(a),return)
+SDL3_SYM_RENAMED(const char*,AndroidGetExternalStoragePath,GetAndroidExternalStoragePath,(void),(),return)
 SDL3_SYM_PASSTHROUGH(int,AndroidSendMessage,(Uint32 a, int b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(SDL_bool,IsAndroidTV,(void),(),return)
 SDL3_SYM_PASSTHROUGH(SDL_bool,IsChromebook,(void),(),return)
