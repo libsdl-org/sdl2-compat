@@ -44,10 +44,6 @@
 #define SDL_AddTimerNS IGNORE_THIS_VERSION_OF_SDL_AddTimerNS
 #define SDL_AddVulkanRenderSemaphores IGNORE_THIS_VERSION_OF_SDL_AddVulkanRenderSemaphores
 #define SDL_AllocateEventMemory IGNORE_THIS_VERSION_OF_SDL_AllocateEventMemory
-#define SDL_AndroidBackButton IGNORE_THIS_VERSION_OF_SDL_AndroidBackButton
-#define SDL_AndroidRequestPermission IGNORE_THIS_VERSION_OF_SDL_AndroidRequestPermission
-#define SDL_AndroidSendMessage IGNORE_THIS_VERSION_OF_SDL_AndroidSendMessage
-#define SDL_AndroidShowToast IGNORE_THIS_VERSION_OF_SDL_AndroidShowToast
 #define SDL_AtomicAdd IGNORE_THIS_VERSION_OF_SDL_AtomicAdd
 #define SDL_AtomicCompareAndSwap IGNORE_THIS_VERSION_OF_SDL_AtomicCompareAndSwap
 #define SDL_AtomicCompareAndSwapPointer IGNORE_THIS_VERSION_OF_SDL_AtomicCompareAndSwapPointer
@@ -117,7 +113,6 @@
 #define SDL_CreateWindowAndRenderer IGNORE_THIS_VERSION_OF_SDL_CreateWindowAndRenderer
 #define SDL_CreateWindowWithProperties IGNORE_THIS_VERSION_OF_SDL_CreateWindowWithProperties
 #define SDL_CursorVisible IGNORE_THIS_VERSION_OF_SDL_CursorVisible
-#define SDL_DXGIGetOutputInfo IGNORE_THIS_VERSION_OF_SDL_DXGIGetOutputInfo
 #define SDL_DateTimeToTime IGNORE_THIS_VERSION_OF_SDL_DateTimeToTime
 #define SDL_DelEventWatch IGNORE_THIS_VERSION_OF_SDL_DelEventWatch
 #define SDL_DelHintCallback IGNORE_THIS_VERSION_OF_SDL_DelHintCallback
@@ -236,6 +231,7 @@
 #define SDL_GetCurrentTime IGNORE_THIS_VERSION_OF_SDL_GetCurrentTime
 #define SDL_GetCurrentVideoDriver IGNORE_THIS_VERSION_OF_SDL_GetCurrentVideoDriver
 #define SDL_GetCursor IGNORE_THIS_VERSION_OF_SDL_GetCursor
+#define SDL_GetDXGIOutputInfo IGNORE_THIS_VERSION_OF_SDL_GetDXGIOutputInfo
 #define SDL_GetDateTimeLocalePreferences IGNORE_THIS_VERSION_OF_SDL_GetDateTimeLocalePreferences
 #define SDL_GetDayOfWeek IGNORE_THIS_VERSION_OF_SDL_GetDayOfWeek
 #define SDL_GetDayOfYear IGNORE_THIS_VERSION_OF_SDL_GetDayOfYear
@@ -698,6 +694,7 @@
 #define SDL_RenderTextureRotated IGNORE_THIS_VERSION_OF_SDL_RenderTextureRotated
 #define SDL_RenderViewportSet IGNORE_THIS_VERSION_OF_SDL_RenderViewportSet
 #define SDL_ReportAssertion IGNORE_THIS_VERSION_OF_SDL_ReportAssertion
+#define SDL_RequestAndroidPermission IGNORE_THIS_VERSION_OF_SDL_RequestAndroidPermission
 #define SDL_ResetAssertionReport IGNORE_THIS_VERSION_OF_SDL_ResetAssertionReport
 #define SDL_ResetHint IGNORE_THIS_VERSION_OF_SDL_ResetHint
 #define SDL_ResetHints IGNORE_THIS_VERSION_OF_SDL_ResetHints
@@ -718,6 +715,8 @@
 #define SDL_ScreenKeyboardShown IGNORE_THIS_VERSION_OF_SDL_ScreenKeyboardShown
 #define SDL_ScreenSaverEnabled IGNORE_THIS_VERSION_OF_SDL_ScreenSaverEnabled
 #define SDL_SeekIO IGNORE_THIS_VERSION_OF_SDL_SeekIO
+#define SDL_SendAndroidBackButton IGNORE_THIS_VERSION_OF_SDL_SendAndroidBackButton
+#define SDL_SendAndroidMessage IGNORE_THIS_VERSION_OF_SDL_SendAndroidMessage
 #define SDL_SendGamepadEffect IGNORE_THIS_VERSION_OF_SDL_SendGamepadEffect
 #define SDL_SendJoystickEffect IGNORE_THIS_VERSION_OF_SDL_SendJoystickEffect
 #define SDL_SendJoystickVirtualSensorData IGNORE_THIS_VERSION_OF_SDL_SendJoystickVirtualSensorData
@@ -824,6 +823,7 @@
 #define SDL_SetX11EventHook IGNORE_THIS_VERSION_OF_SDL_SetX11EventHook
 #define SDL_SetiOSAnimationCallback IGNORE_THIS_VERSION_OF_SDL_SetiOSAnimationCallback
 #define SDL_SetiOSEventPump IGNORE_THIS_VERSION_OF_SDL_SetiOSEventPump
+#define SDL_ShowAndroidToast IGNORE_THIS_VERSION_OF_SDL_ShowAndroidToast
 #define SDL_ShowCursor IGNORE_THIS_VERSION_OF_SDL_ShowCursor
 #define SDL_ShowMessageBox IGNORE_THIS_VERSION_OF_SDL_ShowMessageBox
 #define SDL_ShowOpenFileDialog IGNORE_THIS_VERSION_OF_SDL_ShowOpenFileDialog
@@ -1148,22 +1148,6 @@
 #undef SDL_AllocateEventMemory
 #endif
 
-#ifdef SDL_AndroidBackButton
-#undef SDL_AndroidBackButton
-#endif
-
-#ifdef SDL_AndroidRequestPermission
-#undef SDL_AndroidRequestPermission
-#endif
-
-#ifdef SDL_AndroidSendMessage
-#undef SDL_AndroidSendMessage
-#endif
-
-#ifdef SDL_AndroidShowToast
-#undef SDL_AndroidShowToast
-#endif
-
 #ifdef SDL_AtomicAdd
 #undef SDL_AtomicAdd
 #endif
@@ -1438,10 +1422,6 @@
 
 #ifdef SDL_CursorVisible
 #undef SDL_CursorVisible
-#endif
-
-#ifdef SDL_DXGIGetOutputInfo
-#undef SDL_DXGIGetOutputInfo
 #endif
 
 #ifdef SDL_DateTimeToTime
@@ -1914,6 +1894,10 @@
 
 #ifdef SDL_GetCursor
 #undef SDL_GetCursor
+#endif
+
+#ifdef SDL_GetDXGIOutputInfo
+#undef SDL_GetDXGIOutputInfo
 #endif
 
 #ifdef SDL_GetDateTimeLocalePreferences
@@ -3764,6 +3748,10 @@
 #undef SDL_ReportAssertion
 #endif
 
+#ifdef SDL_RequestAndroidPermission
+#undef SDL_RequestAndroidPermission
+#endif
+
 #ifdef SDL_ResetAssertionReport
 #undef SDL_ResetAssertionReport
 #endif
@@ -3842,6 +3830,14 @@
 
 #ifdef SDL_SeekIO
 #undef SDL_SeekIO
+#endif
+
+#ifdef SDL_SendAndroidBackButton
+#undef SDL_SendAndroidBackButton
+#endif
+
+#ifdef SDL_SendAndroidMessage
+#undef SDL_SendAndroidMessage
 #endif
 
 #ifdef SDL_SendGamepadEffect
@@ -4266,6 +4262,10 @@
 
 #ifdef SDL_SetiOSEventPump
 #undef SDL_SetiOSEventPump
+#endif
+
+#ifdef SDL_ShowAndroidToast
+#undef SDL_ShowAndroidToast
 #endif
 
 #ifdef SDL_ShowCursor

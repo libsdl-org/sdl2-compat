@@ -3070,6 +3070,19 @@ SDL_GetWindowGammaRamp(SDL_Window *window, Uint16 *red, Uint16 *blue, Uint16 *gr
     return 0;
 }
 
+SDL_DECLSPEC int SDLCALL
+SDL_GetWindowOpacity(SDL_Window *window, float *out_opacity)
+{
+    float opacity = SDL3_GetWindowOpacity(window);
+    if (opacity < 0.0f) {
+        return -1;
+    }
+    if (out_opacity) {
+        *out_opacity = opacity;
+    }
+    return 0;
+}
+
 SDL_DECLSPEC SDL2_Surface * SDLCALL
 SDL_ConvertSurface(SDL2_Surface *surface, const SDL2_PixelFormat *format, Uint32 flags)
 {
@@ -9192,7 +9205,8 @@ SDL_Direct3D9GetAdapterIndex(int displayIndex)
 SDL_DECLSPEC SDL_bool SDLCALL
 SDL_DXGIGetOutputInfo(int displayIndex, int *adapterIndex, int *outputIndex)
 {
-    return SDL3_DXGIGetOutputInfo(Display_IndexToID(displayIndex), adapterIndex, outputIndex);
+    int r = SDL3_GetDXGIOutputInfo(Display_IndexToID(displayIndex), adapterIndex, outputIndex);
+    return (r < 0) ? SDL_FALSE : SDL_TRUE;
 }
 
 SDL_DECLSPEC IDirect3DDevice9* SDLCALL SDL_RenderGetD3D9Device(SDL_Renderer *renderer)
@@ -9260,7 +9274,7 @@ SDL_AndroidRequestPermission(const char *permission)
     SDL_AtomicInt response;
     SDL3_AtomicSet(&response, 0);
 
-    if (SDL3_AndroidRequestPermission(permission, AndroidRequestPermissionBlockingCallback, &response) == -1) {
+    if (SDL3_RequestAndroidPermission(permission, AndroidRequestPermissionBlockingCallback, &response) == -1) {
         return SDL_FALSE;
     }
 
