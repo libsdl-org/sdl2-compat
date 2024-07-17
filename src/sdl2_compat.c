@@ -147,6 +147,12 @@ extern "C" {
     SDL_DECLSPEC rc SDLCALL SDL_##oldfn params { ret SDL3_##newfn args; }
 #include "sdl3_syms.h"
 
+/* Things that are the same in SDL3, except they now follow the SDL_GetStringRule (SDL3 owns the returned string, caller does not, so we make a copy here). */
+/* Note that these need to be in sdl3_syms.h with the _non-const_ return type to make this work! */
+#define SDL3_SYM_GETSTRINGRULE(rc,fn,params,args,ret) \
+    SDL_DECLSPEC rc SDLCALL SDL_##fn params { const rc retval = SDL3_##fn args; ret retval ? SDL3_strdup(retval) : NULL; }
+#include "sdl3_syms.h"
+
 
 /* these are macros (etc) in the SDL headers, so make our own. */
 #define SDL3_AtomicIncRef(a)  SDL3_AtomicAdd(a, 1)
@@ -8193,6 +8199,23 @@ SDL_GameControllerMappingForIndex(int idx)
     }
     return retval;
 }
+
+/* Was renamed _and_ follows the SDL_GetStringRule, so we had to fill this in manually. */
+SDL_DECLSPEC char* SDLCALL
+SDL_GameControllerMappingForGUID(SDL_JoystickGUID guid)
+{
+    const char *retval = SDL3_GetGamepadMappingForGUID(guid);
+    return retval ? SDL3_strdup(retval) : NULL;
+}
+
+/* Was renamed _and_ follows the SDL_GetStringRule, so we had to fill this in manually. */
+SDL_DECLSPEC char* SDLCALL
+SDL_GameControllerMapping(SDL_GameController *controller)
+{
+    const char *retval = SDL3_GetGamepadMapping(controller);
+    return retval ? SDL3_strdup(retval) : NULL;
+}
+
 
 SDL_DECLSPEC SDL_GameController* SDLCALL
 SDL_GameControllerOpen(int idx)

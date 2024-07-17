@@ -33,6 +33,9 @@
 #ifndef SDL3_SYM_VARARGS
 #define SDL3_SYM_VARARGS(rc,fn,params) SDL3_SYM(rc,fn,params,unused,unused)
 #endif
+#ifndef SDL3_SYM_GETSTRINGRULE
+#define SDL3_SYM_GETSTRINGRULE(rc,fn,params,args,ret) SDL3_SYM(rc,fn,params,args,ret)
+#endif
 
 SDL3_SYM_VARARGS(int,SetError,(SDL_PRINTF_FORMAT_STRING const char *a, ...))
 SDL3_SYM_VARARGS(void,Log,(SDL_PRINTF_FORMAT_STRING const char *a, ...))
@@ -115,7 +118,7 @@ SDL3_SYM_RENAMED(SDL_bool,AtomicCASPtr,AtomicCompareAndSwapPointer,(void **a, vo
 SDL3_SYM_PASSTHROUGH(void*,AtomicSetPtr,(void **a, void *b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(void*,AtomicGetPtr,(void **a),(a),return)
 SDL3_SYM_PASSTHROUGH(int,SetClipboardText,(const char *a),(a),return)
-SDL3_SYM_PASSTHROUGH(char*,GetClipboardText,(void),(),return)
+SDL3_SYM_GETSTRINGRULE(char*,GetClipboardText,(void),(),return)
 SDL3_SYM_PASSTHROUGH(SDL_bool,HasClipboardText,(void),(),return)
 SDL3_SYM_PASSTHROUGH(int,GetCPUCount,(void),(),return)
 SDL3_SYM_PASSTHROUGH(int,GetCPUCacheLineSize,(void),(),return)
@@ -150,11 +153,11 @@ SDL3_SYM(void,SetEventFilter,(SDL_EventFilter a, void *b),(a,b),)
 SDL3_SYM(void,FilterEvents,(SDL_EventFilter a, void *b),(a,b),)
 SDL3_SYM(void *,AllocateEventMemory,(size_t a),(a),return)
 SDL3_SYM(Uint32,RegisterEvents,(int a),(a),return)
-SDL3_SYM_PASSTHROUGH(char*,GetBasePath,(void),(),return)
-SDL3_SYM_PASSTHROUGH(char*,GetPrefPath,(const char *a, const char *b),(a,b),return)
+SDL3_SYM_GETSTRINGRULE(char*,GetBasePath,(void),(),return)
+SDL3_SYM_GETSTRINGRULE(char*,GetPrefPath,(const char *a, const char *b),(a,b),return)
 SDL3_SYM_RENAMED(int,GameControllerAddMapping,AddGamepadMapping,(const char *a),(a),return)
-SDL3_SYM_RENAMED(char*,GameControllerMappingForGUID,GetGamepadMappingForGUID,(SDL_JoystickGUID a),(a),return)
-SDL3_SYM_RENAMED(char*,GameControllerMapping,GetGamepadMapping,(SDL_GameController *a),(a),return)
+SDL3_SYM(const char*,GetGamepadMappingForGUID,(SDL_JoystickGUID a),(a),return)
+SDL3_SYM(const char*,GetGamepadMapping,(SDL_GameController *a),(a),return)
 SDL3_SYM_RENAMED(const char*,GameControllerName,GetGamepadName,(SDL_GameController *a),(a),return)
 SDL3_SYM_RENAMED(SDL_bool,GameControllerGetAttached,GamepadConnected,(SDL_GameController *a),(a),return)
 SDL3_SYM_RENAMED(SDL_Joystick*,GameControllerGetJoystick,GetGamepadJoystick,(SDL_GameController *a),(a),return)
@@ -853,3 +856,4 @@ SDL3_SYM(SDL_Palette *,CreateSurfacePalette,(SDL_Surface *a),(a),return)
 #undef SDL3_SYM_PASSTHROUGH
 #undef SDL3_SYM_RENAMED
 #undef SDL3_SYM_VARARGS
+#undef SDL3_SYM_GETSTRINGRULE
