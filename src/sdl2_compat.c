@@ -4965,6 +4965,7 @@ SDL_CreateTexture(SDL_Renderer * renderer, Uint32 format, int access, int w, int
 {
     SDL_Texture *texture = SDL3_CreateTexture(renderer, (SDL_PixelFormat)format, access, w, h);
     if (texture) {
+        SDL3_SetTextureBlendMode(texture, SDL_BLENDMODE_NONE);
         SDL3_SetTextureScaleMode(texture, SDL_GetScaleMode());
     }
     return texture;
