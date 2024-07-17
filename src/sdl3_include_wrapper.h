@@ -103,7 +103,6 @@
 #define SDL_CreateSurfaceFrom IGNORE_THIS_VERSION_OF_SDL_CreateSurfaceFrom
 #define SDL_CreateSurfacePalette IGNORE_THIS_VERSION_OF_SDL_CreateSurfacePalette
 #define SDL_CreateSystemCursor IGNORE_THIS_VERSION_OF_SDL_CreateSystemCursor
-#define SDL_CreateTLS IGNORE_THIS_VERSION_OF_SDL_CreateTLS
 #define SDL_CreateTexture IGNORE_THIS_VERSION_OF_SDL_CreateTexture
 #define SDL_CreateTextureFromSurface IGNORE_THIS_VERSION_OF_SDL_CreateTextureFromSurface
 #define SDL_CreateTextureWithProperties IGNORE_THIS_VERSION_OF_SDL_CreateTextureWithProperties
@@ -1382,10 +1381,6 @@
 
 #ifdef SDL_CreateSystemCursor
 #undef SDL_CreateSystemCursor
-#endif
-
-#ifdef SDL_CreateTLS
-#undef SDL_CreateTLS
 #endif
 
 #ifdef SDL_CreateTexture

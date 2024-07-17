@@ -9134,6 +9134,46 @@ SDL_hid_enumerate(unsigned short vendor_id, unsigned short product_id)
 }
 
 
+/* this is gone in SDL3; the TLS get/set functions will create a new TLSID if necessary. */
+SDL_DECLSPEC SDL2_TLSID SDLCALL
+SDL_TLSCreate(void)
+{
+    SDL_TLSID tlsid;
+    tlsid.value = 0;  /* zero so SDL3 creates a new TLSID. */
+
+    /* this will create the new ID when it sees a zero, and just set a
+       harmless NULL in the slot for this thread, which is what SDL_TLSGet
+       will return if nothing was ever set. */
+    if (SDL3_SetTLS(&tlsid, NULL, NULL) < 0) {
+        return 0; /* uhoh, ran out of memory, probably. */
+    }
+
+    return (SDL2_TLSID) tlsid.value;  /* no need to atomic-get this, it's a stack local, so nothing competing for this. :) */
+}
+
+SDL_DECLSPEC void* SDLCALL
+SDL_TLSGet(SDL2_TLSID tlsid2)
+{
+    void *retval = NULL;
+    if (tlsid2 != 0) {  /* tlsid==0 doesn't set an error here in SDL2, it just returns NULL. */
+        SDL_TLSID tlsid3;
+        tlsid3.value = (int) tlsid2;  /* no need to atomic-set; we don't need to compete for a stack-local variable. */
+        retval = SDL3_GetTLS(&tlsid3);
+    }
+    return retval;
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_TLSSet(SDL2_TLSID tlsid2, const void *value, SDL_TLSDestructorCallback destructor)
+{
+    SDL_TLSID tlsid3;
+    if (tlsid2 == 0) {
+        return SDL3_InvalidParamError("id");
+    }
+    tlsid3.value = (int) tlsid2;  /* no need to atomic-set; we don't need to compete for a stack-local variable. */
+    return SDL3_SetTLS(&tlsid3, value, destructor);
+}
+
 static SDL_Thread *SDL2_CreateThreadWithStackSize(SDL_ThreadFunction fn, const char *name, const size_t stacksize, void *userdata, SDL_FunctionPointer pfnBeginThread, SDL_FunctionPointer pfnEndThread)
 {
     const SDL_PropertiesID props = SDL3_CreateProperties();

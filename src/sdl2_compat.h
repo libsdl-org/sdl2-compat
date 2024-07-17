@@ -887,4 +887,6 @@ typedef struct SDL2_VirtualJoystickDesc
 typedef int SDL2_TimerID;
 typedef Uint32 (SDLCALL * SDL2_TimerCallback) (Uint32 interval, void *param);
 
+typedef unsigned int SDL2_TLSID;
+
 #endif /* sdl2_compat_h */
