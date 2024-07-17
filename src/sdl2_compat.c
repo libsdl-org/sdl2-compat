@@ -6141,7 +6141,7 @@ DisplayMode_2to3(const SDL2_DisplayMode *in, SDL_DisplayMode *out) {
         out->h = in->h;
         out->refresh_rate = (float) in->refresh_rate;
         out->pixel_density = 1.0f;
-        out->driverdata = in->driverdata;
+        out->internal = in->driverdata;
     }
 }
 
@@ -6152,7 +6152,7 @@ DisplayMode_3to2(const SDL_DisplayMode *in, SDL2_DisplayMode *out) {
         out->w = in->w;
         out->h = in->h;
         out->refresh_rate = (int) SDL3_lroundf(in->refresh_rate);
-        out->driverdata = in->driverdata;
+        out->driverdata = in->internal;
     }
 }
 
