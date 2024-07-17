@@ -4443,6 +4443,21 @@ SDL_RenderGetScale(SDL_Renderer *renderer, float *scaleX, float *scaleY)
     SDL3_GetRenderScale(renderer, scaleX, scaleY);
 }
 
+SDL_DECLSPEC int SDLCALL
+SDL_GetRenderDrawBlendMode(SDL_Renderer *renderer, SDL_BlendMode *blendMode)
+{
+    SDL_BlendMode blend_mode = SDL3_GetRenderDrawBlendMode(renderer);
+
+    if (blend_mode == SDL_BLENDMODE_INVALID) {
+        return -1;
+    }
+
+    if (blendMode) {
+        *blendMode = blend_mode;
+    }
+    return 0;
+}
+
 SDL_DECLSPEC void SDLCALL
 SDL_RenderWindowToLogical(SDL_Renderer *renderer,
                           int windowX, int windowY,
@@ -4982,7 +4997,7 @@ SDL_CreateTextureFromSurface(SDL_Renderer *renderer, SDL2_Surface *surface)
 }
 
 SDL_DECLSPEC int SDLCALL
-SDL_QueryTexture(SDL_Texture * texture, Uint32 * format, int *access, int *w, int *h)
+SDL_QueryTexture(SDL_Texture *texture, Uint32 *format, int *access, int *w, int *h)
 {
     SDL_PropertiesID props = SDL3_GetTextureProperties(texture);
     if (!props) {
@@ -5000,6 +5015,32 @@ SDL_QueryTexture(SDL_Texture * texture, Uint32 * format, int *access, int *w, in
     }
     if (h) {
         *h = (int)SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_HEIGHT_NUMBER, 0);
+    }
+    return 0;
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_GetTextureBlendMode(SDL_Texture *texture, SDL_BlendMode *blendMode)
+{
+    SDL_BlendMode blend_mode = SDL3_GetTextureBlendMode(texture);
+
+    if (blend_mode == SDL_BLENDMODE_INVALID) {
+        return -1;
+    }
+
+    if (blendMode) {
+        *blendMode = blend_mode;
+    }
+    return 0;
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_GetTextureScaleMode(SDL_Texture *texture, SDL_ScaleMode *scaleMode)
+{
+    SDL_ScaleMode scale_mode = SDL3_GetTextureScaleMode(texture);
+
+    if (scaleMode) {
+        *scaleMode = scale_mode;
     }
     return 0;
 }
@@ -6141,7 +6182,7 @@ DisplayMode_2to3(const SDL2_DisplayMode *in, SDL_DisplayMode *out) {
         out->h = in->h;
         out->refresh_rate = (float) in->refresh_rate;
         out->pixel_density = 1.0f;
-        out->internal = in->driverdata;
+        out->internal = (SDL_DisplayModeData *)in->driverdata;
     }
 }
 
@@ -7832,7 +7873,18 @@ SDL_HasColorKey(SDL2_Surface *surface)
 SDL_DECLSPEC int SDLCALL
 SDL_GetColorKey(SDL2_Surface *surface, Uint32 *key)
 {
-    return SDL3_GetSurfaceColorKey(Surface2to3(surface), key);
+    if (!surface) {
+        return SDL3_InvalidParamError("surface");
+    }
+
+    if (!SDL_HasColorKey(surface)) {
+        return SDL_SetError("Surface doesn't have a colorkey");
+    }
+
+    if (key) {
+        *key = SDL3_GetSurfaceColorKey(Surface2to3(surface));
+    }
+    return 0;
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -7868,7 +7920,16 @@ SDL_SetSurfaceBlendMode(SDL2_Surface *surface, SDL_BlendMode blendMode)
 SDL_DECLSPEC int SDLCALL
 SDL_GetSurfaceBlendMode(SDL2_Surface *surface, SDL_BlendMode *blendMode)
 {
-    return SDL3_GetSurfaceBlendMode(Surface2to3(surface), blendMode);
+    SDL_BlendMode blend_mode = SDL3_GetSurfaceBlendMode(Surface2to3(surface));
+
+    if (blend_mode == SDL_BLENDMODE_INVALID) {
+        return -1;
+    }
+
+    if (blendMode) {
+        *blendMode = blend_mode;
+    }
+    return 0;
 }
 
 SDL_DECLSPEC SDL2_Surface * SDLCALL
@@ -9320,11 +9381,7 @@ SDL_UIKitRunApp(int argc, char *argv[], SDL_main_func mainFunction)
 SDL_DECLSPEC int SDLCALL
 SDL_AndroidGetExternalStorageState(void)
 {
-    Uint32 state = 0;
-    if (SDL3_GetAndroidExternalStorageState(&state) < 0) {
-        return 0;
-    }
-    return state;
+    return (int)SDL3_GetAndroidExternalStorageState(&state);
 }
 
 static void SDLCALL AndroidRequestPermissionBlockingCallback(void *userdata, const char *permission, SDL_bool granted)

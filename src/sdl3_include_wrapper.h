@@ -155,6 +155,7 @@
 #define SDL_FlushEvent IGNORE_THIS_VERSION_OF_SDL_FlushEvent
 #define SDL_FlushEvents IGNORE_THIS_VERSION_OF_SDL_FlushEvents
 #define SDL_FlushRenderer IGNORE_THIS_VERSION_OF_SDL_FlushRenderer
+#define SDL_FreeEventMemory IGNORE_THIS_VERSION_OF_SDL_FreeEventMemory
 #define SDL_GDKSuspendComplete IGNORE_THIS_VERSION_OF_SDL_GDKSuspendComplete
 #define SDL_GL_CreateContext IGNORE_THIS_VERSION_OF_SDL_GL_CreateContext
 #define SDL_GL_DestroyContext IGNORE_THIS_VERSION_OF_SDL_GL_DestroyContext
@@ -1589,6 +1590,10 @@
 
 #ifdef SDL_FlushRenderer
 #undef SDL_FlushRenderer
+#endif
+
+#ifdef SDL_FreeEventMemory
+#undef SDL_FreeEventMemory
 #endif
 
 #ifdef SDL_GDKSuspendComplete
