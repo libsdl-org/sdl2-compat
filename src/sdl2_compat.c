@@ -147,12 +147,6 @@ extern "C" {
     SDL_DECLSPEC rc SDLCALL SDL_##oldfn params { ret SDL3_##newfn args; }
 #include "sdl3_syms.h"
 
-/* Things that are the same in SDL3, except they now follow the SDL_GetStringRule (SDL3 owns the returned string, caller does not, so we make a copy here). */
-/* Note that these need to be in sdl3_syms.h with the _non-const_ return type to make this work! */
-#define SDL3_SYM_GETSTRINGRULE(rc,fn,params,args,ret) \
-    SDL_DECLSPEC rc SDLCALL SDL_##fn params { const rc retval = SDL3_##fn args; ret retval ? SDL3_strdup(retval) : NULL; }
-#include "sdl3_syms.h"
-
 
 /* these are macros (etc) in the SDL headers, so make our own. */
 #define SDL3_AtomicIncRef(a)  SDL3_AtomicAdd(a, 1)
@@ -1253,9 +1247,6 @@ static SDL_Mutex *AudioDeviceLock = NULL;
 static SDL2_AudioStream *AudioOpenDevices[16];  /* SDL2 had a limit of 16 simultaneous devices opens (and the first slot was for the 1.2 legacy interface). We track these as _SDL2_ audio streams. */
 static AudioDeviceList AudioSDL3PlaybackDevices;
 static AudioDeviceList AudioSDL3RecordingDevices;
-
-static char **GamepadMappings = NULL;
-static int NumGamepadMappings = 0;
 
 static SDL_TouchID *TouchDevices = NULL;
 static int NumTouchDevices = 0;
@@ -5254,10 +5245,6 @@ SDL_Quit(void)
     }
     num_gamepad_button_swap_list = 0;
 
-    SDL3_free(GamepadMappings);
-    GamepadMappings = NULL;
-    NumGamepadMappings = 0;
-
     SDL3_free(TouchDevices);
     TouchDevices = NULL;
     NumTouchDevices = 0;
@@ -8225,7 +8212,8 @@ SDL_DECLSPEC char* SDLCALL
 SDL_GameControllerMappingForDeviceIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_GetGamepadMappingForID(jid) : NULL;
+    const char *retval = jid ? SDL3_GetGamepadMappingForID(jid) : NULL;
+    return retval ? SDL3_strdup(retval) : NULL;
 }
 
 SDL_DECLSPEC SDL_bool SDLCALL
@@ -8245,19 +8233,22 @@ SDL_GameControllerNameForIndex(int idx)
 SDL_DECLSPEC int SDLCALL
 SDL_GameControllerNumMappings(void)
 {
-    SDL3_free(GamepadMappings);
-    GamepadMappings = SDL3_GetGamepadMappings(&NumGamepadMappings);
-    return NumGamepadMappings;
+    int count = 0;
+    SDL3_GetGamepadMappings(&count);
+    return count;
 }
 
 SDL_DECLSPEC char* SDLCALL
 SDL_GameControllerMappingForIndex(int idx)
 {
+    int count = 0;
+    const char * const *mappings = SDL3_GetGamepadMappings(&count);
+
     char *retval = NULL;
-    if ((idx < 0) || (idx >= NumGamepadMappings)) {
+    if ((idx < 0) || (idx >= count)) {
         SDL3_SetError("Mapping not available");
     } else {
-        retval = SDL3_strdup(GamepadMappings[idx]);
+        retval = SDL3_strdup(mappings[idx]);
     }
     return retval;
 }
@@ -9114,6 +9105,33 @@ SDL_Metal_GetDrawableSize(SDL_Window *window, int *w, int *h)
     SDL_GetWindowSizeInPixels(window, w, h);
 }
 
+SDL_DECLSPEC char * SDLCALL
+SDL_GetClipboardText(void)
+{
+    const char *retval = SDL3_GetClipboardText();
+    return retval ? SDL3_strdup(retval) : NULL;
+}
+
+SDL_DECLSPEC char * SDLCALL
+SDL_GetPrimarySelectionText(void)
+{
+    const char *retval = SDL3_GetPrimarySelectionText();
+    return retval ? SDL3_strdup(retval) : NULL;
+}
+
+SDL_DECLSPEC char * SDLCALL
+SDL_GetBasePath(void)
+{
+    const char *retval = SDL3_GetBasePath();
+    return retval ? SDL3_strdup(retval) : NULL;
+}
+
+SDL_DECLSPEC char * SDLCALL
+SDL_GetPrefPath(const char *org, const char *app)
+{
+    const char *retval = SDL3_GetPrefPath(org, app);
+    return retval ? SDL3_strdup(retval) : NULL;
+}
 
 SDL_DECLSPEC SDL_hid_device * SDLCALL
 SDL_hid_open_path(const char *path, int bExclusive)

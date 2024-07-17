@@ -33,9 +33,6 @@
 #ifndef SDL3_SYM_VARARGS
 #define SDL3_SYM_VARARGS(rc,fn,params) SDL3_SYM(rc,fn,params,unused,unused)
 #endif
-#ifndef SDL3_SYM_GETSTRINGRULE
-#define SDL3_SYM_GETSTRINGRULE(rc,fn,params,args,ret) SDL3_SYM(rc,fn,params,args,ret)
-#endif
 
 SDL3_SYM_VARARGS(int,SetError,(SDL_PRINTF_FORMAT_STRING const char *a, ...))
 SDL3_SYM_VARARGS(void,Log,(SDL_PRINTF_FORMAT_STRING const char *a, ...))
@@ -118,7 +115,7 @@ SDL3_SYM_RENAMED(SDL_bool,AtomicCASPtr,AtomicCompareAndSwapPointer,(void **a, vo
 SDL3_SYM_PASSTHROUGH(void*,AtomicSetPtr,(void **a, void *b),(a,b),return)
 SDL3_SYM_PASSTHROUGH(void*,AtomicGetPtr,(void **a),(a),return)
 SDL3_SYM_PASSTHROUGH(int,SetClipboardText,(const char *a),(a),return)
-SDL3_SYM_GETSTRINGRULE(char*,GetClipboardText,(void),(),return)
+SDL3_SYM(const char*,GetClipboardText,(void),(),return)
 SDL3_SYM_PASSTHROUGH(SDL_bool,HasClipboardText,(void),(),return)
 SDL3_SYM_PASSTHROUGH(int,GetCPUCount,(void),(),return)
 SDL3_SYM_PASSTHROUGH(int,GetCPUCacheLineSize,(void),(),return)
@@ -153,8 +150,8 @@ SDL3_SYM(void,SetEventFilter,(SDL_EventFilter a, void *b),(a,b),)
 SDL3_SYM(void,FilterEvents,(SDL_EventFilter a, void *b),(a,b),)
 SDL3_SYM(void *,AllocateEventMemory,(size_t a),(a),return)
 SDL3_SYM(Uint32,RegisterEvents,(int a),(a),return)
-SDL3_SYM_GETSTRINGRULE(char*,GetBasePath,(void),(),return)
-SDL3_SYM_GETSTRINGRULE(char*,GetPrefPath,(const char *a, const char *b),(a,b),return)
+SDL3_SYM(const char*,GetBasePath,(void),(),return)
+SDL3_SYM(const char*,GetPrefPath,(const char *a, const char *b),(a,b),return)
 SDL3_SYM_RENAMED(int,GameControllerAddMapping,AddGamepadMapping,(const char *a),(a),return)
 SDL3_SYM(const char*,GetGamepadMappingForGUID,(SDL_JoystickGUID a),(a),return)
 SDL3_SYM(const char*,GetGamepadMapping,(SDL_GameController *a),(a),return)
@@ -738,7 +735,7 @@ SDL3_SYM_PASSTHROUGH(Uint16,crc16,(Uint16 a, const void *b, size_t c),(a,b,c),re
 SDL3_SYM(int,GetWindowSizeInPixels,(SDL_Window *a, int *b, int *c),(a,b,c),return)
 SDL3_SYM_PASSTHROUGH(void,GetJoystickGUIDInfo,(SDL_JoystickGUID a, Uint16 *b, Uint16 *c, Uint16 *d, Uint16 *e),(a,b,c,d,e),)
 SDL3_SYM_PASSTHROUGH(int,SetPrimarySelectionText,(const char *a),(a),return)
-SDL3_SYM_GETSTRINGRULE(char*,GetPrimarySelectionText,(void),(),return)
+SDL3_SYM(const char*,GetPrimarySelectionText,(void),(),return)
 SDL3_SYM_PASSTHROUGH(SDL_bool,HasPrimarySelectionText,(void),(),return)
 SDL3_SYM_PASSTHROUGH(void,ResetHints,(void),(),)
 SDL3_SYM_PASSTHROUGH(char*,strcasestr,(const char *a, const char *b),(a,b),return)
@@ -765,7 +762,7 @@ SDL3_SYM(SDL_JoystickID*,GetGamepads,(int *a),(a),return)
 SDL3_SYM(SDL_Gamepad *,OpenGamepad,(SDL_JoystickID a),(a),return)
 SDL3_SYM(SDL_Joystick *,OpenJoystick,(SDL_JoystickID a),(a),return)
 SDL3_SYM(SDL_JoystickID,GetGamepadID,(SDL_GameController *a),(a),return)
-SDL3_SYM(char *,GetGamepadMappingForID,(SDL_JoystickID a),(a),return)
+SDL3_SYM(const char *,GetGamepadMappingForID,(SDL_JoystickID a),(a),return)
 SDL3_SYM(const char *,GetGamepadNameForID,(SDL_JoystickID a),(a),return)
 SDL3_SYM(const char *,GetGamepadPathForID,(SDL_JoystickID a),(a),return)
 SDL3_SYM(SDL_bool,IsGamepad,(SDL_JoystickID a),(a),return)
@@ -834,7 +831,7 @@ SDL3_SYM(int,SetNumberProperty,(SDL_PropertiesID a, const char *b, Sint64 c),(a,
 SDL3_SYM(int,SetStringProperty,(SDL_PropertiesID a, const char *b, const char *c),(a,b,c),return)
 SDL3_SYM(void,DestroyProperties,(SDL_PropertiesID a),(a),)
 SDL3_SYM(SDL_Window*,CreateWindowWithProperties,(SDL_PropertiesID a),(a),return)
-SDL3_SYM(char **,GetGamepadMappings,(int *a),(a),return)
+SDL3_SYM(const char * const *,GetGamepadMappings,(int *a),(a),return)
 SDL3_SYM_RENAMED(Uint64,GameControllerGetSteamHandle,GetGamepadSteamHandle,(SDL_GameController *a),(a),return)
 SDL3_SYM(SDL_HapticID *,GetHaptics,(int *a),(a),return)
 SDL3_SYM(const char *,GetHapticNameForID,(SDL_HapticID a),(a),return)
@@ -855,4 +852,3 @@ SDL3_SYM(SDL_Palette *,CreateSurfacePalette,(SDL_Surface *a),(a),return)
 #undef SDL3_SYM_PASSTHROUGH
 #undef SDL3_SYM_RENAMED
 #undef SDL3_SYM_VARARGS
-#undef SDL3_SYM_GETSTRINGRULE
