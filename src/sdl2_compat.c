@@ -9399,7 +9399,7 @@ SDL_UIKitRunApp(int argc, char *argv[], SDL_main_func mainFunction)
 SDL_DECLSPEC int SDLCALL
 SDL_AndroidGetExternalStorageState(void)
 {
-    return (int)SDL3_GetAndroidExternalStorageState(&state);
+    return (int)SDL3_GetAndroidExternalStorageState();
 }
 
 static void SDLCALL AndroidRequestPermissionBlockingCallback(void *userdata, const char *permission, SDL_bool granted)
