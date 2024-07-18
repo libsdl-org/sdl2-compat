@@ -67,6 +67,7 @@
 #define SDL_ClearComposition IGNORE_THIS_VERSION_OF_SDL_ClearComposition
 #define SDL_ClearError IGNORE_THIS_VERSION_OF_SDL_ClearError
 #define SDL_ClearProperty IGNORE_THIS_VERSION_OF_SDL_ClearProperty
+#define SDL_ClearSurface IGNORE_THIS_VERSION_OF_SDL_ClearSurface
 #define SDL_CloseAudioDevice IGNORE_THIS_VERSION_OF_SDL_CloseAudioDevice
 #define SDL_CloseCamera IGNORE_THIS_VERSION_OF_SDL_CloseCamera
 #define SDL_CloseGamepad IGNORE_THIS_VERSION_OF_SDL_CloseGamepad
@@ -642,6 +643,7 @@
 #define SDL_PollEvent IGNORE_THIS_VERSION_OF_SDL_PollEvent
 #define SDL_PostSemaphore IGNORE_THIS_VERSION_OF_SDL_PostSemaphore
 #define SDL_PremultiplyAlpha IGNORE_THIS_VERSION_OF_SDL_PremultiplyAlpha
+#define SDL_PremultiplySurfaceAlpha IGNORE_THIS_VERSION_OF_SDL_PremultiplySurfaceAlpha
 #define SDL_PumpEvents IGNORE_THIS_VERSION_OF_SDL_PumpEvents
 #define SDL_PushEvent IGNORE_THIS_VERSION_OF_SDL_PushEvent
 #define SDL_PutAudioStreamData IGNORE_THIS_VERSION_OF_SDL_PutAudioStreamData
@@ -658,6 +660,7 @@
 #define SDL_ReadS8 IGNORE_THIS_VERSION_OF_SDL_ReadS8
 #define SDL_ReadStorageFile IGNORE_THIS_VERSION_OF_SDL_ReadStorageFile
 #define SDL_ReadSurfacePixel IGNORE_THIS_VERSION_OF_SDL_ReadSurfacePixel
+#define SDL_ReadSurfacePixelFloat IGNORE_THIS_VERSION_OF_SDL_ReadSurfacePixelFloat
 #define SDL_ReadU16BE IGNORE_THIS_VERSION_OF_SDL_ReadU16BE
 #define SDL_ReadU16LE IGNORE_THIS_VERSION_OF_SDL_ReadU16LE
 #define SDL_ReadU32BE IGNORE_THIS_VERSION_OF_SDL_ReadU32BE
@@ -1238,6 +1241,10 @@
 
 #ifdef SDL_ClearProperty
 #undef SDL_ClearProperty
+#endif
+
+#ifdef SDL_ClearSurface
+#undef SDL_ClearSurface
 #endif
 
 #ifdef SDL_CloseAudioDevice
@@ -3540,6 +3547,10 @@
 #undef SDL_PremultiplyAlpha
 #endif
 
+#ifdef SDL_PremultiplySurfaceAlpha
+#undef SDL_PremultiplySurfaceAlpha
+#endif
+
 #ifdef SDL_PumpEvents
 #undef SDL_PumpEvents
 #endif
@@ -3602,6 +3613,10 @@
 
 #ifdef SDL_ReadSurfacePixel
 #undef SDL_ReadSurfacePixel
+#endif
+
+#ifdef SDL_ReadSurfacePixelFloat
+#undef SDL_ReadSurfacePixelFloat
 #endif
 
 #ifdef SDL_ReadU16BE

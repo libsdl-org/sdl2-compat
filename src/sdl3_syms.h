@@ -712,7 +712,7 @@ SDL3_SYM_PASSTHROUGH(const SDL_Rect*,GetWindowMouseRect,(SDL_Window *a),(a),retu
 SDL3_SYM(int,RenderCoordinatesFromWindow,(SDL_Renderer *a, float b, float c, float *d, float *e),(a,b,c,d,e),return)
 SDL3_SYM(int,RenderCoordinatesToWindow,(SDL_Renderer *a, float b, float c, float *d, float *e),(a,b,c,d,e),return)
 SDL3_SYM_PASSTHROUGH(void,hid_ble_scan,(SDL_bool a),(a),)
-SDL3_SYM(int,PremultiplyAlpha,(int a, int b, SDL_PixelFormat c, const void *d, int e, SDL_PixelFormat f, void *g, int h),(a,b,c,d,e,f,g,h),return)
+SDL3_SYM(int,PremultiplyAlpha,(int a, int b, SDL_PixelFormat c, const void *d, int e, SDL_PixelFormat f, void *g, int h, SDL_bool i),(a,b,c,d,e,f,g,h,i),return)
 SDL3_SYM(const char*,GetTouchDeviceName,(SDL_TouchID a),(a),return)
 SDL3_SYM(int,ClearComposition,(SDL_Window *a),(a),return)
 SDL3_SYM_RENAMED(SDL_bool,HasIntersectionF,HasRectIntersectionFloat,(const SDL_FRect *a, const SDL_FRect *b),(a,b),return)

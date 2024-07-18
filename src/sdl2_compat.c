@@ -3168,7 +3168,7 @@ SDL_ConvertPixels(int width, int height, Uint32 src_format, const void *src, int
 SDL_DECLSPEC int SDLCALL
 SDL_PremultiplyAlpha(int width, int height, Uint32 src_format, const void * src, int src_pitch, Uint32 dst_format, void * dst, int dst_pitch)
 {
-    return SDL3_PremultiplyAlpha(width, height, (SDL_PixelFormat)src_format, src, src_pitch, (SDL_PixelFormat)dst_format, dst, dst_pitch);
+    return SDL3_PremultiplyAlpha(width, height, (SDL_PixelFormat)src_format, src, src_pitch, (SDL_PixelFormat)dst_format, dst, dst_pitch, SDL_FALSE);
 }
 
 SDL_DECLSPEC SDL2_Surface * SDLCALL
