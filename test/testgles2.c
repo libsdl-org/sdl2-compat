@@ -577,7 +577,7 @@ render_thread_fn(void *render_ctx)
 }
 
 static void
-loop_threaded()
+loop_threaded(void)
 {
     SDL_Event event;
     int i;
@@ -606,7 +606,7 @@ loop_threaded()
 #endif
 
 static void
-loop()
+loop(void)
 {
     SDL_Event event;
     int i;
