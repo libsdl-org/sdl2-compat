@@ -1248,6 +1248,9 @@ static SDL2_AudioStream *AudioOpenDevices[16];  /* SDL2 had a limit of 16 simult
 static AudioDeviceList AudioSDL3PlaybackDevices;
 static AudioDeviceList AudioSDL3RecordingDevices;
 
+static const char **GamepadMappings = NULL;
+static int NumGamepadMappings = 0;
+
 static SDL_TouchID *TouchDevices = NULL;
 static int NumTouchDevices = 0;
 static SDL_TouchID TouchFingersDeviceID = 0;
@@ -1780,7 +1783,7 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
     switch (event2->type) {
     case SDL_EVENT_TEXT_INPUT: {
         const size_t len = SDL3_strlen(event2->text.text) + 1;
-        event3->text.text = (char *)SDL3_AllocateEventMemory(len);
+        event3->text.text = (char *)SDL3_AllocateTemporaryMemory(len);
         if (event3->text.text) {
             SDL3_memcpy((char *)event3->text.text, event3->text.text, len);
         }
@@ -1796,18 +1799,6 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
         event3->key.state = event2->key.state;
         event3->key.repeat = event2->key.repeat;
         break;
-    #if 0 /* FIXME: Can this ever happen? */
-    case SDL_EVENT_TEXT_EDITING: {
-        const size_t len = SDL3_strlen(event2->edit.text) + 1;
-        event3->edit.type = SDL_EVENT_TEXT_EDITING;
-        event3->edit.windowID = event2->edit.windowID;
-        event3->edit.start = event2->edit.start;
-        event3->edit.length = event2->edit.length;
-        event3->edit.text = (char *)SDL3_AllocateEventMemory(len);
-        SDL3_memcpy(event3->edit.text, event2->edit.text, len);
-        break;
-    }
-    #endif
     case SDL_EVENT_MOUSE_MOTION:
         event3->motion.x = (float)event2->motion.x;
         event3->motion.y = (float)event2->motion.y;
@@ -3080,6 +3071,12 @@ SDL_GetWindowOpacity(SDL_Window *window, float *out_opacity)
     return 0;
 }
 
+SDL_DECLSPEC void* SDLCALL
+SDL_GetWindowICCProfile(SDL_Window * window, size_t* size)
+{
+    return SDL3_ClaimTemporaryMemory(SDL3_GetWindowICCProfile(window, size));
+}
+
 SDL_DECLSPEC SDL2_Surface * SDLCALL
 SDL_ConvertSurface(SDL2_Surface *surface, const SDL2_PixelFormat *format, Uint32 flags)
 {
@@ -3390,7 +3387,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_GetNumTouchDevices(void)
 {
     SDL3_free(TouchDevices);
-    TouchDevices = SDL3_GetTouchDevices(&NumTouchDevices);
+    TouchDevices = (SDL_TouchID *)SDL3_ClaimTemporaryMemory(SDL3_GetTouchDevices(&NumTouchDevices));
     return NumTouchDevices;
 }
 
@@ -3416,7 +3413,7 @@ SDL_GetNumTouchFingers(SDL_TouchID touchID)
 {
     SDL3_free(TouchFingers);
     TouchFingersDeviceID = touchID;
-    TouchFingers = SDL3_GetTouchFingers(touchID, &NumTouchFingers);
+    TouchFingers = (SDL_Finger **)SDL3_ClaimTemporaryMemory(SDL3_GetTouchFingers(touchID, &NumTouchFingers));
     return NumTouchFingers;
 }
 
@@ -3499,7 +3496,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_RecordGesture(SDL_TouchID touchId)
 {
     int numtouchdevs = 0;
-    SDL_TouchID *touchdevs = SDL3_GetTouchDevices(&numtouchdevs);
+    const SDL_TouchID *touchdevs = SDL3_GetTouchDevices(&numtouchdevs);
     int i;
 
     /* make sure we know about all the devices SDL3 knows about, since we aren't connected as tightly as we were in SDL2. */
@@ -3507,13 +3504,10 @@ SDL_RecordGesture(SDL_TouchID touchId)
         const SDL_TouchID thistouch = touchdevs[i];
         if (!GestureGetTouch(thistouch)) {
             if (!GestureAddTouch(thistouch)) {
-                SDL3_free(touchdevs);
                 return 0;  /* uhoh, out of memory */
             }
         }
     }
-
-    SDL3_free(touchdevs);
 
     if (touchId == (SDL_TouchID)-1) {
         GestureRecordAll = SDL_TRUE;  /* !!! FIXME: this is never set back to SDL_FALSE anywhere, that's probably a bug. */
@@ -5204,6 +5198,10 @@ SDL_Quit(void)
     }
     num_gamepad_button_swap_list = 0;
 
+    SDL3_free(GamepadMappings);
+    GamepadMappings = NULL;
+    NumGamepadMappings = 0;
+
     SDL3_free(TouchDevices);
     TouchDevices = NULL;
     NumTouchDevices = 0;
@@ -5256,7 +5254,7 @@ static int GetNumAudioDevices(int iscapture)
 {
     AudioDeviceList newlist;
     AudioDeviceList *list = iscapture ? &AudioSDL3RecordingDevices : &AudioSDL3PlaybackDevices;
-    SDL_AudioDeviceID *devices;
+    const SDL_AudioDeviceID *devices;
     int num_devices;
     int i;
 
@@ -5271,7 +5269,6 @@ static int GetNumAudioDevices(int iscapture)
         newlist.num_devices = num_devices;
         newlist.devices = (AudioDeviceInfo *) SDL3_malloc(sizeof (AudioDeviceInfo) * num_devices);
         if (!newlist.devices) {
-            SDL3_free(devices);
             return list->num_devices;  /* just return the existing one for now. Oh well. */
         }
 
@@ -5292,7 +5289,6 @@ static int GetNumAudioDevices(int iscapture)
                 for (j = 0; j < i; j++) {
                     SDL3_free(newlist.devices[i].name);
                 }
-                SDL3_free(devices);
                 SDL3_free(fullname);
                 return list->num_devices;  /* just return the existing one for now. Oh well. */
             }
@@ -6148,24 +6144,21 @@ Display_IndexToID(int displayIndex)
 {
     SDL_DisplayID displayID;
     int count = 0;
-    SDL_DisplayID *list;
+    const SDL_DisplayID *list;
 
     list = SDL3_GetDisplays(&count);
 
     if (list == NULL || count == 0) {
         SDL3_SetError("no displays");
-        SDL3_free(list);
         return 0;
     }
 
     if (displayIndex < 0 || displayIndex >= count) {
         SDL3_SetError("invalid displayIndex");
-        SDL3_free(list);
         return 0;
     }
 
     displayID = list[displayIndex];
-    SDL3_free(list);
     return displayID;
 }
 
@@ -6173,9 +6166,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_GetNumVideoDisplays(void)
 {
     int count = 0;
-    SDL_DisplayID *list;
-    list = SDL3_GetDisplays(&count);
-    SDL3_free(list);
+    SDL3_GetDisplays(&count);
     return count;
 }
 
@@ -6205,7 +6196,7 @@ Display_IDToIndex(SDL_DisplayID displayID)
 {
     int displayIndex = 0;
     int count = 0, i;
-    SDL_DisplayID *list;
+    const SDL_DisplayID *list;
 
     if (displayID == 0) {
         SDL3_SetError("invalid displayID");
@@ -6216,7 +6207,6 @@ Display_IDToIndex(SDL_DisplayID displayID)
 
     if (list == NULL || count == 0) {
         SDL3_SetError("no displays");
-        SDL3_free(list);
         return -1;
     }
 
@@ -6226,14 +6216,13 @@ Display_IDToIndex(SDL_DisplayID displayID)
             break;
         }
     }
-    SDL3_free(list);
     return displayIndex;
 }
 
 static const SDL_DisplayMode** SDL_GetDisplayModeList(SDL_DisplayID displayID, int *count)
 {
     int c = 0;
-    const SDL_DisplayMode **modes = SDL3_GetFullscreenDisplayModes(displayID, &c);
+    const SDL_DisplayMode **modes = (const SDL_DisplayMode **)SDL3_ClaimTemporaryMemory(SDL3_GetFullscreenDisplayModes(displayID, &c));
 
     if (!modes) {
         return NULL;
@@ -6247,7 +6236,7 @@ static const SDL_DisplayMode** SDL_GetDisplayModeList(SDL_DisplayID displayID, i
     }
 
     /* Return the desktop mode, if no exclusive fullscreen modes are available. */
-    SDL3_free((void *)modes);
+    SDL3_free(modes);
     modes = (const SDL_DisplayMode **)SDL3_calloc(sizeof(SDL_DisplayMode *), 2);
     if (modes) {
         modes[0] = SDL3_GetDesktopDisplayMode(displayID);
@@ -6390,7 +6379,7 @@ ApplyFullscreenMode(SDL_Window *window)
         return 0;
     } else {
         int count = 0;
-        const SDL_DisplayMode **list;
+        const SDL_DisplayMode * const *list;
         SDL_DisplayID displayID;
         int ret;
 
@@ -6407,7 +6396,6 @@ ApplyFullscreenMode(SDL_Window *window)
             /* If no exclusive modes, use the fullscreen desktop mode. */
             ret = SDL3_SetWindowFullscreenMode(window, NULL);
         }
-        SDL3_free((void *)list);
         return ret;
     }
 }
@@ -7065,14 +7053,13 @@ SDL_JoystickSetPlayerIndex(SDL_Joystick *joystick, int player_index)
 SDL_DECLSPEC void SDLCALL
 SDL_StartTextInput(void)
 {
-    SDL_Window **windows = SDL3_GetWindows(NULL);
+    SDL_Window * const *windows = SDL3_GetWindows(NULL);
     if (windows) {
         int i;
 
         for (i = 0; windows[i]; ++i) {
             SDL3_StartTextInput(windows[i]);
         }
-        SDL_free(windows);
     }
 }
 
@@ -7080,7 +7067,7 @@ SDL_DECLSPEC SDL_bool SDLCALL
 SDL_IsTextInputActive(void)
 {
     SDL_bool result = SDL_FALSE;
-    SDL_Window **windows = SDL3_GetWindows(NULL);
+    SDL_Window * const *windows = SDL3_GetWindows(NULL);
     if (windows) {
         int i;
 
@@ -7090,7 +7077,6 @@ SDL_IsTextInputActive(void)
                 break;
             }
         }
-        SDL_free(windows);
     }
     return result;
 }
@@ -7098,28 +7084,26 @@ SDL_IsTextInputActive(void)
 SDL_DECLSPEC void SDLCALL
 SDL_StopTextInput(void)
 {
-    SDL_Window **windows = SDL3_GetWindows(NULL);
+    SDL_Window * const *windows = SDL3_GetWindows(NULL);
     if (windows) {
         int i;
 
         for (i = 0; windows[i]; ++i) {
             SDL3_StopTextInput(windows[i]);
         }
-        SDL_free(windows);
     }
 }
 
 SDL_DECLSPEC void SDLCALL
 SDL_ClearComposition(void)
 {
-    SDL_Window **windows = SDL3_GetWindows(NULL);
+    SDL_Window * const *windows = SDL3_GetWindows(NULL);
     if (windows) {
         int i;
 
         for (i = 0; windows[i]; ++i) {
             SDL3_ClearComposition(windows[i]);
         }
-        SDL_free(windows);
     }
 }
 
@@ -7132,7 +7116,7 @@ SDL_IsTextInputShown()
 SDL_DECLSPEC void SDLCALL
 SDL_SetTextInputRect(const SDL_Rect *rect)
 {
-    SDL_Window **windows;
+    SDL_Window * const *windows;
 
     if (!rect) {
         SDL3_InvalidParamError("rect");
@@ -7146,7 +7130,6 @@ SDL_SetTextInputRect(const SDL_Rect *rect)
         for ( i = 0; windows[i]; ++i ) {
             SDL3_SetTextInputArea(windows[i], rect, 0);
         }
-        SDL_free( windows );
     }
 }
 
@@ -7882,16 +7865,23 @@ SDL_GameControllerSetPlayerIndex(SDL_GameController *gamecontroller, int player_
     SDL3_SetGamepadPlayerIndex(gamecontroller, player_index);
 }
 
-SDL_DECLSPEC void SDLCALL
-SDL_JoystickGetGUIDString(SDL_JoystickGUID guid, char *pszGUID, int cbGUID)
+SDL_DECLSPEC SDL_GUID SDLCALL
+SDL_JoystickGetGUIDFromString(const char *pchGUID)
 {
-    SDL3_GetJoystickGUIDString(guid, pszGUID, cbGUID);
+    return SDL3_GUIDFromString(pchGUID);
+}
+
+SDL_DECLSPEC void SDLCALL
+SDL_JoystickGetGUIDString(SDL_GUID guid, char *pszGUID, int cbGUID)
+{
+    SDL_GUIDToString(guid, pszGUID, cbGUID);
 }
 
 SDL_DECLSPEC void SDLCALL
 SDL_GUIDToString(SDL_GUID guid, char *pszGUID, int cbGUID)
 {
-    SDL3_GUIDToString(guid, pszGUID, cbGUID);
+    const char *szGUID = SDL3_GUIDToString(guid);
+    SDL3_strlcpy(pszGUID, szGUID, cbGUID);
 }
 
 /* SDL3 split this into getter/setter functions. */
@@ -7969,7 +7959,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_NumJoysticks(void)
 {
     SDL3_free(joystick_list);
-    joystick_list = SDL3_GetJoysticks(&num_joysticks);
+    joystick_list = (SDL_JoystickID *)SDL3_ClaimTemporaryMemory(SDL3_GetJoysticks(&num_joysticks));
     if (joystick_list == NULL) {
         num_joysticks = 0;
         return -1;
@@ -7991,10 +7981,10 @@ GetIndexFromJoystickInstance(SDL_JoystickID jid) {
 }
 
 
-SDL_DECLSPEC SDL_JoystickGUID SDLCALL
+SDL_DECLSPEC SDL_GUID SDLCALL
 SDL_JoystickGetDeviceGUID(int idx)
 {
-    SDL_JoystickGUID guid;
+    SDL_GUID guid;
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
     if (!jid) {
         SDL3_zero(guid);
@@ -8172,35 +8162,30 @@ SDL_GameControllerNameForIndex(int idx)
 SDL_DECLSPEC int SDLCALL
 SDL_GameControllerNumMappings(void)
 {
-    int count = 0;
-    SDL3_GetGamepadMappings(&count);
-    return count;
+    SDL3_free(GamepadMappings);
+    GamepadMappings = (const char **)SDL3_ClaimTemporaryMemory(SDL3_GetGamepadMappings(&NumGamepadMappings));
+    return NumGamepadMappings;
 }
 
 SDL_DECLSPEC char* SDLCALL
 SDL_GameControllerMappingForIndex(int idx)
 {
-    int count = 0;
-    const char * const *mappings = SDL3_GetGamepadMappings(&count);
-
     char *retval = NULL;
-    if ((idx < 0) || (idx >= count)) {
+    if ((idx < 0) || (idx >= NumGamepadMappings)) {
         SDL3_SetError("Mapping not available");
     } else {
-        retval = SDL3_strdup(mappings[idx]);
+        retval = SDL3_strdup(GamepadMappings[idx]);
     }
     return retval;
 }
 
-/* Was renamed _and_ follows the SDL_GetStringRule, so we had to fill this in manually. */
 SDL_DECLSPEC char* SDLCALL
-SDL_GameControllerMappingForGUID(SDL_JoystickGUID guid)
+SDL_GameControllerMappingForGUID(SDL_GUID guid)
 {
     const char *retval = SDL3_GetGamepadMappingForGUID(guid);
     return retval ? SDL3_strdup(retval) : NULL;
 }
 
-/* Was renamed _and_ follows the SDL_GetStringRule, so we had to fill this in manually. */
 SDL_DECLSPEC char* SDLCALL
 SDL_GameControllerMapping(SDL_GameController *controller)
 {
@@ -8301,11 +8286,11 @@ SDL_GameControllerGetBindForAxis(SDL_GameController *controller,
     SDL3_zero(bind);
 
     if (axis != SDL_GAMEPAD_AXIS_INVALID) {
-        SDL_GamepadBinding **bindings = SDL3_GetGamepadBindings(controller, NULL);
+        const SDL_GamepadBinding * const *bindings = SDL3_GetGamepadBindings(controller, NULL);
         if (bindings) {
             int i;
             for (i = 0; bindings[i]; ++i) {
-                SDL_GamepadBinding *binding = bindings[i];
+                const SDL_GamepadBinding *binding = bindings[i];
                 if (binding->output_type == SDL_GAMEPAD_BINDTYPE_AXIS && binding->output.axis.axis == axis) {
                     bind.bindType = binding->input_type;
                     if (binding->input_type == SDL_GAMEPAD_BINDTYPE_AXIS) {
@@ -8320,8 +8305,6 @@ SDL_GameControllerGetBindForAxis(SDL_GameController *controller,
                     break;
                 }
             }
-
-            SDL_free(bindings);
         }
     }
 
@@ -8337,11 +8320,11 @@ SDL_GameControllerGetBindForButton(SDL_GameController *controller,
     SDL3_zero(bind);
 
     if (button != SDL_GAMEPAD_BUTTON_INVALID) {
-        SDL_GamepadBinding **bindings = SDL3_GetGamepadBindings(controller, NULL);
+        const SDL_GamepadBinding * const *bindings = SDL3_GetGamepadBindings(controller, NULL);
         if (bindings) {
             int i;
             for (i = 0; bindings[i]; ++i) {
-                SDL_GamepadBinding *binding = bindings[i];
+                const SDL_GamepadBinding *binding = bindings[i];
                 if (binding->output_type == SDL_GAMEPAD_BINDTYPE_BUTTON && binding->output.button == button) {
                     bind.bindType = binding->input_type;
                     if (binding->input_type == SDL_GAMEPAD_BINDTYPE_AXIS) {
@@ -8355,8 +8338,6 @@ SDL_GameControllerGetBindForButton(SDL_GameController *controller,
                     break;
                 }
             }
-
-            SDL_free(bindings);
         }
     }
 
@@ -8458,7 +8439,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_NumSensors(void)
 {
     SDL3_free(sensor_list);
-    sensor_list = SDL3_GetSensors(&num_sensors);
+    sensor_list = (SDL_SensorID *)SDL3_ClaimTemporaryMemory(SDL3_GetSensors(&num_sensors));
     if (sensor_list == NULL) {
         num_sensors = 0;
         return -1;
@@ -8536,7 +8517,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_NumHaptics(void)
 {
     SDL3_free(haptic_list);
-    haptic_list = SDL3_GetHaptics(&num_haptics);
+    haptic_list = (SDL_HapticID *)SDL3_ClaimTemporaryMemory(SDL3_GetHaptics(&num_haptics));
     if (haptic_list == NULL) {
         num_haptics = 0;
         return -1;
@@ -9070,6 +9051,22 @@ SDL_GetPrefPath(const char *org, const char *app)
 {
     const char *retval = SDL3_GetPrefPath(org, app);
     return retval ? SDL3_strdup(retval) : NULL;
+}
+
+SDL_DECLSPEC SDL_Locale *SDL_GetPreferredLocales(void)
+{
+    SDL_Locale *retval = NULL;
+    int i, count;
+    const SDL_Locale * const *locales = SDL3_GetPreferredLocales(&count);
+    if (locales) {
+        retval = (SDL_Locale *)SDL3_calloc(count + 1, sizeof(*retval));
+        if (retval) {
+            for (i = 0; i < count; ++i) {
+                SDL3_copyp(&retval[i], locales[i]);
+            }
+        }
+    }
+    return retval;
 }
 
 SDL_DECLSPEC SDL_hid_device * SDLCALL
