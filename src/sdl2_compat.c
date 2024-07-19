@@ -9059,10 +9059,37 @@ SDL_DECLSPEC SDL_Locale *SDL_GetPreferredLocales(void)
     int i, count;
     const SDL_Locale * const *locales = SDL3_GetPreferredLocales(&count);
     if (locales) {
-        retval = (SDL_Locale *)SDL3_calloc(count + 1, sizeof(*retval));
+        /* the string pointers in these structs are allocated as part of
+           `locales`, so count out the strings, allocate space for them,
+            and copy them to the new return value so they don't go away
+            with the temporary memory */
+        size_t allocation = (count + 1) * sizeof (*retval);
+        size_t strallocation = 0;
+        for (i = 0; i < count; ++i) {
+            if (locales[i]->language) {
+                strallocation += SDL3_strlen(locales[i]->language) + 1;
+            }
+            if (locales[i]->country) {
+                strallocation += SDL3_strlen(locales[i]->country) + 1;
+            }
+        }
+        allocation += strallocation;
+        retval = (SDL_Locale *)SDL3_calloc(1, allocation);
         if (retval) {
+            char *strs = (char *) (retval + (count + 1));
             for (i = 0; i < count; ++i) {
-                SDL3_copyp(&retval[i], locales[i]);
+                if (locales[i]->language) {
+                    const size_t len = SDL3_strlcpy(strs, locales[i]->language, strallocation);
+                    retval[i].language = strs;
+                    strs += len + 1;
+                    strallocation -= len + 1;
+                }
+                if (locales[i]->country) {
+                    const size_t len = SDL3_strlcpy(strs, locales[i]->country, strallocation);
+                    retval[i].country = strs;
+                    strs += len + 1;
+                    strallocation -= len + 1;
+                }
             }
         }
     }
