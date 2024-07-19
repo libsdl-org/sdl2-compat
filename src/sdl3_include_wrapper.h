@@ -43,7 +43,7 @@
 #define SDL_AddTimer IGNORE_THIS_VERSION_OF_SDL_AddTimer
 #define SDL_AddTimerNS IGNORE_THIS_VERSION_OF_SDL_AddTimerNS
 #define SDL_AddVulkanRenderSemaphores IGNORE_THIS_VERSION_OF_SDL_AddVulkanRenderSemaphores
-#define SDL_AllocateEventMemory IGNORE_THIS_VERSION_OF_SDL_AllocateEventMemory
+#define SDL_AllocateTemporaryMemory IGNORE_THIS_VERSION_OF_SDL_AllocateTemporaryMemory
 #define SDL_AtomicAdd IGNORE_THIS_VERSION_OF_SDL_AtomicAdd
 #define SDL_AtomicCompareAndSwap IGNORE_THIS_VERSION_OF_SDL_AtomicCompareAndSwap
 #define SDL_AtomicCompareAndSwapPointer IGNORE_THIS_VERSION_OF_SDL_AtomicCompareAndSwapPointer
@@ -61,6 +61,7 @@
 #define SDL_BlitSurfaceUncheckedScaled IGNORE_THIS_VERSION_OF_SDL_BlitSurfaceUncheckedScaled
 #define SDL_BroadcastCondition IGNORE_THIS_VERSION_OF_SDL_BroadcastCondition
 #define SDL_CaptureMouse IGNORE_THIS_VERSION_OF_SDL_CaptureMouse
+#define SDL_ClaimTemporaryMemory IGNORE_THIS_VERSION_OF_SDL_ClaimTemporaryMemory
 #define SDL_CleanupTLS IGNORE_THIS_VERSION_OF_SDL_CleanupTLS
 #define SDL_ClearAudioStream IGNORE_THIS_VERSION_OF_SDL_ClearAudioStream
 #define SDL_ClearClipboardData IGNORE_THIS_VERSION_OF_SDL_ClearClipboardData
@@ -156,7 +157,7 @@
 #define SDL_FlushEvent IGNORE_THIS_VERSION_OF_SDL_FlushEvent
 #define SDL_FlushEvents IGNORE_THIS_VERSION_OF_SDL_FlushEvents
 #define SDL_FlushRenderer IGNORE_THIS_VERSION_OF_SDL_FlushRenderer
-#define SDL_FreeEventMemory IGNORE_THIS_VERSION_OF_SDL_FreeEventMemory
+#define SDL_FreeTemporaryMemory IGNORE_THIS_VERSION_OF_SDL_FreeTemporaryMemory
 #define SDL_GDKSuspendComplete IGNORE_THIS_VERSION_OF_SDL_GDKSuspendComplete
 #define SDL_GL_CreateContext IGNORE_THIS_VERSION_OF_SDL_GL_CreateContext
 #define SDL_GL_DestroyContext IGNORE_THIS_VERSION_OF_SDL_GL_DestroyContext
@@ -329,9 +330,7 @@
 #define SDL_GetJoystickFromPlayerIndex IGNORE_THIS_VERSION_OF_SDL_GetJoystickFromPlayerIndex
 #define SDL_GetJoystickGUID IGNORE_THIS_VERSION_OF_SDL_GetJoystickGUID
 #define SDL_GetJoystickGUIDForID IGNORE_THIS_VERSION_OF_SDL_GetJoystickGUIDForID
-#define SDL_GetJoystickGUIDFromString IGNORE_THIS_VERSION_OF_SDL_GetJoystickGUIDFromString
 #define SDL_GetJoystickGUIDInfo IGNORE_THIS_VERSION_OF_SDL_GetJoystickGUIDInfo
-#define SDL_GetJoystickGUIDString IGNORE_THIS_VERSION_OF_SDL_GetJoystickGUIDString
 #define SDL_GetJoystickHat IGNORE_THIS_VERSION_OF_SDL_GetJoystickHat
 #define SDL_GetJoystickID IGNORE_THIS_VERSION_OF_SDL_GetJoystickID
 #define SDL_GetJoystickName IGNORE_THIS_VERSION_OF_SDL_GetJoystickName
@@ -1147,8 +1146,8 @@
 #undef SDL_AddVulkanRenderSemaphores
 #endif
 
-#ifdef SDL_AllocateEventMemory
-#undef SDL_AllocateEventMemory
+#ifdef SDL_AllocateTemporaryMemory
+#undef SDL_AllocateTemporaryMemory
 #endif
 
 #ifdef SDL_AtomicAdd
@@ -1217,6 +1216,10 @@
 
 #ifdef SDL_CaptureMouse
 #undef SDL_CaptureMouse
+#endif
+
+#ifdef SDL_ClaimTemporaryMemory
+#undef SDL_ClaimTemporaryMemory
 #endif
 
 #ifdef SDL_CleanupTLS
@@ -1599,8 +1602,8 @@
 #undef SDL_FlushRenderer
 #endif
 
-#ifdef SDL_FreeEventMemory
-#undef SDL_FreeEventMemory
+#ifdef SDL_FreeTemporaryMemory
+#undef SDL_FreeTemporaryMemory
 #endif
 
 #ifdef SDL_GDKSuspendComplete
@@ -2291,16 +2294,8 @@
 #undef SDL_GetJoystickGUIDForID
 #endif
 
-#ifdef SDL_GetJoystickGUIDFromString
-#undef SDL_GetJoystickGUIDFromString
-#endif
-
 #ifdef SDL_GetJoystickGUIDInfo
 #undef SDL_GetJoystickGUIDInfo
-#endif
-
-#ifdef SDL_GetJoystickGUIDString
-#undef SDL_GetJoystickGUIDString
 #endif
 
 #ifdef SDL_GetJoystickHat
