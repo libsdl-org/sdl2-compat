@@ -55,8 +55,8 @@
 #define SDL_AudioDevicePaused IGNORE_THIS_VERSION_OF_SDL_AudioDevicePaused
 #define SDL_BindAudioStream IGNORE_THIS_VERSION_OF_SDL_BindAudioStream
 #define SDL_BindAudioStreams IGNORE_THIS_VERSION_OF_SDL_BindAudioStreams
-#define SDL_BlitSurface9Grid IGNORE_THIS_VERSION_OF_SDL_BlitSurface9Grid
 #define SDL_BlitSurface IGNORE_THIS_VERSION_OF_SDL_BlitSurface
+#define SDL_BlitSurface9Grid IGNORE_THIS_VERSION_OF_SDL_BlitSurface9Grid
 #define SDL_BlitSurfaceScaled IGNORE_THIS_VERSION_OF_SDL_BlitSurfaceScaled
 #define SDL_BlitSurfaceTiled IGNORE_THIS_VERSION_OF_SDL_BlitSurfaceTiled
 #define SDL_BlitSurfaceTiledWithScale IGNORE_THIS_VERSION_OF_SDL_BlitSurfaceTiledWithScale
@@ -695,8 +695,8 @@
 #define SDL_RenderReadPixels IGNORE_THIS_VERSION_OF_SDL_RenderReadPixels
 #define SDL_RenderRect IGNORE_THIS_VERSION_OF_SDL_RenderRect
 #define SDL_RenderRects IGNORE_THIS_VERSION_OF_SDL_RenderRects
-#define SDL_RenderTexture9Grid IGNORE_THIS_VERSION_OF_SDL_RenderTexture9Grid
 #define SDL_RenderTexture IGNORE_THIS_VERSION_OF_SDL_RenderTexture
+#define SDL_RenderTexture9Grid IGNORE_THIS_VERSION_OF_SDL_RenderTexture9Grid
 #define SDL_RenderTextureRotated IGNORE_THIS_VERSION_OF_SDL_RenderTextureRotated
 #define SDL_RenderTextureTiled IGNORE_THIS_VERSION_OF_SDL_RenderTextureTiled
 #define SDL_RenderViewportSet IGNORE_THIS_VERSION_OF_SDL_RenderViewportSet
@@ -1200,12 +1200,12 @@
 #undef SDL_BindAudioStreams
 #endif
 
-#ifdef SDL_BlitSurface9Grid
-#undef SDL_BlitSurface9Grid
-#endif
-
 #ifdef SDL_BlitSurface
 #undef SDL_BlitSurface
+#endif
+
+#ifdef SDL_BlitSurface9Grid
+#undef SDL_BlitSurface9Grid
 #endif
 
 #ifdef SDL_BlitSurfaceScaled
@@ -3760,12 +3760,12 @@
 #undef SDL_RenderRects
 #endif
 
-#ifdef SDL_RenderTexture9Grid
-#undef SDL_RenderTexture9Grid
-#endif
-
 #ifdef SDL_RenderTexture
 #undef SDL_RenderTexture
+#endif
+
+#ifdef SDL_RenderTexture9Grid
+#undef SDL_RenderTexture9Grid
 #endif
 
 #ifdef SDL_RenderTextureRotated
