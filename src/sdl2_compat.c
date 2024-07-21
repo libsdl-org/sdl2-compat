@@ -3221,7 +3221,79 @@ SDL_FillRects(SDL2_Surface *dst, const SDL_Rect *rects, int count, Uint32 color)
 SDL_DECLSPEC int SDLCALL
 SDL_UpperBlit(SDL2_Surface *src, const SDL_Rect *srcrect, SDL2_Surface *dst, SDL_Rect *dstrect)
 {
-    return SDL3_BlitSurface(Surface2to3(src), srcrect, Surface2to3(dst), dstrect);
+    SDL_Rect r_src, r_dst;
+
+    /* Make sure the surfaces aren't locked */
+    if (!src) {
+        return SDL3_InvalidParamError("src");
+    } else if (!dst) {
+        return SDL3_InvalidParamError("dst");
+    } else if (src->locked || dst->locked) {
+        return SDL3_SetError("Surfaces must not be locked during blit");
+    }
+
+    /* Full src surface */
+    r_src.x = 0;
+    r_src.y = 0;
+    r_src.w = src->w;
+    r_src.h = src->h;
+
+    if (dstrect) {
+        r_dst.x = dstrect->x;
+        r_dst.y = dstrect->y;
+    } else {
+        r_dst.x = 0;
+        r_dst.y = 0;
+    }
+
+    /* clip the source rectangle to the source surface */
+    if (srcrect) {
+        SDL_Rect tmp;
+        if (SDL_IntersectRect(srcrect, &r_src, &tmp) == SDL_FALSE) {
+            goto end;
+        }
+
+        /* Shift dstrect, if srcrect origin has changed */
+        r_dst.x += tmp.x - srcrect->x;
+        r_dst.y += tmp.y - srcrect->y;
+
+        /* Update srcrect */
+        r_src = tmp;
+    }
+
+    /* There're no dstrect.w/h parameters. It's the same as srcrect */
+    r_dst.w = r_src.w;
+    r_dst.h = r_src.h;
+
+    /* clip the destination rectangle against the clip rectangle */
+    {
+        SDL_Rect tmp;
+        if (SDL_IntersectRect(&r_dst, &dst->clip_rect, &tmp) == SDL_FALSE) {
+            goto end;
+        }
+
+        /* Shift srcrect, if dstrect has changed */
+        r_src.x += tmp.x - r_dst.x;
+        r_src.y += tmp.y - r_dst.y;
+        r_src.w = tmp.w;
+        r_src.h = tmp.h;
+
+        /* Update dstrect */
+        r_dst = tmp;
+    }
+
+    if (r_dst.w > 0 && r_dst.h > 0) {
+        if (dstrect) { /* update output parameter */
+            *dstrect = r_dst;
+        }
+        return SDL_LowerBlit(src, &r_src, dst, &r_dst);
+    }
+
+end:
+    if (dstrect) { /* update output parameter */
+        dstrect->w = dstrect->h = 0;
+    }
+    return 0;
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -3231,27 +3303,179 @@ SDL_LowerBlit(SDL2_Surface *src, SDL_Rect *srcrect, SDL2_Surface *dst, SDL_Rect 
 }
 
 SDL_DECLSPEC int SDLCALL
+SDL_UpperBlitScaled(SDL2_Surface *src, const SDL_Rect *srcrect, SDL2_Surface *dst, SDL_Rect *dstrect)
+{
+    double src_x0, src_y0, src_x1, src_y1;
+    double dst_x0, dst_y0, dst_x1, dst_y1;
+    SDL_Rect final_src, final_dst;
+    double scaling_w, scaling_h;
+    int src_w, src_h;
+    int dst_w, dst_h;
+
+    /* Make sure the surfaces aren't locked */
+    if (!src || !dst) {
+        return SDL3_InvalidParamError("SDL_UpperBlitScaled(): src/dst");
+    }
+    if (src->locked || dst->locked) {
+        return SDL3_SetError("Surfaces must not be locked during blit");
+    }
+
+    if (!srcrect) {
+        src_w = src->w;
+        src_h = src->h;
+    } else {
+        src_w = srcrect->w;
+        src_h = srcrect->h;
+    }
+
+    if (!dstrect) {
+        dst_w = dst->w;
+        dst_h = dst->h;
+    } else {
+        dst_w = dstrect->w;
+        dst_h = dstrect->h;
+    }
+
+    if (dst_w == src_w && dst_h == src_h) {
+        /* No scaling, defer to regular blit */
+        return SDL_UpperBlit(src, srcrect, dst, dstrect);
+    }
+
+    scaling_w = (double)dst_w / src_w;
+    scaling_h = (double)dst_h / src_h;
+
+    if (!dstrect) {
+        dst_x0 = 0;
+        dst_y0 = 0;
+        dst_x1 = dst_w;
+        dst_y1 = dst_h;
+    } else {
+        dst_x0 = dstrect->x;
+        dst_y0 = dstrect->y;
+        dst_x1 = dst_x0 + dst_w;
+        dst_y1 = dst_y0 + dst_h;
+    }
+
+    if (!srcrect) {
+        src_x0 = 0;
+        src_y0 = 0;
+        src_x1 = src_w;
+        src_y1 = src_h;
+    } else {
+        src_x0 = srcrect->x;
+        src_y0 = srcrect->y;
+        src_x1 = src_x0 + src_w;
+        src_y1 = src_y0 + src_h;
+
+        /* Clip source rectangle to the source surface */
+
+        if (src_x0 < 0) {
+            dst_x0 -= src_x0 * scaling_w;
+            src_x0 = 0;
+        }
+
+        if (src_x1 > src->w) {
+            dst_x1 -= (src_x1 - src->w) * scaling_w;
+            src_x1 = src->w;
+        }
+
+        if (src_y0 < 0) {
+            dst_y0 -= src_y0 * scaling_h;
+            src_y0 = 0;
+        }
+
+        if (src_y1 > src->h) {
+            dst_y1 -= (src_y1 - src->h) * scaling_h;
+            src_y1 = src->h;
+        }
+    }
+
+    /* Clip destination rectangle to the clip rectangle */
+
+    /* Translate to clip space for easier calculations */
+    dst_x0 -= dst->clip_rect.x;
+    dst_x1 -= dst->clip_rect.x;
+    dst_y0 -= dst->clip_rect.y;
+    dst_y1 -= dst->clip_rect.y;
+
+    if (dst_x0 < 0) {
+        src_x0 -= dst_x0 / scaling_w;
+        dst_x0 = 0;
+    }
+
+    if (dst_x1 > dst->clip_rect.w) {
+        src_x1 -= (dst_x1 - dst->clip_rect.w) / scaling_w;
+        dst_x1 = dst->clip_rect.w;
+    }
+
+    if (dst_y0 < 0) {
+        src_y0 -= dst_y0 / scaling_h;
+        dst_y0 = 0;
+    }
+
+    if (dst_y1 > dst->clip_rect.h) {
+        src_y1 -= (dst_y1 - dst->clip_rect.h) / scaling_h;
+        dst_y1 = dst->clip_rect.h;
+    }
+
+    /* Translate back to surface coordinates */
+    dst_x0 += dst->clip_rect.x;
+    dst_x1 += dst->clip_rect.x;
+    dst_y0 += dst->clip_rect.y;
+    dst_y1 += dst->clip_rect.y;
+
+    final_src.x = (int)SDL_round(src_x0);
+    final_src.y = (int)SDL_round(src_y0);
+    final_src.w = (int)SDL_round(src_x1 - src_x0);
+    final_src.h = (int)SDL_round(src_y1 - src_y0);
+
+    final_dst.x = (int)SDL_round(dst_x0);
+    final_dst.y = (int)SDL_round(dst_y0);
+    final_dst.w = (int)SDL_round(dst_x1 - dst_x0);
+    final_dst.h = (int)SDL_round(dst_y1 - dst_y0);
+
+    /* Clip again */
+    {
+        SDL_Rect tmp;
+        tmp.x = 0;
+        tmp.y = 0;
+        tmp.w = src->w;
+        tmp.h = src->h;
+        SDL_IntersectRect(&tmp, &final_src, &final_src);
+    }
+
+    /* Clip again */
+    SDL_IntersectRect(&dst->clip_rect, &final_dst, &final_dst);
+
+    if (dstrect) {
+        *dstrect = final_dst;
+    }
+
+    if (final_dst.w == 0 || final_dst.h == 0 ||
+        final_src.w <= 0 || final_src.h <= 0) {
+        /* No-op. */
+        return 0;
+    }
+
+    return SDL_LowerBlitScaled(src, &final_src, dst, &final_dst);
+}
+
+SDL_DECLSPEC int SDLCALL
 SDL_LowerBlitScaled(SDL2_Surface *src, SDL_Rect *srcrect, SDL2_Surface *dst, SDL_Rect *dstrect)
 {
     return SDL3_BlitSurfaceUncheckedScaled(Surface2to3(src), srcrect, Surface2to3(dst), dstrect, SDL_SCALEMODE_NEAREST);
 }
 
 SDL_DECLSPEC int SDLCALL
-SDL_UpperBlitScaled(SDL2_Surface *src, const SDL_Rect *srcrect, SDL2_Surface *dst, SDL_Rect *dstrect)
+SDL_SoftStretch(SDL2_Surface *src, const SDL_Rect *srcrect, SDL2_Surface *dst, const SDL_Rect *dstrect)
 {
     return SDL3_BlitSurfaceScaled(Surface2to3(src), srcrect, Surface2to3(dst), dstrect, SDL_SCALEMODE_NEAREST);
 }
 
 SDL_DECLSPEC int SDLCALL
-SDL_SoftStretch(SDL2_Surface *src, const SDL_Rect *srcrect, SDL2_Surface *dst, const SDL_Rect *dstrect)
-{
-    return SDL3_SoftStretch(Surface2to3(src), srcrect, Surface2to3(dst), dstrect, SDL_SCALEMODE_NEAREST);
-}
-
-SDL_DECLSPEC int SDLCALL
 SDL_SoftStretchLinear(SDL2_Surface *src, const SDL_Rect *srcrect, SDL2_Surface *dst, const SDL_Rect *dstrect)
 {
-    return SDL3_SoftStretch(Surface2to3(src), srcrect, Surface2to3(dst), dstrect, SDL_SCALEMODE_LINEAR);
+    return SDL3_BlitSurfaceScaled(Surface2to3(src), srcrect, Surface2to3(dst), dstrect, SDL_SCALEMODE_LINEAR);
 }
 
 /* SDL_GetTicks is 64-bit in SDL3. Clamp it for SDL2. */
