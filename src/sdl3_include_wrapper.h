@@ -55,8 +55,11 @@
 #define SDL_AudioDevicePaused IGNORE_THIS_VERSION_OF_SDL_AudioDevicePaused
 #define SDL_BindAudioStream IGNORE_THIS_VERSION_OF_SDL_BindAudioStream
 #define SDL_BindAudioStreams IGNORE_THIS_VERSION_OF_SDL_BindAudioStreams
+#define SDL_BlitSurface9Grid IGNORE_THIS_VERSION_OF_SDL_BlitSurface9Grid
 #define SDL_BlitSurface IGNORE_THIS_VERSION_OF_SDL_BlitSurface
 #define SDL_BlitSurfaceScaled IGNORE_THIS_VERSION_OF_SDL_BlitSurfaceScaled
+#define SDL_BlitSurfaceTiled IGNORE_THIS_VERSION_OF_SDL_BlitSurfaceTiled
+#define SDL_BlitSurfaceTiledWithScale IGNORE_THIS_VERSION_OF_SDL_BlitSurfaceTiledWithScale
 #define SDL_BlitSurfaceUnchecked IGNORE_THIS_VERSION_OF_SDL_BlitSurfaceUnchecked
 #define SDL_BlitSurfaceUncheckedScaled IGNORE_THIS_VERSION_OF_SDL_BlitSurfaceUncheckedScaled
 #define SDL_BroadcastCondition IGNORE_THIS_VERSION_OF_SDL_BroadcastCondition
@@ -692,8 +695,10 @@
 #define SDL_RenderReadPixels IGNORE_THIS_VERSION_OF_SDL_RenderReadPixels
 #define SDL_RenderRect IGNORE_THIS_VERSION_OF_SDL_RenderRect
 #define SDL_RenderRects IGNORE_THIS_VERSION_OF_SDL_RenderRects
+#define SDL_RenderTexture9Grid IGNORE_THIS_VERSION_OF_SDL_RenderTexture9Grid
 #define SDL_RenderTexture IGNORE_THIS_VERSION_OF_SDL_RenderTexture
 #define SDL_RenderTextureRotated IGNORE_THIS_VERSION_OF_SDL_RenderTextureRotated
+#define SDL_RenderTextureTiled IGNORE_THIS_VERSION_OF_SDL_RenderTextureTiled
 #define SDL_RenderViewportSet IGNORE_THIS_VERSION_OF_SDL_RenderViewportSet
 #define SDL_ReportAssertion IGNORE_THIS_VERSION_OF_SDL_ReportAssertion
 #define SDL_RequestAndroidPermission IGNORE_THIS_VERSION_OF_SDL_RequestAndroidPermission
@@ -835,7 +840,6 @@
 #define SDL_ShowWindow IGNORE_THIS_VERSION_OF_SDL_ShowWindow
 #define SDL_ShowWindowSystemMenu IGNORE_THIS_VERSION_OF_SDL_ShowWindowSystemMenu
 #define SDL_SignalCondition IGNORE_THIS_VERSION_OF_SDL_SignalCondition
-#define SDL_SoftStretch IGNORE_THIS_VERSION_OF_SDL_SoftStretch
 #define SDL_StartTextInput IGNORE_THIS_VERSION_OF_SDL_StartTextInput
 #define SDL_StepUTF8 IGNORE_THIS_VERSION_OF_SDL_StepUTF8
 #define SDL_StopHapticEffect IGNORE_THIS_VERSION_OF_SDL_StopHapticEffect
@@ -905,6 +909,8 @@
 #define SDL_WriteS64LE IGNORE_THIS_VERSION_OF_SDL_WriteS64LE
 #define SDL_WriteS8 IGNORE_THIS_VERSION_OF_SDL_WriteS8
 #define SDL_WriteStorageFile IGNORE_THIS_VERSION_OF_SDL_WriteStorageFile
+#define SDL_WriteSurfacePixel IGNORE_THIS_VERSION_OF_SDL_WriteSurfacePixel
+#define SDL_WriteSurfacePixelFloat IGNORE_THIS_VERSION_OF_SDL_WriteSurfacePixelFloat
 #define SDL_WriteU16BE IGNORE_THIS_VERSION_OF_SDL_WriteU16BE
 #define SDL_WriteU16LE IGNORE_THIS_VERSION_OF_SDL_WriteU16LE
 #define SDL_WriteU32BE IGNORE_THIS_VERSION_OF_SDL_WriteU32BE
@@ -1194,12 +1200,24 @@
 #undef SDL_BindAudioStreams
 #endif
 
+#ifdef SDL_BlitSurface9Grid
+#undef SDL_BlitSurface9Grid
+#endif
+
 #ifdef SDL_BlitSurface
 #undef SDL_BlitSurface
 #endif
 
 #ifdef SDL_BlitSurfaceScaled
 #undef SDL_BlitSurfaceScaled
+#endif
+
+#ifdef SDL_BlitSurfaceTiled
+#undef SDL_BlitSurfaceTiled
+#endif
+
+#ifdef SDL_BlitSurfaceTiledWithScale
+#undef SDL_BlitSurfaceTiledWithScale
 #endif
 
 #ifdef SDL_BlitSurfaceUnchecked
@@ -3742,12 +3760,20 @@
 #undef SDL_RenderRects
 #endif
 
+#ifdef SDL_RenderTexture9Grid
+#undef SDL_RenderTexture9Grid
+#endif
+
 #ifdef SDL_RenderTexture
 #undef SDL_RenderTexture
 #endif
 
 #ifdef SDL_RenderTextureRotated
 #undef SDL_RenderTextureRotated
+#endif
+
+#ifdef SDL_RenderTextureTiled
+#undef SDL_RenderTextureTiled
 #endif
 
 #ifdef SDL_RenderViewportSet
@@ -4314,10 +4340,6 @@
 #undef SDL_SignalCondition
 #endif
 
-#ifdef SDL_SoftStretch
-#undef SDL_SoftStretch
-#endif
-
 #ifdef SDL_StartTextInput
 #undef SDL_StartTextInput
 #endif
@@ -4592,6 +4614,14 @@
 
 #ifdef SDL_WriteStorageFile
 #undef SDL_WriteStorageFile
+#endif
+
+#ifdef SDL_WriteSurfacePixel
+#undef SDL_WriteSurfacePixel
+#endif
+
+#ifdef SDL_WriteSurfacePixelFloat
+#undef SDL_WriteSurfacePixelFloat
 #endif
 
 #ifdef SDL_WriteU16BE
