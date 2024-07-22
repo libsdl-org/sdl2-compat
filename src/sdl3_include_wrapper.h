@@ -87,7 +87,9 @@
 #define SDL_ConvertPixelsAndColorspace IGNORE_THIS_VERSION_OF_SDL_ConvertPixelsAndColorspace
 #define SDL_ConvertSurface IGNORE_THIS_VERSION_OF_SDL_ConvertSurface
 #define SDL_ConvertSurfaceAndColorspace IGNORE_THIS_VERSION_OF_SDL_ConvertSurfaceAndColorspace
+#define SDL_CopyFile IGNORE_THIS_VERSION_OF_SDL_CopyFile
 #define SDL_CopyProperties IGNORE_THIS_VERSION_OF_SDL_CopyProperties
+#define SDL_CopyStorageFile IGNORE_THIS_VERSION_OF_SDL_CopyStorageFile
 #define SDL_CreateAudioStream IGNORE_THIS_VERSION_OF_SDL_CreateAudioStream
 #define SDL_CreateColorCursor IGNORE_THIS_VERSION_OF_SDL_CreateColorCursor
 #define SDL_CreateCondition IGNORE_THIS_VERSION_OF_SDL_CreateCondition
@@ -160,7 +162,6 @@
 #define SDL_FlushEvent IGNORE_THIS_VERSION_OF_SDL_FlushEvent
 #define SDL_FlushEvents IGNORE_THIS_VERSION_OF_SDL_FlushEvents
 #define SDL_FlushRenderer IGNORE_THIS_VERSION_OF_SDL_FlushRenderer
-#define SDL_FreeTemporaryMemory IGNORE_THIS_VERSION_OF_SDL_FreeTemporaryMemory
 #define SDL_GDKSuspendComplete IGNORE_THIS_VERSION_OF_SDL_GDKSuspendComplete
 #define SDL_GL_CreateContext IGNORE_THIS_VERSION_OF_SDL_GL_CreateContext
 #define SDL_GL_DestroyContext IGNORE_THIS_VERSION_OF_SDL_GL_DestroyContext
@@ -1328,8 +1329,16 @@
 #undef SDL_ConvertSurfaceAndColorspace
 #endif
 
+#ifdef SDL_CopyFile
+#undef SDL_CopyFile
+#endif
+
 #ifdef SDL_CopyProperties
 #undef SDL_CopyProperties
+#endif
+
+#ifdef SDL_CopyStorageFile
+#undef SDL_CopyStorageFile
 #endif
 
 #ifdef SDL_CreateAudioStream
@@ -1618,10 +1627,6 @@
 
 #ifdef SDL_FlushRenderer
 #undef SDL_FlushRenderer
-#endif
-
-#ifdef SDL_FreeTemporaryMemory
-#undef SDL_FreeTemporaryMemory
 #endif
 
 #ifdef SDL_GDKSuspendComplete
