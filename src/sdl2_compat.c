@@ -5172,7 +5172,7 @@ static SDL_ScaleMode SDL_GetScaleMode(void)
 SDL_DECLSPEC SDL_Texture * SDLCALL
 SDL_CreateTexture(SDL_Renderer * renderer, Uint32 format, int access, int w, int h)
 {
-    SDL_Texture *texture = SDL3_CreateTexture(renderer, (SDL_PixelFormat)format, access, w, h);
+    SDL_Texture *texture = SDL3_CreateTexture(renderer, (SDL_PixelFormat)format, (SDL_TextureAccess)access, w, h);
     if (texture) {
         SDL3_SetTextureBlendMode(texture, SDL_BLENDMODE_NONE);
         SDL3_SetTextureScaleMode(texture, SDL_GetScaleMode());
