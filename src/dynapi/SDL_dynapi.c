@@ -23,6 +23,9 @@
 #include "../sdl2_compat.h"
 
 #include "SDL_dynapi.h"
+#define SDL2_PROTO(rc,fn,params) \
+ extern SDL_DECLSPEC rc SDLCALL SDL_##fn##_REAL params ;
+#include "../sdl2_protos.h"
 
 #if SDL_DYNAMIC_API
 

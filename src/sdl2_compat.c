@@ -112,13 +112,13 @@ This breaks the build when creating SDL_ ## DisableScreenSaver
 #endif
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* SDL2 function prototypes:  */
 #include "sdl2_protos.h"
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** Define SDL2COMPAT_TEST_SYMS=1 to have warnings about wrong prototypes of src/sdl3_sym.h
  *  It won't compile but it helps to make sure it's sync'ed with SDL3 headers.

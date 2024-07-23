@@ -22,8 +22,14 @@
 #ifndef sdl2_protos_h_
 #define sdl2_protos_h_ 1
 
+#ifndef SDL2_PROTO
 #define SDL2_PROTO(rc,fn,params) \
  extern SDL_DECLSPEC rc SDLCALL SDL_##fn params ;
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 SDL2_PROTO(int,SetError,(SDL_PRINTF_FORMAT_STRING const char *a, ...))
 SDL2_PROTO(void,Log,(SDL_PRINTF_FORMAT_STRING const char *a, ...))
@@ -967,6 +973,10 @@ SDL2_PROTO(int,DestroyWindowSurface,(SDL_Window *a))
 SDL2_PROTO(int,GDKGetDefaultUser,(XUserHandle *a))
 #endif
 SDL2_PROTO(Uint64,GameControllerGetSteamHandle,(SDL_GameController *a))
+
+#ifdef __cplusplus
+}
+#endif
 
 #undef SDL2_PROTO
 
