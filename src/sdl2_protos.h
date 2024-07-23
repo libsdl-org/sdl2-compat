@@ -398,7 +398,7 @@ SDL2_PROTO(void*,malloc,(size_t a))
 SDL2_PROTO(void*,calloc,(size_t a, size_t b))
 SDL2_PROTO(void*,realloc,(void *a, size_t b))
 SDL2_PROTO(void,free,(void *a))
-SDL2_PROTO(char*,getenv,(const char *a))
+SDL2_PROTO(const char*,getenv,(const char *a)) /* returns non-const in real SDL2 */
 SDL2_PROTO(int,setenv,(const char *a, const char *b, int c))
 SDL2_PROTO(void,qsort,(void *a, size_t b, size_t c, int (SDLCALL *d)(const void *, const void *)))
 SDL2_PROTO(int,abs,(int a))

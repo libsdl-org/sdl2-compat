@@ -178,7 +178,6 @@
 #define SDL_GL_SetSwapInterval IGNORE_THIS_VERSION_OF_SDL_GL_SetSwapInterval
 #define SDL_GL_SwapWindow IGNORE_THIS_VERSION_OF_SDL_GL_SwapWindow
 #define SDL_GL_UnloadLibrary IGNORE_THIS_VERSION_OF_SDL_GL_UnloadLibrary
-#define SDL_GUIDFromString IGNORE_THIS_VERSION_OF_SDL_GUIDFromString
 #define SDL_GUIDToString IGNORE_THIS_VERSION_OF_SDL_GUIDToString
 #define SDL_GamepadConnected IGNORE_THIS_VERSION_OF_SDL_GamepadConnected
 #define SDL_GamepadEventsEnabled IGNORE_THIS_VERSION_OF_SDL_GamepadEventsEnabled
@@ -848,6 +847,7 @@
 #define SDL_StopHapticRumble IGNORE_THIS_VERSION_OF_SDL_StopHapticRumble
 #define SDL_StopTextInput IGNORE_THIS_VERSION_OF_SDL_StopTextInput
 #define SDL_StorageReady IGNORE_THIS_VERSION_OF_SDL_StorageReady
+#define SDL_StringToGUID IGNORE_THIS_VERSION_OF_SDL_StringToGUID
 #define SDL_SurfaceHasColorKey IGNORE_THIS_VERSION_OF_SDL_SurfaceHasColorKey
 #define SDL_SurfaceHasRLE IGNORE_THIS_VERSION_OF_SDL_SurfaceHasRLE
 #define SDL_SyncWindow IGNORE_THIS_VERSION_OF_SDL_SyncWindow
@@ -1691,10 +1691,6 @@
 
 #ifdef SDL_GL_UnloadLibrary
 #undef SDL_GL_UnloadLibrary
-#endif
-
-#ifdef SDL_GUIDFromString
-#undef SDL_GUIDFromString
 #endif
 
 #ifdef SDL_GUIDToString
@@ -4371,6 +4367,10 @@
 
 #ifdef SDL_StorageReady
 #undef SDL_StorageReady
+#endif
+
+#ifdef SDL_StringToGUID
+#undef SDL_StringToGUID
 #endif
 
 #ifdef SDL_SurfaceHasColorKey

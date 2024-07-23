@@ -8092,7 +8092,7 @@ SDL_GameControllerSetPlayerIndex(SDL_GameController *gamecontroller, int player_
 SDL_DECLSPEC SDL_GUID SDLCALL
 SDL_JoystickGetGUIDFromString(const char *pchGUID)
 {
-    return SDL3_GUIDFromString(pchGUID);
+    return SDL3_StringToGUID(pchGUID);
 }
 
 SDL_DECLSPEC void SDLCALL
