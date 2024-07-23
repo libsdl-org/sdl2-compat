@@ -408,7 +408,7 @@ SDL_DYNAPI_PROC(void*,SDL_malloc,(size_t a),(a),return)
 SDL_DYNAPI_PROC(void*,SDL_calloc,(size_t a, size_t b),(a,b),return)
 SDL_DYNAPI_PROC(void*,SDL_realloc,(void *a, size_t b),(a,b),return)
 SDL_DYNAPI_PROC(void,SDL_free,(void *a),(a),)
-SDL_DYNAPI_PROC(char*,SDL_getenv,(const char *a),(a),return)
+SDL_DYNAPI_PROC(const char*,SDL_getenv,(const char *a),(a),return) /* returns non-const in real SDL2*/
 SDL_DYNAPI_PROC(int,SDL_setenv,(const char *a, const char *b, int c),(a,b,c),return)
 SDL_DYNAPI_PROC(void,SDL_qsort,(void *a, size_t b, size_t c, int (SDLCALL *d)(const void *, const void *)),(a,b,c,d),)
 SDL_DYNAPI_PROC(int,SDL_abs,(int a),(a),return)
