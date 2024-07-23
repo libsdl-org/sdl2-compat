@@ -142,11 +142,11 @@
 #define SDL_DetachVirtualJoystick IGNORE_THIS_VERSION_OF_SDL_DetachVirtualJoystick
 #define SDL_DisableScreenSaver IGNORE_THIS_VERSION_OF_SDL_DisableScreenSaver
 #define SDL_DuplicateSurface IGNORE_THIS_VERSION_OF_SDL_DuplicateSurface
-#define SDL_EGL_GetCurrentEGLConfig IGNORE_THIS_VERSION_OF_SDL_EGL_GetCurrentEGLConfig
-#define SDL_EGL_GetCurrentEGLDisplay IGNORE_THIS_VERSION_OF_SDL_EGL_GetCurrentEGLDisplay
+#define SDL_EGL_GetCurrentConfig IGNORE_THIS_VERSION_OF_SDL_EGL_GetCurrentConfig
+#define SDL_EGL_GetCurrentDisplay IGNORE_THIS_VERSION_OF_SDL_EGL_GetCurrentDisplay
 #define SDL_EGL_GetProcAddress IGNORE_THIS_VERSION_OF_SDL_EGL_GetProcAddress
-#define SDL_EGL_GetWindowEGLSurface IGNORE_THIS_VERSION_OF_SDL_EGL_GetWindowEGLSurface
-#define SDL_EGL_SetEGLAttributeCallbacks IGNORE_THIS_VERSION_OF_SDL_EGL_SetEGLAttributeCallbacks
+#define SDL_EGL_GetWindowSurface IGNORE_THIS_VERSION_OF_SDL_EGL_GetWindowSurface
+#define SDL_EGL_SetAttributeCallbacks IGNORE_THIS_VERSION_OF_SDL_EGL_SetAttributeCallbacks
 #define SDL_EnableScreenSaver IGNORE_THIS_VERSION_OF_SDL_EnableScreenSaver
 #define SDL_EnterAppMainCallbacks IGNORE_THIS_VERSION_OF_SDL_EnterAppMainCallbacks
 #define SDL_EnumerateDirectory IGNORE_THIS_VERSION_OF_SDL_EnumerateDirectory
@@ -1549,24 +1549,24 @@
 #undef SDL_DuplicateSurface
 #endif
 
-#ifdef SDL_EGL_GetCurrentEGLConfig
-#undef SDL_EGL_GetCurrentEGLConfig
+#ifdef SDL_EGL_GetCurrentConfig
+#undef SDL_EGL_GetCurrentConfig
 #endif
 
-#ifdef SDL_EGL_GetCurrentEGLDisplay
-#undef SDL_EGL_GetCurrentEGLDisplay
+#ifdef SDL_EGL_GetCurrentDisplay
+#undef SDL_EGL_GetCurrentDisplay
 #endif
 
 #ifdef SDL_EGL_GetProcAddress
 #undef SDL_EGL_GetProcAddress
 #endif
 
-#ifdef SDL_EGL_GetWindowEGLSurface
-#undef SDL_EGL_GetWindowEGLSurface
+#ifdef SDL_EGL_GetWindowSurface
+#undef SDL_EGL_GetWindowSurface
 #endif
 
-#ifdef SDL_EGL_SetEGLAttributeCallbacks
-#undef SDL_EGL_SetEGLAttributeCallbacks
+#ifdef SDL_EGL_SetAttributeCallbacks
+#undef SDL_EGL_SetAttributeCallbacks
 #endif
 
 #ifdef SDL_EnableScreenSaver
