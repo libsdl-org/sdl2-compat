@@ -844,6 +844,7 @@ SDL3_SYM(SDL_Window * const*,GetWindows,(int *a),(a),return)
 SDL3_SYM(const SDL_PixelFormatDetails *,GetPixelFormatDetails,(SDL_PixelFormat a),(a),return)
 SDL3_SYM(SDL_Surface *,ConvertSurfaceAndColorspace,(SDL_Surface *a, SDL_PixelFormat b, SDL_Palette *c, SDL_Colorspace d, SDL_PropertiesID e),(a,b,c,d,e),return)
 SDL3_SYM(SDL_Palette *,CreateSurfacePalette,(SDL_Surface *a),(a),return)
+SDL3_SYM(SDL_Palette *,GetSurfacePalette,(SDL_Surface *a),(a),return)
 SDL3_SYM(void *,ClaimTemporaryMemory,(const void *a),(a),return)
 
 #undef SDL3_SYM

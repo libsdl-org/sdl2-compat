@@ -2877,11 +2877,16 @@ static SDL2_Surface *CreateSurface2from3(SDL_Surface *surface3)
     SDL3_GetSurfaceClipRect(surface3, &surface->clip_rect);
 
     if (SDL_ISPIXELFORMAT_INDEXED(surface3->format)) {
-        SDL_Palette *palette = SDL3_CreateSurfacePalette(surface3);
+        SDL_Palette *palette = SDL3_GetSurfacePalette(surface3);
         if (!palette) {
-            SDL_FreeSurface(surface);
-            return NULL;
+            palette = SDL3_CreateSurfacePalette(surface3);
+            if (!palette) {
+                SDL_FreeSurface(surface);
+                return NULL;
+            }
         }
+        surface->format->palette = palette;
+        ++palette->refcount;
     }
 
     /* The surface is ready to go */
