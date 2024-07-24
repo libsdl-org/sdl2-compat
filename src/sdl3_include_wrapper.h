@@ -614,12 +614,12 @@
 #define SDL_Metal_GetLayer IGNORE_THIS_VERSION_OF_SDL_Metal_GetLayer
 #define SDL_MinimizeWindow IGNORE_THIS_VERSION_OF_SDL_MinimizeWindow
 #define SDL_MixAudio IGNORE_THIS_VERSION_OF_SDL_MixAudio
-#define SDL_OnApplicationDidEnterForeground IGNORE_THIS_VERSION_OF_SDL_OnApplicationDidEnterForeground
 #define SDL_OnApplicationDidChangeStatusBarOrientation IGNORE_THIS_VERSION_OF_SDL_OnApplicationDidChangeStatusBarOrientation
 #define SDL_OnApplicationDidEnterBackground IGNORE_THIS_VERSION_OF_SDL_OnApplicationDidEnterBackground
+#define SDL_OnApplicationDidEnterForeground IGNORE_THIS_VERSION_OF_SDL_OnApplicationDidEnterForeground
 #define SDL_OnApplicationDidReceiveMemoryWarning IGNORE_THIS_VERSION_OF_SDL_OnApplicationDidReceiveMemoryWarning
-#define SDL_OnApplicationWillEnterForeground IGNORE_THIS_VERSION_OF_SDL_OnApplicationWillEnterForeground
 #define SDL_OnApplicationWillEnterBackground IGNORE_THIS_VERSION_OF_SDL_OnApplicationWillEnterBackground
+#define SDL_OnApplicationWillEnterForeground IGNORE_THIS_VERSION_OF_SDL_OnApplicationWillEnterForeground
 #define SDL_OnApplicationWillTerminate IGNORE_THIS_VERSION_OF_SDL_OnApplicationWillTerminate
 #define SDL_OpenAudioDevice IGNORE_THIS_VERSION_OF_SDL_OpenAudioDevice
 #define SDL_OpenAudioDeviceStream IGNORE_THIS_VERSION_OF_SDL_OpenAudioDeviceStream
@@ -644,7 +644,6 @@
 #define SDL_PenConnected IGNORE_THIS_VERSION_OF_SDL_PenConnected
 #define SDL_PlayHapticRumble IGNORE_THIS_VERSION_OF_SDL_PlayHapticRumble
 #define SDL_PollEvent IGNORE_THIS_VERSION_OF_SDL_PollEvent
-#define SDL_PostSemaphore IGNORE_THIS_VERSION_OF_SDL_PostSemaphore
 #define SDL_PremultiplyAlpha IGNORE_THIS_VERSION_OF_SDL_PremultiplyAlpha
 #define SDL_PremultiplySurfaceAlpha IGNORE_THIS_VERSION_OF_SDL_PremultiplySurfaceAlpha
 #define SDL_PumpEvents IGNORE_THIS_VERSION_OF_SDL_PumpEvents
@@ -841,6 +840,7 @@
 #define SDL_ShowWindow IGNORE_THIS_VERSION_OF_SDL_ShowWindow
 #define SDL_ShowWindowSystemMenu IGNORE_THIS_VERSION_OF_SDL_ShowWindowSystemMenu
 #define SDL_SignalCondition IGNORE_THIS_VERSION_OF_SDL_SignalCondition
+#define SDL_SignalSemaphore IGNORE_THIS_VERSION_OF_SDL_SignalSemaphore
 #define SDL_StartTextInput IGNORE_THIS_VERSION_OF_SDL_StartTextInput
 #define SDL_StepUTF8 IGNORE_THIS_VERSION_OF_SDL_StepUTF8
 #define SDL_StopHapticEffect IGNORE_THIS_VERSION_OF_SDL_StopHapticEffect
@@ -3438,10 +3438,6 @@
 #undef SDL_MixAudio
 #endif
 
-#ifdef SDL_OnApplicationDidEnterForeground
-#undef SDL_OnApplicationDidEnterForeground
-#endif
-
 #ifdef SDL_OnApplicationDidChangeStatusBarOrientation
 #undef SDL_OnApplicationDidChangeStatusBarOrientation
 #endif
@@ -3450,16 +3446,20 @@
 #undef SDL_OnApplicationDidEnterBackground
 #endif
 
+#ifdef SDL_OnApplicationDidEnterForeground
+#undef SDL_OnApplicationDidEnterForeground
+#endif
+
 #ifdef SDL_OnApplicationDidReceiveMemoryWarning
 #undef SDL_OnApplicationDidReceiveMemoryWarning
 #endif
 
-#ifdef SDL_OnApplicationWillEnterForeground
-#undef SDL_OnApplicationWillEnterForeground
-#endif
-
 #ifdef SDL_OnApplicationWillEnterBackground
 #undef SDL_OnApplicationWillEnterBackground
+#endif
+
+#ifdef SDL_OnApplicationWillEnterForeground
+#undef SDL_OnApplicationWillEnterForeground
 #endif
 
 #ifdef SDL_OnApplicationWillTerminate
@@ -3556,10 +3556,6 @@
 
 #ifdef SDL_PollEvent
 #undef SDL_PollEvent
-#endif
-
-#ifdef SDL_PostSemaphore
-#undef SDL_PostSemaphore
 #endif
 
 #ifdef SDL_PremultiplyAlpha
@@ -4344,6 +4340,10 @@
 
 #ifdef SDL_SignalCondition
 #undef SDL_SignalCondition
+#endif
+
+#ifdef SDL_SignalSemaphore
+#undef SDL_SignalSemaphore
 #endif
 
 #ifdef SDL_StartTextInput
@@ -5342,7 +5342,7 @@
 #undef SDL_wcstol
 #endif
 
-#undef SDL_ThreadID /* see at top */
+#undef SDL_ThreadID /* see at top. */
 
 /* dump the macro CreateThread versions, too. */
 #ifdef SDL_CreateThread
