@@ -648,6 +648,34 @@ typedef struct SDL2_Keysym
 #define SDL2_DISPLAYEVENT 0x150
 #define SDL2_WINDOWEVENT 0x200
 
+typedef enum SDL2_WindowEventID
+{
+    SDL_WINDOWEVENT_NONE,           /**< Never used */
+    SDL_WINDOWEVENT_SHOWN,          /**< Window has been shown */
+    SDL_WINDOWEVENT_HIDDEN,         /**< Window has been hidden */
+    SDL_WINDOWEVENT_EXPOSED,        /**< Window has been exposed and should be
+                                         redrawn */
+    SDL_WINDOWEVENT_MOVED,          /**< Window has been moved to data1, data2
+                                     */
+    SDL_WINDOWEVENT_RESIZED,        /**< Window has been resized to data1xdata2 */
+    SDL_WINDOWEVENT_SIZE_CHANGED,   /**< The window size has changed, either as
+                                         a result of an API call or through the
+                                         system or user changing the window size. */
+    SDL_WINDOWEVENT_MINIMIZED,      /**< Window has been minimized */
+    SDL_WINDOWEVENT_MAXIMIZED,      /**< Window has been maximized */
+    SDL_WINDOWEVENT_RESTORED,       /**< Window has been restored to normal size
+                                         and position */
+    SDL_WINDOWEVENT_ENTER,          /**< Window has gained mouse focus */
+    SDL_WINDOWEVENT_LEAVE,          /**< Window has lost mouse focus */
+    SDL_WINDOWEVENT_FOCUS_GAINED,   /**< Window has gained keyboard focus */
+    SDL_WINDOWEVENT_FOCUS_LOST,     /**< Window has lost keyboard focus */
+    SDL_WINDOWEVENT_CLOSE,          /**< The window manager requests that the window be closed */
+    SDL_WINDOWEVENT_TAKE_FOCUS,     /**< Window is being offered a focus (should SetWindowInputFocus() on itself or a subwindow, or ignore) */
+    SDL_WINDOWEVENT_HIT_TEST,       /**< Window had a hit test that wasn't SDL_HITTEST_NORMAL. */
+    SDL_WINDOWEVENT_ICCPROF_CHANGED,/**< The ICC profile of the window's display has changed. */
+    SDL_WINDOWEVENT_DISPLAY_CHANGED /**< Window has been moved to display data1. */
+} SDL2_WindowEventID;
+
 typedef struct SDL2_CommonEvent
 {
     Uint32 type;
@@ -1271,7 +1299,6 @@ struct SDL_SysWMinfo
 };
 
 typedef struct SDL_SysWMinfo SDL_SysWMinfo;
-
 
 #define SDL_NONSHAPEABLE_WINDOW -1
 #define SDL_INVALID_SHAPE_ARGUMENT -2

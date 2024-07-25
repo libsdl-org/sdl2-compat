@@ -1387,20 +1387,47 @@ SDL_PushEvent(SDL2_Event *event2)
 
 static int Display_IDToIndex(SDL_DisplayID displayID);
 
-static Uint8
+static SDL2_WindowEventID
 WindowEventType3To2(Uint32 event_type3)
 {
-    Uint8 event_type2 = (Uint8) (event_type3 - (Uint32) SDL_EVENT_WINDOW_SHOWN + 1);
-
-    /* SDL_EVENT_WINDOW_TAKE_FOCUS (formerly event 528, now SDL_EVENT_WINDOW_HIT_TEST) was removed from SDL3.
-     * SDL_EVENT_WINDOW_HIT_TEST and higher need the offset adjusted by an additional +1 when mapping to SDL2
-     * to account for the difference.
-     */
-    if (event_type3 >= SDL_EVENT_WINDOW_HIT_TEST) {
-        event_type2 += 1;
+    switch (event_type3) {
+    case SDL_EVENT_WINDOW_SHOWN:
+        return SDL_WINDOWEVENT_SHOWN;
+    case SDL_EVENT_WINDOW_HIDDEN:
+        return SDL_WINDOWEVENT_HIDDEN;
+    case SDL_EVENT_WINDOW_EXPOSED:
+        return SDL_WINDOWEVENT_EXPOSED;
+    case SDL_EVENT_WINDOW_MOVED:
+        return SDL_WINDOWEVENT_MOVED;
+    case SDL_EVENT_WINDOW_RESIZED:
+        return SDL_WINDOWEVENT_RESIZED;
+    case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+        return SDL_WINDOWEVENT_SIZE_CHANGED;
+    case SDL_EVENT_WINDOW_MINIMIZED:
+        return SDL_WINDOWEVENT_MINIMIZED;
+    case SDL_EVENT_WINDOW_MAXIMIZED:
+        return SDL_WINDOWEVENT_MAXIMIZED;
+    case SDL_EVENT_WINDOW_RESTORED:
+        return SDL_WINDOWEVENT_RESTORED;
+    case SDL_EVENT_WINDOW_MOUSE_ENTER:
+        return SDL_WINDOWEVENT_ENTER;
+    case SDL_EVENT_WINDOW_MOUSE_LEAVE:
+        return SDL_WINDOWEVENT_LEAVE;
+    case SDL_EVENT_WINDOW_FOCUS_GAINED:
+        return SDL_WINDOWEVENT_FOCUS_GAINED;
+    case SDL_EVENT_WINDOW_FOCUS_LOST:
+        return SDL_WINDOWEVENT_FOCUS_LOST;
+    case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+        return SDL_WINDOWEVENT_CLOSE;
+    case SDL_EVENT_WINDOW_HIT_TEST:
+        return SDL_WINDOWEVENT_HIT_TEST;
+    case SDL_EVENT_WINDOW_ICCPROF_CHANGED:
+        return SDL_WINDOWEVENT_ICCPROF_CHANGED;
+    case SDL_WINDOWEVENT_DISPLAY_CHANGED:
+        return SDL_WINDOWEVENT_DISPLAY_CHANGED;
+    default:
+        return SDL_WINDOWEVENT_NONE;
     }
-
-    return event_type2;
 }
 
 static int SDLCALL
