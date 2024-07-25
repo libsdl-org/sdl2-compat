@@ -24,7 +24,7 @@
 
 #include <SDL3/SDL_begin_code.h> /* for correct structure alignment, just in case */
 
-/* This is to make sure the SDL2 SDL_bool (an enum) and the SDL3 one (an int) are compatible. */
+/* Make sure that the SDL2 SDL_bool (an enum) and the SDL3 one (an int) are compatible. */
 typedef enum
 {
     DUMMY_ENUM_VALUE0,
@@ -162,7 +162,7 @@ typedef Sint32 SDL2_SensorID;  /* this became unsigned in SDL3, but we'll just h
 typedef Sint64 SDL2_GestureID;
 
 
-/* The SDL3 version of SDL_RWops (SDL_IOStream!) changed, so we need to convert when necessary. */
+/* The SDL3 version of SDL_RWops (SDL_IOStream) changed, so we need to convert when necessary. */
 
 #define SDL_RWOPS_UNKNOWN   0   /**< Unknown stream type */
 #define SDL_RWOPS_WINFILE   1   /**< Win32 file */
@@ -193,16 +193,13 @@ typedef struct SDL2_RWops
             SDL_bool autoclose;
             void *fp;
         } stdio;
-        struct
-        {
+        struct {
             void *asset;
         } androidio;
-        struct
-        {
+        struct {
             SDL_bool append;
             void *h;
-            struct
-            {
+            struct {
                 void *data;
                 size_t size;
                 size_t left;
@@ -1005,13 +1002,11 @@ typedef struct SDL2_UserEvent
 } SDL2_UserEvent;
 
 struct SDL2_SysWMmsg;
-typedef struct SDL2_SysWMmsg SDL2_SysWMmsg;
-
 typedef struct SDL2_SysWMEvent
 {
     Uint32 type;
     Uint32 timestamp;
-    SDL2_SysWMmsg *msg;
+    struct SDL2_SysWMmsg *msg;
 } SDL2_SysWMEvent;
 
 typedef union SDL2_Event
@@ -1119,8 +1114,6 @@ typedef struct SDL2_AudioSpec
    This is not a concern on CHERI architectures, where pointers must be stored
    at aligned locations otherwise they will become invalid, and thus structs
    containing pointers cannot be packed without giving a warning or error.
-   vvv
-   The next time we rev the ABI, make sure to size the ints and add padding.
 */
 #define SDL_AUDIOCVT_PACKED __attribute__((packed))
 #else
@@ -1160,6 +1153,7 @@ typedef struct SDL2_AudioStream
 #define SDL2_AUDIO_ALLOW_CHANNELS_CHANGE     0x00000004
 #define SDL2_AUDIO_ALLOW_SAMPLES_CHANGE      0x00000008
 #define SDL2_AUDIO_ALLOW_ANY_CHANGE          (SDL2_AUDIO_ALLOW_FREQUENCY_CHANGE|SDL2_AUDIO_ALLOW_FORMAT_CHANGE|SDL2_AUDIO_ALLOW_CHANNELS_CHANGE|SDL2_AUDIO_ALLOW_SAMPLES_CHANGE)
+
 
 /* Prototypes for D3D devices */
 #if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_WINGDK)
@@ -1212,32 +1206,28 @@ typedef struct _NSWindow NSWindow;
 typedef struct _UIWindow UIWindow;
 #endif
 
-struct SDL_SysWMinfo
+typedef struct SDL_SysWMinfo
 {
     SDL2_version version;
     SDL2_SYSWM_TYPE subsystem;
     union
     {
-      struct
-      {
+      struct {
         void *window;
         void *hdc;
         void *hinstance;
       } win;
 
-      struct
-      {
+      struct {
         void *window;
       } winrt;
 
-      struct
-      {
+      struct {
         void *display;
         unsigned long window;
       } x11;
 
-      struct
-      {
+      struct {
 #if defined(__OBJC__) && defined(__has_feature)
 #if __has_feature(objc_arc)
         NSWindow __unsafe_unretained *window;
@@ -1247,8 +1237,7 @@ struct SDL_SysWMinfo
 #endif
       } cocoa;
 
-      struct
-      {
+      struct {
 #if defined(__OBJC__) && defined(__has_feature)
 #if __has_feature(objc_arc)
         UIWindow __unsafe_unretained *window;
@@ -1261,8 +1250,7 @@ struct SDL_SysWMinfo
         Uint32 resolveFramebuffer;
       } uikit;
 
-      struct
-      {
+      struct {
         void *display;
         void *surface;
         void *shell_surface;
@@ -1273,20 +1261,17 @@ struct SDL_SysWMinfo
         void *xdg_positioner;
       } wl;
 
-      struct
-      {
+      struct {
         void *window;
         void *surface;
       } android;
 
-      struct
-      {
+      struct {
         void *display;
         void *window;
       } vivante;
 
-      struct
-      {
+      struct {
         int dev_index;
         int drm_fd;
         void *gbm_dev;
@@ -1296,9 +1281,8 @@ struct SDL_SysWMinfo
       /* Be careful not to overflow this if you add a new target! */
       Uint8 dummy[64];
     } info;
-};
+} SDL_SysWMinfo;
 
-typedef struct SDL_SysWMinfo SDL_SysWMinfo;
 
 #define SDL_NONSHAPEABLE_WINDOW -1
 #define SDL_INVALID_SHAPE_ARGUMENT -2
