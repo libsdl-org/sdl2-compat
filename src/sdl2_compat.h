@@ -22,6 +22,8 @@
 #ifndef sdl2_compat_h
 #define sdl2_compat_h
 
+#include <SDL3/SDL_begin_code.h> /* for correct structure alignment, just in case */
+
 /* This is to make sure the SDL2 SDL_bool (an enum) and the SDL3 one (an int) are compatible. */
 typedef enum
 {
@@ -888,5 +890,7 @@ typedef int SDL2_TimerID;
 typedef Uint32 (SDLCALL * SDL2_TimerCallback) (Uint32 interval, void *param);
 
 typedef unsigned int SDL2_TLSID;
+
+#include <SDL3/SDL_close_code.h>
 
 #endif /* sdl2_compat_h */
