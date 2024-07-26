@@ -7616,7 +7616,11 @@ SDL_DECLSPEC void SDLCALL
 SDL_GUIDToString(SDL_GUID guid, char *pszGUID, int cbGUID)
 {
     const char *szGUID = SDL3_GUIDToString(guid);
-    SDL3_strlcpy(pszGUID, szGUID, cbGUID);
+    if (szGUID) {
+        SDL3_strlcpy(pszGUID, szGUID, cbGUID);
+    } else if (cbGUID > 0) {
+        *pszGUID = '\0';
+    }
 }
 
 /* SDL3 split this into getter/setter functions. */
