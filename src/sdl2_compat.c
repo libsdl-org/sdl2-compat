@@ -796,7 +796,7 @@ static SDL2_AudioStream *AudioOpenDevices[16];  /* SDL2 had a limit of 16 simult
 static AudioDeviceList AudioSDL3PlaybackDevices;
 static AudioDeviceList AudioSDL3RecordingDevices;
 
-static const char **GamepadMappings = NULL;
+static char **GamepadMappings = NULL;
 static int NumGamepadMappings = 0;
 
 static SDL_TouchID *TouchDevices = NULL;
@@ -1329,14 +1329,9 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
     SDL3_memcpy((&event3->common) + 1, (&event2->common) + 1, sizeof (SDL2_Event) - sizeof (SDL2_CommonEvent));
     /* mouse coords became floats in SDL3: */
     switch (event2->type) {
-    case SDL_EVENT_TEXT_INPUT: {
-        const size_t len = SDL3_strlen(event2->text.text) + 1;
-        event3->text.text = (char *)SDL3_AllocateTemporaryMemory(len);
-        if (event3->text.text) {
-            SDL3_memcpy((char *)event3->text.text, event3->text.text, len);
-        }
-        break;
-    }
+    case SDL_EVENT_TEXT_INPUT:
+        /* We shouldn't be getting text input events this direction */
+        return SDL_FALSE;
     case SDL_EVENT_KEY_DOWN:
     case SDL_EVENT_KEY_UP:
         event3->key.which = 0;
@@ -2591,12 +2586,6 @@ SDL_GetWindowOpacity(SDL_Window *window, float *out_opacity)
     return 0;
 }
 
-SDL_DECLSPEC void* SDLCALL
-SDL_GetWindowICCProfile(SDL_Window * window, size_t* size)
-{
-    return SDL3_ClaimTemporaryMemory(SDL3_GetWindowICCProfile(window, size));
-}
-
 SDL_DECLSPEC SDL2_Surface * SDLCALL
 SDL_ConvertSurface(SDL2_Surface *surface, const SDL2_PixelFormat *format, Uint32 flags)
 {
@@ -3131,7 +3120,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_GetNumTouchDevices(void)
 {
     SDL3_free(TouchDevices);
-    TouchDevices = (SDL_TouchID *)SDL3_ClaimTemporaryMemory(SDL3_GetTouchDevices(&NumTouchDevices));
+    TouchDevices = SDL3_GetTouchDevices(&NumTouchDevices);
     return NumTouchDevices;
 }
 
@@ -3157,7 +3146,7 @@ SDL_GetNumTouchFingers(SDL_TouchID touchID)
 {
     SDL3_free(TouchFingers);
     TouchFingersDeviceID = touchID;
-    TouchFingers = (SDL_Finger **)SDL3_ClaimTemporaryMemory(SDL3_GetTouchFingers(touchID, &NumTouchFingers));
+    TouchFingers = SDL3_GetTouchFingers(touchID, &NumTouchFingers);
     return NumTouchFingers;
 }
 
@@ -3240,18 +3229,20 @@ SDL_DECLSPEC int SDLCALL
 SDL_RecordGesture(SDL_TouchID touchId)
 {
     int numtouchdevs = 0;
-    const SDL_TouchID *touchdevs = SDL3_GetTouchDevices(&numtouchdevs);
+    SDL_TouchID *touchdevs = SDL3_GetTouchDevices(&numtouchdevs);
     int i;
 
     /* make sure we know about all the devices SDL3 knows about, since we aren't connected as tightly as we were in SDL2. */
     for (i = 0; i < numtouchdevs; i++) {
-        const SDL_TouchID thistouch = touchdevs[i];
+        SDL_TouchID thistouch = touchdevs[i];
         if (!GestureGetTouch(thistouch)) {
             if (!GestureAddTouch(thistouch)) {
+                SDL_free(touchdevs);
                 return 0;  /* uhoh, out of memory */
             }
         }
     }
+    SDL_free(touchdevs);
 
     if (touchId == (SDL_TouchID)-1) {
         GestureRecordAll = SDL_TRUE;  /* !!! FIXME: this is never set back to SDL_FALSE anywhere, that's probably a bug. */
@@ -4998,7 +4989,7 @@ static int GetNumAudioDevices(int iscapture)
 {
     AudioDeviceList newlist;
     AudioDeviceList *list = iscapture ? &AudioSDL3RecordingDevices : &AudioSDL3PlaybackDevices;
-    const SDL_AudioDeviceID *devices;
+    SDL_AudioDeviceID *devices;
     int num_devices;
     int i;
 
@@ -5013,6 +5004,7 @@ static int GetNumAudioDevices(int iscapture)
         newlist.num_devices = num_devices;
         newlist.devices = (AudioDeviceInfo *) SDL3_malloc(sizeof (AudioDeviceInfo) * num_devices);
         if (!newlist.devices) {
+            SDL_free(devices);
             return list->num_devices;  /* just return the existing one for now. Oh well. */
         }
 
@@ -5034,6 +5026,7 @@ static int GetNumAudioDevices(int iscapture)
                     SDL3_free(newlist.devices[i].name);
                 }
                 SDL3_free(fullname);
+                SDL_free(devices);
                 return list->num_devices;  /* just return the existing one for now. Oh well. */
             }
 
@@ -5046,6 +5039,7 @@ static int GetNumAudioDevices(int iscapture)
         SDL3_free(list->devices[i].name);
     }
     SDL3_free(list->devices);
+    SDL_free(devices);
 
     SDL3_memcpy(list, &newlist, sizeof (AudioDeviceList));
     return num_devices;
@@ -5954,32 +5948,22 @@ Display_IDToIndex(SDL_DisplayID displayID)
     return displayIndex;
 }
 
-static const SDL_DisplayMode** SDL_GetDisplayModeList(SDL_DisplayID displayID, int *count)
+static const SDL_DisplayMode **SDL_GetDisplayModeList(SDL_DisplayID displayID, int *count)
 {
     int c = 0;
-    const SDL_DisplayMode **modes = (const SDL_DisplayMode **)SDL3_ClaimTemporaryMemory(SDL3_GetFullscreenDisplayModes(displayID, &c));
-
+    const SDL_DisplayMode **modes = (const SDL_DisplayMode **)SDL3_GetFullscreenDisplayModes(displayID, &c);
     if (!modes) {
         return NULL;
     }
 
-    if (c) {
-        if (count) {
-            *count = c;
-        }
-        return modes;
-    }
-
-    /* Return the desktop mode, if no exclusive fullscreen modes are available. */
-    SDL3_free(modes);
-    modes = (const SDL_DisplayMode **)SDL3_calloc(sizeof(SDL_DisplayMode *), 2);
-    if (modes) {
+    if (c == 0) {
+        /* Return the desktop mode, if no exclusive fullscreen modes are available. */
         modes[0] = SDL3_GetDesktopDisplayMode(displayID);
-        if (count) {
-            *count = 1;
-        }
+        c = 1;
     }
-
+    if (count) {
+        *count = c;
+    }
     return modes;
 }
 
@@ -6005,7 +5989,7 @@ SDL_GetNumDisplayModes(int displayIndex)
     const SDL_DisplayMode **list;
     list = SDL_GetDisplayModeList(displayID, &count);
     if (list) {
-        SDL3_free((void*)list);
+        SDL3_free(list);
         return count;
     }
     return -1;
@@ -6070,7 +6054,7 @@ SDL_GetDisplayMode(int displayIndex, int modeIndex, SDL2_DisplayMode *mode)
         }
         ret = 0;
     }
-    SDL3_free((void *)list);
+    SDL3_free(list);
     return ret;
 }
 
@@ -6114,7 +6098,7 @@ ApplyFullscreenMode(SDL_Window *window)
         return 0;
     } else {
         int count = 0;
-        const SDL_DisplayMode * const *list;
+        SDL_DisplayMode **list;
         SDL_DisplayID displayID;
         int ret;
 
@@ -6131,6 +6115,7 @@ ApplyFullscreenMode(SDL_Window *window)
             /* If no exclusive modes, use the fullscreen desktop mode. */
             ret = SDL3_SetWindowFullscreenMode(window, NULL);
         }
+        SDL_free(list);
         return ret;
     }
 }
@@ -6178,7 +6163,8 @@ SDL_GetWindowDisplayMode(SDL_Window *window, SDL2_DisplayMode *mode)
 SDL_DECLSPEC SDL2_DisplayMode * SDLCALL
 SDL_GetClosestDisplayMode(int displayIndex, const SDL2_DisplayMode *mode, SDL2_DisplayMode *closest)
 {
-    const SDL_DisplayMode *ret3;
+    SDL_DisplayMode closest3;
+    const SDL_DisplayMode *ret3 = NULL;
     const SDL_DisplayID displayID = Display_IndexToID(displayIndex);
 
     if (mode == NULL || closest == NULL) {
@@ -6186,12 +6172,12 @@ SDL_GetClosestDisplayMode(int displayIndex, const SDL2_DisplayMode *mode, SDL2_D
         return NULL;
     }
 
-    ret3 = SDL3_GetClosestFullscreenDisplayMode(displayID, mode->w, mode->h, (float)mode->refresh_rate, SDL_FALSE);
-    if (ret3 == NULL) {
+    if (SDL3_GetClosestFullscreenDisplayMode(displayID, mode->w, mode->h, (float)mode->refresh_rate, SDL_FALSE, &closest3) == 0) {
+        ret3 = &closest3;
+    } else {
         /* Try the desktop mode */
         ret3 = SDL3_GetDesktopDisplayMode(displayID);
-
-        if (ret3->w < mode->w || ret3->h < mode->h) {
+        if (!ret3 || ret3->w < mode->w || ret3->h < mode->h) {
             return NULL;
         }
     }
@@ -6788,13 +6774,14 @@ SDL_JoystickSetPlayerIndex(SDL_Joystick *joystick, int player_index)
 SDL_DECLSPEC void SDLCALL
 SDL_StartTextInput(void)
 {
-    SDL_Window * const *windows = SDL3_GetWindows(NULL);
+    SDL_Window **windows = SDL3_GetWindows(NULL);
     if (windows) {
         int i;
 
         for (i = 0; windows[i]; ++i) {
             SDL3_StartTextInput(windows[i]);
         }
+        SDL_free(windows);
     }
 }
 
@@ -6802,7 +6789,7 @@ SDL_DECLSPEC SDL_bool SDLCALL
 SDL_IsTextInputActive(void)
 {
     SDL_bool result = SDL_FALSE;
-    SDL_Window * const *windows = SDL3_GetWindows(NULL);
+    SDL_Window **windows = SDL3_GetWindows(NULL);
     if (windows) {
         int i;
 
@@ -6812,6 +6799,7 @@ SDL_IsTextInputActive(void)
                 break;
             }
         }
+        SDL_free(windows);
     }
     return result;
 }
@@ -6819,26 +6807,28 @@ SDL_IsTextInputActive(void)
 SDL_DECLSPEC void SDLCALL
 SDL_StopTextInput(void)
 {
-    SDL_Window * const *windows = SDL3_GetWindows(NULL);
+    SDL_Window **windows = SDL3_GetWindows(NULL);
     if (windows) {
         int i;
 
         for (i = 0; windows[i]; ++i) {
             SDL3_StopTextInput(windows[i]);
         }
+        SDL_free(windows);
     }
 }
 
 SDL_DECLSPEC void SDLCALL
 SDL_ClearComposition(void)
 {
-    SDL_Window * const *windows = SDL3_GetWindows(NULL);
+    SDL_Window **windows = SDL3_GetWindows(NULL);
     if (windows) {
         int i;
 
         for (i = 0; windows[i]; ++i) {
             SDL3_ClearComposition(windows[i]);
         }
+        SDL_free(windows);
     }
 }
 
@@ -6851,7 +6841,7 @@ SDL_IsTextInputShown()
 SDL_DECLSPEC void SDLCALL
 SDL_SetTextInputRect(const SDL_Rect *rect)
 {
-    SDL_Window * const *windows;
+    SDL_Window **windows;
 
     if (!rect) {
         SDL3_InvalidParamError("rect");
@@ -6865,6 +6855,7 @@ SDL_SetTextInputRect(const SDL_Rect *rect)
         for ( i = 0; windows[i]; ++i ) {
             SDL3_SetTextInputArea(windows[i], rect, 0);
         }
+        SDL_free(windows);
     }
 }
 
@@ -7609,18 +7600,7 @@ SDL_JoystickGetGUIDFromString(const char *pchGUID)
 SDL_DECLSPEC void SDLCALL
 SDL_JoystickGetGUIDString(SDL_GUID guid, char *pszGUID, int cbGUID)
 {
-    SDL_GUIDToString(guid, pszGUID, cbGUID);
-}
-
-SDL_DECLSPEC void SDLCALL
-SDL_GUIDToString(SDL_GUID guid, char *pszGUID, int cbGUID)
-{
-    const char *szGUID = SDL3_GUIDToString(guid);
-    if (szGUID) {
-        SDL3_strlcpy(pszGUID, szGUID, cbGUID);
-    } else if (cbGUID > 0) {
-        *pszGUID = '\0';
-    }
+    SDL3_GUIDToString(guid, pszGUID, cbGUID);
 }
 
 /* SDL3 split this into getter/setter functions. */
@@ -7698,7 +7678,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_NumJoysticks(void)
 {
     SDL3_free(joystick_list);
-    joystick_list = (SDL_JoystickID *)SDL3_ClaimTemporaryMemory(SDL3_GetJoysticks(&num_joysticks));
+    joystick_list = SDL3_GetJoysticks(&num_joysticks);
     if (joystick_list == NULL) {
         num_joysticks = 0;
         return -1;
@@ -7880,8 +7860,7 @@ SDL_DECLSPEC char* SDLCALL
 SDL_GameControllerMappingForDeviceIndex(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    const char *retval = jid ? SDL3_GetGamepadMappingForID(jid) : NULL;
-    return retval ? SDL3_strdup(retval) : NULL;
+    return jid ? SDL3_GetGamepadMappingForID(jid) : NULL;
 }
 
 SDL_DECLSPEC SDL_bool SDLCALL
@@ -7902,7 +7881,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_GameControllerNumMappings(void)
 {
     SDL3_free(GamepadMappings);
-    GamepadMappings = (const char **)SDL3_ClaimTemporaryMemory(SDL3_GetGamepadMappings(&NumGamepadMappings));
+    GamepadMappings = SDL3_GetGamepadMappings(&NumGamepadMappings);
     return NumGamepadMappings;
 }
 
@@ -7917,21 +7896,6 @@ SDL_GameControllerMappingForIndex(int idx)
     }
     return retval;
 }
-
-SDL_DECLSPEC char* SDLCALL
-SDL_GameControllerMappingForGUID(SDL_GUID guid)
-{
-    const char *retval = SDL3_GetGamepadMappingForGUID(guid);
-    return retval ? SDL3_strdup(retval) : NULL;
-}
-
-SDL_DECLSPEC char* SDLCALL
-SDL_GameControllerMapping(SDL_GameController *controller)
-{
-    const char *retval = SDL3_GetGamepadMapping(controller);
-    return retval ? SDL3_strdup(retval) : NULL;
-}
-
 
 SDL_DECLSPEC SDL_GameController* SDLCALL
 SDL_GameControllerOpen(int idx)
@@ -8025,7 +7989,7 @@ SDL_GameControllerGetBindForAxis(SDL_GameController *controller,
     SDL3_zero(bind);
 
     if (axis != SDL_GAMEPAD_AXIS_INVALID) {
-        const SDL_GamepadBinding * const *bindings = SDL3_GetGamepadBindings(controller, NULL);
+        SDL_GamepadBinding **bindings = SDL3_GetGamepadBindings(controller, NULL);
         if (bindings) {
             int i;
             for (i = 0; bindings[i]; ++i) {
@@ -8044,6 +8008,7 @@ SDL_GameControllerGetBindForAxis(SDL_GameController *controller,
                     break;
                 }
             }
+            SDL_free(bindings);
         }
     }
 
@@ -8059,7 +8024,7 @@ SDL_GameControllerGetBindForButton(SDL_GameController *controller,
     SDL3_zero(bind);
 
     if (button != SDL_GAMEPAD_BUTTON_INVALID) {
-        const SDL_GamepadBinding * const *bindings = SDL3_GetGamepadBindings(controller, NULL);
+        SDL_GamepadBinding **bindings = SDL3_GetGamepadBindings(controller, NULL);
         if (bindings) {
             int i;
             for (i = 0; bindings[i]; ++i) {
@@ -8077,6 +8042,7 @@ SDL_GameControllerGetBindForButton(SDL_GameController *controller,
                     break;
                 }
             }
+            SDL_free(bindings);
         }
     }
 
@@ -8178,7 +8144,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_NumSensors(void)
 {
     SDL3_free(sensor_list);
-    sensor_list = (SDL_SensorID *)SDL3_ClaimTemporaryMemory(SDL3_GetSensors(&num_sensors));
+    sensor_list = SDL3_GetSensors(&num_sensors);
     if (sensor_list == NULL) {
         num_sensors = 0;
         return -1;
@@ -8256,7 +8222,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_NumHaptics(void)
 {
     SDL3_free(haptic_list);
-    haptic_list = (SDL_HapticID *)SDL3_ClaimTemporaryMemory(SDL3_GetHaptics(&num_haptics));
+    haptic_list = SDL3_GetHaptics(&num_haptics);
     if (haptic_list == NULL) {
         num_haptics = 0;
         return -1;
@@ -8765,30 +8731,9 @@ SDL_Metal_GetDrawableSize(SDL_Window *window, int *w, int *h)
 }
 
 SDL_DECLSPEC char * SDLCALL
-SDL_GetClipboardText(void)
-{
-    const char *retval = SDL3_GetClipboardText();
-    return retval ? SDL3_strdup(retval) : NULL;
-}
-
-SDL_DECLSPEC char * SDLCALL
-SDL_GetPrimarySelectionText(void)
-{
-    const char *retval = SDL3_GetPrimarySelectionText();
-    return retval ? SDL3_strdup(retval) : NULL;
-}
-
-SDL_DECLSPEC char * SDLCALL
 SDL_GetBasePath(void)
 {
     const char *retval = SDL3_GetBasePath();
-    return retval ? SDL3_strdup(retval) : NULL;
-}
-
-SDL_DECLSPEC char * SDLCALL
-SDL_GetPrefPath(const char *org, const char *app)
-{
-    const char *retval = SDL3_GetPrefPath(org, app);
     return retval ? SDL3_strdup(retval) : NULL;
 }
 
@@ -8796,7 +8741,7 @@ SDL_DECLSPEC SDL_Locale *SDL_GetPreferredLocales(void)
 {
     SDL_Locale *retval = NULL;
     int i, count;
-    const SDL_Locale * const *locales = SDL3_GetPreferredLocales(&count);
+    SDL_Locale **locales = SDL3_GetPreferredLocales(&count);
     if (locales) {
         /* the string pointers in these structs are allocated as part of
            `locales`, so count out the strings, allocate space for them,
@@ -8831,6 +8776,7 @@ SDL_DECLSPEC SDL_Locale *SDL_GetPreferredLocales(void)
                 }
             }
         }
+        SDL_free(locales);
     }
     return retval;
 }
