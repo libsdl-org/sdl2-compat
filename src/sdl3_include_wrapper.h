@@ -43,7 +43,6 @@
 #define SDL_AddTimer IGNORE_THIS_VERSION_OF_SDL_AddTimer
 #define SDL_AddTimerNS IGNORE_THIS_VERSION_OF_SDL_AddTimerNS
 #define SDL_AddVulkanRenderSemaphores IGNORE_THIS_VERSION_OF_SDL_AddVulkanRenderSemaphores
-#define SDL_AllocateTemporaryMemory IGNORE_THIS_VERSION_OF_SDL_AllocateTemporaryMemory
 #define SDL_AtomicAdd IGNORE_THIS_VERSION_OF_SDL_AtomicAdd
 #define SDL_AtomicCompareAndSwap IGNORE_THIS_VERSION_OF_SDL_AtomicCompareAndSwap
 #define SDL_AtomicCompareAndSwapPointer IGNORE_THIS_VERSION_OF_SDL_AtomicCompareAndSwapPointer
@@ -64,7 +63,6 @@
 #define SDL_BlitSurfaceUncheckedScaled IGNORE_THIS_VERSION_OF_SDL_BlitSurfaceUncheckedScaled
 #define SDL_BroadcastCondition IGNORE_THIS_VERSION_OF_SDL_BroadcastCondition
 #define SDL_CaptureMouse IGNORE_THIS_VERSION_OF_SDL_CaptureMouse
-#define SDL_ClaimTemporaryMemory IGNORE_THIS_VERSION_OF_SDL_ClaimTemporaryMemory
 #define SDL_CleanupTLS IGNORE_THIS_VERSION_OF_SDL_CleanupTLS
 #define SDL_ClearAudioStream IGNORE_THIS_VERSION_OF_SDL_ClearAudioStream
 #define SDL_ClearClipboardData IGNORE_THIS_VERSION_OF_SDL_ClearClipboardData
@@ -433,6 +431,7 @@
 #define SDL_GetRenderMetalCommandEncoder IGNORE_THIS_VERSION_OF_SDL_GetRenderMetalCommandEncoder
 #define SDL_GetRenderMetalLayer IGNORE_THIS_VERSION_OF_SDL_GetRenderMetalLayer
 #define SDL_GetRenderOutputSize IGNORE_THIS_VERSION_OF_SDL_GetRenderOutputSize
+#define SDL_GetRenderSafeArea IGNORE_THIS_VERSION_OF_SDL_GetRenderSafeArea
 #define SDL_GetRenderScale IGNORE_THIS_VERSION_OF_SDL_GetRenderScale
 #define SDL_GetRenderTarget IGNORE_THIS_VERSION_OF_SDL_GetRenderTarget
 #define SDL_GetRenderVSync IGNORE_THIS_VERSION_OF_SDL_GetRenderVSync
@@ -1154,10 +1153,6 @@
 #undef SDL_AddVulkanRenderSemaphores
 #endif
 
-#ifdef SDL_AllocateTemporaryMemory
-#undef SDL_AllocateTemporaryMemory
-#endif
-
 #ifdef SDL_AtomicAdd
 #undef SDL_AtomicAdd
 #endif
@@ -1236,10 +1231,6 @@
 
 #ifdef SDL_CaptureMouse
 #undef SDL_CaptureMouse
-#endif
-
-#ifdef SDL_ClaimTemporaryMemory
-#undef SDL_ClaimTemporaryMemory
 #endif
 
 #ifdef SDL_CleanupTLS
@@ -2712,6 +2703,10 @@
 
 #ifdef SDL_GetRenderOutputSize
 #undef SDL_GetRenderOutputSize
+#endif
+
+#ifdef SDL_GetRenderSafeArea
+#undef SDL_GetRenderSafeArea
 #endif
 
 #ifdef SDL_GetRenderScale
