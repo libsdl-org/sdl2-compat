@@ -190,6 +190,7 @@
 #define SDL_GetAndroidInternalStoragePath IGNORE_THIS_VERSION_OF_SDL_GetAndroidInternalStoragePath
 #define SDL_GetAndroidJNIEnv IGNORE_THIS_VERSION_OF_SDL_GetAndroidJNIEnv
 #define SDL_GetAndroidSDKVersion IGNORE_THIS_VERSION_OF_SDL_GetAndroidSDKVersion
+#define SDL_GetAppMetadataProperty IGNORE_THIS_VERSION_OF_SDL_GetAppMetadataProperty
 #define SDL_GetAssertionHandler IGNORE_THIS_VERSION_OF_SDL_GetAssertionHandler
 #define SDL_GetAssertionReport IGNORE_THIS_VERSION_OF_SDL_GetAssertionReport
 #define SDL_GetAudioDeviceChannelMap IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceChannelMap
@@ -726,6 +727,8 @@
 #define SDL_SendGamepadEffect IGNORE_THIS_VERSION_OF_SDL_SendGamepadEffect
 #define SDL_SendJoystickEffect IGNORE_THIS_VERSION_OF_SDL_SendJoystickEffect
 #define SDL_SendJoystickVirtualSensorData IGNORE_THIS_VERSION_OF_SDL_SendJoystickVirtualSensorData
+#define SDL_SetAppMetadata IGNORE_THIS_VERSION_OF_SDL_SetAppMetadata
+#define SDL_SetAppMetadataProperty IGNORE_THIS_VERSION_OF_SDL_SetAppMetadataProperty
 #define SDL_SetAssertionHandler IGNORE_THIS_VERSION_OF_SDL_SetAssertionHandler
 #define SDL_SetAudioDeviceGain IGNORE_THIS_VERSION_OF_SDL_SetAudioDeviceGain
 #define SDL_SetAudioPostmixCallback IGNORE_THIS_VERSION_OF_SDL_SetAudioPostmixCallback
@@ -1070,6 +1073,7 @@
 #define SDL_uitoa IGNORE_THIS_VERSION_OF_SDL_uitoa
 #define SDL_ulltoa IGNORE_THIS_VERSION_OF_SDL_ulltoa
 #define SDL_ultoa IGNORE_THIS_VERSION_OF_SDL_ultoa
+#define SDL_unsetenv IGNORE_THIS_VERSION_OF_SDL_unsetenv
 #define SDL_utf8strlcpy IGNORE_THIS_VERSION_OF_SDL_utf8strlcpy
 #define SDL_utf8strlen IGNORE_THIS_VERSION_OF_SDL_utf8strlen
 #define SDL_utf8strnlen IGNORE_THIS_VERSION_OF_SDL_utf8strnlen
@@ -1739,6 +1743,10 @@
 
 #ifdef SDL_GetAndroidSDKVersion
 #undef SDL_GetAndroidSDKVersion
+#endif
+
+#ifdef SDL_GetAppMetadataProperty
+#undef SDL_GetAppMetadataProperty
 #endif
 
 #ifdef SDL_GetAssertionHandler
@@ -3885,6 +3893,14 @@
 #undef SDL_SendJoystickVirtualSensorData
 #endif
 
+#ifdef SDL_SetAppMetadata
+#undef SDL_SetAppMetadata
+#endif
+
+#ifdef SDL_SetAppMetadataProperty
+#undef SDL_SetAppMetadataProperty
+#endif
+
 #ifdef SDL_SetAssertionHandler
 #undef SDL_SetAssertionHandler
 #endif
@@ -5259,6 +5275,10 @@
 
 #ifdef SDL_ultoa
 #undef SDL_ultoa
+#endif
+
+#ifdef SDL_unsetenv
+#undef SDL_unsetenv
 #endif
 
 #ifdef SDL_utf8strlcpy
