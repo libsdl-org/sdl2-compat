@@ -1999,7 +1999,27 @@ RWops3to2(SDL_IOStream *iostrm3, Uint32 type)
 SDL_DECLSPEC SDL2_RWops *SDLCALL
 SDL_RWFromFile(const char *file, const char *mode)
 {
-    SDL2_RWops *rwops2 = RWops3to2(SDL3_IOFromFile(file, mode), SDL_RWOPS_PLATFORM_FILE);
+    SDL2_RWops *rwops2 = NULL;
+
+    /* match some SDL2 Apple-specific quirks that were removed from SDL3. */
+    #if defined(SDL_PLATFORM_APPLE)
+    char *adjusted_path = NULL;
+    /* If the file mode is writable, skip all the bundle stuff because generally the bundle is read-only. */
+    if ((SDL3_strchr(mode, 'r') != NULL) && SDL3_GetHintBoolean(SDL_HINT_APPLE_RWFROMFILE_USE_RESOURCES, SDL_TRUE)) {
+        const char *base = SDL3_GetBasePath();
+        if (!base) {
+            return NULL;
+        } else if (SDL3_asprintf(&adjusted_path, "%s%s", base, file) < 0) {
+            return NULL;
+        }
+        file = adjusted_path;
+    }
+    rwops2 = RWops3to2(SDL3_IOFromFile(file, mode), SDL_RWOPS_PLATFORM_FILE);
+    SDL_free(adjusted_path);
+    #else
+    rwops2 = RWops3to2(SDL3_IOFromFile(file, mode), SDL_RWOPS_PLATFORM_FILE);
+    #endif
+
     if (rwops2) {
         const SDL_PropertiesID props = SDL3_GetIOProperties(rwops2->hidden.sdl3.iostrm);
         if (props) {
