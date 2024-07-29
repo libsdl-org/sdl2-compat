@@ -164,6 +164,8 @@ typedef Sint64 SDL2_GestureID;
 
 /* The SDL3 version of SDL_RWops (SDL_IOStream) changed, so we need to convert when necessary. */
 
+#define SDL_HINT_APPLE_RWFROMFILE_USE_RESOURCES "SDL_APPLE_RWFROMFILE_USE_RESOURCES"
+
 #define SDL_RWOPS_UNKNOWN   0   /**< Unknown stream type */
 #define SDL_RWOPS_WINFILE   1   /**< Win32 file */
 #define SDL_RWOPS_STDFILE   2   /**< Stdio file */
