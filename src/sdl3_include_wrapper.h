@@ -40,6 +40,7 @@
 #define SDL_AddGamepadMappingsFromFile IGNORE_THIS_VERSION_OF_SDL_AddGamepadMappingsFromFile
 #define SDL_AddGamepadMappingsFromIO IGNORE_THIS_VERSION_OF_SDL_AddGamepadMappingsFromIO
 #define SDL_AddHintCallback IGNORE_THIS_VERSION_OF_SDL_AddHintCallback
+#define SDL_AddSurfaceAlternateImage IGNORE_THIS_VERSION_OF_SDL_AddSurfaceAlternateImage
 #define SDL_AddTimer IGNORE_THIS_VERSION_OF_SDL_AddTimer
 #define SDL_AddTimerNS IGNORE_THIS_VERSION_OF_SDL_AddTimerNS
 #define SDL_AddVulkanRenderSemaphores IGNORE_THIS_VERSION_OF_SDL_AddVulkanRenderSemaphores
@@ -470,6 +471,7 @@
 #define SDL_GetSurfaceColorKey IGNORE_THIS_VERSION_OF_SDL_GetSurfaceColorKey
 #define SDL_GetSurfaceColorMod IGNORE_THIS_VERSION_OF_SDL_GetSurfaceColorMod
 #define SDL_GetSurfaceColorspace IGNORE_THIS_VERSION_OF_SDL_GetSurfaceColorspace
+#define SDL_GetSurfaceImages IGNORE_THIS_VERSION_OF_SDL_GetSurfaceImages
 #define SDL_GetSurfacePalette IGNORE_THIS_VERSION_OF_SDL_GetSurfacePalette
 #define SDL_GetSurfaceProperties IGNORE_THIS_VERSION_OF_SDL_GetSurfaceProperties
 #define SDL_GetSystemRAM IGNORE_THIS_VERSION_OF_SDL_GetSystemRAM
@@ -676,6 +678,7 @@
 #define SDL_ReloadGamepadMappings IGNORE_THIS_VERSION_OF_SDL_ReloadGamepadMappings
 #define SDL_RemovePath IGNORE_THIS_VERSION_OF_SDL_RemovePath
 #define SDL_RemoveStoragePath IGNORE_THIS_VERSION_OF_SDL_RemoveStoragePath
+#define SDL_RemoveSurfaceAlternateImages IGNORE_THIS_VERSION_OF_SDL_RemoveSurfaceAlternateImages
 #define SDL_RemoveTimer IGNORE_THIS_VERSION_OF_SDL_RemoveTimer
 #define SDL_RenamePath IGNORE_THIS_VERSION_OF_SDL_RenamePath
 #define SDL_RenameStoragePath IGNORE_THIS_VERSION_OF_SDL_RenameStoragePath
@@ -719,6 +722,7 @@
 #define SDL_RunHapticEffect IGNORE_THIS_VERSION_OF_SDL_RunHapticEffect
 #define SDL_SaveBMP IGNORE_THIS_VERSION_OF_SDL_SaveBMP
 #define SDL_SaveBMP_IO IGNORE_THIS_VERSION_OF_SDL_SaveBMP_IO
+#define SDL_ScaleSurface IGNORE_THIS_VERSION_OF_SDL_ScaleSurface
 #define SDL_ScreenKeyboardShown IGNORE_THIS_VERSION_OF_SDL_ScreenKeyboardShown
 #define SDL_ScreenSaverEnabled IGNORE_THIS_VERSION_OF_SDL_ScreenSaverEnabled
 #define SDL_SeekIO IGNORE_THIS_VERSION_OF_SDL_SeekIO
@@ -851,6 +855,7 @@
 #define SDL_StopTextInput IGNORE_THIS_VERSION_OF_SDL_StopTextInput
 #define SDL_StorageReady IGNORE_THIS_VERSION_OF_SDL_StorageReady
 #define SDL_StringToGUID IGNORE_THIS_VERSION_OF_SDL_StringToGUID
+#define SDL_SurfaceHasAlternateImages IGNORE_THIS_VERSION_OF_SDL_SurfaceHasAlternateImages
 #define SDL_SurfaceHasColorKey IGNORE_THIS_VERSION_OF_SDL_SurfaceHasColorKey
 #define SDL_SurfaceHasRLE IGNORE_THIS_VERSION_OF_SDL_SurfaceHasRLE
 #define SDL_SyncWindow IGNORE_THIS_VERSION_OF_SDL_SyncWindow
@@ -1143,6 +1148,10 @@
 
 #ifdef SDL_AddHintCallback
 #undef SDL_AddHintCallback
+#endif
+
+#ifdef SDL_AddSurfaceAlternateImage
+#undef SDL_AddSurfaceAlternateImage
 #endif
 
 #ifdef SDL_AddTimer
@@ -2865,6 +2874,10 @@
 #undef SDL_GetSurfaceColorspace
 #endif
 
+#ifdef SDL_GetSurfaceImages
+#undef SDL_GetSurfaceImages
+#endif
+
 #ifdef SDL_GetSurfacePalette
 #undef SDL_GetSurfacePalette
 #endif
@@ -3689,6 +3702,10 @@
 #undef SDL_RemoveStoragePath
 #endif
 
+#ifdef SDL_RemoveSurfaceAlternateImages
+#undef SDL_RemoveSurfaceAlternateImages
+#endif
+
 #ifdef SDL_RemoveTimer
 #undef SDL_RemoveTimer
 #endif
@@ -3859,6 +3876,10 @@
 
 #ifdef SDL_SaveBMP_IO
 #undef SDL_SaveBMP_IO
+#endif
+
+#ifdef SDL_ScaleSurface
+#undef SDL_ScaleSurface
 #endif
 
 #ifdef SDL_ScreenKeyboardShown
@@ -4387,6 +4408,10 @@
 
 #ifdef SDL_StringToGUID
 #undef SDL_StringToGUID
+#endif
+
+#ifdef SDL_SurfaceHasAlternateImages
+#undef SDL_SurfaceHasAlternateImages
 #endif
 
 #ifdef SDL_SurfaceHasColorKey
