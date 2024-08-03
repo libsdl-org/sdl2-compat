@@ -503,6 +503,7 @@
 #define SDL_GetWindowBordersSize IGNORE_THIS_VERSION_OF_SDL_GetWindowBordersSize
 #define SDL_GetWindowDisplayScale IGNORE_THIS_VERSION_OF_SDL_GetWindowDisplayScale
 #define SDL_GetWindowFlags IGNORE_THIS_VERSION_OF_SDL_GetWindowFlags
+#define SDL_GetWindowFromEvent IGNORE_THIS_VERSION_OF_SDL_GetWindowFromEvent
 #define SDL_GetWindowFromID IGNORE_THIS_VERSION_OF_SDL_GetWindowFromID
 #define SDL_GetWindowFullscreenMode IGNORE_THIS_VERSION_OF_SDL_GetWindowFullscreenMode
 #define SDL_GetWindowICCProfile IGNORE_THIS_VERSION_OF_SDL_GetWindowICCProfile
@@ -848,6 +849,7 @@
 #define SDL_SignalCondition IGNORE_THIS_VERSION_OF_SDL_SignalCondition
 #define SDL_SignalSemaphore IGNORE_THIS_VERSION_OF_SDL_SignalSemaphore
 #define SDL_StartTextInput IGNORE_THIS_VERSION_OF_SDL_StartTextInput
+#define SDL_StartTextInputWithProperties IGNORE_THIS_VERSION_OF_SDL_StartTextInputWithProperties
 #define SDL_StepUTF8 IGNORE_THIS_VERSION_OF_SDL_StepUTF8
 #define SDL_StopHapticEffect IGNORE_THIS_VERSION_OF_SDL_StopHapticEffect
 #define SDL_StopHapticEffects IGNORE_THIS_VERSION_OF_SDL_StopHapticEffects
@@ -3002,6 +3004,10 @@
 #undef SDL_GetWindowFlags
 #endif
 
+#ifdef SDL_GetWindowFromEvent
+#undef SDL_GetWindowFromEvent
+#endif
+
 #ifdef SDL_GetWindowFromID
 #undef SDL_GetWindowFromID
 #endif
@@ -4380,6 +4386,10 @@
 
 #ifdef SDL_StartTextInput
 #undef SDL_StartTextInput
+#endif
+
+#ifdef SDL_StartTextInputWithProperties
+#undef SDL_StartTextInputWithProperties
 #endif
 
 #ifdef SDL_StepUTF8
