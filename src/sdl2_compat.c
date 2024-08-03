@@ -6797,10 +6797,17 @@ SDL_StartTextInput(void)
     SDL_Window **windows = SDL3_GetWindows(NULL);
     if (windows) {
         int i;
+        SDL_PropertiesID props = SDL3_CreateProperties();
+
+        SDL3_SetNumberProperty(props, SDL_PROP_TEXTINPUT_TYPE_NUMBER, SDL_TEXTINPUT_TYPE_TEXT);
+        SDL3_SetNumberProperty(props, SDL_PROP_TEXTINPUT_CAPITALIZATION_NUMBER, SDL_CAPITALIZE_NONE);
+        SDL3_SetBooleanProperty(props, SDL_PROP_TEXTINPUT_AUTOCORRECT_BOOLEAN, SDL_FALSE);
 
         for (i = 0; windows[i]; ++i) {
-            SDL3_StartTextInput(windows[i]);
+            SDL3_StartTextInputWithProperties(windows[i], props);
         }
+        SDL3_DestroyProperties(props);
+
         SDL_free(windows);
     }
 }

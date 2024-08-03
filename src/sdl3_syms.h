@@ -222,7 +222,6 @@ SDL3_SYM(const char*,GetScancodeName,(SDL_Scancode a),(a),return)
 SDL3_SYM(SDL_Scancode,GetScancodeFromName,(const char *a),(a),return)
 SDL3_SYM(const char*,GetKeyName,(SDL_Keycode a),(a),return)
 SDL3_SYM(SDL_Keycode,GetKeyFromName,(const char *a),(a),return)
-SDL3_SYM(int,StartTextInput,(SDL_Window *a),(a),return)
 SDL3_SYM(SDL_bool,TextInputActive,(SDL_Window *a),(a),return)
 SDL3_SYM(int,StopTextInput,(SDL_Window *a),(a),return)
 SDL3_SYM(int,SetTextInputArea,(SDL_Window *a, const SDL_Rect *b, int c),(a,b,c),return)
@@ -843,6 +842,7 @@ SDL3_SYM(const SDL_PixelFormatDetails *,GetPixelFormatDetails,(SDL_PixelFormat a
 SDL3_SYM(SDL_Surface *,ConvertSurfaceAndColorspace,(SDL_Surface *a, SDL_PixelFormat b, SDL_Palette *c, SDL_Colorspace d, SDL_PropertiesID e),(a,b,c,d,e),return)
 SDL3_SYM(SDL_Palette *,CreateSurfacePalette,(SDL_Surface *a),(a),return)
 SDL3_SYM(SDL_Palette *,GetSurfacePalette,(SDL_Surface *a),(a),return)
+SDL3_SYM(int,StartTextInputWithProperties,(SDL_Window *a, SDL_PropertiesID b),(a,b),return)
 
 #undef SDL3_SYM
 #undef SDL3_SYM_PASSTHROUGH
