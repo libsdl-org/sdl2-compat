@@ -774,6 +774,7 @@
 #define SDL_SetLogOutputFunction IGNORE_THIS_VERSION_OF_SDL_SetLogOutputFunction
 #define SDL_SetLogPriorities IGNORE_THIS_VERSION_OF_SDL_SetLogPriorities
 #define SDL_SetLogPriority IGNORE_THIS_VERSION_OF_SDL_SetLogPriority
+#define SDL_SetLogPriorityPrefix IGNORE_THIS_VERSION_OF_SDL_SetLogPriorityPrefix
 #define SDL_SetMainReady IGNORE_THIS_VERSION_OF_SDL_SetMainReady
 #define SDL_SetMemoryFunctions IGNORE_THIS_VERSION_OF_SDL_SetMemoryFunctions
 #define SDL_SetModState IGNORE_THIS_VERSION_OF_SDL_SetModState
@@ -4086,6 +4087,10 @@
 
 #ifdef SDL_SetLogPriority
 #undef SDL_SetLogPriority
+#endif
+
+#ifdef SDL_SetLogPriorityPrefix
+#undef SDL_SetLogPriorityPrefix
 #endif
 
 #ifdef SDL_SetMainReady
