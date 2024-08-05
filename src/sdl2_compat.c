@@ -466,13 +466,13 @@ SDL2_to_SDL3_hint(const char *name)
 SDL_DECLSPEC SDL_bool SDLCALL
 SDL_SetHintWithPriority(const char *name, const char *value, SDL_HintPriority priority)
 {
-    return SDL3_SetHintWithPriority(SDL2_to_SDL3_hint(name), value, priority);
+    return SDL3_SetHintWithPriority(SDL2_to_SDL3_hint(name), value, priority) == 0;
 }
 
 SDL_DECLSPEC SDL_bool SDLCALL
 SDL_SetHint(const char *name, const char *value)
 {
-    return SDL3_SetHint(SDL2_to_SDL3_hint(name), value);
+    return SDL3_SetHint(SDL2_to_SDL3_hint(name), value) == 0;
 }
 
 SDL_DECLSPEC const char * SDLCALL
@@ -484,7 +484,7 @@ SDL_GetHint(const char *name)
 SDL_DECLSPEC SDL_bool SDLCALL
 SDL_ResetHint(const char *name)
 {
-    return SDL3_ResetHint(SDL2_to_SDL3_hint(name));
+    return SDL3_ResetHint(SDL2_to_SDL3_hint(name)) == 0;
 }
 
 SDL_DECLSPEC SDL_bool SDLCALL
