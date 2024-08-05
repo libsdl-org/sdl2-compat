@@ -843,6 +843,7 @@ SDL3_SYM(SDL_Surface *,ConvertSurfaceAndColorspace,(SDL_Surface *a, SDL_PixelFor
 SDL3_SYM(SDL_Palette *,CreateSurfacePalette,(SDL_Surface *a),(a),return)
 SDL3_SYM(SDL_Palette *,GetSurfacePalette,(SDL_Surface *a),(a),return)
 SDL3_SYM(int,StartTextInputWithProperties,(SDL_Window *a, SDL_PropertiesID b),(a,b),return)
+SDL3_SYM(int,SetLogPriorityPrefix,(SDL_LogPriority a, const char *b),(a,b),return)
 
 #undef SDL3_SYM
 #undef SDL3_SYM_PASSTHROUGH

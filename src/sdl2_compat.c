@@ -838,6 +838,13 @@ SDL2Compat_InitOnStartup(void)
     SDL3_SetHint("SDL_VIDEO_SYNC_WINDOW_OPERATIONS", "1");
     SDL3_SetHint(SDL_HINT_WINDOWS_RAW_KEYBOARD, "0");
 
+    SDL3_SetLogPriorityPrefix(SDL_LOG_PRIORITY_VERBOSE, "VERBOSE: ");
+    SDL3_SetLogPriorityPrefix(SDL_LOG_PRIORITY_DEBUG, "DEBUG: ");
+    SDL3_SetLogPriorityPrefix(SDL_LOG_PRIORITY_INFO, "INFO: ");
+    SDL3_SetLogPriorityPrefix(SDL_LOG_PRIORITY_WARN, "WARN: ");
+    SDL3_SetLogPriorityPrefix(SDL_LOG_PRIORITY_ERROR, "ERROR: ");
+    SDL3_SetLogPriorityPrefix(SDL_LOG_PRIORITY_CRITICAL, "CRITICAL: ");
+
     return 1;
 
 fail:
