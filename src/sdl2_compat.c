@@ -810,6 +810,17 @@ static SDL_PropertiesID timers = 0;
 
 /* Functions! */
 
+static void
+SDL2Compat_InitLogPrefixes(void)
+{
+    SDL3_SetLogPriorityPrefix(SDL_LOG_PRIORITY_VERBOSE, "VERBOSE: ");
+    SDL3_SetLogPriorityPrefix(SDL_LOG_PRIORITY_DEBUG, "DEBUG: ");
+    SDL3_SetLogPriorityPrefix(SDL_LOG_PRIORITY_INFO, "INFO: ");
+    SDL3_SetLogPriorityPrefix(SDL_LOG_PRIORITY_WARN, "WARN: ");
+    SDL3_SetLogPriorityPrefix(SDL_LOG_PRIORITY_ERROR, "ERROR: ");
+    SDL3_SetLogPriorityPrefix(SDL_LOG_PRIORITY_CRITICAL, "CRITICAL: ");
+}
+
 /* this stuff _might_ move to SDL_Init later */
 static int
 SDL2Compat_InitOnStartup(void)
@@ -838,12 +849,7 @@ SDL2Compat_InitOnStartup(void)
     SDL3_SetHint("SDL_BORDERLESS_WINDOWED_STYLE", "0");
     SDL3_SetHint("SDL_VIDEO_SYNC_WINDOW_OPERATIONS", "1");
 
-    SDL3_SetLogPriorityPrefix(SDL_LOG_PRIORITY_VERBOSE, "VERBOSE: ");
-    SDL3_SetLogPriorityPrefix(SDL_LOG_PRIORITY_DEBUG, "DEBUG: ");
-    SDL3_SetLogPriorityPrefix(SDL_LOG_PRIORITY_INFO, "INFO: ");
-    SDL3_SetLogPriorityPrefix(SDL_LOG_PRIORITY_WARN, "WARN: ");
-    SDL3_SetLogPriorityPrefix(SDL_LOG_PRIORITY_ERROR, "ERROR: ");
-    SDL3_SetLogPriorityPrefix(SDL_LOG_PRIORITY_CRITICAL, "CRITICAL: ");
+    SDL2Compat_InitLogPrefixes();
 
     return 1;
 
@@ -4921,6 +4927,8 @@ SDL_DECLSPEC int SDLCALL
 SDL_InitSubSystem(Uint32 flags)
 {
     int ret;
+
+    SDL2Compat_InitLogPrefixes();
 
     /* Update IME UI hint */
     if (flags & SDL_INIT_VIDEO) {
