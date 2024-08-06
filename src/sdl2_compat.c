@@ -1697,7 +1697,7 @@ SDL_GetKeyFromScancode(SDL2_Scancode scancode)
 
     if (scancode <= SDL2_SCANCODE_MODE) {
         // They're the same
-        return SDL3_GetKeyFromScancode(SDL2ScancodeToSDL3Scancode(scancode), SDL_KMOD_NONE);
+        return SDL3_GetKeyFromScancode(SDL2ScancodeToSDL3Scancode(scancode), SDL_KMOD_NONE, SDL_TRUE);
     } else {
         return SDL_SCANCODE_TO_KEYCODE(scancode);
     }
