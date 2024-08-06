@@ -243,8 +243,6 @@
 #define SDL_GetDaysInMonth IGNORE_THIS_VERSION_OF_SDL_GetDaysInMonth
 #define SDL_GetDefaultAssertionHandler IGNORE_THIS_VERSION_OF_SDL_GetDefaultAssertionHandler
 #define SDL_GetDefaultCursor IGNORE_THIS_VERSION_OF_SDL_GetDefaultCursor
-#define SDL_GetDefaultKeyFromScancode IGNORE_THIS_VERSION_OF_SDL_GetDefaultKeyFromScancode
-#define SDL_GetDefaultScancodeFromKey IGNORE_THIS_VERSION_OF_SDL_GetDefaultScancodeFromKey
 #define SDL_GetDesktopDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetDesktopDisplayMode
 #define SDL_GetDirect3D9AdapterIndex IGNORE_THIS_VERSION_OF_SDL_GetDirect3D9AdapterIndex
 #define SDL_GetDisplayBounds IGNORE_THIS_VERSION_OF_SDL_GetDisplayBounds
@@ -1963,14 +1961,6 @@
 
 #ifdef SDL_GetDefaultCursor
 #undef SDL_GetDefaultCursor
-#endif
-
-#ifdef SDL_GetDefaultKeyFromScancode
-#undef SDL_GetDefaultKeyFromScancode
-#endif
-
-#ifdef SDL_GetDefaultScancodeFromKey
-#undef SDL_GetDefaultScancodeFromKey
 #endif
 
 #ifdef SDL_GetDesktopDisplayMode
