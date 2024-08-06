@@ -6015,7 +6015,7 @@ SDL_GetNumDisplayModes(int displayIndex)
     const SDL_DisplayMode **list;
     list = SDL_GetDisplayModeList(displayID, &count);
     if (list) {
-        SDL3_free(list);
+        SDL3_free((void *) list);
         return count;
     }
     return -1;
@@ -6080,7 +6080,7 @@ SDL_GetDisplayMode(int displayIndex, int modeIndex, SDL2_DisplayMode *mode)
         }
         ret = 0;
     }
-    SDL3_free(list);
+    SDL3_free((void *) list);
     return ret;
 }
 
