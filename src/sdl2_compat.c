@@ -767,6 +767,7 @@ static SDL2_EventFilter EventFilter2 = NULL;
 static void *EventFilterUserData2 = NULL;
 static SDL_mutex *EventWatchListMutex = NULL;
 static EventFilterWrapperData *EventWatchers2 = NULL;
+static SDL_bool relative_mouse_mode = SDL_FALSE;
 static SDL_JoystickID *joystick_list = NULL;
 static int num_joysticks = 0;
 static SDL_JoystickID *gamepad_button_swap_list = NULL;
@@ -1922,6 +1923,33 @@ SDL_WarpMouseGlobal(int x, int y)
     return SDL3_WarpMouseGlobal((float)x, (float)y);
 }
 
+SDL_DECLSPEC int SDLCALL
+SDL_SetRelativeMouseMode(SDL_bool enabled)
+{
+    int retval = 0;
+    SDL_Window **windows = SDL3_GetWindows(NULL);
+    if (windows) {
+        int i;
+
+        for (i = 0; windows[i]; ++i) {
+            if (SDL3_SetWindowRelativeMouseMode(windows[i], enabled) < 0) {
+                retval = -1;
+            }
+        }
+
+        SDL_free(windows);
+    }
+    if (retval == 0) {
+        relative_mouse_mode = enabled;
+    }
+    return retval;
+}
+
+SDL_DECLSPEC SDL_bool SDLCALL
+SDL_GetRelativeMouseMode(void)
+{
+    return relative_mouse_mode;
+}
 
 SDL_DECLSPEC SDL2_RWops *SDLCALL
 SDL_AllocRW(void)
@@ -4931,6 +4959,8 @@ SDL_InitSubSystem(Uint32 flags)
 SDL_DECLSPEC void SDLCALL
 SDL_Quit(void)
 {
+    relative_mouse_mode = SDL_FALSE;
+
     if (SDL3_WasInit(SDL_INIT_VIDEO)) {
         GestureQuit();
     }

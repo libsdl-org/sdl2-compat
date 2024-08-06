@@ -418,7 +418,6 @@
 #define SDL_GetRectIntersectionFloat IGNORE_THIS_VERSION_OF_SDL_GetRectIntersectionFloat
 #define SDL_GetRectUnion IGNORE_THIS_VERSION_OF_SDL_GetRectUnion
 #define SDL_GetRectUnionFloat IGNORE_THIS_VERSION_OF_SDL_GetRectUnionFloat
-#define SDL_GetRelativeMouseMode IGNORE_THIS_VERSION_OF_SDL_GetRelativeMouseMode
 #define SDL_GetRelativeMouseState IGNORE_THIS_VERSION_OF_SDL_GetRelativeMouseState
 #define SDL_GetRenderClipRect IGNORE_THIS_VERSION_OF_SDL_GetRenderClipRect
 #define SDL_GetRenderColorScale IGNORE_THIS_VERSION_OF_SDL_GetRenderColorScale
@@ -517,6 +516,7 @@
 #define SDL_GetWindowPixelFormat IGNORE_THIS_VERSION_OF_SDL_GetWindowPixelFormat
 #define SDL_GetWindowPosition IGNORE_THIS_VERSION_OF_SDL_GetWindowPosition
 #define SDL_GetWindowProperties IGNORE_THIS_VERSION_OF_SDL_GetWindowProperties
+#define SDL_GetWindowRelativeMouseMode IGNORE_THIS_VERSION_OF_SDL_GetWindowRelativeMouseMode
 #define SDL_GetWindowSafeArea IGNORE_THIS_VERSION_OF_SDL_GetWindowSafeArea
 #define SDL_GetWindowSize IGNORE_THIS_VERSION_OF_SDL_GetWindowSize
 #define SDL_GetWindowSizeInPixels IGNORE_THIS_VERSION_OF_SDL_GetWindowSizeInPixels
@@ -781,7 +781,6 @@
 #define SDL_SetPointerProperty IGNORE_THIS_VERSION_OF_SDL_SetPointerProperty
 #define SDL_SetPointerPropertyWithCleanup IGNORE_THIS_VERSION_OF_SDL_SetPointerPropertyWithCleanup
 #define SDL_SetPrimarySelectionText IGNORE_THIS_VERSION_OF_SDL_SetPrimarySelectionText
-#define SDL_SetRelativeMouseMode IGNORE_THIS_VERSION_OF_SDL_SetRelativeMouseMode
 #define SDL_SetRenderClipRect IGNORE_THIS_VERSION_OF_SDL_SetRenderClipRect
 #define SDL_SetRenderColorScale IGNORE_THIS_VERSION_OF_SDL_SetRenderColorScale
 #define SDL_SetRenderDrawBlendMode IGNORE_THIS_VERSION_OF_SDL_SetRenderDrawBlendMode
@@ -827,6 +826,7 @@
 #define SDL_SetWindowMouseRect IGNORE_THIS_VERSION_OF_SDL_SetWindowMouseRect
 #define SDL_SetWindowOpacity IGNORE_THIS_VERSION_OF_SDL_SetWindowOpacity
 #define SDL_SetWindowPosition IGNORE_THIS_VERSION_OF_SDL_SetWindowPosition
+#define SDL_SetWindowRelativeMouseMode IGNORE_THIS_VERSION_OF_SDL_SetWindowRelativeMouseMode
 #define SDL_SetWindowResizable IGNORE_THIS_VERSION_OF_SDL_SetWindowResizable
 #define SDL_SetWindowShape IGNORE_THIS_VERSION_OF_SDL_SetWindowShape
 #define SDL_SetWindowSize IGNORE_THIS_VERSION_OF_SDL_SetWindowSize
@@ -2663,10 +2663,6 @@
 #undef SDL_GetRectUnionFloat
 #endif
 
-#ifdef SDL_GetRelativeMouseMode
-#undef SDL_GetRelativeMouseMode
-#endif
-
 #ifdef SDL_GetRelativeMouseState
 #undef SDL_GetRelativeMouseState
 #endif
@@ -3057,6 +3053,10 @@
 
 #ifdef SDL_GetWindowProperties
 #undef SDL_GetWindowProperties
+#endif
+
+#ifdef SDL_GetWindowRelativeMouseMode
+#undef SDL_GetWindowRelativeMouseMode
 #endif
 
 #ifdef SDL_GetWindowSafeArea
@@ -4115,10 +4115,6 @@
 #undef SDL_SetPrimarySelectionText
 #endif
 
-#ifdef SDL_SetRelativeMouseMode
-#undef SDL_SetRelativeMouseMode
-#endif
-
 #ifdef SDL_SetRenderClipRect
 #undef SDL_SetRenderClipRect
 #endif
@@ -4297,6 +4293,10 @@
 
 #ifdef SDL_SetWindowPosition
 #undef SDL_SetWindowPosition
+#endif
+
+#ifdef SDL_SetWindowRelativeMouseMode
+#undef SDL_SetWindowRelativeMouseMode
 #endif
 
 #ifdef SDL_SetWindowResizable
