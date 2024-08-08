@@ -2045,17 +2045,19 @@ SDL_RWFromFile(const char *file, const char *mode)
     #if defined(SDL_PLATFORM_APPLE)
     char *adjusted_path = NULL;
     /* If the file mode is writable, skip all the bundle stuff because generally the bundle is read-only. */
-    if ((SDL3_strchr(mode, 'r') != NULL) && SDL3_GetHintBoolean(SDL_HINT_APPLE_RWFROMFILE_USE_RESOURCES, SDL_TRUE)) {
+    if (mode && (SDL3_strchr(mode, 'r') != NULL) && SDL3_GetHintBoolean(SDL_HINT_APPLE_RWFROMFILE_USE_RESOURCES, SDL_TRUE)) {
         const char *base = SDL3_GetBasePath();
-        if (!base) {
-            return NULL;
-        } else if (SDL3_asprintf(&adjusted_path, "%s%s", base, file) < 0) {
-            return NULL;
+        if (base) {
+            if (SDL3_asprintf(&adjusted_path, "%s%s", base, file) < 0) {
+                return NULL;
+            }
+            rwops2 = RWops3to2(SDL3_IOFromFile(adjusted_path, mode), SDL_RWOPS_PLATFORM_FILE);
+            SDL_free(adjusted_path);
         }
-        file = adjusted_path;
     }
-    rwops2 = RWops3to2(SDL3_IOFromFile(file, mode), SDL_RWOPS_PLATFORM_FILE);
-    SDL_free(adjusted_path);
+    if (!rwops2) {
+        rwops2 = RWops3to2(SDL3_IOFromFile(file, mode), SDL_RWOPS_PLATFORM_FILE);
+    }
     #else
     rwops2 = RWops3to2(SDL3_IOFromFile(file, mode), SDL_RWOPS_PLATFORM_FILE);
     #endif
