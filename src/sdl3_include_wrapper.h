@@ -199,6 +199,7 @@
 #define SDL_GetAudioDeviceGain IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceGain
 #define SDL_GetAudioDeviceName IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceName
 #define SDL_GetAudioDriver IGNORE_THIS_VERSION_OF_SDL_GetAudioDriver
+#define SDL_GetAudioFormatName IGNORE_THIS_VERSION_OF_SDL_GetAudioFormatName
 #define SDL_GetAudioPlaybackDevices IGNORE_THIS_VERSION_OF_SDL_GetAudioPlaybackDevices
 #define SDL_GetAudioRecordingDevices IGNORE_THIS_VERSION_OF_SDL_GetAudioRecordingDevices
 #define SDL_GetAudioStreamAvailable IGNORE_THIS_VERSION_OF_SDL_GetAudioStreamAvailable
@@ -1785,6 +1786,10 @@
 
 #ifdef SDL_GetAudioDriver
 #undef SDL_GetAudioDriver
+#endif
+
+#ifdef SDL_GetAudioFormatName
+#undef SDL_GetAudioFormatName
 #endif
 
 #ifdef SDL_GetAudioPlaybackDevices
