@@ -387,13 +387,6 @@
 #define SDL_GetNumberProperty IGNORE_THIS_VERSION_OF_SDL_GetNumberProperty
 #define SDL_GetOriginalMemoryFunctions IGNORE_THIS_VERSION_OF_SDL_GetOriginalMemoryFunctions
 #define SDL_GetPathInfo IGNORE_THIS_VERSION_OF_SDL_GetPathInfo
-#define SDL_GetPenCapabilities IGNORE_THIS_VERSION_OF_SDL_GetPenCapabilities
-#define SDL_GetPenFromGUID IGNORE_THIS_VERSION_OF_SDL_GetPenFromGUID
-#define SDL_GetPenGUID IGNORE_THIS_VERSION_OF_SDL_GetPenGUID
-#define SDL_GetPenName IGNORE_THIS_VERSION_OF_SDL_GetPenName
-#define SDL_GetPenStatus IGNORE_THIS_VERSION_OF_SDL_GetPenStatus
-#define SDL_GetPenType IGNORE_THIS_VERSION_OF_SDL_GetPenType
-#define SDL_GetPens IGNORE_THIS_VERSION_OF_SDL_GetPens
 #define SDL_GetPerformanceCounter IGNORE_THIS_VERSION_OF_SDL_GetPerformanceCounter
 #define SDL_GetPerformanceFrequency IGNORE_THIS_VERSION_OF_SDL_GetPerformanceFrequency
 #define SDL_GetPixelFormatDetails IGNORE_THIS_VERSION_OF_SDL_GetPixelFormatDetails
@@ -643,7 +636,6 @@
 #define SDL_PauseAudioStreamDevice IGNORE_THIS_VERSION_OF_SDL_PauseAudioStreamDevice
 #define SDL_PauseHaptic IGNORE_THIS_VERSION_OF_SDL_PauseHaptic
 #define SDL_PeepEvents IGNORE_THIS_VERSION_OF_SDL_PeepEvents
-#define SDL_PenConnected IGNORE_THIS_VERSION_OF_SDL_PenConnected
 #define SDL_PlayHapticRumble IGNORE_THIS_VERSION_OF_SDL_PlayHapticRumble
 #define SDL_PollEvent IGNORE_THIS_VERSION_OF_SDL_PollEvent
 #define SDL_PremultiplyAlpha IGNORE_THIS_VERSION_OF_SDL_PremultiplyAlpha
@@ -2540,34 +2532,6 @@
 #undef SDL_GetPathInfo
 #endif
 
-#ifdef SDL_GetPenCapabilities
-#undef SDL_GetPenCapabilities
-#endif
-
-#ifdef SDL_GetPenFromGUID
-#undef SDL_GetPenFromGUID
-#endif
-
-#ifdef SDL_GetPenGUID
-#undef SDL_GetPenGUID
-#endif
-
-#ifdef SDL_GetPenName
-#undef SDL_GetPenName
-#endif
-
-#ifdef SDL_GetPenStatus
-#undef SDL_GetPenStatus
-#endif
-
-#ifdef SDL_GetPenType
-#undef SDL_GetPenType
-#endif
-
-#ifdef SDL_GetPens
-#undef SDL_GetPens
-#endif
-
 #ifdef SDL_GetPerformanceCounter
 #undef SDL_GetPerformanceCounter
 #endif
@@ -3562,10 +3526,6 @@
 
 #ifdef SDL_PeepEvents
 #undef SDL_PeepEvents
-#endif
-
-#ifdef SDL_PenConnected
-#undef SDL_PenConnected
 #endif
 
 #ifdef SDL_PlayHapticRumble
