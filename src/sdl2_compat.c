@@ -6669,7 +6669,7 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
         SDL3_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, y);
         SDL3_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, w);
         SDL3_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, h);
-        SDL3_SetNumberProperty(props, "flags", flags);
+        SDL3_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_FLAGS_NUMBER, flags);
         SDL3_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_EXTERNAL_GRAPHICS_CONTEXT_BOOLEAN, SDL3_GetHintBoolean("SDL_VIDEO_EXTERNAL_CONTEXT", SDL_FALSE));
 
         window = SDL3_CreateWindowWithProperties(props);
