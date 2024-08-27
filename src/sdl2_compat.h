@@ -42,6 +42,8 @@ SDL_COMPILE_TIME_ASSERT(SDL23bool, sizeof(SDL2_DUMMY_ENUM) == sizeof(SDL_bool));
 #define SDL2_DISABLE  0
 #define SDL2_ENABLE   1
 
+#define SDL2_MUTEX_TIMEDOUT 1
+
 /* changed values in SDL3 */
 #define SDL2_HAPTIC_CONSTANT   (1u<<0)
 #define SDL2_HAPTIC_SINE       (1u<<1)

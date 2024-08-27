@@ -140,11 +140,15 @@ extern "C" {
 /* Things that _should_ be binary compatible pass right through... */
 #define SDL3_SYM_PASSTHROUGH(rc,fn,params,args,ret) \
     SDL_DECLSPEC rc SDLCALL SDL_##fn params { ret SDL3_##fn args; }
+#define SDL3_SYM_PASSTHROUGH_RETCODE(rc,fn,params,args,ret) \
+    SDL_DECLSPEC int SDLCALL SDL_##fn params { ret (SDL3_##fn args) ? 0 : -1; }
 #include "sdl3_syms.h"
 
 /* Things that were renamed and _should_ be binary compatible pass right through with the correct names... */
 #define SDL3_SYM_RENAMED(rc,oldfn,newfn,params,args,ret) \
     SDL_DECLSPEC rc SDLCALL SDL_##oldfn params { ret SDL3_##newfn args; }
+#define SDL3_SYM_RENAMED_RETCODE(rc,oldfn,newfn,params,args,ret) \
+    SDL_DECLSPEC int SDLCALL SDL_##oldfn params { ret (SDL3_##newfn args) ? 0 : -1; }
 #include "sdl3_syms.h"
 
 
@@ -466,13 +470,13 @@ SDL2_to_SDL3_hint(const char *name)
 SDL_DECLSPEC SDL_bool SDLCALL
 SDL_SetHintWithPriority(const char *name, const char *value, SDL_HintPriority priority)
 {
-    return SDL3_SetHintWithPriority(SDL2_to_SDL3_hint(name), value, priority) == 0;
+    return SDL3_SetHintWithPriority(SDL2_to_SDL3_hint(name), value, priority);
 }
 
 SDL_DECLSPEC SDL_bool SDLCALL
 SDL_SetHint(const char *name, const char *value)
 {
-    return SDL3_SetHint(SDL2_to_SDL3_hint(name), value) == 0;
+    return SDL3_SetHint(SDL2_to_SDL3_hint(name), value);
 }
 
 SDL_DECLSPEC const char * SDLCALL
@@ -484,7 +488,7 @@ SDL_GetHint(const char *name)
 SDL_DECLSPEC SDL_bool SDLCALL
 SDL_ResetHint(const char *name)
 {
-    return SDL3_ResetHint(SDL2_to_SDL3_hint(name)) == 0;
+    return SDL3_ResetHint(SDL2_to_SDL3_hint(name));
 }
 
 SDL_DECLSPEC SDL_bool SDLCALL
@@ -943,18 +947,25 @@ SDL_Error(SDL_errorcode code)
 {
     switch (code) {
     case SDL_ENOMEM:
-        return SDL3_OutOfMemory();
+        SDL3_OutOfMemory();
+        break;
     case SDL_EFREAD:
-        return SDL3_SetError("Error reading from datastream");
+        SDL3_SetError("Error reading from datastream");
+        break;
     case SDL_EFWRITE:
-        return SDL3_SetError("Error writing to datastream");
+        SDL3_SetError("Error writing to datastream");
+        break;
     case SDL_EFSEEK:
-        return SDL3_SetError("Error seeking in datastream");
+        SDL3_SetError("Error seeking in datastream");
+        break;
     case SDL_UNSUPPORTED:
-        return SDL3_Unsupported();
+        SDL3_Unsupported();
+        break;
     default:
-        return SDL3_SetError("Unknown SDL error");
+        SDL3_SetError("Unknown SDL error");
+        break;
     }
+    return -1;
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -1391,7 +1402,13 @@ SDL_DECLSPEC int SDLCALL
 SDL_PushEvent(SDL2_Event *event2)
 {
     SDL_Event event3;
-    return SDL3_PushEvent(Event2to3(event2, &event3));
+    if (SDL3_PushEvent(Event2to3(event2, &event3))) {
+        return 1;
+    } else if (*SDL_GetError() == '\0') {
+        return 0;
+    } else {
+        return -1;
+    }
 }
 
 static int Display_IDToIndex(SDL_DisplayID displayID);
@@ -1439,7 +1456,7 @@ WindowEventType3To2(Uint32 event_type3)
     }
 }
 
-static int SDLCALL
+static SDL_bool SDLCALL
 EventFilter3to2(void *userdata, SDL_Event *event3)
 {
     SDL2_Event event2;  /* note that event filters do not receive events as const! So we have to convert or copy it for each one! */
@@ -1657,7 +1674,7 @@ SDL_DelEventWatch(SDL2_EventFilter filter2, void *userdata)
     SDL3_UnlockMutex(EventWatchListMutex);
 }
 
-static int SDLCALL
+static SDL_bool SDLCALL
 EventFilterWrapper3to2(void *userdata, SDL_Event *event)
 {
     const EventFilterWrapperData *wrapperdata = (const EventFilterWrapperData *) userdata;
@@ -1926,7 +1943,7 @@ SDL_WarpMouseInWindow(SDL_Window *window, int x, int y)
 SDL_DECLSPEC int SDLCALL
 SDL_WarpMouseGlobal(int x, int y)
 {
-    return SDL3_WarpMouseGlobal((float)x, (float)y);
+    return SDL3_WarpMouseGlobal((float)x, (float)y) ? 0 : -1;
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -1938,7 +1955,7 @@ SDL_SetRelativeMouseMode(SDL_bool enabled)
         int i;
 
         for (i = 0; windows[i]; ++i) {
-            if (SDL3_SetWindowRelativeMouseMode(windows[i], enabled) < 0) {
+            if (!SDL3_SetWindowRelativeMouseMode(windows[i], enabled)) {
                 retval = -1;
             }
         }
@@ -2008,7 +2025,7 @@ RWops3to2_write(SDL2_RWops *rwops2, const void *ptr, size_t size, size_t maxnum)
 static int SDLCALL
 RWops3to2_close(SDL2_RWops *rwops2)
 {
-    const int retval = SDL3_CloseIO(rwops2->hidden.sdl3.iostrm);
+    const int retval = SDL3_CloseIO(rwops2->hidden.sdl3.iostrm) ? 0 : -1;
     SDL_FreeRW(rwops2);
     return retval;
 }
@@ -2233,19 +2250,22 @@ stdio_seek(SDL2_RWops *rwops2, Sint64 offset, int whence)
         stdiowhence = SEEK_END;
         break;
     default:
-        return SDL3_SetError("Unknown value for 'whence'");
+        SDL3_SetError("Unknown value for 'whence'");
+        return -1;
     }
 
 #if defined(FSEEK_OFF_MIN) && defined(FSEEK_OFF_MAX)
     if (offset < (Sint64)(FSEEK_OFF_MIN) || offset > (Sint64)(FSEEK_OFF_MAX)) {
-        return SDL3_SetError("Seek offset out of range");
+        SDL3_SetError("Seek offset out of range");
+        return -1;
     }
 #endif
 
     if (fseek(fp, (long)offset, stdiowhence) == 0) {
         Sint64 pos = ftell(fp);
         if (pos < 0) {
-            return SDL3_SetError("Couldn't get stream offset");
+            SDL3_SetError("Couldn't get stream offset");
+            return -1;
         }
         return pos;
     }
@@ -2331,12 +2351,12 @@ RWops2to3_write(void *userdata, const void *ptr, size_t size, SDL_IOStatus *stat
     return SDL_RWwrite((SDL2_RWops *) userdata, ptr, 1, size);
 }
 
-static int SDLCALL
+static SDL_bool SDLCALL
 RWops2to3_close(void *userdata)
 {
     /* Never close the SDL2_RWops here! This is just a wrapper to talk to SDL3 APIs. We will manually close the rwops2 if appropriate. */
-    /*return SDL_CloseIO((SDL2_RWops *) userdata);*/
-    return 0;
+    /*return SDL_CloseIO((SDL2_RWops *) userdata) ? 0 : -1;*/
+    return SDL_TRUE;
 }
 
 static SDL_IOStream *
@@ -2388,9 +2408,9 @@ SDL_LoadWAV_RW(SDL2_RWops *rwops2, int freesrc, SDL2_AudioSpec *spec2, Uint8 **a
         SDL_IOStream *iostrm3 = RWops2to3(rwops2);
         if (iostrm3) {
             SDL_AudioSpec spec3;
-            const int rc = SDL3_LoadWAV_IO(iostrm3, SDL_TRUE, &spec3, audio_buf, audio_len);   /* always close the iostrm3 bridge object. */
+            const SDL_bool rc = SDL3_LoadWAV_IO(iostrm3, SDL_TRUE, &spec3, audio_buf, audio_len);   /* always close the iostrm3 bridge object. */
             SDL3_zerop(spec2);
-            if (rc == 0) {
+            if (rc) {
                 spec2->format = spec3.format;
                 spec2->channels = spec3.channels;
                 spec2->freq = spec3.freq;
@@ -2521,7 +2541,7 @@ SDL_SaveBMP_RW(SDL2_Surface *surface, SDL2_RWops *rwops, int freedst)
     int retval = -1;
     SDL_IOStream *iostream = RWops2to3(rwops);
     if (iostream) {
-        retval = SDL3_SaveBMP_IO(Surface2to3(surface), iostream, SDL_TRUE);    /* always close the iostrm3 bridge object. */
+        retval = SDL3_SaveBMP_IO(Surface2to3(surface), iostream, SDL_TRUE) ? 0 : -1;    /* always close the iostrm3 bridge object. */
     }
     if (rwops && freedst) {
         SDL_RWclose(rwops);
@@ -2551,14 +2571,15 @@ SDL_GameControllerAddMappingsFromRW(SDL2_RWops *rwops2, int freerw)
 SDL_DECLSPEC int SDLCALL
 SDL_SetWindowBrightness(SDL_Window *window, float brightness)
 {
-    return SDL3_Unsupported();
+    SDL3_Unsupported();
+    return -1;
 }
 
 SDL_DECLSPEC float SDLCALL
 SDL_GetWindowBrightness(SDL_Window *window)
 {
     if (!window) {
-        SDL_SetError("Invalid window");
+        SDL3_SetError("Invalid window");
     }
     return 1.0f;
 }
@@ -2566,7 +2587,8 @@ SDL_GetWindowBrightness(SDL_Window *window)
 SDL_DECLSPEC int SDLCALL
 SDL_SetWindowGammaRamp(SDL_Window *window, const Uint16 *r, const Uint16 *g, const Uint16 *b)
 {
-    return SDL3_Unsupported();
+    SDL3_Unsupported();
+    return -1;
 }
 
 SDL_DECLSPEC void SDLCALL
@@ -2616,7 +2638,8 @@ SDL_GetWindowGammaRamp(SDL_Window *window, Uint16 *red, Uint16 *blue, Uint16 *gr
     Uint16 *buf;
 
     if (!window) {
-        return SDL_SetError("Invalid window");
+        SDL3_SetError("Invalid window");
+        return -1;
     }
 
     buf = red ? red : (green ? green : blue);
@@ -2730,13 +2753,13 @@ SDL_ConvertPixels(int width, int height, Uint32 src_format, const void *src, int
 {
     SDL_Colorspace src_colorspace = GetColorspaceForFormatAndSize(src_format, width, height);
     SDL_Colorspace dst_colorspace = GetColorspaceForFormatAndSize(dst_format, width, height);
-    return SDL3_ConvertPixelsAndColorspace(width, height, (SDL_PixelFormat)src_format, src_colorspace, 0, src, src_pitch, (SDL_PixelFormat)dst_format, dst_colorspace, 0, dst, dst_pitch);
+    return SDL3_ConvertPixelsAndColorspace(width, height, (SDL_PixelFormat)src_format, src_colorspace, 0, src, src_pitch, (SDL_PixelFormat)dst_format, dst_colorspace, 0, dst, dst_pitch) ? 0 : -1;
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_PremultiplyAlpha(int width, int height, Uint32 src_format, const void * src, int src_pitch, Uint32 dst_format, void * dst, int dst_pitch)
 {
-    return SDL3_PremultiplyAlpha(width, height, (SDL_PixelFormat)src_format, src, src_pitch, (SDL_PixelFormat)dst_format, dst, dst_pitch, SDL_FALSE);
+    return SDL3_PremultiplyAlpha(width, height, (SDL_PixelFormat)src_format, src, src_pitch, (SDL_PixelFormat)dst_format, dst, dst_pitch, SDL_FALSE) ? 0 : -1;
 }
 
 SDL_DECLSPEC SDL2_Surface * SDLCALL
@@ -2780,13 +2803,13 @@ SDL_FreeSurface(SDL2_Surface *surface)
 SDL_DECLSPEC int SDLCALL
 SDL_FillRect(SDL2_Surface *dst, const SDL_Rect *rect, Uint32 color)
 {
-    return SDL3_FillSurfaceRect(Surface2to3(dst), rect, color);
+    return SDL3_FillSurfaceRect(Surface2to3(dst), rect, color) ? 0 : -1;
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_FillRects(SDL2_Surface *dst, const SDL_Rect *rects, int count, Uint32 color)
 {
-    return SDL3_FillSurfaceRects(Surface2to3(dst), rects, count, color);
+    return SDL3_FillSurfaceRects(Surface2to3(dst), rects, count, color) ? 0 : -1;
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -2796,11 +2819,14 @@ SDL_UpperBlit(SDL2_Surface *src, const SDL_Rect *srcrect, SDL2_Surface *dst, SDL
 
     /* Make sure the surfaces aren't locked */
     if (!src) {
-        return SDL3_InvalidParamError("src");
+        SDL3_InvalidParamError("src");
+        return -1;
     } else if (!dst) {
-        return SDL3_InvalidParamError("dst");
+        SDL3_InvalidParamError("dst");
+        return -1;
     } else if (src->locked || dst->locked) {
-        return SDL3_SetError("Surfaces must not be locked during blit");
+        SDL3_SetError("Surfaces must not be locked during blit");
+        return -1;
     }
 
     /* Full src surface */
@@ -2870,7 +2896,7 @@ end:
 SDL_DECLSPEC int SDLCALL
 SDL_LowerBlit(SDL2_Surface *src, SDL_Rect *srcrect, SDL2_Surface *dst, SDL_Rect *dstrect)
 {
-    return SDL3_BlitSurfaceUnchecked(Surface2to3(src), srcrect, Surface2to3(dst), dstrect);
+    return SDL3_BlitSurfaceUnchecked(Surface2to3(src), srcrect, Surface2to3(dst), dstrect) ? 0 : -1;
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -2885,10 +2911,12 @@ SDL_UpperBlitScaled(SDL2_Surface *src, const SDL_Rect *srcrect, SDL2_Surface *ds
 
     /* Make sure the surfaces aren't locked */
     if (!src || !dst) {
-        return SDL3_InvalidParamError("SDL_UpperBlitScaled(): src/dst");
+        SDL3_InvalidParamError("SDL_UpperBlitScaled(): src/dst");
+        return -1;
     }
     if (src->locked || dst->locked) {
-        return SDL3_SetError("Surfaces must not be locked during blit");
+        SDL3_SetError("Surfaces must not be locked during blit");
+        return -1;
     }
 
     if (!srcrect) {
@@ -3034,19 +3062,19 @@ SDL_UpperBlitScaled(SDL2_Surface *src, const SDL_Rect *srcrect, SDL2_Surface *ds
 SDL_DECLSPEC int SDLCALL
 SDL_LowerBlitScaled(SDL2_Surface *src, SDL_Rect *srcrect, SDL2_Surface *dst, SDL_Rect *dstrect)
 {
-    return SDL3_BlitSurfaceUncheckedScaled(Surface2to3(src), srcrect, Surface2to3(dst), dstrect, SDL_SCALEMODE_NEAREST);
+    return SDL3_BlitSurfaceUncheckedScaled(Surface2to3(src), srcrect, Surface2to3(dst), dstrect, SDL_SCALEMODE_NEAREST) ? 0 : -1;
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_SoftStretch(SDL2_Surface *src, const SDL_Rect *srcrect, SDL2_Surface *dst, const SDL_Rect *dstrect)
 {
-    return SDL3_BlitSurfaceScaled(Surface2to3(src), srcrect, Surface2to3(dst), dstrect, SDL_SCALEMODE_NEAREST);
+    return SDL3_BlitSurfaceScaled(Surface2to3(src), srcrect, Surface2to3(dst), dstrect, SDL_SCALEMODE_NEAREST) ? 0 : -1;
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_SoftStretchLinear(SDL2_Surface *src, const SDL_Rect *srcrect, SDL2_Surface *dst, const SDL_Rect *dstrect)
 {
-    return SDL3_BlitSurfaceScaled(Surface2to3(src), srcrect, Surface2to3(dst), dstrect, SDL_SCALEMODE_LINEAR);
+    return SDL3_BlitSurfaceScaled(Surface2to3(src), srcrect, Surface2to3(dst), dstrect, SDL_SCALEMODE_LINEAR) ? 0 : -1;
 }
 
 /* SDL_GetTicks is 64-bit in SDL3. Clamp it for SDL2. */
@@ -3168,14 +3196,16 @@ SDL_DECLSPEC SDL_bool SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWMi
 SDL_DECLSPEC int SDLCALL
 SDL_GameControllerGetSensorDataWithTimestamp(SDL_GameController *gamecontroller, SDL_SensorType type, Uint64 *timestamp, float *data, int num_values)
 {
-    return SDL3_Unsupported();  /* !!! FIXME: maybe try to track this from SDL3 events if something needs this? I can't imagine this was widely used. */
+    SDL3_Unsupported();  /* !!! FIXME: maybe try to track this from SDL3 events if something needs this? I can't imagine this was widely used. */
+    return -1;
 }
 
 /* this API was removed in SDL3; use sensor event timestamps instead! */
 SDL_DECLSPEC int SDLCALL
 SDL_SensorGetDataWithTimestamp(SDL_Sensor *sensor, Uint64 *timestamp, float *data, int num_values)
 {
-    return SDL3_Unsupported();  /* !!! FIXME: maybe try to track this from SDL3 events if something needs this? I can't imagine this was widely used. */
+    SDL3_Unsupported();  /* !!! FIXME: maybe try to track this from SDL3 events if something needs this? I can't imagine this was widely used. */
+    return -1;
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -3404,7 +3434,8 @@ SDL_SaveDollarTemplate(SDL2_GestureID gestureId, SDL2_RWops *dst)
             }
         }
     }
-    return SDL3_SetError("Unknown gestureId");
+    SDL3_SetError("Unknown gestureId");
+    return -1;
 }
 
 /* path is an already sampled set of points
@@ -3437,7 +3468,8 @@ GestureAddDollar(GestureTouch *inTouch, SDL_FPoint *path)
     if (inTouch == NULL) {
         int i, idx;
         if (GestureNumTouches == 0) {
-            return SDL3_SetError("no gesture touch devices registered");
+            SDL3_SetError("no gesture touch devices registered");
+            return -1;
         }
         for (i = 0, idx = -1; i < GestureNumTouches; i++) {
             inTouch = &GestureTouches[i];
@@ -3467,7 +3499,8 @@ SDL_LoadDollarTemplates(SDL_TouchID touchId, SDL2_RWops *src)
             }
         }
         if (touch == NULL) {
-            return SDL3_SetError("given touch id not found");
+            SDL3_SetError("given touch id not found");
+            return -1;
         }
     }
 
@@ -3476,7 +3509,8 @@ SDL_LoadDollarTemplates(SDL_TouchID touchId, SDL2_RWops *src)
 
         if (SDL_RWread(src, templ.path, sizeof(templ.path[0]), GESTURE_DOLLARNPOINTS) < GESTURE_DOLLARNPOINTS) {
             if (loaded == 0) {
-                return SDL3_SetError("could not read any dollar gesture from rwops");
+                SDL3_SetError("could not read any dollar gesture from rwops");
+                return -1;
             }
             break;
         }
@@ -3987,12 +4021,12 @@ SDL_SetWindowShape(SDL_Window *window, SDL2_Surface *shape, SDL_WindowShapeMode 
 
     SDL_CalculateShapeBitmap(*shape_mode, shape, (Uint32 *)surface->pixels, surface->pitch);
 
-    result = SDL3_SetWindowShape(window, surface);
+    result = SDL3_SetWindowShape(window, surface) ? 0 : -1;
     if (result == 0) {
         SDL_WindowShapeMode *property = (SDL_WindowShapeMode *)SDL3_malloc(sizeof(*property));
         if (property) {
             SDL3_copyp(property, shape_mode);
-            result = SDL3_SetPointerPropertyWithCleanup(SDL3_GetWindowProperties(window), PROP_WINDOW_SHAPE_MODE_POINTER, property, CleanupFreeableProperty, NULL);
+            result = SDL3_SetPointerPropertyWithCleanup(SDL3_GetWindowProperties(window), PROP_WINDOW_SHAPE_MODE_POINTER, property, CleanupFreeableProperty, NULL) ? 0 : -1;
         } else {
             result = -1;
         }
@@ -4249,9 +4283,9 @@ SDL_RenderSetLogicalSize(SDL_Renderer *renderer, int w, int h)
 {
     int retval;
     if (w == 0 && h == 0) {
-        retval = SDL3_SetRenderLogicalPresentation(renderer, 0, 0, SDL_LOGICAL_PRESENTATION_DISABLED, SDL_SCALEMODE_NEAREST);
+        retval = SDL3_SetRenderLogicalPresentation(renderer, 0, 0, SDL_LOGICAL_PRESENTATION_DISABLED, SDL_SCALEMODE_NEAREST) ? 0 : -1;
     } else {
-        retval = SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_LETTERBOX, SDL_SCALEMODE_LINEAR);
+        retval = SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_LETTERBOX, SDL_SCALEMODE_LINEAR) ? 0 : -1;
     }
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
@@ -4270,7 +4304,7 @@ SDL_RenderSetIntegerScale(SDL_Renderer *renderer, SDL_bool enable)
     int w, h;
     int retval;
 
-    retval = SDL3_GetRenderLogicalPresentation(renderer, &w, &h, &mode, &scale_mode);
+    retval = SDL3_GetRenderLogicalPresentation(renderer, &w, &h, &mode, &scale_mode) ? 0 : -1;
     if (retval < 0) {
         return retval;
     }
@@ -4284,9 +4318,9 @@ SDL_RenderSetIntegerScale(SDL_Renderer *renderer, SDL_bool enable)
     }
 
     if (enable) {
-        retval = SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE, scale_mode);
+        retval = SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE, scale_mode) ? 0 : -1;
     } else {
-        retval = SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_DISABLED, scale_mode);
+        retval = SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_DISABLED, scale_mode) ? 0 : -1;
     }
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
@@ -4295,7 +4329,7 @@ SDL_DECLSPEC SDL_bool SDLCALL
 SDL_RenderGetIntegerScale(SDL_Renderer *renderer)
 {
     SDL_RendererLogicalPresentation mode;
-    if (SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode, NULL) == 0) {
+    if (SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode, NULL)) {
         if (mode == SDL_LOGICAL_PRESENTATION_INTEGER_SCALE) {
             return SDL_TRUE;
         }
@@ -4306,21 +4340,21 @@ SDL_RenderGetIntegerScale(SDL_Renderer *renderer)
 SDL_DECLSPEC int SDLCALL
 SDL_RenderSetViewport(SDL_Renderer *renderer, const SDL_Rect *rect)
 {
-    const int retval = SDL3_SetRenderViewport(renderer, rect);
+    const int retval = SDL3_SetRenderViewport(renderer, rect) ? 0 : -1;
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_RenderSetClipRect(SDL_Renderer *renderer, const SDL_Rect *rect)
 {
-    const int retval = SDL3_SetRenderClipRect(renderer, rect);
+    const int retval = SDL3_SetRenderClipRect(renderer, rect) ? 0 : -1;
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_RenderClear(SDL_Renderer *renderer)
 {
-    const int retval = SDL3_RenderClear(renderer);
+    const int retval = SDL3_RenderClear(renderer) ? 0 : -1;
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
@@ -4331,14 +4365,14 @@ SDL_RenderDrawPointF(SDL_Renderer *renderer, float x, float y)
     SDL_FPoint fpoint;
     fpoint.x = x;
     fpoint.y = y;
-    retval = SDL3_RenderPoints(renderer, &fpoint, 1);
+    retval = SDL3_RenderPoints(renderer, &fpoint, 1) ? 0 : -1;
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_RenderDrawPoint(SDL_Renderer *renderer, int x, int y)
 {
-    return SDL_RenderDrawPointF(renderer, (float) x, (float) y);
+    return SDL_RenderDrawPointF(renderer, (float) x, (float) y) ? 0 : -1;
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -4350,7 +4384,8 @@ SDL_RenderDrawPoints(SDL_Renderer *renderer,
     int retval;
 
     if (points == NULL) {
-        return SDL3_InvalidParamError("points");
+        SDL3_InvalidParamError("points");
+        return -1;
     }
 
     fpoints = (SDL_FPoint *) SDL3_malloc(sizeof (SDL_FPoint) * count);
@@ -4363,7 +4398,7 @@ SDL_RenderDrawPoints(SDL_Renderer *renderer,
         fpoints[i].y = (float)points[i].y;
     }
 
-    retval = SDL3_RenderPoints(renderer, fpoints, count);
+    retval = SDL3_RenderPoints(renderer, fpoints, count) ? 0 : -1;
 
     SDL3_free(fpoints);
 
@@ -4373,7 +4408,7 @@ SDL_RenderDrawPoints(SDL_Renderer *renderer,
 SDL_DECLSPEC int SDLCALL
 SDL_RenderDrawPointsF(SDL_Renderer *renderer, const SDL_FPoint *points, int count)
 {
-    const int retval = SDL3_RenderPoints(renderer, points, count);
+    const int retval = SDL3_RenderPoints(renderer, points, count) ? 0 : -1;
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
@@ -4386,7 +4421,7 @@ SDL_RenderDrawLineF(SDL_Renderer *renderer, float x1, float y1, float x2, float 
     points[0].y = (float)y1;
     points[1].x = (float)x2;
     points[1].y = (float)y2;
-    retval = SDL3_RenderLines(renderer, points, 2);
+    retval = SDL3_RenderLines(renderer, points, 2) ? 0 : -1;
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
@@ -4404,7 +4439,8 @@ SDL_RenderDrawLines(SDL_Renderer *renderer, const SDL_Point *points, int count)
     int retval;
 
     if (points == NULL) {
-        return SDL3_InvalidParamError("points");
+        SDL3_InvalidParamError("points");
+        return -1;
     }
     if (count < 2) {
         return 0;
@@ -4420,7 +4456,7 @@ SDL_RenderDrawLines(SDL_Renderer *renderer, const SDL_Point *points, int count)
         fpoints[i].y = (float)points[i].y;
     }
 
-    retval = SDL3_RenderLines(renderer, fpoints, count);
+    retval = SDL3_RenderLines(renderer, fpoints, count) ? 0 : -1;
 
     SDL3_free(fpoints);
 
@@ -4430,7 +4466,7 @@ SDL_RenderDrawLines(SDL_Renderer *renderer, const SDL_Point *points, int count)
 SDL_DECLSPEC int SDLCALL
 SDL_RenderDrawLinesF(SDL_Renderer *renderer, const SDL_FPoint *points, int count)
 {
-    const int retval = SDL3_RenderLines(renderer, points, count);
+    const int retval = SDL3_RenderLines(renderer, points, count) ? 0 : -1;
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
@@ -4449,7 +4485,7 @@ SDL_RenderDrawRect(SDL_Renderer *renderer, const SDL_Rect *rect)
         prect = &frect;
     }
 
-    retval = SDL3_RenderRect(renderer, prect);
+    retval = SDL3_RenderRect(renderer, prect) ? 0 : -1;
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
@@ -4459,7 +4495,8 @@ SDL_RenderDrawRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
     int i;
 
     if (rects == NULL) {
-        return SDL3_InvalidParamError("rects");
+        SDL3_InvalidParamError("rects");
+        return -1;
     }
     if (count < 1) {
         return 0;
@@ -4476,14 +4513,14 @@ SDL_RenderDrawRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
 SDL_DECLSPEC int SDLCALL
 SDL_RenderDrawRectF(SDL_Renderer *renderer, const SDL_FRect *rect)
 {
-    const int retval = SDL3_RenderRect(renderer, rect);
+    const int retval = SDL3_RenderRect(renderer, rect) ? 0 : -1;
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_RenderDrawRectsF(SDL_Renderer *renderer, const SDL_FRect *rects, int count)
 {
-    const int retval = SDL3_RenderRects(renderer, rects, count);
+    const int retval = SDL3_RenderRects(renderer, rects, count) ? 0 : -1;
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
@@ -4497,9 +4534,9 @@ SDL_RenderFillRect(SDL_Renderer *renderer, const SDL_Rect *rect)
         frect.y = (float)rect->y;
         frect.w = (float)rect->w;
         frect.h = (float)rect->h;
-        return SDL3_RenderFillRect(renderer, &frect);
+        return SDL3_RenderFillRect(renderer, &frect) ? 0 : -1;
     }
-    retval = SDL3_RenderFillRect(renderer, NULL);
+    retval = SDL3_RenderFillRect(renderer, NULL) ? 0 : -1;
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
@@ -4511,7 +4548,8 @@ SDL_RenderFillRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
     int retval;
 
     if (rects == NULL) {
-        return SDL3_InvalidParamError("rects");
+        SDL3_InvalidParamError("rects");
+        return -1;
     }
     if (count < 1) {
         return 0;
@@ -4529,7 +4567,7 @@ SDL_RenderFillRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
         frects[i].h = (float)rects[i].h;
     }
 
-    retval = SDL3_RenderFillRects(renderer, frects, count);
+    retval = SDL3_RenderFillRects(renderer, frects, count) ? 0 : -1;
 
     SDL3_free(frects);
 
@@ -4539,14 +4577,14 @@ SDL_RenderFillRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
 SDL_DECLSPEC int SDLCALL
 SDL_RenderFillRectF(SDL_Renderer *renderer, const SDL_FRect *rect)
 {
-    const int retval = SDL3_RenderFillRect(renderer, rect);
+    const int retval = SDL3_RenderFillRect(renderer, rect) ? 0 : -1;
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_RenderFillRectsF(SDL_Renderer *renderer, const SDL_FRect *rects, int count)
 {
-    const int retval = SDL3_RenderFillRects(renderer, rects, count);
+    const int retval = SDL3_RenderFillRects(renderer, rects, count) ? 0 : -1;
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
@@ -4572,7 +4610,7 @@ SDL_RenderCopy(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect *src
         dstfrect.h = (float)dstrect->h;
         pdstfrect = &dstfrect;
     }
-    retval = SDL3_RenderTexture(renderer, texture, psrcfrect, pdstfrect);
+    retval = SDL3_RenderTexture(renderer, texture, psrcfrect, pdstfrect) ? 0 : -1;
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
@@ -4589,7 +4627,7 @@ SDL_RenderCopyF(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect *sr
         srcfrect.h = (float)srcrect->h;
         psrcfrect = &srcfrect;
     }
-    retval = SDL3_RenderTexture(renderer, texture, psrcfrect, dstrect);
+    retval = SDL3_RenderTexture(renderer, texture, psrcfrect, dstrect) ? 0 : -1;
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
@@ -4628,7 +4666,7 @@ SDL_RenderCopyEx(SDL_Renderer *renderer, SDL_Texture *texture,
         pfcenter = &fcenter;
     }
 
-    retval = SDL3_RenderTextureRotated(renderer, texture, psrcfrect, pdstfrect, angle, pfcenter, flip);
+    retval = SDL3_RenderTextureRotated(renderer, texture, psrcfrect, pdstfrect, angle, pfcenter, flip) ? 0 : -1;
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
@@ -4649,7 +4687,7 @@ SDL_RenderCopyExF(SDL_Renderer *renderer, SDL_Texture *texture,
         psrcfrect = &srcfrect;
     }
 
-    retval = SDL3_RenderTextureRotated(renderer, texture, psrcfrect, dstrect, angle, center, flip);
+    retval = SDL3_RenderTextureRotated(renderer, texture, psrcfrect, dstrect, angle, center, flip) ? 0 : -1;
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
@@ -4666,7 +4704,8 @@ SDL_RenderGeometry(SDL_Renderer *renderer, SDL_Texture *texture, const SDL2_Vert
         int size_indices = 4;
         return SDL_RenderGeometryRaw(renderer, texture, xy, xy_stride, color, color_stride, uv, uv_stride, num_vertices, indices, num_indices, size_indices);
     }
-    return SDL3_InvalidParamError("vertices");
+    SDL3_InvalidParamError("vertices");
+    return -1;
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -4677,15 +4716,18 @@ SDL_RenderGeometryRaw(SDL_Renderer *renderer, SDL_Texture *texture, const float 
     SDL_FColor *color3;
 
     if (num_vertices <= 0) {
-        return SDL3_InvalidParamError("num_vertices");
+        SDL3_InvalidParamError("num_vertices");
+        return -1;
     }
     if (!color) {
-        return SDL3_InvalidParamError("color");
+        SDL3_InvalidParamError("color");
+        return -1;
     }
 
     color3 = (SDL_FColor *) SDL3_small_alloc(SDL_FColor, num_vertices, &isstack);
     if (!color3) {
-        return SDL3_OutOfMemory();
+        SDL3_OutOfMemory();
+        return -1;
     }
     for (i = 0; i < num_vertices; ++i) {
         color3[i].r = color->r / 255.0f;
@@ -4697,7 +4739,7 @@ SDL_RenderGeometryRaw(SDL_Renderer *renderer, SDL_Texture *texture, const float 
     }
 
     color_stride = sizeof(SDL_FColor);
-    retval = SDL3_RenderGeometryRaw(renderer, texture, xy, xy_stride, color3, color_stride, uv, uv_stride, num_vertices, indices, num_indices, size_indices);
+    retval = SDL3_RenderGeometryRaw(renderer, texture, xy, xy_stride, color3, color_stride, uv, uv_stride, num_vertices, indices, num_indices, size_indices) ? 0 : -1;
     SDL3_small_free(color3, isstack);
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
@@ -4712,7 +4754,7 @@ SDL_RenderReadPixels(SDL_Renderer * renderer, const SDL_Rect * rect, Uint32 form
         return -1;
     }
 
-    if (SDL3_ConvertPixelsAndColorspace(surface->w, surface->h, surface->format, SDL3_GetSurfaceColorspace(surface), SDL3_GetSurfaceProperties(surface), surface->pixels, surface->pitch, (SDL_PixelFormat)format, SDL_COLORSPACE_SRGB, 0, pixels, pitch) == 0) {
+    if (SDL3_ConvertPixelsAndColorspace(surface->w, surface->h, surface->format, SDL3_GetSurfaceColorspace(surface), SDL3_GetSurfaceProperties(surface), surface->pixels, surface->pitch, (SDL_PixelFormat)format, SDL_COLORSPACE_SRGB, 0, pixels, pitch)) {
         result = 0;
     }
 
@@ -4794,6 +4836,16 @@ SDL_LockMutex(SDL_Mutex *a)
 }
 
 SDL_DECLSPEC int SDLCALL
+SDL_TryLockMutex(SDL_Mutex *a)
+{
+    if (SDL3_TryLockMutex(a)) {
+        return 0;
+    } else {
+        return SDL2_MUTEX_TIMEDOUT;
+    }
+}
+
+SDL_DECLSPEC int SDLCALL
 SDL_UnlockMutex(SDL_Mutex *a)
 {
     SDL3_UnlockMutex(a);
@@ -4860,11 +4912,7 @@ SDL_RemoveTimer(SDL2_TimerID id)
     SDL3_snprintf(name, sizeof(name), "%" SDL_PRIu32, id);
     SDL3_ClearProperty(timers, name);
 
-    if (SDL3_RemoveTimer((SDL_TimerID)id) == 0) {
-        return SDL_TRUE;
-    } else {
-        return SDL_FALSE;
-    }
+    return SDL3_RemoveTimer((SDL_TimerID)id);
 }
 
 
@@ -4874,7 +4922,7 @@ SDL_AudioInit(const char *driver_name)
     if (driver_name) {
         SDL3_SetHint("SDL_AUDIO_DRIVER", driver_name);
     }
-    return SDL3_InitSubSystem(SDL_INIT_AUDIO);
+    return SDL3_InitSubSystem(SDL_INIT_AUDIO) ? 0 : -1;
 }
 
 SDL_DECLSPEC void SDLCALL
@@ -4891,7 +4939,7 @@ SDL_VideoInit(const char *driver_name)
         SDL3_SetHint("SDL_VIDEO_DRIVER", driver_name);
     }
 
-    ret = SDL3_InitSubSystem(SDL_INIT_VIDEO);
+    ret = SDL3_InitSubSystem(SDL_INIT_VIDEO) ? 0 : -1;
 
     /* default SDL2 GL attributes */
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 3);
@@ -4913,7 +4961,7 @@ SDL_Init(Uint32 flags)
 {
     int ret;
 
-    ret = SDL3_Init(flags);
+    ret = SDL3_InitSubSystem(flags) ? 0 : -1;
     if (flags & SDL_INIT_VIDEO) {
         /* default SDL2 GL attributes */
         SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 3);
@@ -4955,7 +5003,7 @@ SDL_InitSubSystem(Uint32 flags)
         SDL_SetHint(SDL_HINT_IME_IMPLEMENTED_UI, hint);
     }
 
-    ret = SDL3_InitSubSystem(flags);
+    ret = SDL3_InitSubSystem(flags) ? 0 : -1;
     if (flags & SDL_INIT_VIDEO) {
         /* default SDL2 GL attributes */
         SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 3);
@@ -5117,7 +5165,8 @@ SDL_GetNumAudioDevices(int iscapture)
     int retval;
 
     if (!SDL3_GetCurrentAudioDriver()) {
-        return SDL3_SetError("Audio subsystem is not initialized");
+        SDL3_SetError("Audio subsystem is not initialized");
+        return -1;
     }
 
     SDL3_LockMutex(AudioDeviceLock);
@@ -5157,9 +5206,11 @@ SDL_GetAudioDeviceSpec(int idx, int iscapture, SDL2_AudioSpec *spec2)
     int retval = -1;
 
     if (spec2 == NULL) {
-        return SDL3_InvalidParamError("spec");
+        SDL3_InvalidParamError("spec");
+        return -1;
     } else if (!SDL3_GetCurrentAudioDriver()) {
-        return SDL3_SetError("Audio subsystem is not initialized");
+        SDL3_SetError("Audio subsystem is not initialized");
+        return -1;
     }
 
     SDL3_LockMutex(AudioDeviceLock);
@@ -5167,7 +5218,7 @@ SDL_GetAudioDeviceSpec(int idx, int iscapture, SDL2_AudioSpec *spec2)
     if ((idx < 0) || (idx >= list->num_devices)) {
         SDL3_InvalidParamError("index");
     } else {
-        retval = SDL3_GetAudioDeviceFormat(list->devices[idx].devid, &spec3, NULL);
+        retval = SDL3_GetAudioDeviceFormat(list->devices[idx].devid, &spec3, NULL) ? 0 : -1;
     }
     SDL3_UnlockMutex(AudioDeviceLock);
 
@@ -5188,9 +5239,11 @@ SDL_GetDefaultAudioInfo(char **name, SDL2_AudioSpec *spec2, int iscapture)
     int retval;
 
     if (spec2 == NULL) {
-        return SDL3_InvalidParamError("spec");
+        SDL3_InvalidParamError("spec");
+        return -1;
     } else if (!SDL3_GetCurrentAudioDriver()) {
-        return SDL3_SetError("Audio subsystem is not initialized");
+        SDL3_SetError("Audio subsystem is not initialized");
+        return -1;
     }
 
     retval = SDL3_GetAudioDeviceFormat(iscapture ? SDL_AUDIO_DEVICE_DEFAULT_RECORDING : SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec3, NULL);
@@ -5271,7 +5324,7 @@ static int PrepareAudiospec(const SDL2_AudioSpec *orig2, SDL2_AudioSpec *prepare
             prepared2->channels = 2;
         }
     } else if (orig2->channels > 8) {
-        SDL_SetError("Unsupported number of audio channels.");
+        SDL3_SetError("Unsupported number of audio channels.");
         return 0;
     }
 
@@ -5476,7 +5529,7 @@ static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devicename, int iscap
         }
     }
 
-    if (SDL3_BindAudioStream(device3, stream2->stream3) < 0) {
+    if (!SDL3_BindAudioStream(device3, stream2->stream3)) {
         SDL_FreeAudioStream(stream2);
         SDL3_CloseAudioDevice(device3);
         return 0;
@@ -5496,7 +5549,7 @@ static SDL_AudioDeviceID OpenAudioDevice(const char *devicename, int iscapture,
     SDL_AudioDeviceID retval;
 
     if (!SDL3_GetCurrentAudioDriver()) {
-        SDL_SetError("Audio subsystem is not initialized");
+        SDL3_SetError("Audio subsystem is not initialized");
         return 0;
     }
 
@@ -5525,13 +5578,14 @@ SDL_OpenAudio(SDL2_AudioSpec *desired2, SDL2_AudioSpec *obtained2)
 
     /* Start up the audio driver, if necessary. This is legacy behaviour! */
     if (!SDL3_WasInit(SDL_INIT_AUDIO)) {
-        if (SDL3_InitSubSystem(SDL_INIT_AUDIO) < 0) {
+        if (!SDL3_InitSubSystem(SDL_INIT_AUDIO)) {
             return -1;
         }
     }
 
     if (AudioOpenDevices[0] != NULL) {
-        return SDL3_SetError("Audio device is already opened");
+        SDL3_SetError("Audio device is already opened");
+        return -1;
     }
 
     if (obtained2) {
@@ -5644,10 +5698,10 @@ SDL_AudioStreamPut(SDL2_AudioStream *stream2, const void *buf, int len)
         } else if (stream2->src_format == SDL2_AUDIO_U16MSB) {
             AudioUi16MSBToSi16Sys(tmpbuf, (const Uint16 *) buf, tmpsamples);
         }
-        retval = SDL3_PutAudioStreamData(stream2->stream3, tmpbuf, len);
+        retval = SDL3_PutAudioStreamData(stream2->stream3, tmpbuf, len) ? 0 : -1;
         SDL3_free(tmpbuf);
     } else {
-        retval = SDL3_PutAudioStreamData(stream2->stream3, buf, len);
+        retval = SDL3_PutAudioStreamData(stream2->stream3, buf, len) ? 0 : -1;
     }
 
     return retval;
@@ -5700,7 +5754,7 @@ SDL_FreeAudioStream(SDL2_AudioStream *stream2)
 SDL_DECLSPEC int SDLCALL
 SDL_AudioStreamFlush(SDL2_AudioStream *stream2)
 {
-    return SDL3_FlushAudioStream(stream2 ? stream2->stream3 : NULL);
+    return SDL3_FlushAudioStream(stream2 ? stream2->stream3 : NULL) ? 0 : -1;
 }
 
 #define SDL2_MIX_MAXVOLUME 128.0f
@@ -5760,15 +5814,17 @@ SDL_QueueAudio(SDL_AudioDeviceID dev, const void *data, Uint32 len)
     if (!stream2) {
         return -1;
     } else if (stream2->iscapture) {
-        return SDL3_SetError("This is a capture device, queueing not allowed");
+        SDL3_SetError("This is a capture device, queueing not allowed");
+        return -1;
     } else if (stream2->dataqueue3 == NULL) {
-        return SDL3_SetError("Audio device has a callback, queueing not allowed");
+        SDL3_SetError("Audio device has a callback, queueing not allowed");
+        return -1;
     } else if (len == 0) {
         return 0;  /* nothing to do. */
     }
 
     SDL_assert(stream2->dataqueue3 != NULL);
-    return SDL3_PutAudioStreamData(stream2->dataqueue3, data, len);
+    return SDL3_PutAudioStreamData(stream2->dataqueue3, data, len) ? 0 : -1;
 }
 
 SDL_DECLSPEC Uint32 SDLCALL
@@ -6044,7 +6100,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_GetDisplayBounds(int displayIndex, SDL_Rect *rect)
 {
     SDL_DisplayID displayID = Display_IndexToID(displayIndex);
-    return SDL3_GetDisplayBounds(displayID, rect);
+    return SDL3_GetDisplayBounds(displayID, rect) ? 0 : -1;
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -6096,7 +6152,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_GetDisplayUsableBounds(int displayIndex, SDL_Rect *rect)
 {
     SDL_DisplayID displayID = Display_IndexToID(displayIndex);
-    return SDL3_GetDisplayUsableBounds(displayID, rect);
+    return SDL3_GetDisplayUsableBounds(displayID, rect) ? 0 : -1;
 }
 
 SDL_DECLSPEC SDL_DisplayOrientation SDLCALL
@@ -6160,7 +6216,7 @@ ApplyFullscreenMode(SDL_Window *window)
         /* Always try to enter fullscreen on the current display */
         mode->displayID = SDL3_GetDisplayForWindow(window);
     }
-    if (mode && SDL3_SetWindowFullscreenMode(window, mode) == 0) {
+    if (mode && SDL3_SetWindowFullscreenMode(window, mode)) {
         return 0;
     } else {
         int count = 0;
@@ -6176,10 +6232,10 @@ ApplyFullscreenMode(SDL_Window *window)
         /* FIXME: at least set a valid fullscreen mode */
         list = SDL3_GetFullscreenDisplayModes(displayID, &count);
         if (list && count) {
-            ret = SDL3_SetWindowFullscreenMode(window, list[0]);
+            ret = SDL3_SetWindowFullscreenMode(window, list[0]) ? 0 : -1;
         } else {
             /* If no exclusive modes, use the fullscreen desktop mode. */
-            ret = SDL3_SetWindowFullscreenMode(window, NULL);
+            ret = SDL3_SetWindowFullscreenMode(window, NULL) ? 0 : -1;
         }
         SDL_free(list);
         return ret;
@@ -6193,11 +6249,13 @@ SDL_GetWindowDisplayMode(SDL_Window *window, SDL2_DisplayMode *mode)
     const SDL_DisplayMode *dp;
 
     if (!window) {
-        return SDL_SetError("Invalid window");
+        SDL3_SetError("Invalid window");
+        return -1;
     }
 
     if (!mode) {
-        return SDL3_InvalidParamError("mode");
+        SDL3_InvalidParamError("mode");
+        return -1;
     }
 
     dp = (SDL_DisplayMode *) SDL3_GetPointerProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_FULLSCREEN_MODE, (void *)SDL3_GetWindowFullscreenMode(window));
@@ -6238,7 +6296,7 @@ SDL_GetClosestDisplayMode(int displayIndex, const SDL2_DisplayMode *mode, SDL2_D
         return NULL;
     }
 
-    if (SDL3_GetClosestFullscreenDisplayMode(displayID, mode->w, mode->h, (float)mode->refresh_rate, SDL_FALSE, &closest3) == 0) {
+    if (SDL3_GetClosestFullscreenDisplayMode(displayID, mode->w, mode->h, (float)mode->refresh_rate, SDL_FALSE, &closest3)) {
         ret3 = &closest3;
     } else {
         /* Try the desktop mode */
@@ -6263,7 +6321,7 @@ SDL_GetClosestDisplayMode(int displayIndex, const SDL2_DisplayMode *mode, SDL2_D
 SDL_DECLSPEC int SDLCALL
 SDL_SetWindowDisplayMode(SDL_Window *window, const SDL2_DisplayMode *mode)
 {
-    int ret;
+    int result;
     SDL_DisplayMode dp;
 
     SDL3_zero(dp);
@@ -6274,20 +6332,20 @@ SDL_SetWindowDisplayMode(SDL_Window *window, const SDL2_DisplayMode *mode)
         SDL_DisplayMode *property = (SDL_DisplayMode *) SDL3_malloc(sizeof(*property));
         if (property) {
             SDL3_copyp(property, &dp);
-            ret = SDL3_SetPointerPropertyWithCleanup(SDL3_GetWindowProperties(window), PROP_WINDOW_FULLSCREEN_MODE, property, CleanupFreeableProperty, NULL);
+            result = SDL3_SetPointerPropertyWithCleanup(SDL3_GetWindowProperties(window), PROP_WINDOW_FULLSCREEN_MODE, property, CleanupFreeableProperty, NULL) ? 0 : -1;
         } else {
-            ret = -1;
+            result = -1;
         }
     } else {
-        ret = SDL3_SetPointerProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_FULLSCREEN_MODE, NULL);
+        result = SDL3_SetPointerProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_FULLSCREEN_MODE, NULL) ? 0 : -1;
     }
 
     /* If're we're in full-screen exclusive mode now, apply the new display mode */
     if ((SDL3_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) && SDL3_GetWindowFullscreenMode(window)) {
-        ret = ApplyFullscreenMode(window);
+        result = ApplyFullscreenMode(window);
     }
 
-    return ret;
+    return result;
 }
 
 /* this came out of SDL2 directly. */
@@ -6300,7 +6358,7 @@ static SDL_bool SDL_Vulkan_GetInstanceExtensions_Helper(unsigned int *userCount,
         unsigned i;
 
         if (*userCount < nameCount) {
-            SDL_SetError("Output array for SDL_Vulkan_GetInstanceExtensions needs to be at least %d big", nameCount);
+            SDL3_SetError("Output array for SDL_Vulkan_GetInstanceExtensions needs to be at least %d big", nameCount);
             return SDL_FALSE;
         }
 
@@ -6340,7 +6398,7 @@ SDL_Vulkan_GetInstanceExtensions(SDL_Window *window, unsigned int *puiCount, con
 SDL_DECLSPEC SDL_bool SDLCALL
 SDL_Vulkan_CreateSurface(SDL_Window *window, VkInstance vkinst, VkSurfaceKHR *psurf)
 {
-    return (SDL3_Vulkan_CreateSurface(window, vkinst, NULL, psurf) == 0) ? SDL_TRUE : SDL_FALSE;
+    return SDL3_Vulkan_CreateSurface(window, vkinst, NULL, psurf);
 }
 
 
@@ -6568,7 +6626,7 @@ SDL_DECLSPEC void* SDLCALL
 SDL_GetWindowData(SDL_Window * window, const char *name)
 {
     if (!window) {
-        SDL_SetError("Invalid window");
+        SDL3_SetError("Invalid window");
         return NULL;
     }
 
@@ -6586,7 +6644,7 @@ SDL_SetWindowData(SDL_Window * window, const char *name, void *userdata)
     void *prev;
 
     if (!window) {
-        SDL_SetError("Invalid window");
+        SDL3_SetError("Invalid window");
         return NULL;
     }
 
@@ -6605,7 +6663,7 @@ SDL_SetWindowData(SDL_Window * window, const char *name, void *userdata)
 SDL_DECLSPEC int SDLCALL
 SDL_SetTextureUserData(SDL_Texture * texture, void *userdata)
 {
-    return SDL3_SetPointerProperty(SDL3_GetTextureProperties(texture), PROP_TEXTURE_USERDATA_POINTER, userdata);
+    return SDL3_SetPointerProperty(SDL3_GetTextureProperties(texture), PROP_TEXTURE_USERDATA_POINTER, userdata) ? 0 : -1;
 }
 
 SDL_DECLSPEC void * SDLCALL
@@ -6765,13 +6823,13 @@ SDL_SetWindowFullscreen(SDL_Window *window, Uint32 flags)
     int ret = 0;
 
     if (flags == SDL2_WINDOW_FULLSCREEN_DESKTOP) {
-        ret = SDL3_SetWindowFullscreenMode(window, NULL);
+        ret = SDL3_SetWindowFullscreenMode(window, NULL) ? 0 : -1;
     } else if (flags == SDL_WINDOW_FULLSCREEN) {
         ret = ApplyFullscreenMode(window);
     }
 
     if (ret == 0) {
-        ret = SDL3_SetWindowFullscreen(window, (flags & SDL2_WINDOW_FULLSCREEN_DESKTOP) != 0);
+        ret = SDL3_SetWindowFullscreen(window, (flags & SDL2_WINDOW_FULLSCREEN_DESKTOP) != 0) ? 0 : -1;
     }
 
     return ret;
@@ -6799,7 +6857,7 @@ SDL_DECLSPEC void SDLCALL
 SDL_SetWindowMinimumSize(SDL_Window *window, int min_w, int min_h)
 {
     if (!window) {
-        SDL_SetError("Invalid window");
+        SDL3_SetError("Invalid window");
         return;
     }
     if (min_w <= 0) {
@@ -6817,7 +6875,7 @@ SDL_DECLSPEC void SDLCALL
 SDL_SetWindowMaximumSize(SDL_Window *window, int max_w, int max_h)
 {
     if (!window) {
-        SDL_SetError("Invalid window");
+        SDL3_SetError("Invalid window");
         return;
     }
     if (max_w <= 0) {
@@ -7229,7 +7287,7 @@ static void *getglfn(const char *fn, SDL_bool *okay)
         retval = SDL3_GL_GetProcAddress(fn);
         if (retval == NULL) {
             *okay = SDL_FALSE;
-            SDL_SetError("Failed to find GL proc address of %s", fn);
+            SDL3_SetError("Failed to find GL proc address of %s", fn);
         }
     }
     return retval;
@@ -7434,11 +7492,13 @@ SDL_DECLSPEC int SDLCALL
 SDL_SetPixelFormatPalette(SDL2_PixelFormat *format, SDL_Palette *palette)
 {
     if (!format) {
-        return SDL3_InvalidParamError("SDL_SetPixelFormatPalette(): format");
+        SDL3_InvalidParamError("SDL_SetPixelFormatPalette(): format");
+        return -1;
     }
 
     if (palette && palette->ncolors > (1 << format->BitsPerPixel)) {
-        return SDL3_SetError("SDL_SetPixelFormatPalette() passed a palette that doesn't match the format");
+        SDL3_SetError("SDL_SetPixelFormatPalette() passed a palette that doesn't match the format");
+        return -1;
     }
 
     if (format->palette == palette) {
@@ -7510,12 +7570,13 @@ SDL_DECLSPEC int SDLCALL
 SDL_SetSurfacePalette(SDL2_Surface *surface, SDL_Palette *palette)
 {
     if (!surface) {
-        return SDL3_InvalidParamError("SDL_SetSurfacePalette(): surface");
+        SDL3_InvalidParamError("SDL_SetSurfacePalette(): surface");
+        return -1;
     }
     if (SDL_SetPixelFormatPalette(surface->format, palette) < 0) {
         return -1;
     }
-    if (SDL3_SetSurfacePalette(Surface2to3(surface), palette) < 0) {
+    if (!SDL3_SetSurfacePalette(Surface2to3(surface), palette)) {
         return -1;
     }
     return 0;
@@ -7527,7 +7588,7 @@ SDL_LockSurface(SDL2_Surface *surface)
     if (!surface->locked) {
         /* Perform the lock */
         SDL_Surface *surface3 = Surface2to3(surface);
-        if (SDL3_LockSurface(surface3) < 0) {
+        if (!SDL3_LockSurface(surface3)) {
             return -1;
         }
         surface->pixels = surface3->pixels;
@@ -7562,10 +7623,11 @@ SDL_SetSurfaceRLE(SDL2_Surface *surface, int flag)
 {
     SDL_Surface *surface3 = Surface2to3(surface);
     if (!surface3) {
-        return SDL3_InvalidParamError("surface");
+        SDL3_InvalidParamError("surface");
+        return -1;
     }
 
-    if (SDL3_SetSurfaceRLE(surface3, flag ? SDL_TRUE : SDL_FALSE) < 0) {
+    if (!SDL3_SetSurfaceRLE(surface3, flag ? SDL_TRUE : SDL_FALSE)) {
         return -1;
     }
 
@@ -7589,7 +7651,7 @@ SDL_SetColorKey(SDL2_Surface *surface, int flag, Uint32 key)
     if (flag & SDL_RLEACCEL) {
         SDL_SetSurfaceRLE(surface, 1);
     }
-    return SDL3_SetSurfaceColorKey(Surface2to3(surface), flag ? SDL_TRUE : SDL_FALSE, key);
+    return SDL3_SetSurfaceColorKey(Surface2to3(surface), flag ? SDL_TRUE : SDL_FALSE, key) ? 0 : -1;
 }
 
 SDL_DECLSPEC SDL_bool SDLCALL
@@ -7601,43 +7663,43 @@ SDL_HasColorKey(SDL2_Surface *surface)
 SDL_DECLSPEC int SDLCALL
 SDL_GetColorKey(SDL2_Surface *surface, Uint32 *key)
 {
-    return SDL3_GetSurfaceColorKey(Surface2to3(surface), key);
+    return SDL3_GetSurfaceColorKey(Surface2to3(surface), key) ? 0 : -1;
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_SetSurfaceColorMod(SDL2_Surface *surface, Uint8 r, Uint8 g, Uint8 b)
 {
-    return SDL3_SetSurfaceColorMod(Surface2to3(surface), r, g, b);
+    return SDL3_SetSurfaceColorMod(Surface2to3(surface), r, g, b) ? 0 : -1;
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_GetSurfaceColorMod(SDL2_Surface *surface, Uint8 *r, Uint8 *g, Uint8 *b)
 {
-    return SDL3_GetSurfaceColorMod(Surface2to3(surface), r, g, b);
+    return SDL3_GetSurfaceColorMod(Surface2to3(surface), r, g, b) ? 0 : -1;
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_SetSurfaceAlphaMod(SDL2_Surface *surface, Uint8 alpha)
 {
-    return SDL3_SetSurfaceAlphaMod(Surface2to3(surface), alpha);
+    return SDL3_SetSurfaceAlphaMod(Surface2to3(surface), alpha) ? 0 : -1;
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_GetSurfaceAlphaMod(SDL2_Surface *surface, Uint8 *alpha)
 {
-    return SDL3_GetSurfaceAlphaMod(Surface2to3(surface), alpha);
+    return SDL3_GetSurfaceAlphaMod(Surface2to3(surface), alpha) ? 0 : -1;
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_SetSurfaceBlendMode(SDL2_Surface *surface, SDL_BlendMode blendMode)
 {
-    return SDL3_SetSurfaceBlendMode(Surface2to3(surface), blendMode);
+    return SDL3_SetSurfaceBlendMode(Surface2to3(surface), blendMode) ? 0 : -1;
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_GetSurfaceBlendMode(SDL2_Surface *surface, SDL_BlendMode *blendMode)
 {
-    return SDL3_GetSurfaceBlendMode(Surface2to3(surface), blendMode);
+    return SDL3_GetSurfaceBlendMode(Surface2to3(surface), blendMode) ? 0 : -1;
 }
 
 SDL_DECLSPEC SDL2_Surface * SDLCALL
@@ -7650,7 +7712,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_LockTextureToSurface(SDL_Texture *texture, const SDL_Rect *rect, SDL2_Surface **surface)
 {
     SDL_Surface *surface3 = NULL;
-    if (SDL3_LockTextureToSurface(texture, rect, &surface3) < 0) {
+    if (!SDL3_LockTextureToSurface(texture, rect, &surface3)) {
         return -1;
     }
     *surface = Surface3to2(surface3);
@@ -7694,9 +7756,9 @@ SDL_DECLSPEC int SDLCALL
 SDL_ShowCursor(int state)
 {
     int retval = SDL3_CursorVisible() ? SDL2_ENABLE : SDL2_DISABLE;
-    if ((state == SDL2_ENABLE) && (SDL3_ShowCursor() < 0)) {
+    if ((state == SDL2_ENABLE) && !SDL3_ShowCursor()) {
         retval = -1;
-    } else if ((state == SDL2_DISABLE) && (SDL3_HideCursor() < 0)) {
+    } else if ((state == SDL2_DISABLE) && !SDL3_HideCursor()) {
         retval = -1;
     }
     return retval;
@@ -8158,6 +8220,47 @@ SDL_JoystickAttachVirtual(SDL_JoystickType type, int naxes, int nbuttons, int nh
     return GetIndexFromJoystickInstance(jid);
 }
 
+static void SDLCALL VirtualJoystick_Update(void *userdata)
+{
+    SDL2_VirtualJoystickDesc *desc = (SDL2_VirtualJoystickDesc *)userdata;
+    desc->Update(desc->userdata);
+}
+
+static void SDLCALL VirtualJoystick_SetPlayerIndex(void *userdata, int player_index)
+{
+    SDL2_VirtualJoystickDesc *desc = (SDL2_VirtualJoystickDesc *)userdata;
+    desc->SetPlayerIndex(desc->userdata, player_index);
+}
+
+static SDL_bool SDLCALL VirtualJoystick_Rumble(void *userdata, Uint16 low_frequency_rumble, Uint16 high_frequency_rumble)
+{
+    SDL2_VirtualJoystickDesc *desc = (SDL2_VirtualJoystickDesc *)userdata;
+    return desc->Rumble(desc->userdata, low_frequency_rumble, high_frequency_rumble);
+}
+
+static SDL_bool SDLCALL VirtualJoystick_RumbleTriggers(void *userdata, Uint16 left_rumble, Uint16 right_rumble)
+{
+    SDL2_VirtualJoystickDesc *desc = (SDL2_VirtualJoystickDesc *)userdata;
+    return desc->RumbleTriggers(desc->userdata, left_rumble, right_rumble);
+}
+
+static SDL_bool SDLCALL VirtualJoystick_SetLED(void *userdata, Uint8 red, Uint8 green, Uint8 blue)
+{
+    SDL2_VirtualJoystickDesc *desc = (SDL2_VirtualJoystickDesc *)userdata;
+    return desc->SetLED(desc->userdata, red, green, blue);
+}
+
+static SDL_bool SDLCALL VirtualJoystick_SendEffect(void *userdata, const void *data, int size)
+{
+    SDL2_VirtualJoystickDesc *desc = (SDL2_VirtualJoystickDesc *)userdata;
+    return desc->SendEffect(desc->userdata, data, size);
+}
+
+static void SDLCALL VirtualJoystick_Cleanup(void *userdata)
+{
+    SDL_free(userdata);
+}
+
 SDL_DECLSPEC int SDLCALL
 SDL_JoystickAttachVirtualEx(const SDL2_VirtualJoystickDesc *desc2)
 {
@@ -8165,9 +8268,11 @@ SDL_JoystickAttachVirtualEx(const SDL2_VirtualJoystickDesc *desc2)
     SDL_VirtualJoystickDesc desc3;
 
     if (!desc2) {
-        return SDL3_InvalidParamError("desc");
+        SDL3_InvalidParamError("desc");
+        return -1;
     } else if (desc2->version != SDL_VIRTUAL_JOYSTICK_DESC_VERSION) { /* SDL2 only had one version. */
-        return SDL3_SetError("Unsupported virtual joystick description version %u", desc2->version);
+        SDL3_SetError("Unsupported virtual joystick description version %u", desc2->version);
+        return -1;
     }
 
     SDL3_zero(desc3);
@@ -8181,14 +8286,34 @@ SDL_JoystickAttachVirtualEx(const SDL2_VirtualJoystickDesc *desc2)
     SETDESCFIELD(button_mask);
     SETDESCFIELD(axis_mask);
     SETDESCFIELD(name);
-    SETDESCFIELD(userdata);
-    SETDESCFIELD(Update);
-    SETDESCFIELD(SetPlayerIndex);
-    SETDESCFIELD(Rumble);
-    SETDESCFIELD(RumbleTriggers);
-    SETDESCFIELD(SetLED);
-    SETDESCFIELD(SendEffect);
     #undef SETDESCFIELD
+
+    desc3.userdata = SDL_malloc(sizeof(*desc2));
+    if (!desc3.userdata) {
+        SDL3_OutOfMemory();
+        return -1;
+    }
+    SDL_memcpy(desc3.userdata, desc2, sizeof(*desc2));
+
+    if (desc2->Update) {
+        desc3.Update = VirtualJoystick_Update;
+    }
+    if (desc2->SetPlayerIndex) {
+        desc3.SetPlayerIndex = VirtualJoystick_SetPlayerIndex;
+    }
+    if (desc2->Rumble) {
+        desc3.Rumble = VirtualJoystick_Rumble;
+    }
+    if (desc2->RumbleTriggers) {
+        desc3.RumbleTriggers = VirtualJoystick_RumbleTriggers;
+    }
+    if (desc2->SetLED) {
+        desc3.SetLED = VirtualJoystick_SetLED;
+    }
+    if (desc2->SendEffect) {
+        desc3.SendEffect = VirtualJoystick_SendEffect;
+    }
+    desc3.Cleanup = VirtualJoystick_Cleanup;
 
     jid = SDL3_AttachVirtualJoystick(&desc3);
     SDL_NumJoysticks(); /* Refresh */
@@ -8199,7 +8324,11 @@ SDL_DECLSPEC int SDLCALL
 SDL_JoystickDetachVirtual(int device_index)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(device_index);
-    return jid ? SDL3_DetachVirtualJoystick(jid) : -1;
+    if (jid && SDL3_DetachVirtualJoystick(jid)) {
+        return 0;
+    } else {
+        return -1;
+    }
 }
 
 
@@ -8339,7 +8468,8 @@ SDL_HapticIndex(SDL_Haptic *haptic)
             return i;
         }
     }
-    return SDL_SetError("Haptic: Invalid haptic device identifier");
+    SDL3_SetError("Haptic: Invalid haptic device identifier");
+    return -1;
 }
 
 static Uint16 HapticFeatures3to2(Uint32 features)
@@ -8466,7 +8596,7 @@ SDL_HapticQuery(SDL_Haptic *haptic)
     return HapticFeatures3to2(SDL3_GetHapticFeatures(haptic));
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC int SDLCALL
 SDL_HapticEffectSupported(SDL_Haptic *haptic, SDL_HapticEffect *effect)
 {
     SDL_HapticEffect effect3;
@@ -8484,7 +8614,8 @@ SDL_HapticNewEffect(SDL_Haptic *haptic, SDL_HapticEffect *effect)
     SDL_HapticEffect effect3;
 
     if (!effect) {
-        return SDL3_InvalidParamError("effect");
+        SDL3_InvalidParamError("effect");
+        return -1;
     }
     HapticEffect2to3(effect, &effect3);
     return SDL3_CreateHapticEffect(haptic, &effect3);
@@ -8496,23 +8627,94 @@ SDL_HapticUpdateEffect(SDL_Haptic *haptic, int effect, SDL_HapticEffect *data)
     SDL_HapticEffect effect3;
 
     if (!data) {
-        return SDL3_InvalidParamError("data");
+        SDL3_InvalidParamError("data");
+        return -1;
     }
     HapticEffect2to3(data, &effect3);
-    return SDL3_UpdateHapticEffect(haptic, effect, &effect3);
+    if (!SDL3_UpdateHapticEffect(haptic, effect, &effect3)) {
+        return -1;
+    }
+    return 0;
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_HapticGetEffectStatus(SDL_Haptic * haptic, int effect)
+{
+    SDL_bool status;
+
+    SDL3_ClearError();
+
+    status = SDL3_GetHapticEffectStatus(haptic, effect);
+    if (status) {
+        return 1;
+    } else if (*SDL3_GetError() == '\0') {
+        return 0;
+    } else {
+        return -1;
+    }
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_SemWait(SDL_sem *sem)
+{
+    SDL3_WaitSemaphore(sem);
+    return 0;
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_SemTryWait(SDL_sem *sem)
+{
+    if (SDL3_TryWaitSemaphore(sem)) {
+        return 0;
+    } else {
+        return SDL2_MUTEX_TIMEDOUT;
+    }
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_SemWaitTimeout(SDL_sem *sem, Uint32 ms)
+{
+    if (SDL3_WaitSemaphoreTimeout(sem, (Sint32)ms)) {
+        return 0;
+    } else {
+        return SDL2_MUTEX_TIMEDOUT;
+    }
+}
+
+SDL_DECLSPEC int SDLCALL SDL_CondSignal(SDL_cond *cond)
+{
+    SDL3_SignalCondition(cond);
+    return 0;
+}
+
+SDL_DECLSPEC int SDLCALL SDL_CondBroadcast(SDL_cond *cond)
+{
+    SDL3_BroadcastCondition(cond);
+    return 0;
+}
+
+SDL_DECLSPEC int SDLCALL SDL_CondWait(SDL_cond *cond, SDL_mutex *mutex)
+{
+    SDL3_WaitCondition(cond, mutex);
+    return 0;
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_CondWaitTimeout(SDL_cond *cond, SDL_mutex *mutex, Uint32 ms)
 {
-    return SDL3_WaitConditionTimeout(cond, mutex, (Sint32)ms);
-}
-SDL_DECLSPEC int SDLCALL
-SDL_SemWaitTimeout(SDL_sem *sem, Uint32 ms)
-{
-    return SDL3_WaitSemaphoreTimeout(sem, (Sint32)ms);
+    if (SDL3_WaitConditionTimeout(cond, mutex, (Sint32)ms)) {
+        return 0;
+    } else {
+        return SDL2_MUTEX_TIMEDOUT;
+    }
 }
 
+SDL_DECLSPEC int SDLCALL
+SDL_SemPost(SDL_sem *sem)
+{
+    SDL3_SignalSemaphore(sem);
+    return 0;
+}
 
 SDL_DECLSPEC void * SDLCALL
 SDL_SIMDAlloc(const size_t len)
@@ -8634,35 +8836,44 @@ SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
 {
     /* Sanity check target pointer */
     if (cvt == NULL) {
-        return SDL3_InvalidParamError("cvt");
+        SDL3_InvalidParamError("cvt");
+        return -1;
     }
 
     /* Make sure we zero out the audio conversion before error checking */
     SDL3_zerop(cvt);
 
     if (!SDL_IsSupportedAudioFormat(src_format)) {
-        return SDL_SetError("Invalid source format");
+        SDL3_SetError("Invalid source format");
+        return -1;
     }
     if (!SDL_IsSupportedAudioFormat(dst_format)) {
-        return SDL_SetError("Invalid destination format");
+        SDL3_SetError("Invalid destination format");
+        return -1;
     }
     if (!SDL_IsSupportedChannelCount(src_channels)) {
-        return SDL_SetError("Invalid source channels");
+        SDL3_SetError("Invalid source channels");
+        return -1;
     }
     if (!SDL_IsSupportedChannelCount(dst_channels)) {
-        return SDL_SetError("Invalid destination channels");
+        SDL3_SetError("Invalid destination channels");
+        return -1;
     }
     if (src_rate <= 0) {
-        return SDL_SetError("Source rate is equal to or less than zero");
+        SDL3_SetError("Source rate is equal to or less than zero");
+        return -1;
     }
     if (dst_rate <= 0) {
-        return SDL_SetError("Destination rate is equal to or less than zero");
+        SDL3_SetError("Destination rate is equal to or less than zero");
+        return -1;
     }
     if (src_rate >= SDL_MAX_SINT32 / RESAMPLER_SAMPLES_PER_ZERO_CROSSING) {
-        return SDL_SetError("Source rate is too high");
+        SDL3_SetError("Source rate is too high");
+        return -1;
     }
     if (dst_rate >= SDL_MAX_SINT32 / RESAMPLER_SAMPLES_PER_ZERO_CROSSING) {
-        return SDL_SetError("Destination rate is too high");
+        SDL3_SetError("Destination rate is too high");
+        return -1;
     }
 
 #ifdef DEBUG_CONVERT
@@ -8731,7 +8942,8 @@ SDL_ConvertAudio(SDL_AudioCVT *cvt)
 
     /* Sanity check target pointer */
     if (cvt == NULL) {
-        return SDL3_InvalidParamError("cvt");
+        SDL3_InvalidParamError("cvt");
+        return -1;
     }
 
     { /* Fetch from the end of filters[], aligned */
@@ -8944,7 +9156,7 @@ SDL_TLSCreate(void)
     /* this will create the new ID when it sees a zero, and just set a
        harmless NULL in the slot for this thread, which is what SDL_TLSGet
        will return if nothing was ever set. */
-    if (SDL3_SetTLS(&tlsid, NULL, NULL) < 0) {
+    if (!SDL3_SetTLS(&tlsid, NULL, NULL)) {
         return 0; /* uhoh, ran out of memory, probably. */
     }
 
@@ -8968,7 +9180,8 @@ SDL_TLSSet(SDL2_TLSID tlsid2, const void *value, SDL_TLSDestructorCallback destr
 {
     SDL_TLSID tlsid3;
     if (tlsid2 == 0) {
-        return SDL3_InvalidParamError("id");
+        SDL3_InvalidParamError("id");
+        return -1;
     }
     tlsid3.value = (int) tlsid2;  /* no need to atomic-set; we don't need to compete for a stack-local variable. */
     return SDL3_SetTLS(&tlsid3, value, destructor);
@@ -9069,8 +9282,7 @@ SDL_Direct3D9GetAdapterIndex(int displayIndex)
 SDL_DECLSPEC SDL_bool SDLCALL
 SDL_DXGIGetOutputInfo(int displayIndex, int *adapterIndex, int *outputIndex)
 {
-    int r = SDL3_GetDXGIOutputInfo(Display_IndexToID(displayIndex), adapterIndex, outputIndex);
-    return (r < 0) ? SDL_FALSE : SDL_TRUE;
+    return SDL3_GetDXGIOutputInfo(Display_IndexToID(displayIndex), adapterIndex, outputIndex);
 }
 
 SDL_DECLSPEC IDirect3DDevice9* SDLCALL SDL_RenderGetD3D9Device(SDL_Renderer *renderer)
@@ -9134,7 +9346,7 @@ SDL_AndroidRequestPermission(const char *permission)
     SDL_AtomicInt response;
     SDL3_AtomicSet(&response, 0);
 
-    if (SDL3_RequestAndroidPermission(permission, AndroidRequestPermissionBlockingCallback, &response) == -1) {
+    if (!SDL3_RequestAndroidPermission(permission, AndroidRequestPermissionBlockingCallback, &response)) {
         return SDL_FALSE;
     }
 
