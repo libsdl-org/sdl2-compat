@@ -24,13 +24,18 @@
 
 #include <SDL3/SDL_begin_code.h> /* for correct structure alignment, just in case */
 
-/* Make sure that the SDL2 SDL_bool (an enum) and the SDL3 one (an int) are compatible. */
+#ifdef __CC_ARM
+/* ARM's compiler throws warnings if we use an enum: like "SDL2_bool x = a < b;" */
+#define SDL2_FALSE 0
+#define SDL2_TRUE 1
+typedef int SDL2_bool;
+#else
 typedef enum
 {
-    DUMMY_ENUM_VALUE0,
-    DUMMY_ENUM_VALUE1
-} SDL2_DUMMY_ENUM;
-SDL_COMPILE_TIME_ASSERT(SDL23bool, sizeof(SDL2_DUMMY_ENUM) == sizeof(SDL_bool));
+    SDL2_FALSE = 0,
+    SDL2_TRUE = 1
+} SDL2_bool;
+#endif
 
 /* removed in SDL3 (which only uses SDL_WINDOW_HIDDEN now). */
 #define SDL2_WINDOW_SHOWN 0x000000004
@@ -194,14 +199,14 @@ typedef struct SDL2_RWops
     union
     {
         struct {
-            SDL_bool autoclose;
+            SDL2_bool autoclose;
             void *fp;
         } stdio;
         struct {
             void *asset;
         } androidio;
         struct {
-            SDL_bool append;
+            SDL2_bool append;
             void *h;
             struct {
                 void *data;
@@ -1149,7 +1154,7 @@ typedef struct SDL2_AudioStream
     SDL2_AudioCallback callback2;
     void *callback2_userdata;
     SDL_AudioStream *dataqueue3;
-    SDL_bool iscapture;
+    SDL2_bool iscapture;
 } SDL2_AudioStream;
 
 #define SDL2_AUDIO_ALLOW_FREQUENCY_CHANGE    0x00000001

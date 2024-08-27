@@ -140,6 +140,8 @@ extern "C" {
 /* Things that _should_ be binary compatible pass right through... */
 #define SDL3_SYM_PASSTHROUGH(rc,fn,params,args,ret) \
     SDL_DECLSPEC rc SDLCALL SDL_##fn params { ret SDL3_##fn args; }
+#define SDL3_SYM_PASSTHROUGH_BOOL(rc,fn,params,args,ret) \
+    SDL_DECLSPEC SDL2_bool SDLCALL SDL_##fn params { ret (SDL3_##fn args) ? SDL2_TRUE : SDL2_FALSE; }
 #define SDL3_SYM_PASSTHROUGH_RETCODE(rc,fn,params,args,ret) \
     SDL_DECLSPEC int SDLCALL SDL_##fn params { ret (SDL3_##fn args) ? 0 : -1; }
 #include "sdl3_syms.h"
@@ -147,6 +149,8 @@ extern "C" {
 /* Things that were renamed and _should_ be binary compatible pass right through with the correct names... */
 #define SDL3_SYM_RENAMED(rc,oldfn,newfn,params,args,ret) \
     SDL_DECLSPEC rc SDLCALL SDL_##oldfn params { ret SDL3_##newfn args; }
+#define SDL3_SYM_RENAMED_BOOL(rc,oldfn,newfn,params,args,ret) \
+    SDL_DECLSPEC SDL2_bool SDLCALL SDL_##oldfn params { ret (SDL3_##newfn args) ? SDL2_TRUE : SDL2_FALSE; }
 #define SDL3_SYM_RENAMED_RETCODE(rc,oldfn,newfn,params,args,ret) \
     SDL_DECLSPEC int SDLCALL SDL_##oldfn params { ret (SDL3_##newfn args) ? 0 : -1; }
 #include "sdl3_syms.h"
@@ -330,7 +334,7 @@ static int SDL2Compat_InitOnStartup(void);
 
 
 static void *
-LoadSDL3Symbol(const char *fn, int *okay)
+LoadSDL3Symbol(const char *fn, SDL_bool *okay)
 {
     void *retval = NULL;
     if (*okay) { /* only bother trying if we haven't previously failed. */
@@ -338,7 +342,7 @@ LoadSDL3Symbol(const char *fn, int *okay)
         if (retval == NULL) {
             char *p = SDL2COMPAT_stpcpy(loaderror, fn);
             SDL2COMPAT_stpcpy(p, " missing in SDL3 library.");
-            *okay = 0;
+            *okay = SDL_FALSE;
         }
     }
     return retval;
@@ -467,16 +471,16 @@ SDL2_to_SDL3_hint(const char *name)
     return name;
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_SetHintWithPriority(const char *name, const char *value, SDL_HintPriority priority)
 {
-    return SDL3_SetHintWithPriority(SDL2_to_SDL3_hint(name), value, priority);
+    return SDL3_SetHintWithPriority(SDL2_to_SDL3_hint(name), value, priority) ? SDL2_TRUE : SDL2_FALSE;
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_SetHint(const char *name, const char *value)
 {
-    return SDL3_SetHint(SDL2_to_SDL3_hint(name), value);
+    return SDL3_SetHint(SDL2_to_SDL3_hint(name), value) ? SDL2_TRUE : SDL2_FALSE;
 }
 
 SDL_DECLSPEC const char * SDLCALL
@@ -485,16 +489,16 @@ SDL_GetHint(const char *name)
     return SDL3_GetHint(SDL2_to_SDL3_hint(name));
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_ResetHint(const char *name)
 {
-    return SDL3_ResetHint(SDL2_to_SDL3_hint(name));
+    return SDL3_ResetHint(SDL2_to_SDL3_hint(name)) ? SDL2_TRUE : SDL2_FALSE;
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
-SDL_GetHintBoolean(const char *name, SDL_bool default_value)
+SDL_DECLSPEC SDL2_bool SDLCALL
+SDL_GetHintBoolean(const char *name, SDL2_bool default_value)
 {
-    return SDL3_GetHintBoolean(SDL2_to_SDL3_hint(name), default_value);
+    return SDL3_GetHintBoolean(SDL2_to_SDL3_hint(name), default_value) ? SDL2_TRUE : SDL2_FALSE;
 }
 
 /* FIXME: callbacks may need tweaking ... */
@@ -575,7 +579,7 @@ SDL2Compat_ApplyQuirks(SDL_bool force_x11)
 static int
 LoadSDL3(void)
 {
-    int okay = 1;
+    SDL_bool okay = SDL_TRUE;
     if (!Loaded_SDL3) {
         SDL_bool force_x11 = SDL_FALSE;
 
@@ -771,7 +775,7 @@ static SDL2_EventFilter EventFilter2 = NULL;
 static void *EventFilterUserData2 = NULL;
 static SDL_mutex *EventWatchListMutex = NULL;
 static EventFilterWrapperData *EventWatchers2 = NULL;
-static SDL_bool relative_mouse_mode = SDL_FALSE;
+static SDL2_bool relative_mouse_mode = SDL2_FALSE;
 static SDL_JoystickID *joystick_list = NULL;
 static int num_joysticks = 0;
 static SDL_JoystickID *gamepad_button_swap_list = NULL;
@@ -1193,7 +1197,7 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
 
 #if 0
     if (event3->type == SDL_SYSWMEVENT) {
-        return SDL_FALSE;  /* !!! FIXME: figure out what to do with this. */
+        return SDL2_FALSE;  /* !!! FIXME: figure out what to do with this. */
     }
 #endif
 
@@ -1340,7 +1344,7 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
 {
 #if 0
     if (event2->type == SDL_SYSWMEVENT) {
-        return SDL_FALSE;  /* !!! FIXME: figure out what to do with this. */
+        return SDL2_FALSE;  /* !!! FIXME: figure out what to do with this. */
     }
 #endif
 
@@ -1355,7 +1359,7 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
     switch (event2->type) {
     case SDL_EVENT_TEXT_INPUT:
         /* We shouldn't be getting text input events this direction */
-        return SDL_FALSE;
+        return NULL;
     case SDL_EVENT_KEY_DOWN:
     case SDL_EVENT_KEY_UP:
         event3->key.which = 0;
@@ -1545,7 +1549,7 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
         default: break;
     }
 
-    return 1;
+    return SDL2_TRUE;
 }
 
 static void CheckEventFilter(void)
@@ -1566,11 +1570,11 @@ SDL_SetEventFilter(SDL2_EventFilter filter2, void *userdata)
     EventFilterUserData2 = userdata;
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_GetEventFilter(SDL2_EventFilter *filter2, void **userdata)
 {
     if (!EventFilter2) {
-        return SDL_FALSE;
+        return SDL2_FALSE;
     }
 
     if (filter2) {
@@ -1580,7 +1584,7 @@ SDL_GetEventFilter(SDL2_EventFilter *filter2, void **userdata)
         *userdata = EventFilterUserData2;
     }
 
-    return SDL_TRUE;
+    return SDL2_TRUE;
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -1947,7 +1951,7 @@ SDL_WarpMouseGlobal(int x, int y)
 }
 
 SDL_DECLSPEC int SDLCALL
-SDL_SetRelativeMouseMode(SDL_bool enabled)
+SDL_SetRelativeMouseMode(SDL2_bool enabled)
 {
     int retval = 0;
     SDL_Window **windows = SDL3_GetWindows(NULL);
@@ -1968,10 +1972,16 @@ SDL_SetRelativeMouseMode(SDL_bool enabled)
     return retval;
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_GetRelativeMouseMode(void)
 {
     return relative_mouse_mode;
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_CaptureMouse(SDL2_bool enabled)
+{
+    return SDL3_CaptureMouse(enabled) ? 0 : -1;
 }
 
 SDL_DECLSPEC SDL2_RWops *SDLCALL
@@ -2102,7 +2112,7 @@ SDL_RWFromFile(const char *file, const char *mode)
             if (!handle) {
                 handle = SDL3_GetPointerProperty(props, SDL_PROP_IOSTREAM_STDIO_FILE_POINTER, NULL);
                 if (handle) {
-                    rwops2->hidden.stdio.autoclose = SDL_FALSE;
+                    rwops2->hidden.stdio.autoclose = SDL2_FALSE;
                     rwops2->hidden.stdio.fp = handle;
                 }
             }
@@ -2205,7 +2215,7 @@ DO_RWOPS_ENDIAN(BE, 64)
 /* stdio SDL_RWops was removed from SDL3, to prevent incompatible C runtime issues */
 #ifndef HAVE_STDIO_H
 SDL_DECLSPEC SDL2_RWops * SDLCALL
-SDL_RWFromFP(void *fp, SDL_bool autoclose)
+SDL_RWFromFP(void *fp, SDL2_bool autoclose)
 {
     SDL3_SetError("SDL not compiled with stdio support");
     return NULL;
@@ -2310,7 +2320,7 @@ stdio_close(SDL2_RWops *rwops2)
 }
 
 SDL_DECLSPEC SDL2_RWops * SDLCALL
-SDL_RWFromFP(FILE *fp, SDL_bool autoclose)
+SDL_RWFromFP(FILE *fp, SDL2_bool autoclose)
 {
     SDL2_RWops *rwops = SDL_AllocRW();
     if (rwops != NULL) {
@@ -2846,7 +2856,7 @@ SDL_UpperBlit(SDL2_Surface *src, const SDL_Rect *srcrect, SDL2_Surface *dst, SDL
     /* clip the source rectangle to the source surface */
     if (srcrect) {
         SDL_Rect tmp;
-        if (SDL_IntersectRect(srcrect, &r_src, &tmp) == SDL_FALSE) {
+        if (!SDL3_GetRectIntersection(srcrect, &r_src, &tmp)) {
             goto end;
         }
 
@@ -2865,7 +2875,7 @@ SDL_UpperBlit(SDL2_Surface *src, const SDL_Rect *srcrect, SDL2_Surface *dst, SDL
     /* clip the destination rectangle against the clip rectangle */
     {
         SDL_Rect tmp;
-        if (SDL_IntersectRect(&r_dst, &dst->clip_rect, &tmp) == SDL_FALSE) {
+        if (!SDL3_GetRectIntersection(&r_dst, &dst->clip_rect, &tmp)) {
             goto end;
         }
 
@@ -3040,11 +3050,11 @@ SDL_UpperBlitScaled(SDL2_Surface *src, const SDL_Rect *srcrect, SDL2_Surface *ds
         tmp.y = 0;
         tmp.w = src->w;
         tmp.h = src->h;
-        SDL_IntersectRect(&tmp, &final_src, &final_src);
+        SDL3_GetRectIntersection(&tmp, &final_src, &final_src);
     }
 
     /* Clip again */
-    SDL_IntersectRect(&dst->clip_rect, &final_dst, &final_dst);
+    SDL3_GetRectIntersection(&dst->clip_rect, &final_dst, &final_dst);
 
     if (dstrect) {
         *dstrect = final_dst;
@@ -3091,21 +3101,21 @@ SDL_GetTicks64(void)
     return SDL3_GetTicks();
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWMinfo *info)
+SDL_DECLSPEC SDL2_bool SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWMinfo *info)
 {
     const char *driver = SDL3_GetCurrentVideoDriver();
     SDL_PropertiesID props;
 
     if (!driver) {
-        return SDL_FALSE;
+        return SDL2_FALSE;
     }
     if (!window) {
         SDL3_InvalidParamError("window");
-        return SDL_FALSE;
+        return SDL2_FALSE;
     }
     if (!info) {
         SDL3_InvalidParamError("info");
-        return SDL_FALSE;
+        return SDL2_FALSE;
     }
 
     props = SDL3_GetWindowProperties(window);
@@ -3151,7 +3161,7 @@ SDL_DECLSPEC SDL_bool SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWMi
         if (version2 < SDL_VERSIONNUM(2, 0, 6)) {
             info->subsystem = SDL2_SYSWM_UNKNOWN;
             SDL3_SetError("Version must be 2.0.6 or newer");
-            return SDL_FALSE;
+            return SDL2_FALSE;
         }
 
         info->subsystem = SDL2_SYSWM_WAYLAND;
@@ -3185,12 +3195,18 @@ SDL_DECLSPEC SDL_bool SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWMi
     } else {
         SDL3_SetError("Video driver '%s' has no mapping to SDL_SysWMinfo", driver);
         info->subsystem = SDL2_SYSWM_UNKNOWN;
-        return SDL_FALSE;
+        return SDL2_FALSE;
     }
 
-    return SDL_TRUE;
+    return SDL2_TRUE;
 }
 
+
+SDL_DECLSPEC int SDLCALL
+SDL_GameControllerSetSensorEnabled(SDL_GameController *gamecontroller, SDL_SensorType type, SDL2_bool enabled)
+{
+    return SDL3_SetGamepadSensorEnabled(gamecontroller, type, enabled) ? 0 : -1;
+}
 
 /* this API was removed in SDL3; use sensor event timestamps instead! */
 SDL_DECLSPEC int SDLCALL
@@ -3283,7 +3299,7 @@ typedef struct
     Uint16 numDownFingers;
     int numDollarTemplates;
     GestureDollarTemplate *dollarTemplate;
-    SDL_bool recording;
+    SDL2_bool recording;
 } GestureTouch;
 
 static GestureTouch *GestureTouches = NULL;
@@ -3337,16 +3353,16 @@ SDL_RecordGesture(SDL_TouchID touchId)
     SDL_free(touchdevs);
 
     if (touchId == (SDL_TouchID)-1) {
-        GestureRecordAll = SDL_TRUE;  /* !!! FIXME: this is never set back to SDL_FALSE anywhere, that's probably a bug. */
+        GestureRecordAll = SDL_TRUE;  /* !!! FIXME: this is never set back to SDL2_FALSE anywhere, that's probably a bug. */
         for (i = 0; i < GestureNumTouches; i++) {
-            GestureTouches[i].recording = SDL_TRUE;
+            GestureTouches[i].recording = SDL2_TRUE;
         }
     } else {
         GestureTouch *touch = GestureGetTouch(touchId);
         if (!touch) {
             return 0;  /* bogus touchid */
         }
-        touch->recording = SDL_TRUE;
+        touch->recording = SDL2_TRUE;
     }
 
     return 1;
@@ -3598,7 +3614,7 @@ GestureBestDollarDifference(SDL_FPoint *points, SDL_FPoint *templ)
 
 /* `path` contains raw points, plus (possibly) the calculated length */
 static int
-GestureDollarNormalize(const GestureDollarPath *path, SDL_FPoint *points, SDL_bool is_recording)
+GestureDollarNormalize(const GestureDollarPath *path, SDL_FPoint *points, SDL2_bool is_recording)
 {
     int i;
     float interval;
@@ -3705,7 +3721,7 @@ GestureDollarRecognize(const GestureDollarPath *path, int *bestTempl, GestureTou
 
     SDL3_memset(points, 0, sizeof(points));
 
-    GestureDollarNormalize(path, points, SDL_FALSE);
+    GestureDollarNormalize(path, points, SDL2_FALSE);
 
     /* PrintPath(points); */
     *bestTempl = -1;
@@ -3800,13 +3816,13 @@ GestureProcessEvent(const SDL_Event *event3)
             inTouch->numDownFingers--;
 
             if (inTouch->recording) {
-                inTouch->recording = SDL_FALSE;
-                GestureDollarNormalize(&inTouch->dollarPath, path, SDL_TRUE);
+                inTouch->recording = SDL2_FALSE;
+                GestureDollarNormalize(&inTouch->dollarPath, path, SDL2_TRUE);
                 /* PrintPath(path); */
                 if (GestureRecordAll) {
                     idx = GestureAddDollar(NULL, path);
                     for (i = 0; i < GestureNumTouches; i++) {
-                        GestureTouches[i].recording = SDL_FALSE;
+                        GestureTouches[i].recording = SDL2_FALSE;
                     }
                 } else {
                     idx = GestureAddDollar(inTouch, path);
@@ -3980,13 +3996,13 @@ SDL_CreateShapedWindow(const char *title, unsigned int x, unsigned int y, unsign
     return SDL_CreateWindow(title, (int)x, (int)y, (int)w, (int)h, flags);
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_IsShapedWindow(const SDL_Window *window)
 {
     if (SDL3_GetWindowFlags((SDL_Window *)window) & SDL_WINDOW_TRANSPARENT) {
-        return SDL_TRUE;
+        return SDL2_TRUE;
     }
-    return SDL_FALSE;
+    return SDL2_FALSE;
 }
 
 #define PROP_WINDOW_SHAPE_MODE_POINTER "sdl2-compat.window.shape_mode"
@@ -4208,11 +4224,11 @@ SDL_CreateRenderer(SDL_Window *window, int idx, Uint32 flags)
     return renderer;
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_RenderTargetSupported(SDL_Renderer *renderer)
 {
     /* All SDL3 renderers support target textures */
-    return SDL_TRUE;
+    return SDL2_TRUE;
 }
 
 SDL_DECLSPEC void SDLCALL
@@ -4221,14 +4237,14 @@ SDL_RenderGetViewport(SDL_Renderer *renderer, SDL_Rect *rect)
     SDL3_GetRenderViewport(renderer, rect);
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_SetClipRect(SDL2_Surface *surface, const SDL_Rect *rect)
 {
     SDL_Rect full_rect;
 
     /* Don't do anything if there's no surface to act on */
     if (!surface) {
-        return SDL_FALSE;
+        return SDL2_FALSE;
     }
 
     SDL3_SetSurfaceClipRect(Surface2to3(surface), rect);
@@ -4242,9 +4258,9 @@ SDL_SetClipRect(SDL2_Surface *surface, const SDL_Rect *rect)
     /* Set the clipping rectangle */
     if (!rect) {
         surface->clip_rect = full_rect;
-        return SDL_TRUE;
+        return SDL2_TRUE;
     }
-    return SDL_IntersectRect(rect, &full_rect, &surface->clip_rect);
+    return SDL3_GetRectIntersection(rect, &full_rect, &surface->clip_rect) ? SDL2_TRUE : SDL2_FALSE;
 }
 
 SDL_DECLSPEC void SDLCALL
@@ -4297,7 +4313,7 @@ SDL_RenderGetLogicalSize(SDL_Renderer *renderer, int *w, int *h)
 }
 
 SDL_DECLSPEC int SDLCALL
-SDL_RenderSetIntegerScale(SDL_Renderer *renderer, SDL_bool enable)
+SDL_RenderSetIntegerScale(SDL_Renderer *renderer, SDL2_bool enable)
 {
     SDL_ScaleMode scale_mode;
     SDL_RendererLogicalPresentation mode;
@@ -4325,16 +4341,16 @@ SDL_RenderSetIntegerScale(SDL_Renderer *renderer, SDL_bool enable)
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_RenderGetIntegerScale(SDL_Renderer *renderer)
 {
     SDL_RendererLogicalPresentation mode;
     if (SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode, NULL)) {
         if (mode == SDL_LOGICAL_PRESENTATION_INTEGER_SCALE) {
-            return SDL_TRUE;
+            return SDL2_TRUE;
         }
     }
-    return SDL_FALSE;
+    return SDL2_FALSE;
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -4904,7 +4920,7 @@ SDL_AddTimer(Uint32 interval, SDL2_TimerCallback callback, void *param)
     return (SDL2_TimerID)timerID;
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_RemoveTimer(SDL2_TimerID id)
 {
     char name[32];
@@ -4912,7 +4928,7 @@ SDL_RemoveTimer(SDL2_TimerID id)
     SDL3_snprintf(name, sizeof(name), "%" SDL_PRIu32, id);
     SDL3_ClearProperty(timers, name);
 
-    return SDL3_RemoveTimer((SDL_TimerID)id);
+    return SDL3_RemoveTimer((SDL_TimerID)id) ? SDL2_TRUE : SDL2_FALSE;
 }
 
 
@@ -5017,7 +5033,7 @@ SDL_InitSubSystem(Uint32 flags)
 SDL_DECLSPEC void SDLCALL
 SDL_Quit(void)
 {
-    relative_mouse_mode = SDL_FALSE;
+    relative_mouse_mode = SDL2_FALSE;
 
     if (SDL3_WasInit(SDL_INIT_VIDEO)) {
         GestureQuit();
@@ -5535,7 +5551,7 @@ static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devicename, int iscap
         return 0;
     }
 
-    stream2->iscapture = iscapture;
+    stream2->iscapture = iscapture ? SDL2_TRUE : SDL2_FALSE;
     AudioOpenDevices[id] = stream2;
 
     return id + 1;
@@ -6349,7 +6365,7 @@ SDL_SetWindowDisplayMode(SDL_Window *window, const SDL2_DisplayMode *mode)
 }
 
 /* this came out of SDL2 directly. */
-static SDL_bool SDL_Vulkan_GetInstanceExtensions_Helper(unsigned int *userCount,
+static SDL2_bool SDL_Vulkan_GetInstanceExtensions_Helper(unsigned int *userCount,
                                                  const char **userNames,
                                                  unsigned int nameCount,
                                                  const char *const *names)
@@ -6359,7 +6375,7 @@ static SDL_bool SDL_Vulkan_GetInstanceExtensions_Helper(unsigned int *userCount,
 
         if (*userCount < nameCount) {
             SDL3_SetError("Output array for SDL_Vulkan_GetInstanceExtensions needs to be at least %d big", nameCount);
-            return SDL_FALSE;
+            return SDL2_FALSE;
         }
 
         for (i = 0; i < nameCount; i++) {
@@ -6367,12 +6383,12 @@ static SDL_bool SDL_Vulkan_GetInstanceExtensions_Helper(unsigned int *userCount,
         }
     }
     *userCount = nameCount;
-    return SDL_TRUE;
+    return SDL2_TRUE;
 }
 
 
 /* SDL3 simplified SDL_Vulkan_GetInstanceExtensions() extensively. */
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_Vulkan_GetInstanceExtensions(SDL_Window *window, unsigned int *puiCount, const char **pNames)
 {
     Uint32 ui32count = 0;
@@ -6382,23 +6398,23 @@ SDL_Vulkan_GetInstanceExtensions(SDL_Window *window, unsigned int *puiCount, con
 
     if (puiCount == NULL) {
         SDL3_InvalidParamError("count");
-        return SDL_FALSE;
+        return SDL2_FALSE;
     }
 
     extensions = SDL3_Vulkan_GetInstanceExtensions(&ui32count);
     if (!extensions) {
-        return SDL_FALSE;
+        return SDL2_FALSE;
     }
 
     return SDL_Vulkan_GetInstanceExtensions_Helper(puiCount, pNames, (unsigned int) ui32count, extensions);
 }
 
 /* SDL3 added a VkAllocationCallbacks* argument; SDL2 always uses the default (NULL) allocator */
-/* SDL3 also changed the return type from SDL_bool to int (with usual 0==success, -1==error semantics) */
-SDL_DECLSPEC SDL_bool SDLCALL
+/* SDL3 also changed the return type from SDL2_bool to int (with usual 0==success, -1==error semantics) */
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_Vulkan_CreateSurface(SDL_Window *window, VkInstance vkinst, VkSurfaceKHR *psurf)
 {
-    return SDL3_Vulkan_CreateSurface(window, vkinst, NULL, psurf);
+    return SDL3_Vulkan_CreateSurface(window, vkinst, NULL, psurf) ? SDL2_TRUE : SDL2_FALSE;
 }
 
 
@@ -6547,7 +6563,7 @@ done:
     do { a = b = c = d = 0; (void) a; (void) b; (void) c; (void) d; } while (0)
 #endif
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_Has3DNow(void)
 {
     /* if there's no MMX, presumably there's no 3DNow. */
@@ -6557,26 +6573,26 @@ SDL_Has3DNow(void)
         cpuid(0x80000000, a, b, c, d);
         if ((unsigned int)a >= 0x80000001) {
             cpuid(0x80000001, a, b, c, d);
-            return (d & 0x80000000) ? SDL_TRUE : SDL_FALSE;
+            return (d & 0x80000000) ? SDL2_TRUE : SDL2_FALSE;
         }
     }
-    return SDL_FALSE;
+    return SDL2_FALSE;
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_HasRDTSC(void)
 {
-    static SDL_bool checked = SDL_FALSE;
-    static SDL_bool has_RDTSC = SDL_FALSE;
+    static SDL2_bool checked = SDL2_FALSE;
+    static SDL2_bool has_RDTSC = SDL2_FALSE;
     if (!checked) {
-        checked = SDL_TRUE;
+        checked = SDL2_TRUE;
         if (CPU_haveCPUID()) {
             int a, b, c, d;
             cpuid(0, a, b, c, d);
             if (a /* CPUIDMaxFunction */ >= 1) {
                 cpuid(1, a, b, c, d);
                 if (d & 0x00000010) {
-                    has_RDTSC = SDL_TRUE;
+                    has_RDTSC = SDL2_TRUE;
                 }
             }
         }
@@ -6916,17 +6932,17 @@ SDL_StartTextInput(void)
     }
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_IsTextInputActive(void)
 {
-    SDL_bool result = SDL_FALSE;
+    SDL2_bool result = SDL2_FALSE;
     SDL_Window **windows = SDL3_GetWindows(NULL);
     if (windows) {
         int i;
 
         for (i = 0; windows[i]; ++i) {
             if (SDL3_TextInputActive(windows[i])) {
-                result = SDL_TRUE;
+                result = SDL2_TRUE;
                 break;
             }
         }
@@ -6963,7 +6979,7 @@ SDL_ClearComposition(void)
     }
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_IsTextInputShown()
 {
     return SDL_IsTextInputActive();
@@ -6996,10 +7012,10 @@ SDL_SetCursor(SDL_Cursor * cursor)
     SDL3_SetCursor(cursor);
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_PixelFormatEnumToMasks(Uint32 format, int *bpp, Uint32 * Rmask, Uint32 * Gmask, Uint32 * Bmask, Uint32 * Amask)
 {
-    return SDL3_GetMasksForPixelFormat((SDL_PixelFormat)format, bpp, Rmask, Gmask, Bmask, Amask);
+    return SDL3_GetMasksForPixelFormat((SDL_PixelFormat)format, bpp, Rmask, Gmask, Bmask, Amask) ? SDL2_TRUE : SDL2_FALSE;
 }
 
 SDL_DECLSPEC Uint32 SDLCALL
@@ -7162,19 +7178,19 @@ SDL_GetWindowMaximumSize(SDL_Window *window, int *w, int *h)
 }
 
 SDL_DECLSPEC void SDLCALL
-SDL_SetWindowBordered(SDL_Window *window, SDL_bool bordered)
+SDL_SetWindowBordered(SDL_Window *window, SDL2_bool bordered)
 {
     SDL3_SetWindowBordered(window, bordered);
 }
 
 SDL_DECLSPEC void SDLCALL
-SDL_SetWindowResizable(SDL_Window *window, SDL_bool resizable)
+SDL_SetWindowResizable(SDL_Window *window, SDL2_bool resizable)
 {
     SDL3_SetWindowResizable(window, resizable);
 }
 
 SDL_DECLSPEC void SDLCALL
-SDL_SetWindowAlwaysOnTop(SDL_Window *window, SDL_bool on_top)
+SDL_SetWindowAlwaysOnTop(SDL_Window *window, SDL2_bool on_top)
 {
     SDL3_SetWindowAlwaysOnTop(window, on_top);
 }
@@ -7222,7 +7238,7 @@ SDL_RestoreWindow(SDL_Window *window)
 }
 
 SDL_DECLSPEC void SDLCALL
-SDL_SetWindowGrab(SDL_Window *window, SDL_bool grabbed)
+SDL_SetWindowGrab(SDL_Window *window, SDL2_bool grabbed)
 {
     SDL3_SetWindowMouseGrab(window, grabbed);
     if (SDL3_GetHintBoolean("SDL_GRAB_KEYBOARD", SDL_FALSE)) {
@@ -7230,20 +7246,20 @@ SDL_SetWindowGrab(SDL_Window *window, SDL_bool grabbed)
     }
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_GetWindowGrab(SDL_Window *window)
 {
-    return SDL3_GetWindowKeyboardGrab(window) || SDL3_GetWindowMouseGrab(window);
+    return SDL3_GetWindowKeyboardGrab(window) || SDL3_GetWindowMouseGrab(window) ? SDL2_TRUE : SDL2_FALSE;
 }
 
 SDL_DECLSPEC void SDLCALL
-SDL_SetWindowKeyboardGrab(SDL_Window *window, SDL_bool grabbed)
+SDL_SetWindowKeyboardGrab(SDL_Window *window, SDL2_bool grabbed)
 {
     SDL3_SetWindowKeyboardGrab(window, grabbed);
 }
 
 SDL_DECLSPEC void SDLCALL
-SDL_SetWindowMouseGrab(SDL_Window *window, SDL_bool grabbed)
+SDL_SetWindowMouseGrab(SDL_Window *window, SDL2_bool grabbed)
 {
     SDL3_SetWindowMouseGrab(window, grabbed);
 }
@@ -7639,10 +7655,10 @@ SDL_SetSurfaceRLE(SDL2_Surface *surface, int flag)
     return 0;
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_HasSurfaceRLE(SDL2_Surface *surface)
 {
-    return SDL3_SurfaceHasRLE(Surface2to3(surface));
+    return SDL3_SurfaceHasRLE(Surface2to3(surface)) ? SDL2_TRUE : SDL2_FALSE;
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -7654,10 +7670,10 @@ SDL_SetColorKey(SDL2_Surface *surface, int flag, Uint32 key)
     return SDL3_SetSurfaceColorKey(Surface2to3(surface), flag ? SDL_TRUE : SDL_FALSE, key) ? 0 : -1;
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_HasColorKey(SDL2_Surface *surface)
 {
-    return SDL3_SurfaceHasColorKey(Surface2to3(surface));
+    return SDL3_SurfaceHasColorKey(Surface2to3(surface)) ? SDL2_TRUE : SDL2_FALSE;
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -7930,11 +7946,11 @@ SDL_JoystickGetDevicePlayerIndex(int idx)
     return jid ? SDL3_GetJoystickPlayerIndexForID(jid) : -1;
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_JoystickIsVirtual(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_IsJoystickVirtual(jid) : SDL_FALSE;
+    return SDL3_IsJoystickVirtual(jid) ? SDL2_TRUE : SDL2_FALSE;
 }
 
 SDL_DECLSPEC const char* SDLCALL
@@ -7944,22 +7960,22 @@ SDL_JoystickPathForIndex(int idx)
     return jid ? SDL3_GetJoystickPathForID(jid) : NULL;
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_JoystickHasLED(SDL_Joystick *joystick)
 {
-    return SDL3_GetBooleanProperty(SDL3_GetJoystickProperties(joystick), SDL_PROP_JOYSTICK_CAP_RGB_LED_BOOLEAN, SDL_FALSE);
+    return SDL3_GetBooleanProperty(SDL3_GetJoystickProperties(joystick), SDL_PROP_JOYSTICK_CAP_RGB_LED_BOOLEAN, SDL_FALSE) ? SDL2_TRUE : SDL2_FALSE;
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_JoystickHasRumble(SDL_Joystick *joystick)
 {
-    return SDL3_GetBooleanProperty(SDL3_GetJoystickProperties(joystick), SDL_PROP_GAMEPAD_CAP_RUMBLE_BOOLEAN, SDL_FALSE);
+    return SDL3_GetBooleanProperty(SDL3_GetJoystickProperties(joystick), SDL_PROP_GAMEPAD_CAP_RUMBLE_BOOLEAN, SDL_FALSE) ? SDL2_TRUE : SDL2_FALSE;
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_JoystickHasRumbleTriggers(SDL_Joystick *joystick)
 {
-    return SDL3_GetBooleanProperty(SDL3_GetJoystickProperties(joystick), SDL_PROP_GAMEPAD_CAP_TRIGGER_RUMBLE_BOOLEAN, SDL_FALSE);
+    return SDL3_GetBooleanProperty(SDL3_GetJoystickProperties(joystick), SDL_PROP_GAMEPAD_CAP_TRIGGER_RUMBLE_BOOLEAN, SDL_FALSE) ? SDL2_TRUE : SDL2_FALSE;
 }
 
 SDL_DECLSPEC SDL_JoystickPowerLevel SDLCALL
@@ -7998,11 +8014,11 @@ SDL_GameControllerMappingForDeviceIndex(int idx)
     return jid ? SDL3_GetGamepadMappingForID(jid) : NULL;
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_IsGameController(int idx)
 {
     const SDL_JoystickID jid = GetJoystickInstanceFromIndex(idx);
-    return jid ? SDL3_IsGamepad(jid) : SDL_FALSE;
+    return SDL3_IsGamepad(jid) ? SDL2_TRUE : SDL2_FALSE;
 }
 
 SDL_DECLSPEC const char* SDLCALL
@@ -8184,22 +8200,22 @@ SDL_GameControllerGetBindForButton(SDL_GameController *controller,
     return bind;
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_GameControllerHasLED(SDL_Gamepad *gamepad)
 {
-    return SDL3_GetBooleanProperty(SDL3_GetGamepadProperties(gamepad), SDL_PROP_GAMEPAD_CAP_RGB_LED_BOOLEAN, SDL_FALSE);
+    return SDL3_GetBooleanProperty(SDL3_GetGamepadProperties(gamepad), SDL_PROP_GAMEPAD_CAP_RGB_LED_BOOLEAN, SDL_FALSE) ? SDL2_TRUE : SDL2_FALSE;
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_GameControllerHasRumble(SDL_Gamepad *gamepad)
 {
-    return SDL3_GetBooleanProperty(SDL3_GetGamepadProperties(gamepad), SDL_PROP_GAMEPAD_CAP_RUMBLE_BOOLEAN, SDL_FALSE);
+    return SDL3_GetBooleanProperty(SDL3_GetGamepadProperties(gamepad), SDL_PROP_GAMEPAD_CAP_RUMBLE_BOOLEAN, SDL_FALSE) ? SDL2_TRUE : SDL2_FALSE;
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_GameControllerHasRumbleTriggers(SDL_Gamepad *gamepad)
 {
-    return SDL3_GetBooleanProperty(SDL3_GetGamepadProperties(gamepad), SDL_PROP_GAMEPAD_CAP_TRIGGER_RUMBLE_BOOLEAN, SDL_FALSE);
+    return SDL3_GetBooleanProperty(SDL3_GetGamepadProperties(gamepad), SDL_PROP_GAMEPAD_CAP_TRIGGER_RUMBLE_BOOLEAN, SDL_FALSE) ? SDL2_TRUE : SDL2_FALSE;
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -8602,7 +8618,7 @@ SDL_HapticEffectSupported(SDL_Haptic *haptic, SDL_HapticEffect *effect)
     SDL_HapticEffect effect3;
 
     if (!effect) {
-        return SDL_FALSE;
+        return SDL2_FALSE;
     }
     HapticEffect2to3(effect, &effect3);
     return SDL3_HapticEffectSupported(haptic, &effect3);
@@ -8640,12 +8656,9 @@ SDL_HapticUpdateEffect(SDL_Haptic *haptic, int effect, SDL_HapticEffect *data)
 SDL_DECLSPEC int SDLCALL
 SDL_HapticGetEffectStatus(SDL_Haptic * haptic, int effect)
 {
-    SDL_bool status;
-
     SDL3_ClearError();
 
-    status = SDL3_GetHapticEffectStatus(haptic, effect);
-    if (status) {
+    if (SDL3_GetHapticEffectStatus(haptic, effect)) {
         return 1;
     } else if (*SDL3_GetError() == '\0') {
         return 0;
@@ -8783,7 +8796,7 @@ SDL_SIMDFree(void *ptr)
 
 
 /* !!! FIXME: move this all up with the other audio functions */
-static SDL_bool
+static SDL2_bool
 SDL_IsSupportedAudioFormat(const SDL2_AudioFormat fmt)
 {
     switch (fmt) {
@@ -8797,16 +8810,16 @@ SDL_IsSupportedAudioFormat(const SDL2_AudioFormat fmt)
     case SDL_AUDIO_S32BE:
     case SDL_AUDIO_F32LE:
     case SDL_AUDIO_F32BE:
-        return SDL_TRUE; /* supported. */
+        return SDL2_TRUE; /* supported. */
 
     default:
         break;
     }
 
-    return SDL_FALSE; /* unsupported. */
+    return SDL2_FALSE; /* unsupported. */
 }
 
-static SDL_bool SDL_IsSupportedChannelCount(const int channels)
+static bool SDL_IsSupportedChannelCount(const int channels)
 {
     return ((channels >= 1) && (channels <= 8));
 }
@@ -9254,6 +9267,11 @@ SDL_GetThreadID(SDL_Thread *thread)
     return (unsigned long)SDL3_GetThreadID(thread);
 }
 
+SDL_DECLSPEC void SDLCALL SDL_hid_ble_scan(SDL2_bool active)
+{
+    SDL3_hid_ble_scan(active);
+}
+
 #if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)
 static SDL2_WindowsMessageHook g_WindowsMessageHook = NULL;
 
@@ -9279,10 +9297,10 @@ SDL_Direct3D9GetAdapterIndex(int displayIndex)
     return SDL3_GetDirect3D9AdapterIndex(Display_IndexToID(displayIndex));
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_DXGIGetOutputInfo(int displayIndex, int *adapterIndex, int *outputIndex)
 {
-    return SDL3_GetDXGIOutputInfo(Display_IndexToID(displayIndex), adapterIndex, outputIndex);
+    return SDL3_GetDXGIOutputInfo(Display_IndexToID(displayIndex), adapterIndex, outputIndex) ? SDL2_TRUE : SDL2_FALSE;
 }
 
 SDL_DECLSPEC IDirect3DDevice9* SDLCALL SDL_RenderGetD3D9Device(SDL_Renderer *renderer)
@@ -9326,6 +9344,12 @@ SDL_UIKitRunApp(int argc, char *argv[], SDL_main_func mainFunction)
 {
     return SDL3_RunApp(argc, argv, mainFunction, NULL);
 }
+
+SDL_DECLSPEC void SDLCALL
+SDL_iPhoneSetEventPump(SDL2_bool enabled)
+{
+    SDL3_SetiOSEventPump(enabled);
+}
 #endif
 
 #ifdef SDL_PLATFORM_ANDROID
@@ -9335,19 +9359,19 @@ SDL_AndroidGetExternalStorageState(void)
     return (int)SDL3_GetAndroidExternalStorageState();
 }
 
-static void SDLCALL AndroidRequestPermissionBlockingCallback(void *userdata, const char *permission, SDL_bool granted)
+static void SDLCALL AndroidRequestPermissionBlockingCallback(void *userdata, const char *permission, SDL2_bool granted)
 {
     SDL3_AtomicSet((SDL_AtomicInt *) userdata, granted ? 1 : -1);
 }
 
-SDL_DECLSPEC SDL_bool SDLCALL
+SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_AndroidRequestPermission(const char *permission)
 {
     SDL_AtomicInt response;
     SDL3_AtomicSet(&response, 0);
 
     if (!SDL3_RequestAndroidPermission(permission, AndroidRequestPermissionBlockingCallback, &response)) {
-        return SDL_FALSE;
+        return SDL2_FALSE;
     }
 
     /* Wait for the request to complete */
@@ -9355,7 +9379,7 @@ SDL_AndroidRequestPermission(const char *permission)
         SDL3_Delay(10);
     }
 
-    return (SDL3_AtomicGet(&response) < 0) ? SDL_FALSE : SDL_TRUE;
+    return (SDL3_AtomicGet(&response) < 0) ? SDL2_FALSE : SDL2_TRUE;
 }
 #endif
 
