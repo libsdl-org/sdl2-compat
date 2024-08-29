@@ -2365,7 +2365,7 @@ static SDL_bool SDLCALL
 RWops2to3_close(void *userdata)
 {
     /* Never close the SDL2_RWops here! This is just a wrapper to talk to SDL3 APIs. We will manually close the rwops2 if appropriate. */
-    /*return SDL_CloseIO((SDL2_RWops *) userdata) ? 0 : -1;*/
+    /*return SDL3_CloseIO((SDL2_RWops *) userdata) ? 0 : -1;*/
     return SDL_TRUE;
 }
 
@@ -4177,7 +4177,7 @@ static int FlushRendererIfNotBatching(SDL_Renderer *renderer)
 {
     const SDL_PropertiesID props = SDL3_GetRendererProperties(renderer);
     if (!SDL3_GetBooleanProperty(props, PROP_RENDERER_BATCHING, SDL_FALSE)) {
-        return SDL3_FlushRenderer(renderer);
+        return SDL3_FlushRenderer(renderer) ? 0 : -1;
     }
     return 0;
 }
@@ -4388,7 +4388,7 @@ SDL_RenderDrawPointF(SDL_Renderer *renderer, float x, float y)
 SDL_DECLSPEC int SDLCALL
 SDL_RenderDrawPoint(SDL_Renderer *renderer, int x, int y)
 {
-    return SDL_RenderDrawPointF(renderer, (float) x, (float) y) ? 0 : -1;
+    return SDL_RenderDrawPointF(renderer, (float)x, (float)y);
 }
 
 SDL_DECLSPEC int SDLCALL
