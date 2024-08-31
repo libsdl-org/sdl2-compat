@@ -512,7 +512,7 @@ SDL_AddHintCallback(const char *name, SDL_HintCallback callback, void *userdata)
 SDL_DECLSPEC void SDLCALL
 SDL_DelHintCallback(const char *name, SDL_HintCallback callback, void *userdata)
 {
-    SDL3_DelHintCallback(SDL2_to_SDL3_hint(name), callback, userdata);
+    SDL3_RemoveHintCallback(SDL2_to_SDL3_hint(name), callback, userdata);
 }
 
 SDL_DECLSPEC void SDLCALL

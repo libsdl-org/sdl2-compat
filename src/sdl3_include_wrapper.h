@@ -35,6 +35,8 @@
 #define SDL_ThreadID SDL3_ThreadID /* avoid clash with SDL_ThreadID() of SDL2 */
 
 #define SDL_AcquireCameraFrame IGNORE_THIS_VERSION_OF_SDL_AcquireCameraFrame
+#define SDL_AcquireGPUCommandBuffer IGNORE_THIS_VERSION_OF_SDL_AcquireGPUCommandBuffer
+#define SDL_AcquireGPUSwapchainTexture IGNORE_THIS_VERSION_OF_SDL_AcquireGPUSwapchainTexture
 #define SDL_AddEventWatch IGNORE_THIS_VERSION_OF_SDL_AddEventWatch
 #define SDL_AddGamepadMapping IGNORE_THIS_VERSION_OF_SDL_AddGamepadMapping
 #define SDL_AddGamepadMappingsFromFile IGNORE_THIS_VERSION_OF_SDL_AddGamepadMappingsFromFile
@@ -48,13 +50,29 @@
 #define SDL_AtomicCompareAndSwap IGNORE_THIS_VERSION_OF_SDL_AtomicCompareAndSwap
 #define SDL_AtomicCompareAndSwapPointer IGNORE_THIS_VERSION_OF_SDL_AtomicCompareAndSwapPointer
 #define SDL_AtomicGet IGNORE_THIS_VERSION_OF_SDL_AtomicGet
-#define SDL_AtomicGetPtr IGNORE_THIS_VERSION_OF_SDL_AtomicGetPtr
+#define SDL_AtomicGetPointer IGNORE_THIS_VERSION_OF_SDL_AtomicGetPointer
 #define SDL_AtomicSet IGNORE_THIS_VERSION_OF_SDL_AtomicSet
-#define SDL_AtomicSetPtr IGNORE_THIS_VERSION_OF_SDL_AtomicSetPtr
+#define SDL_AtomicSetPointer IGNORE_THIS_VERSION_OF_SDL_AtomicSetPointer
 #define SDL_AttachVirtualJoystick IGNORE_THIS_VERSION_OF_SDL_AttachVirtualJoystick
 #define SDL_AudioDevicePaused IGNORE_THIS_VERSION_OF_SDL_AudioDevicePaused
+#define SDL_BeginGPUComputePass IGNORE_THIS_VERSION_OF_SDL_BeginGPUComputePass
+#define SDL_BeginGPUCopyPass IGNORE_THIS_VERSION_OF_SDL_BeginGPUCopyPass
+#define SDL_BeginGPURenderPass IGNORE_THIS_VERSION_OF_SDL_BeginGPURenderPass
 #define SDL_BindAudioStream IGNORE_THIS_VERSION_OF_SDL_BindAudioStream
 #define SDL_BindAudioStreams IGNORE_THIS_VERSION_OF_SDL_BindAudioStreams
+#define SDL_BindGPUComputePipeline IGNORE_THIS_VERSION_OF_SDL_BindGPUComputePipeline
+#define SDL_BindGPUComputeStorageBuffers IGNORE_THIS_VERSION_OF_SDL_BindGPUComputeStorageBuffers
+#define SDL_BindGPUComputeStorageTextures IGNORE_THIS_VERSION_OF_SDL_BindGPUComputeStorageTextures
+#define SDL_BindGPUFragmentSamplers IGNORE_THIS_VERSION_OF_SDL_BindGPUFragmentSamplers
+#define SDL_BindGPUFragmentStorageBuffers IGNORE_THIS_VERSION_OF_SDL_BindGPUFragmentStorageBuffers
+#define SDL_BindGPUFragmentStorageTextures IGNORE_THIS_VERSION_OF_SDL_BindGPUFragmentStorageTextures
+#define SDL_BindGPUGraphicsPipeline IGNORE_THIS_VERSION_OF_SDL_BindGPUGraphicsPipeline
+#define SDL_BindGPUIndexBuffer IGNORE_THIS_VERSION_OF_SDL_BindGPUIndexBuffer
+#define SDL_BindGPUVertexBuffers IGNORE_THIS_VERSION_OF_SDL_BindGPUVertexBuffers
+#define SDL_BindGPUVertexSamplers IGNORE_THIS_VERSION_OF_SDL_BindGPUVertexSamplers
+#define SDL_BindGPUVertexStorageBuffers IGNORE_THIS_VERSION_OF_SDL_BindGPUVertexStorageBuffers
+#define SDL_BindGPUVertexStorageTextures IGNORE_THIS_VERSION_OF_SDL_BindGPUVertexStorageTextures
+#define SDL_BlitGPUTexture IGNORE_THIS_VERSION_OF_SDL_BlitGPUTexture
 #define SDL_BlitSurface IGNORE_THIS_VERSION_OF_SDL_BlitSurface
 #define SDL_BlitSurface9Grid IGNORE_THIS_VERSION_OF_SDL_BlitSurface9Grid
 #define SDL_BlitSurfaceScaled IGNORE_THIS_VERSION_OF_SDL_BlitSurfaceScaled
@@ -64,6 +82,7 @@
 #define SDL_BlitSurfaceUncheckedScaled IGNORE_THIS_VERSION_OF_SDL_BlitSurfaceUncheckedScaled
 #define SDL_BroadcastCondition IGNORE_THIS_VERSION_OF_SDL_BroadcastCondition
 #define SDL_CaptureMouse IGNORE_THIS_VERSION_OF_SDL_CaptureMouse
+#define SDL_ClaimWindowForGPUDevice IGNORE_THIS_VERSION_OF_SDL_ClaimWindowForGPUDevice
 #define SDL_CleanupTLS IGNORE_THIS_VERSION_OF_SDL_CleanupTLS
 #define SDL_ClearAudioStream IGNORE_THIS_VERSION_OF_SDL_ClearAudioStream
 #define SDL_ClearClipboardData IGNORE_THIS_VERSION_OF_SDL_ClearClipboardData
@@ -87,6 +106,8 @@
 #define SDL_ConvertSurface IGNORE_THIS_VERSION_OF_SDL_ConvertSurface
 #define SDL_ConvertSurfaceAndColorspace IGNORE_THIS_VERSION_OF_SDL_ConvertSurfaceAndColorspace
 #define SDL_CopyFile IGNORE_THIS_VERSION_OF_SDL_CopyFile
+#define SDL_CopyGPUBufferToBuffer IGNORE_THIS_VERSION_OF_SDL_CopyGPUBufferToBuffer
+#define SDL_CopyGPUTextureToTexture IGNORE_THIS_VERSION_OF_SDL_CopyGPUTextureToTexture
 #define SDL_CopyProperties IGNORE_THIS_VERSION_OF_SDL_CopyProperties
 #define SDL_CopyStorageFile IGNORE_THIS_VERSION_OF_SDL_CopyStorageFile
 #define SDL_CreateAudioStream IGNORE_THIS_VERSION_OF_SDL_CreateAudioStream
@@ -94,6 +115,15 @@
 #define SDL_CreateCondition IGNORE_THIS_VERSION_OF_SDL_CreateCondition
 #define SDL_CreateCursor IGNORE_THIS_VERSION_OF_SDL_CreateCursor
 #define SDL_CreateDirectory IGNORE_THIS_VERSION_OF_SDL_CreateDirectory
+#define SDL_CreateGPUBuffer IGNORE_THIS_VERSION_OF_SDL_CreateGPUBuffer
+#define SDL_CreateGPUComputePipeline IGNORE_THIS_VERSION_OF_SDL_CreateGPUComputePipeline
+#define SDL_CreateGPUDevice IGNORE_THIS_VERSION_OF_SDL_CreateGPUDevice
+#define SDL_CreateGPUDeviceWithProperties IGNORE_THIS_VERSION_OF_SDL_CreateGPUDeviceWithProperties
+#define SDL_CreateGPUGraphicsPipeline IGNORE_THIS_VERSION_OF_SDL_CreateGPUGraphicsPipeline
+#define SDL_CreateGPUSampler IGNORE_THIS_VERSION_OF_SDL_CreateGPUSampler
+#define SDL_CreateGPUShader IGNORE_THIS_VERSION_OF_SDL_CreateGPUShader
+#define SDL_CreateGPUTexture IGNORE_THIS_VERSION_OF_SDL_CreateGPUTexture
+#define SDL_CreateGPUTransferBuffer IGNORE_THIS_VERSION_OF_SDL_CreateGPUTransferBuffer
 #define SDL_CreateHapticEffect IGNORE_THIS_VERSION_OF_SDL_CreateHapticEffect
 #define SDL_CreateMutex IGNORE_THIS_VERSION_OF_SDL_CreateMutex
 #define SDL_CreatePalette IGNORE_THIS_VERSION_OF_SDL_CreatePalette
@@ -119,13 +149,14 @@
 #define SDL_CreateWindowWithProperties IGNORE_THIS_VERSION_OF_SDL_CreateWindowWithProperties
 #define SDL_CursorVisible IGNORE_THIS_VERSION_OF_SDL_CursorVisible
 #define SDL_DateTimeToTime IGNORE_THIS_VERSION_OF_SDL_DateTimeToTime
-#define SDL_DelEventWatch IGNORE_THIS_VERSION_OF_SDL_DelEventWatch
-#define SDL_DelHintCallback IGNORE_THIS_VERSION_OF_SDL_DelHintCallback
+#define SDL_RemoveEventWatch IGNORE_THIS_VERSION_OF_SDL_RemoveEventWatch
+#define SDL_RemoveHintCallback IGNORE_THIS_VERSION_OF_SDL_RemoveHintCallback
 #define SDL_Delay IGNORE_THIS_VERSION_OF_SDL_Delay
 #define SDL_DelayNS IGNORE_THIS_VERSION_OF_SDL_DelayNS
 #define SDL_DestroyAudioStream IGNORE_THIS_VERSION_OF_SDL_DestroyAudioStream
 #define SDL_DestroyCondition IGNORE_THIS_VERSION_OF_SDL_DestroyCondition
 #define SDL_DestroyCursor IGNORE_THIS_VERSION_OF_SDL_DestroyCursor
+#define SDL_DestroyGPUDevice IGNORE_THIS_VERSION_OF_SDL_DestroyGPUDevice
 #define SDL_DestroyHapticEffect IGNORE_THIS_VERSION_OF_SDL_DestroyHapticEffect
 #define SDL_DestroyMutex IGNORE_THIS_VERSION_OF_SDL_DestroyMutex
 #define SDL_DestroyPalette IGNORE_THIS_VERSION_OF_SDL_DestroyPalette
@@ -140,6 +171,14 @@
 #define SDL_DetachThread IGNORE_THIS_VERSION_OF_SDL_DetachThread
 #define SDL_DetachVirtualJoystick IGNORE_THIS_VERSION_OF_SDL_DetachVirtualJoystick
 #define SDL_DisableScreenSaver IGNORE_THIS_VERSION_OF_SDL_DisableScreenSaver
+#define SDL_DispatchGPUCompute IGNORE_THIS_VERSION_OF_SDL_DispatchGPUCompute
+#define SDL_DispatchGPUComputeIndirect IGNORE_THIS_VERSION_OF_SDL_DispatchGPUComputeIndirect
+#define SDL_DownloadFromGPUBuffer IGNORE_THIS_VERSION_OF_SDL_DownloadFromGPUBuffer
+#define SDL_DownloadFromGPUTexture IGNORE_THIS_VERSION_OF_SDL_DownloadFromGPUTexture
+#define SDL_DrawGPUIndexedPrimitives IGNORE_THIS_VERSION_OF_SDL_DrawGPUIndexedPrimitives
+#define SDL_DrawGPUIndexedPrimitivesIndirect IGNORE_THIS_VERSION_OF_SDL_DrawGPUIndexedPrimitivesIndirect
+#define SDL_DrawGPUPrimitives IGNORE_THIS_VERSION_OF_SDL_DrawGPUPrimitives
+#define SDL_DrawGPUPrimitivesIndirect IGNORE_THIS_VERSION_OF_SDL_DrawGPUPrimitivesIndirect
 #define SDL_DuplicateSurface IGNORE_THIS_VERSION_OF_SDL_DuplicateSurface
 #define SDL_EGL_GetCurrentConfig IGNORE_THIS_VERSION_OF_SDL_EGL_GetCurrentConfig
 #define SDL_EGL_GetCurrentDisplay IGNORE_THIS_VERSION_OF_SDL_EGL_GetCurrentDisplay
@@ -147,6 +186,9 @@
 #define SDL_EGL_GetWindowSurface IGNORE_THIS_VERSION_OF_SDL_EGL_GetWindowSurface
 #define SDL_EGL_SetAttributeCallbacks IGNORE_THIS_VERSION_OF_SDL_EGL_SetAttributeCallbacks
 #define SDL_EnableScreenSaver IGNORE_THIS_VERSION_OF_SDL_EnableScreenSaver
+#define SDL_EndGPUComputePass IGNORE_THIS_VERSION_OF_SDL_EndGPUComputePass
+#define SDL_EndGPUCopyPass IGNORE_THIS_VERSION_OF_SDL_EndGPUCopyPass
+#define SDL_EndGPURenderPass IGNORE_THIS_VERSION_OF_SDL_EndGPURenderPass
 #define SDL_EnterAppMainCallbacks IGNORE_THIS_VERSION_OF_SDL_EnterAppMainCallbacks
 #define SDL_EnumerateDirectory IGNORE_THIS_VERSION_OF_SDL_EnumerateDirectory
 #define SDL_EnumerateProperties IGNORE_THIS_VERSION_OF_SDL_EnumerateProperties
@@ -161,7 +203,9 @@
 #define SDL_FlushEvent IGNORE_THIS_VERSION_OF_SDL_FlushEvent
 #define SDL_FlushEvents IGNORE_THIS_VERSION_OF_SDL_FlushEvents
 #define SDL_FlushRenderer IGNORE_THIS_VERSION_OF_SDL_FlushRenderer
+#define SDL_GDKResumeGPU IGNORE_THIS_VERSION_OF_SDL_GDKResumeGPU
 #define SDL_GDKSuspendComplete IGNORE_THIS_VERSION_OF_SDL_GDKSuspendComplete
+#define SDL_GDKSuspendGPU IGNORE_THIS_VERSION_OF_SDL_GDKSuspendGPU
 #define SDL_GL_CreateContext IGNORE_THIS_VERSION_OF_SDL_GL_CreateContext
 #define SDL_GL_DestroyContext IGNORE_THIS_VERSION_OF_SDL_GL_DestroyContext
 #define SDL_GL_ExtensionSupported IGNORE_THIS_VERSION_OF_SDL_GL_ExtensionSupported
@@ -177,6 +221,9 @@
 #define SDL_GL_SetSwapInterval IGNORE_THIS_VERSION_OF_SDL_GL_SetSwapInterval
 #define SDL_GL_SwapWindow IGNORE_THIS_VERSION_OF_SDL_GL_SwapWindow
 #define SDL_GL_UnloadLibrary IGNORE_THIS_VERSION_OF_SDL_GL_UnloadLibrary
+#define SDL_GPUTextureFormatTexelBlockSize IGNORE_THIS_VERSION_OF_SDL_GPUTextureFormatTexelBlockSize
+#define SDL_GPUTextureSupportsFormat IGNORE_THIS_VERSION_OF_SDL_GPUTextureSupportsFormat
+#define SDL_GPUTextureSupportsSampleCount IGNORE_THIS_VERSION_OF_SDL_GPUTextureSupportsSampleCount
 #define SDL_GUIDToString IGNORE_THIS_VERSION_OF_SDL_GUIDToString
 #define SDL_GamepadConnected IGNORE_THIS_VERSION_OF_SDL_GamepadConnected
 #define SDL_GamepadEventsEnabled IGNORE_THIS_VERSION_OF_SDL_GamepadEventsEnabled
@@ -184,6 +231,7 @@
 #define SDL_GamepadHasButton IGNORE_THIS_VERSION_OF_SDL_GamepadHasButton
 #define SDL_GamepadHasSensor IGNORE_THIS_VERSION_OF_SDL_GamepadHasSensor
 #define SDL_GamepadSensorEnabled IGNORE_THIS_VERSION_OF_SDL_GamepadSensorEnabled
+#define SDL_GenerateMipmapsForGPUTexture IGNORE_THIS_VERSION_OF_SDL_GenerateMipmapsForGPUTexture
 #define SDL_GetAndroidActivity IGNORE_THIS_VERSION_OF_SDL_GetAndroidActivity
 #define SDL_GetAndroidCachePath IGNORE_THIS_VERSION_OF_SDL_GetAndroidCachePath
 #define SDL_GetAndroidExternalStoragePath IGNORE_THIS_VERSION_OF_SDL_GetAndroidExternalStoragePath
@@ -261,6 +309,8 @@
 #define SDL_GetFullscreenDisplayModes IGNORE_THIS_VERSION_OF_SDL_GetFullscreenDisplayModes
 #define SDL_GetGDKDefaultUser IGNORE_THIS_VERSION_OF_SDL_GetGDKDefaultUser
 #define SDL_GetGDKTaskQueue IGNORE_THIS_VERSION_OF_SDL_GetGDKTaskQueue
+#define SDL_GetGPUDriver IGNORE_THIS_VERSION_OF_SDL_GetGPUDriver
+#define SDL_GetGPUSwapchainTextureFormat IGNORE_THIS_VERSION_OF_SDL_GetGPUSwapchainTextureFormat
 #define SDL_GetGamepadAppleSFSymbolsNameForAxis IGNORE_THIS_VERSION_OF_SDL_GetGamepadAppleSFSymbolsNameForAxis
 #define SDL_GetGamepadAppleSFSymbolsNameForButton IGNORE_THIS_VERSION_OF_SDL_GetGamepadAppleSFSymbolsNameForButton
 #define SDL_GetGamepadAxis IGNORE_THIS_VERSION_OF_SDL_GetGamepadAxis
@@ -560,6 +610,7 @@
 #define SDL_Init IGNORE_THIS_VERSION_OF_SDL_Init
 #define SDL_InitHapticRumble IGNORE_THIS_VERSION_OF_SDL_InitHapticRumble
 #define SDL_InitSubSystem IGNORE_THIS_VERSION_OF_SDL_InitSubSystem
+#define SDL_InsertGPUDebugLabel IGNORE_THIS_VERSION_OF_SDL_InsertGPUDebugLabel
 #define SDL_IsAndroidTV IGNORE_THIS_VERSION_OF_SDL_IsAndroidTV
 #define SDL_IsChromebook IGNORE_THIS_VERSION_OF_SDL_IsChromebook
 #define SDL_IsDeXMode IGNORE_THIS_VERSION_OF_SDL_IsDeXMode
@@ -597,6 +648,7 @@
 #define SDL_LogMessageV IGNORE_THIS_VERSION_OF_SDL_LogMessageV
 #define SDL_LogVerbose IGNORE_THIS_VERSION_OF_SDL_LogVerbose
 #define SDL_LogWarn IGNORE_THIS_VERSION_OF_SDL_LogWarn
+#define SDL_MapGPUTransferBuffer IGNORE_THIS_VERSION_OF_SDL_MapGPUTransferBuffer
 #define SDL_MapRGB IGNORE_THIS_VERSION_OF_SDL_MapRGB
 #define SDL_MapRGBA IGNORE_THIS_VERSION_OF_SDL_MapRGBA
 #define SDL_MapSurfaceRGB IGNORE_THIS_VERSION_OF_SDL_MapSurfaceRGB
@@ -638,11 +690,17 @@
 #define SDL_PeepEvents IGNORE_THIS_VERSION_OF_SDL_PeepEvents
 #define SDL_PlayHapticRumble IGNORE_THIS_VERSION_OF_SDL_PlayHapticRumble
 #define SDL_PollEvent IGNORE_THIS_VERSION_OF_SDL_PollEvent
+#define SDL_PopGPUDebugGroup IGNORE_THIS_VERSION_OF_SDL_PopGPUDebugGroup
 #define SDL_PremultiplyAlpha IGNORE_THIS_VERSION_OF_SDL_PremultiplyAlpha
 #define SDL_PremultiplySurfaceAlpha IGNORE_THIS_VERSION_OF_SDL_PremultiplySurfaceAlpha
 #define SDL_PumpEvents IGNORE_THIS_VERSION_OF_SDL_PumpEvents
 #define SDL_PushEvent IGNORE_THIS_VERSION_OF_SDL_PushEvent
+#define SDL_PushGPUComputeUniformData IGNORE_THIS_VERSION_OF_SDL_PushGPUComputeUniformData
+#define SDL_PushGPUDebugGroup IGNORE_THIS_VERSION_OF_SDL_PushGPUDebugGroup
+#define SDL_PushGPUFragmentUniformData IGNORE_THIS_VERSION_OF_SDL_PushGPUFragmentUniformData
+#define SDL_PushGPUVertexUniformData IGNORE_THIS_VERSION_OF_SDL_PushGPUVertexUniformData
 #define SDL_PutAudioStreamData IGNORE_THIS_VERSION_OF_SDL_PutAudioStreamData
+#define SDL_QueryGPUFence IGNORE_THIS_VERSION_OF_SDL_QueryGPUFence
 #define SDL_Quit IGNORE_THIS_VERSION_OF_SDL_Quit
 #define SDL_QuitSubSystem IGNORE_THIS_VERSION_OF_SDL_QuitSubSystem
 #define SDL_RaiseWindow IGNORE_THIS_VERSION_OF_SDL_RaiseWindow
@@ -667,6 +725,15 @@
 #define SDL_RegisterApp IGNORE_THIS_VERSION_OF_SDL_RegisterApp
 #define SDL_RegisterEvents IGNORE_THIS_VERSION_OF_SDL_RegisterEvents
 #define SDL_ReleaseCameraFrame IGNORE_THIS_VERSION_OF_SDL_ReleaseCameraFrame
+#define SDL_ReleaseGPUBuffer IGNORE_THIS_VERSION_OF_SDL_ReleaseGPUBuffer
+#define SDL_ReleaseGPUComputePipeline IGNORE_THIS_VERSION_OF_SDL_ReleaseGPUComputePipeline
+#define SDL_ReleaseGPUFence IGNORE_THIS_VERSION_OF_SDL_ReleaseGPUFence
+#define SDL_ReleaseGPUGraphicsPipeline IGNORE_THIS_VERSION_OF_SDL_ReleaseGPUGraphicsPipeline
+#define SDL_ReleaseGPUSampler IGNORE_THIS_VERSION_OF_SDL_ReleaseGPUSampler
+#define SDL_ReleaseGPUShader IGNORE_THIS_VERSION_OF_SDL_ReleaseGPUShader
+#define SDL_ReleaseGPUTexture IGNORE_THIS_VERSION_OF_SDL_ReleaseGPUTexture
+#define SDL_ReleaseGPUTransferBuffer IGNORE_THIS_VERSION_OF_SDL_ReleaseGPUTransferBuffer
+#define SDL_ReleaseWindowFromGPUDevice IGNORE_THIS_VERSION_OF_SDL_ReleaseWindowFromGPUDevice
 #define SDL_ReloadGamepadMappings IGNORE_THIS_VERSION_OF_SDL_ReloadGamepadMappings
 #define SDL_RemovePath IGNORE_THIS_VERSION_OF_SDL_RemovePath
 #define SDL_RemoveStoragePath IGNORE_THIS_VERSION_OF_SDL_RemoveStoragePath
@@ -743,6 +810,11 @@
 #define SDL_SetEventEnabled IGNORE_THIS_VERSION_OF_SDL_SetEventEnabled
 #define SDL_SetEventFilter IGNORE_THIS_VERSION_OF_SDL_SetEventFilter
 #define SDL_SetFloatProperty IGNORE_THIS_VERSION_OF_SDL_SetFloatProperty
+#define SDL_SetGPUBufferName IGNORE_THIS_VERSION_OF_SDL_SetGPUBufferName
+#define SDL_SetGPUScissor IGNORE_THIS_VERSION_OF_SDL_SetGPUScissor
+#define SDL_SetGPUSwapchainParameters IGNORE_THIS_VERSION_OF_SDL_SetGPUSwapchainParameters
+#define SDL_SetGPUTextureName IGNORE_THIS_VERSION_OF_SDL_SetGPUTextureName
+#define SDL_SetGPUViewport IGNORE_THIS_VERSION_OF_SDL_SetGPUViewport
 #define SDL_SetGamepadEventsEnabled IGNORE_THIS_VERSION_OF_SDL_SetGamepadEventsEnabled
 #define SDL_SetGamepadLED IGNORE_THIS_VERSION_OF_SDL_SetGamepadLED
 #define SDL_SetGamepadMapping IGNORE_THIS_VERSION_OF_SDL_SetGamepadMapping
@@ -849,6 +921,8 @@
 #define SDL_StopTextInput IGNORE_THIS_VERSION_OF_SDL_StopTextInput
 #define SDL_StorageReady IGNORE_THIS_VERSION_OF_SDL_StorageReady
 #define SDL_StringToGUID IGNORE_THIS_VERSION_OF_SDL_StringToGUID
+#define SDL_SubmitGPUCommandBuffer IGNORE_THIS_VERSION_OF_SDL_SubmitGPUCommandBuffer
+#define SDL_SubmitGPUCommandBufferAndAcquireFence IGNORE_THIS_VERSION_OF_SDL_SubmitGPUCommandBufferAndAcquireFence
 #define SDL_SurfaceHasAlternateImages IGNORE_THIS_VERSION_OF_SDL_SurfaceHasAlternateImages
 #define SDL_SurfaceHasColorKey IGNORE_THIS_VERSION_OF_SDL_SurfaceHasColorKey
 #define SDL_SurfaceHasRLE IGNORE_THIS_VERSION_OF_SDL_SurfaceHasRLE
@@ -875,6 +949,7 @@
 #define SDL_UnlockSpinlock IGNORE_THIS_VERSION_OF_SDL_UnlockSpinlock
 #define SDL_UnlockSurface IGNORE_THIS_VERSION_OF_SDL_UnlockSurface
 #define SDL_UnlockTexture IGNORE_THIS_VERSION_OF_SDL_UnlockTexture
+#define SDL_UnmapGPUTransferBuffer IGNORE_THIS_VERSION_OF_SDL_UnmapGPUTransferBuffer
 #define SDL_UnregisterApp IGNORE_THIS_VERSION_OF_SDL_UnregisterApp
 #define SDL_UpdateGamepads IGNORE_THIS_VERSION_OF_SDL_UpdateGamepads
 #define SDL_UpdateHapticEffect IGNORE_THIS_VERSION_OF_SDL_UpdateHapticEffect
@@ -885,6 +960,8 @@
 #define SDL_UpdateWindowSurface IGNORE_THIS_VERSION_OF_SDL_UpdateWindowSurface
 #define SDL_UpdateWindowSurfaceRects IGNORE_THIS_VERSION_OF_SDL_UpdateWindowSurfaceRects
 #define SDL_UpdateYUVTexture IGNORE_THIS_VERSION_OF_SDL_UpdateYUVTexture
+#define SDL_UploadToGPUBuffer IGNORE_THIS_VERSION_OF_SDL_UploadToGPUBuffer
+#define SDL_UploadToGPUTexture IGNORE_THIS_VERSION_OF_SDL_UploadToGPUTexture
 #define SDL_Vulkan_CreateSurface IGNORE_THIS_VERSION_OF_SDL_Vulkan_CreateSurface
 #define SDL_Vulkan_DestroySurface IGNORE_THIS_VERSION_OF_SDL_Vulkan_DestroySurface
 #define SDL_Vulkan_GetInstanceExtensions IGNORE_THIS_VERSION_OF_SDL_Vulkan_GetInstanceExtensions
@@ -896,6 +973,8 @@
 #define SDL_WaitConditionTimeout IGNORE_THIS_VERSION_OF_SDL_WaitConditionTimeout
 #define SDL_WaitEvent IGNORE_THIS_VERSION_OF_SDL_WaitEvent
 #define SDL_WaitEventTimeout IGNORE_THIS_VERSION_OF_SDL_WaitEventTimeout
+#define SDL_WaitForGPUFences IGNORE_THIS_VERSION_OF_SDL_WaitForGPUFences
+#define SDL_WaitForGPUIdle IGNORE_THIS_VERSION_OF_SDL_WaitForGPUIdle
 #define SDL_WaitSemaphore IGNORE_THIS_VERSION_OF_SDL_WaitSemaphore
 #define SDL_WaitSemaphoreTimeout IGNORE_THIS_VERSION_OF_SDL_WaitSemaphoreTimeout
 #define SDL_WaitThread IGNORE_THIS_VERSION_OF_SDL_WaitThread
@@ -903,6 +982,8 @@
 #define SDL_WarpMouseInWindow IGNORE_THIS_VERSION_OF_SDL_WarpMouseInWindow
 #define SDL_WasInit IGNORE_THIS_VERSION_OF_SDL_WasInit
 #define SDL_WindowHasSurface IGNORE_THIS_VERSION_OF_SDL_WindowHasSurface
+#define SDL_WindowSupportsGPUPresentMode IGNORE_THIS_VERSION_OF_SDL_WindowSupportsGPUPresentMode
+#define SDL_WindowSupportsGPUSwapchainComposition IGNORE_THIS_VERSION_OF_SDL_WindowSupportsGPUSwapchainComposition
 #define SDL_WriteIO IGNORE_THIS_VERSION_OF_SDL_WriteIO
 #define SDL_WriteS16BE IGNORE_THIS_VERSION_OF_SDL_WriteS16BE
 #define SDL_WriteS16LE IGNORE_THIS_VERSION_OF_SDL_WriteS16LE
@@ -1124,6 +1205,14 @@
 #undef SDL_AcquireCameraFrame
 #endif
 
+#ifdef SDL_AcquireGPUCommandBuffer
+#undef SDL_AcquireGPUCommandBuffer
+#endif
+
+#ifdef SDL_AcquireGPUSwapchainTexture
+#undef SDL_AcquireGPUSwapchainTexture
+#endif
+
 #ifdef SDL_AddEventWatch
 #undef SDL_AddEventWatch
 #endif
@@ -1176,16 +1265,16 @@
 #undef SDL_AtomicGet
 #endif
 
-#ifdef SDL_AtomicGetPtr
-#undef SDL_AtomicGetPtr
+#ifdef SDL_AtomicGetPointer
+#undef SDL_AtomicGetPointer
 #endif
 
 #ifdef SDL_AtomicSet
 #undef SDL_AtomicSet
 #endif
 
-#ifdef SDL_AtomicSetPtr
-#undef SDL_AtomicSetPtr
+#ifdef SDL_AtomicSetPointer
+#undef SDL_AtomicSetPointer
 #endif
 
 #ifdef SDL_AttachVirtualJoystick
@@ -1196,12 +1285,76 @@
 #undef SDL_AudioDevicePaused
 #endif
 
+#ifdef SDL_BeginGPUComputePass
+#undef SDL_BeginGPUComputePass
+#endif
+
+#ifdef SDL_BeginGPUCopyPass
+#undef SDL_BeginGPUCopyPass
+#endif
+
+#ifdef SDL_BeginGPURenderPass
+#undef SDL_BeginGPURenderPass
+#endif
+
 #ifdef SDL_BindAudioStream
 #undef SDL_BindAudioStream
 #endif
 
 #ifdef SDL_BindAudioStreams
 #undef SDL_BindAudioStreams
+#endif
+
+#ifdef SDL_BindGPUComputePipeline
+#undef SDL_BindGPUComputePipeline
+#endif
+
+#ifdef SDL_BindGPUComputeStorageBuffers
+#undef SDL_BindGPUComputeStorageBuffers
+#endif
+
+#ifdef SDL_BindGPUComputeStorageTextures
+#undef SDL_BindGPUComputeStorageTextures
+#endif
+
+#ifdef SDL_BindGPUFragmentSamplers
+#undef SDL_BindGPUFragmentSamplers
+#endif
+
+#ifdef SDL_BindGPUFragmentStorageBuffers
+#undef SDL_BindGPUFragmentStorageBuffers
+#endif
+
+#ifdef SDL_BindGPUFragmentStorageTextures
+#undef SDL_BindGPUFragmentStorageTextures
+#endif
+
+#ifdef SDL_BindGPUGraphicsPipeline
+#undef SDL_BindGPUGraphicsPipeline
+#endif
+
+#ifdef SDL_BindGPUIndexBuffer
+#undef SDL_BindGPUIndexBuffer
+#endif
+
+#ifdef SDL_BindGPUVertexBuffers
+#undef SDL_BindGPUVertexBuffers
+#endif
+
+#ifdef SDL_BindGPUVertexSamplers
+#undef SDL_BindGPUVertexSamplers
+#endif
+
+#ifdef SDL_BindGPUVertexStorageBuffers
+#undef SDL_BindGPUVertexStorageBuffers
+#endif
+
+#ifdef SDL_BindGPUVertexStorageTextures
+#undef SDL_BindGPUVertexStorageTextures
+#endif
+
+#ifdef SDL_BlitGPUTexture
+#undef SDL_BlitGPUTexture
 #endif
 
 #ifdef SDL_BlitSurface
@@ -1238,6 +1391,10 @@
 
 #ifdef SDL_CaptureMouse
 #undef SDL_CaptureMouse
+#endif
+
+#ifdef SDL_ClaimWindowForGPUDevice
+#undef SDL_ClaimWindowForGPUDevice
 #endif
 
 #ifdef SDL_CleanupTLS
@@ -1332,6 +1489,14 @@
 #undef SDL_CopyFile
 #endif
 
+#ifdef SDL_CopyGPUBufferToBuffer
+#undef SDL_CopyGPUBufferToBuffer
+#endif
+
+#ifdef SDL_CopyGPUTextureToTexture
+#undef SDL_CopyGPUTextureToTexture
+#endif
+
 #ifdef SDL_CopyProperties
 #undef SDL_CopyProperties
 #endif
@@ -1358,6 +1523,42 @@
 
 #ifdef SDL_CreateDirectory
 #undef SDL_CreateDirectory
+#endif
+
+#ifdef SDL_CreateGPUBuffer
+#undef SDL_CreateGPUBuffer
+#endif
+
+#ifdef SDL_CreateGPUComputePipeline
+#undef SDL_CreateGPUComputePipeline
+#endif
+
+#ifdef SDL_CreateGPUDevice
+#undef SDL_CreateGPUDevice
+#endif
+
+#ifdef SDL_CreateGPUDeviceWithProperties
+#undef SDL_CreateGPUDeviceWithProperties
+#endif
+
+#ifdef SDL_CreateGPUGraphicsPipeline
+#undef SDL_CreateGPUGraphicsPipeline
+#endif
+
+#ifdef SDL_CreateGPUSampler
+#undef SDL_CreateGPUSampler
+#endif
+
+#ifdef SDL_CreateGPUShader
+#undef SDL_CreateGPUShader
+#endif
+
+#ifdef SDL_CreateGPUTexture
+#undef SDL_CreateGPUTexture
+#endif
+
+#ifdef SDL_CreateGPUTransferBuffer
+#undef SDL_CreateGPUTransferBuffer
 #endif
 
 #ifdef SDL_CreateHapticEffect
@@ -1460,12 +1661,12 @@
 #undef SDL_DateTimeToTime
 #endif
 
-#ifdef SDL_DelEventWatch
-#undef SDL_DelEventWatch
+#ifdef SDL_RemoveEventWatch
+#undef SDL_RemoveEventWatch
 #endif
 
-#ifdef SDL_DelHintCallback
-#undef SDL_DelHintCallback
+#ifdef SDL_RemoveHintCallback
+#undef SDL_RemoveHintCallback
 #endif
 
 #ifdef SDL_Delay
@@ -1486,6 +1687,10 @@
 
 #ifdef SDL_DestroyCursor
 #undef SDL_DestroyCursor
+#endif
+
+#ifdef SDL_DestroyGPUDevice
+#undef SDL_DestroyGPUDevice
 #endif
 
 #ifdef SDL_DestroyHapticEffect
@@ -1544,6 +1749,38 @@
 #undef SDL_DisableScreenSaver
 #endif
 
+#ifdef SDL_DispatchGPUCompute
+#undef SDL_DispatchGPUCompute
+#endif
+
+#ifdef SDL_DispatchGPUComputeIndirect
+#undef SDL_DispatchGPUComputeIndirect
+#endif
+
+#ifdef SDL_DownloadFromGPUBuffer
+#undef SDL_DownloadFromGPUBuffer
+#endif
+
+#ifdef SDL_DownloadFromGPUTexture
+#undef SDL_DownloadFromGPUTexture
+#endif
+
+#ifdef SDL_DrawGPUIndexedPrimitives
+#undef SDL_DrawGPUIndexedPrimitives
+#endif
+
+#ifdef SDL_DrawGPUIndexedPrimitivesIndirect
+#undef SDL_DrawGPUIndexedPrimitivesIndirect
+#endif
+
+#ifdef SDL_DrawGPUPrimitives
+#undef SDL_DrawGPUPrimitives
+#endif
+
+#ifdef SDL_DrawGPUPrimitivesIndirect
+#undef SDL_DrawGPUPrimitivesIndirect
+#endif
+
 #ifdef SDL_DuplicateSurface
 #undef SDL_DuplicateSurface
 #endif
@@ -1570,6 +1807,18 @@
 
 #ifdef SDL_EnableScreenSaver
 #undef SDL_EnableScreenSaver
+#endif
+
+#ifdef SDL_EndGPUComputePass
+#undef SDL_EndGPUComputePass
+#endif
+
+#ifdef SDL_EndGPUCopyPass
+#undef SDL_EndGPUCopyPass
+#endif
+
+#ifdef SDL_EndGPURenderPass
+#undef SDL_EndGPURenderPass
 #endif
 
 #ifdef SDL_EnterAppMainCallbacks
@@ -1628,8 +1877,16 @@
 #undef SDL_FlushRenderer
 #endif
 
+#ifdef SDL_GDKResumeGPU
+#undef SDL_GDKResumeGPU
+#endif
+
 #ifdef SDL_GDKSuspendComplete
 #undef SDL_GDKSuspendComplete
+#endif
+
+#ifdef SDL_GDKSuspendGPU
+#undef SDL_GDKSuspendGPU
 #endif
 
 #ifdef SDL_GL_CreateContext
@@ -1692,6 +1949,18 @@
 #undef SDL_GL_UnloadLibrary
 #endif
 
+#ifdef SDL_GPUTextureFormatTexelBlockSize
+#undef SDL_GPUTextureFormatTexelBlockSize
+#endif
+
+#ifdef SDL_GPUTextureSupportsFormat
+#undef SDL_GPUTextureSupportsFormat
+#endif
+
+#ifdef SDL_GPUTextureSupportsSampleCount
+#undef SDL_GPUTextureSupportsSampleCount
+#endif
+
 #ifdef SDL_GUIDToString
 #undef SDL_GUIDToString
 #endif
@@ -1718,6 +1987,10 @@
 
 #ifdef SDL_GamepadSensorEnabled
 #undef SDL_GamepadSensorEnabled
+#endif
+
+#ifdef SDL_GenerateMipmapsForGPUTexture
+#undef SDL_GenerateMipmapsForGPUTexture
 #endif
 
 #ifdef SDL_GetAndroidActivity
@@ -2026,6 +2299,14 @@
 
 #ifdef SDL_GetGDKTaskQueue
 #undef SDL_GetGDKTaskQueue
+#endif
+
+#ifdef SDL_GetGPUDriver
+#undef SDL_GetGPUDriver
+#endif
+
+#ifdef SDL_GetGPUSwapchainTextureFormat
+#undef SDL_GetGPUSwapchainTextureFormat
 #endif
 
 #ifdef SDL_GetGamepadAppleSFSymbolsNameForAxis
@@ -3224,6 +3505,10 @@
 #undef SDL_InitSubSystem
 #endif
 
+#ifdef SDL_InsertGPUDebugLabel
+#undef SDL_InsertGPUDebugLabel
+#endif
+
 #ifdef SDL_IsAndroidTV
 #undef SDL_IsAndroidTV
 #endif
@@ -3370,6 +3655,10 @@
 
 #ifdef SDL_LogWarn
 #undef SDL_LogWarn
+#endif
+
+#ifdef SDL_MapGPUTransferBuffer
+#undef SDL_MapGPUTransferBuffer
 #endif
 
 #ifdef SDL_MapRGB
@@ -3536,6 +3825,10 @@
 #undef SDL_PollEvent
 #endif
 
+#ifdef SDL_PopGPUDebugGroup
+#undef SDL_PopGPUDebugGroup
+#endif
+
 #ifdef SDL_PremultiplyAlpha
 #undef SDL_PremultiplyAlpha
 #endif
@@ -3552,8 +3845,28 @@
 #undef SDL_PushEvent
 #endif
 
+#ifdef SDL_PushGPUComputeUniformData
+#undef SDL_PushGPUComputeUniformData
+#endif
+
+#ifdef SDL_PushGPUDebugGroup
+#undef SDL_PushGPUDebugGroup
+#endif
+
+#ifdef SDL_PushGPUFragmentUniformData
+#undef SDL_PushGPUFragmentUniformData
+#endif
+
+#ifdef SDL_PushGPUVertexUniformData
+#undef SDL_PushGPUVertexUniformData
+#endif
+
 #ifdef SDL_PutAudioStreamData
 #undef SDL_PutAudioStreamData
+#endif
+
+#ifdef SDL_QueryGPUFence
+#undef SDL_QueryGPUFence
 #endif
 
 #ifdef SDL_Quit
@@ -3650,6 +3963,42 @@
 
 #ifdef SDL_ReleaseCameraFrame
 #undef SDL_ReleaseCameraFrame
+#endif
+
+#ifdef SDL_ReleaseGPUBuffer
+#undef SDL_ReleaseGPUBuffer
+#endif
+
+#ifdef SDL_ReleaseGPUComputePipeline
+#undef SDL_ReleaseGPUComputePipeline
+#endif
+
+#ifdef SDL_ReleaseGPUFence
+#undef SDL_ReleaseGPUFence
+#endif
+
+#ifdef SDL_ReleaseGPUGraphicsPipeline
+#undef SDL_ReleaseGPUGraphicsPipeline
+#endif
+
+#ifdef SDL_ReleaseGPUSampler
+#undef SDL_ReleaseGPUSampler
+#endif
+
+#ifdef SDL_ReleaseGPUShader
+#undef SDL_ReleaseGPUShader
+#endif
+
+#ifdef SDL_ReleaseGPUTexture
+#undef SDL_ReleaseGPUTexture
+#endif
+
+#ifdef SDL_ReleaseGPUTransferBuffer
+#undef SDL_ReleaseGPUTransferBuffer
+#endif
+
+#ifdef SDL_ReleaseWindowFromGPUDevice
+#undef SDL_ReleaseWindowFromGPUDevice
 #endif
 
 #ifdef SDL_ReloadGamepadMappings
@@ -3954,6 +4303,26 @@
 
 #ifdef SDL_SetFloatProperty
 #undef SDL_SetFloatProperty
+#endif
+
+#ifdef SDL_SetGPUBufferName
+#undef SDL_SetGPUBufferName
+#endif
+
+#ifdef SDL_SetGPUScissor
+#undef SDL_SetGPUScissor
+#endif
+
+#ifdef SDL_SetGPUSwapchainParameters
+#undef SDL_SetGPUSwapchainParameters
+#endif
+
+#ifdef SDL_SetGPUTextureName
+#undef SDL_SetGPUTextureName
+#endif
+
+#ifdef SDL_SetGPUViewport
+#undef SDL_SetGPUViewport
 #endif
 
 #ifdef SDL_SetGamepadEventsEnabled
@@ -4380,6 +4749,14 @@
 #undef SDL_StringToGUID
 #endif
 
+#ifdef SDL_SubmitGPUCommandBuffer
+#undef SDL_SubmitGPUCommandBuffer
+#endif
+
+#ifdef SDL_SubmitGPUCommandBufferAndAcquireFence
+#undef SDL_SubmitGPUCommandBufferAndAcquireFence
+#endif
+
 #ifdef SDL_SurfaceHasAlternateImages
 #undef SDL_SurfaceHasAlternateImages
 #endif
@@ -4484,6 +4861,10 @@
 #undef SDL_UnlockTexture
 #endif
 
+#ifdef SDL_UnmapGPUTransferBuffer
+#undef SDL_UnmapGPUTransferBuffer
+#endif
+
 #ifdef SDL_UnregisterApp
 #undef SDL_UnregisterApp
 #endif
@@ -4522,6 +4903,14 @@
 
 #ifdef SDL_UpdateYUVTexture
 #undef SDL_UpdateYUVTexture
+#endif
+
+#ifdef SDL_UploadToGPUBuffer
+#undef SDL_UploadToGPUBuffer
+#endif
+
+#ifdef SDL_UploadToGPUTexture
+#undef SDL_UploadToGPUTexture
 #endif
 
 #ifdef SDL_Vulkan_CreateSurface
@@ -4568,6 +4957,14 @@
 #undef SDL_WaitEventTimeout
 #endif
 
+#ifdef SDL_WaitForGPUFences
+#undef SDL_WaitForGPUFences
+#endif
+
+#ifdef SDL_WaitForGPUIdle
+#undef SDL_WaitForGPUIdle
+#endif
+
 #ifdef SDL_WaitSemaphore
 #undef SDL_WaitSemaphore
 #endif
@@ -4594,6 +4991,14 @@
 
 #ifdef SDL_WindowHasSurface
 #undef SDL_WindowHasSurface
+#endif
+
+#ifdef SDL_WindowSupportsGPUPresentMode
+#undef SDL_WindowSupportsGPUPresentMode
+#endif
+
+#ifdef SDL_WindowSupportsGPUSwapchainComposition
+#undef SDL_WindowSupportsGPUSwapchainComposition
 #endif
 
 #ifdef SDL_WriteIO
