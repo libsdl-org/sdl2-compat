@@ -647,7 +647,7 @@ SDL3_SYM(SDL_bool,SetTextInputArea,(SDL_Window *a, const SDL_Rect *b, int c),(a,
 SDL3_SYM_PASSTHROUGH_RETCODE(SDL_bool,SetTextureAlphaMod,(SDL_Texture *a, Uint8 b),(a,b),return)
 SDL3_SYM_PASSTHROUGH_RETCODE(SDL_bool,SetTextureBlendMode,(SDL_Texture *a, SDL_BlendMode b),(a,b),return)
 SDL3_SYM_PASSTHROUGH_RETCODE(SDL_bool,SetTextureColorMod,(SDL_Texture *a, Uint8 b, Uint8 c, Uint8 d),(a,b,c,d),return)
-SDL3_SYM_PASSTHROUGH_RETCODE(SDL_bool,SetTextureScaleMode,(SDL_Texture *a, SDL_ScaleMode b),(a,b),return)
+SDL3_SYM(SDL_bool,SetTextureScaleMode,(SDL_Texture *a, SDL_ScaleMode b),(a,b),return)
 SDL3_SYM_PASSTHROUGH_RETCODE(SDL_bool,SetThreadPriority,(SDL_ThreadPriority a),(a),return)
 SDL3_SYM(SDL_bool,SetWindowAlwaysOnTop,(SDL_Window *a, SDL_bool b),(a,b),return)
 SDL3_SYM(SDL_bool,SetWindowBordered,(SDL_Window *a, SDL_bool b),(a,b),return)

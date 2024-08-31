@@ -4791,10 +4791,9 @@ static SDL_ScaleMode SDL_GetScaleMode(void)
 
     if (!hint || SDL3_strcasecmp(hint, "nearest") == 0) {
         return SDL_SCALEMODE_NEAREST;
-    } else if (SDL3_strcasecmp(hint, "linear") == 0) {
+    } else if (SDL3_strcasecmp(hint, "linear") == 0 ||
+               SDL3_strcasecmp(hint, "best") == 0) {
         return SDL_SCALEMODE_LINEAR;
-    } else if (SDL3_strcasecmp(hint, "best") == 0) {
-        return SDL_SCALEMODE_BEST;
     } else {
         return (SDL_ScaleMode)SDL3_atoi(hint);
     }
@@ -4842,6 +4841,15 @@ SDL_QueryTexture(SDL_Texture *texture, Uint32 *format, int *access, int *w, int 
         *h = (int)SDL3_GetNumberProperty(props, SDL_PROP_TEXTURE_HEIGHT_NUMBER, 0);
     }
     return 0;
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_SetTextureScaleMode(SDL_Texture *texture, SDL_ScaleMode scaleMode)
+{
+    if (scaleMode > SDL_SCALEMODE_LINEAR) {
+        scaleMode = SDL_SCALEMODE_LINEAR;
+    }
+    return SDL3_SetTextureScaleMode(texture, scaleMode) ? 0 : -1;
 }
 
 SDL_DECLSPEC int SDLCALL
