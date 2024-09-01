@@ -28,11 +28,8 @@ include it with the library if necessary.
 
 - If you want to build an SDL2 program from source code, we have included
 compatibility headers, so that sdl2-compat can completely replace SDL2
-at all points. These headers are just the bare minimum needed for source-level
-compatibility and don't have a lot of documentation or fanciness at all. The
-new headers are also under the zlib license. Note that sdl2-compat itself
-does not use these headers, so if you just want the library, you don't need
-them.
+at all points. Note that sdl2-compat itself does not use these headers,
+so if you just want the library, you don't need them.
 
 # Building the library:
 
