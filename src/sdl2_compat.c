@@ -8756,7 +8756,7 @@ SDL_SIMDRealloc(void *mem, const size_t len)
 
     /* alignment + padding + sizeof (void *) is bounded (a few hundred
      * bytes max), so no need to check for overflow within that argument */
-    if (SDL_size_add_overflow(len, alignment + padding + sizeof(void *), &to_allocate)) {
+    if (!SDL_size_add_check_overflow(len, alignment + padding + sizeof(void *), &to_allocate)) {
         return NULL;
     }
 
