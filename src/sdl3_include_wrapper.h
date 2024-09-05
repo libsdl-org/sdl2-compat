@@ -886,10 +886,11 @@
 #define SDL_SetWindowKeyboardGrab IGNORE_THIS_VERSION_OF_SDL_SetWindowKeyboardGrab
 #define SDL_SetWindowMaximumSize IGNORE_THIS_VERSION_OF_SDL_SetWindowMaximumSize
 #define SDL_SetWindowMinimumSize IGNORE_THIS_VERSION_OF_SDL_SetWindowMinimumSize
-#define SDL_SetWindowModalFor IGNORE_THIS_VERSION_OF_SDL_SetWindowModalFor
+#define SDL_SetWindowModal IGNORE_THIS_VERSION_OF_SDL_SetWindowModal
 #define SDL_SetWindowMouseGrab IGNORE_THIS_VERSION_OF_SDL_SetWindowMouseGrab
 #define SDL_SetWindowMouseRect IGNORE_THIS_VERSION_OF_SDL_SetWindowMouseRect
 #define SDL_SetWindowOpacity IGNORE_THIS_VERSION_OF_SDL_SetWindowOpacity
+#define SDL_SetWindowParent IGNORE_THIS_VERSION_OF_SDL_SetWindowParent
 #define SDL_SetWindowPosition IGNORE_THIS_VERSION_OF_SDL_SetWindowPosition
 #define SDL_SetWindowRelativeMouseMode IGNORE_THIS_VERSION_OF_SDL_SetWindowRelativeMouseMode
 #define SDL_SetWindowResizable IGNORE_THIS_VERSION_OF_SDL_SetWindowResizable
@@ -4609,8 +4610,8 @@
 #undef SDL_SetWindowMinimumSize
 #endif
 
-#ifdef SDL_SetWindowModalFor
-#undef SDL_SetWindowModalFor
+#ifdef SDL_SetWindowModal
+#undef SDL_SetWindowModal
 #endif
 
 #ifdef SDL_SetWindowMouseGrab
@@ -4623,6 +4624,10 @@
 
 #ifdef SDL_SetWindowOpacity
 #undef SDL_SetWindowOpacity
+#endif
+
+#ifdef SDL_SetWindowParent
+#undef SDL_SetWindowParent
 #endif
 
 #ifdef SDL_SetWindowPosition
