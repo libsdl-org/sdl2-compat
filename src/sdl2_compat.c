@@ -5042,6 +5042,8 @@ SDL_InitSubSystem(Uint32 flags)
 SDL_DECLSPEC void SDLCALL
 SDL_Quit(void)
 {
+    int i;
+    SDL_LogPriority priorities[SDL_LOG_CATEGORY_CUSTOM];
     relative_mouse_mode = SDL2_FALSE;
 
     if (SDL3_WasInit(SDL_INIT_VIDEO)) {
@@ -5089,7 +5091,15 @@ SDL_Quit(void)
         timers = 0;
     }
 
+    for (i = 0; i < SDL_LOG_CATEGORY_CUSTOM; i++) {
+        priorities[i] = SDL3_GetLogPriority(i);
+    }
+
     SDL3_Quit();
+
+    for (i = 0; i < SDL_LOG_CATEGORY_CUSTOM; i++) {
+        SDL3_SetLogPriority(i, priorities[i]);
+    }
 }
 
 SDL_DECLSPEC void SDLCALL
