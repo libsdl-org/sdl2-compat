@@ -75,11 +75,6 @@ SDL3_SYM_RENAMED_RETCODE(SDL_bool,GDKGetTaskQueue,GetGDKTaskQueue,(XTaskQueueHan
 SDL3_SYM_RENAMED_RETCODE(SDL_bool,GDKGetDefaultUser,GetGDKDefaultUser,(XUserHandle *a),(a),return)
 #endif
 
-#ifdef SDL_PLATFORM_WINRT
-SDL3_SYM_RENAMED(const char*,WinRTGetFSPathUTF8,GetWinRTFSPath,(SDL_WinRT_Path a),(a),return)
-SDL3_SYM_RENAMED(SDL_WinRT_DeviceFamily,WinRTGetDeviceFamily,GetWinRTDeviceFamily,(void),(),return)
-#endif
-
 #ifdef SDL_PLATFORM_IOS
 SDL3_SYM_RENAMED_RETCODE(SDL_bool,iPhoneSetAnimationCallback,SetiOSAnimationCallback,(SDL_Window *a, int b, SDL_iOSAnimationCallback c, void *d),(a,b,c,d),return)
 SDL3_SYM(void,iPhoneSetEventPump,SetiOSEventPump,(SDL_bool a),(a),)

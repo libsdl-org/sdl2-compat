@@ -601,11 +601,6 @@ SDL2_PROTO(SDL_AssertionHandler,GetAssertionHandler,(void **a))
 SDL2_PROTO(SDL2_bool,DXGIGetOutputInfo,(int a,int *b, int *c))
 #endif
 SDL2_PROTO(SDL2_bool,RenderIsClipEnabled,(SDL_Renderer *a))
-#ifdef SDL_PLATFORM_WINRT
-SDL2_PROTO(int,WinRTRunApp,(SDL_main_func a, void *b))
-SDL2_PROTO(const wchar_t*,WinRTGetFSPathUNICODE,(SDL_WinRT_Path a))
-SDL2_PROTO(const char*,WinRTGetFSPathUTF8,(SDL_WinRT_Path a))
-#endif
 SDL2_PROTO(int,WarpMouseGlobal,(int a, int b))
 SDL2_PROTO(float,sqrtf,(float a))
 SDL2_PROTO(double,tan,(double a))
@@ -697,9 +692,6 @@ SDL2_PROTO(SDL_YUV_CONVERSION_MODE,GetYUVConversionMode,(void))
 SDL2_PROTO(SDL_YUV_CONVERSION_MODE,GetYUVConversionModeForResolution,(int a, int b))
 SDL2_PROTO(void*,RenderGetMetalLayer,(SDL_Renderer *a))
 SDL2_PROTO(void*,RenderGetMetalCommandEncoder,(SDL_Renderer *a))
-#ifdef SDL_PLATFORM_WINRT
-SDL2_PROTO(SDL_WinRT_DeviceFamily,WinRTGetDeviceFamily,(void))
-#endif
 #ifdef SDL_PLATFORM_ANDROID
 SDL2_PROTO(SDL2_bool,IsAndroidTV,(void))
 #endif

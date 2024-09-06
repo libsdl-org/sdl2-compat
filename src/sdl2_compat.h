@@ -180,7 +180,7 @@ typedef Sint64 SDL2_GestureID;
 #define SDL_RWOPS_MEMORY    4   /**< Memory stream */
 #define SDL_RWOPS_MEMORY_RO 5   /**< Read-Only memory stream */
 
-#if (defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)) && !defined(SDL_PLATFORM_WINRT)
+#if defined(SDL_PLATFORM_WINDOWS)
 #define SDL_RWOPS_PLATFORM_FILE SDL_RWOPS_WINFILE
 #elif defined(SDL_PLATFORM_ANDROID)
 #define SDL_RWOPS_PLATFORM_FILE SDL_RWOPS_JNIFILE
@@ -1174,7 +1174,7 @@ typedef struct ID3D12Device ID3D12Device;
 typedef void (SDLCALL * SDL2_WindowsMessageHook)(void *userdata, void *hWnd, unsigned int message, Uint64 wParam, Sint64 lParam);
 #endif
 
-#if (defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)) && !defined(SDL_PLATFORM_WINRT)
+#if defined(SDL_PLATFORM_WINDOWS)
 typedef uintptr_t (__cdecl * pfnSDL_CurrentBeginThread)
                         (void *, unsigned, unsigned (__stdcall *func)(void *), void *, unsigned, unsigned *);
 typedef void (__cdecl * pfnSDL_CurrentEndThread) (unsigned);

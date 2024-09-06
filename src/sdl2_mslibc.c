@@ -21,7 +21,7 @@
 
 /* taken from SDL_mslibc.c of SDL3 */
 
-#if defined(_MSC_VER) && !defined(SDL_BUILDING_WINRT)
+#if defined(_MSC_VER)
 
 #ifndef __FLTUSED__
 #define __FLTUSED__

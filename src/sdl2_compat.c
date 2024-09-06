@@ -251,13 +251,8 @@ static char loaderror[256];
 #if defined(_WIN32)
     static HMODULE Loaded_SDL3 = NULL;
     #define DIRSEP "\\"
-    #ifdef SDL_BUILDING_WINRT
-    #define SDL3_LIBNAME L"SDL3.dll"
-    #define LoadSDL3Library() ((Loaded_SDL3 = LoadPackagedLibrary(SDL3_LIBNAME,0)) != NULL)
-    #else
     #define SDL3_LIBNAME "SDL3.dll"
     #define LoadSDL3Library() ((Loaded_SDL3 = LoadLibraryA(SDL3_LIBNAME)) != NULL)
-    #endif
     #define LookupSDL3Sym(sym) (void *)GetProcAddress(Loaded_SDL3, sym)
     #define CloseSDL3Library() { if (Loaded_SDL3) { FreeLibrary(Loaded_SDL3); Loaded_SDL3 = NULL; } }
 #elif defined(__APPLE__)
@@ -650,7 +645,7 @@ LoadSDL3(void)
     return okay;
 }
 
-#if defined(_MSC_VER) && !defined(SDL_BUILDING_WINRT)
+#if defined(_MSC_VER)
 
 /* NOLINTNEXTLINE(readability-redundant-declaration) */
 extern void *memcpy(void *dst, const void *src, size_t len);
@@ -674,7 +669,7 @@ void *memset(void *dst, int c, size_t len)
 {
     return SDL3_memset(dst, c, len);
 }
-#endif  /* MSVC && !WINRT */
+#endif  /* MSVC */
 
 #if defined(__ICL) && defined(_WIN32)
 /* The classic Intel compiler generates calls to _intel_fast_memcpy
@@ -690,9 +685,7 @@ void *_intel_fast_memset(void *dst, int c, size_t len)
 }
 #endif
 
-#ifdef SDL_BUILDING_WINRT
-EXTERN_C void error_dialog(const char *errorMsg);
-#elif defined(_WIN32)
+#if defined(_WIN32)
 static void error_dialog(const char *errorMsg)
 {
     MessageBoxA(NULL, errorMsg, "Error", MB_OK | MB_SETFOREGROUND | MB_ICONSTOP);
@@ -2094,7 +2087,7 @@ SDL_RWFromFile(const char *file, const char *mode)
         const SDL_PropertiesID props = SDL3_GetIOProperties(rwops2->hidden.sdl3.iostrm);
         if (props) {
             void *handle = NULL;
-            #if (defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)) && !defined(SDL_PLATFORM_WINRT)
+            #if defined(SDL_PLATFORM_WINDOWS)
             if (!handle) {
                 handle = SDL3_GetPointerProperty(props, SDL_PROP_IOSTREAM_WINDOWS_HANDLE_POINTER, NULL);
                 if (handle) {
@@ -3186,9 +3179,6 @@ SDL_DECLSPEC SDL2_bool SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWM
         info->info.win.window = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
         info->info.win.hdc = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_HDC_POINTER, NULL);
         info->info.win.hinstance = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_INSTANCE_POINTER, NULL);
-    } else if (SDL_strcmp(driver, "winrt") == 0) {
-        info->subsystem = SDL2_SYSWM_WINRT;
-        info->info.winrt.window = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_WINRT_WINDOW_POINTER, NULL);
     } else if (SDL_strcmp(driver, "x11") == 0) {
         info->subsystem = SDL2_SYSWM_X11;
         info->info.x11.display = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, NULL);
@@ -9263,7 +9253,7 @@ static SDL_Thread *SDL2_CreateThread(SDL_ThreadFunction fn, const char *name, vo
     return SDL2_CreateThreadWithStackSize(fn, name, stacksize, userdata, pfnBeginThread, pfnEndThread);
 }
 
-#if (defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)) && !defined(SDL_PLATFORM_WINRT)
+#if defined(SDL_PLATFORM_WINDOWS)
 
 SDL_DECLSPEC SDL_Thread *SDLCALL
 SDL_CreateThread(SDL_ThreadFunction fn, const char *name, void *data,
@@ -9293,7 +9283,7 @@ SDL_CreateThreadWithStackSize(SDL_ThreadFunction fn, const char *name, const siz
     return SDL2_CreateThreadWithStackSize(fn, name, stacksize, data, NULL, NULL);
 }
 
-#endif /* (SDL_PLATFORM_WIN32 || SDL_PLATFORM_GDK) && !SDL_PLATFORM_WINRT */
+#endif /* SDL_PLATFORM_WINDOWS */
 
 SDL_DECLSPEC unsigned long SDLCALL
 SDL_ThreadID(void)
@@ -9362,14 +9352,6 @@ SDL_DECLSPEC ID3D12Device* SDLCALL SDL_RenderGetD3D12Device(SDL_Renderer *render
 }
 #endif
 
-#ifdef SDL_PLATFORM_WINRT
-SDL_DECLSPEC int SDLCALL
-SDL_WinRTRunApp(SDL_main_func mainFunction, void *reserved)
-{
-    return SDL3_RunApp(0, NULL, mainFunction, reserved);
-}
-#endif
-
 #if defined(SDL_PLATFORM_GDK)
 SDL_DECLSPEC int SDLCALL
 SDL_GDKRunApp(SDL_main_func mainFunction, void *reserved)
@@ -9420,31 +9402,6 @@ SDL_AndroidRequestPermission(const char *permission)
     }
 
     return (SDL3_AtomicGet(&response) < 0) ? SDL2_FALSE : SDL2_TRUE;
-}
-#endif
-
-#ifdef SDL_PLATFORM_WINRT
-static wchar_t *winrt_getfspath_cached_strings[4];  // these need to be saved here, since we return a const string. These strings' memory leaks!
-
-SDL_DECLSPEC const wchar_t* SDLCALL
-SDL_WinRTGetFSPathUNICODE(int SDL_WinRT_Path pathType)
-{
-    wchar_t *wstr = NULL;
-
-    if ((int)pathType >= (int)SDL_arraysize(winrt_getfspath_cached_strings)) {  // in case something new is added in SDL3...
-        SDL3_SetError("Unsupported SDL_WinRT_Path %d", (int) pathType);
-    } else {
-        wstr = winrt_getfspath_cached_strings[pathType];
-        if (!wstr) {
-            const char *utf8 = SDL3_GetWinRTFSPath(pathType);
-            if (utf8) {
-                wstr = (wchar_t *) SDL3_iconv_string("UTF-16LE", "UTF-8", (const char *)(utf8), SDL3_strlen(utf8) + 1);
-                winrt_getfspath_cached_strings[pathType] = wstr;
-            }
-        }
-    }
-
-    return wstr;
 }
 #endif
 
