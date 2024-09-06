@@ -167,6 +167,7 @@ extern "C" {
 #define SDL3_copyp(dst, src)                                                    \
     { SDL_COMPILE_TIME_ASSERT(SDL3_copyp, sizeof(*(dst)) == sizeof(*(src))); }  \
     SDL3_memcpy((dst), (src), sizeof(*(src)))
+#define SDL_zerop   SDL3_zerop
 
 /* for SDL_assert() : */
 #define SDL_enabled_assert(condition) \
@@ -2375,7 +2376,7 @@ RWops2to3(SDL2_RWops *rwops2)
     SDL_IOStream *iostrm3 = NULL;
     if (rwops2) {
         SDL_IOStreamInterface iface;
-        SDL3_zero(iface);
+        SDL_INIT_INTERFACE(&iface);
         iface.size = RWops2to3_size;
         iface.seek = RWops2to3_seek;
         iface.read = RWops2to3_read;
@@ -8253,7 +8254,7 @@ SDL_JoystickAttachVirtual(SDL_JoystickType type, int naxes, int nbuttons, int nh
     SDL_JoystickID jid;
     SDL_VirtualJoystickDesc desc3;
 
-    SDL3_zero(desc3);
+    SDL_INIT_INTERFACE(&desc3);
     desc3.type = (Uint16)type;
     desc3.naxes = (Uint16)naxes;
     desc3.nbuttons = (Uint16)nbuttons;
@@ -8320,7 +8321,7 @@ SDL_JoystickAttachVirtualEx(const SDL2_VirtualJoystickDesc *desc2)
         return -1;
     }
 
-    SDL3_zero(desc3);
+    SDL_INIT_INTERFACE(&desc3);
     #define SETDESCFIELD(x) desc3.x = desc2->x
     SETDESCFIELD(type);
     SETDESCFIELD(naxes);
