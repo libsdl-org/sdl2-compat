@@ -1209,7 +1209,7 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
         event2->key.keysym.scancode = SDL3ScancodeToSDL2Scancode(event3->key.scancode);
         event2->key.keysym.sym = event3->key.key;
         event2->key.keysym.mod = event3->key.mod;
-        event2->key.state = event3->key.state;
+        event2->key.state = event3->key.down;
         event2->key.repeat = event3->key.repeat;
         break;
     case SDL_EVENT_TEXT_INPUT:
@@ -1361,7 +1361,7 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
         event3->key.key = event2->key.keysym.sym;
         event3->key.mod = event2->key.keysym.mod;
         event3->key.raw = 0;
-        event3->key.state = event2->key.state;
+        event3->key.down = (event2->key.state != 0);
         event3->key.repeat = event2->key.repeat;
         break;
     case SDL_EVENT_MOUSE_MOTION:
@@ -1869,6 +1869,13 @@ SDL_GetKeyFromName(const char *name)
         /* Get the scancode for this name, and the associated keycode */
         return SDL_GetKeyFromScancode(SDL_GetScancodeFromName(name));
     }
+}
+
+SDL_DECLSPEC const Uint8 *SDLCALL
+SDL_GetKeyboardState(int *numkeys)
+{
+    SDL_COMPILE_TIME_ASSERT(bool_size, sizeof(SDL_bool) == sizeof(Uint8));
+    return (const Uint8 *)SDL3_GetKeyboardState(numkeys);
 }
 
 /* Several SDL3 video backends have had their names lower-cased, map to the SDL2 equivalent name. */
@@ -7947,6 +7954,12 @@ SDL_JoystickGetDeviceInstanceID(int idx)
     return (SDL2_JoystickID)jid;
 }
 
+SDL_DECLSPEC Uint8 SDLCALL
+SDL_JoystickGetButton(SDL_Joystick *joystick, int button)
+{
+    return SDL3_GetJoystickButton(joystick, button);
+}
+
 SDL_DECLSPEC SDL2_JoystickID SDLCALL
 SDL_JoystickInstanceID(SDL_Joystick *joystick)
 {
@@ -8161,6 +8174,13 @@ SDL_DECLSPEC Uint8 SDLCALL SDL_GameControllerGetButton(SDL_GameController *contr
     return SDL3_GetGamepadButton(controller, button);
 }
 
+SDL_DECLSPEC int SDLCALL
+SDL_GameControllerGetTouchpadFinger(SDL_GameController *gamecontroller, int touchpad, int finger, Uint8 *state, float *x, float *y, float *pressure)
+{
+    SDL_COMPILE_TIME_ASSERT(bool_size, sizeof(SDL_bool) == sizeof(Uint8));
+    return SDL3_GetGamepadTouchpadFinger(gamecontroller, touchpad, finger, (SDL_bool *)state, x, y, pressure) ? 0 : -1;
+}
+
 SDL_DECLSPEC SDL_GameControllerButtonBind SDLCALL
 SDL_GameControllerGetBindForAxis(SDL_GameController *controller,
                                  SDL_GameControllerAxis axis)
@@ -8364,6 +8384,12 @@ SDL_JoystickAttachVirtualEx(const SDL2_VirtualJoystickDesc *desc2)
     jid = SDL3_AttachVirtualJoystick(&desc3);
     SDL_NumJoysticks(); /* Refresh */
     return GetIndexFromJoystickInstance(jid);
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_JoystickSetVirtualButton(SDL_Joystick *joystick, int button, Uint8 value)
+{
+    return SDL3_SetJoystickVirtualButton(joystick, button, (value != 0)) ? 0 : -1;
 }
 
 SDL_DECLSPEC int SDLCALL
