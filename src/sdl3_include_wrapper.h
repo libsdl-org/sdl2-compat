@@ -149,8 +149,6 @@
 #define SDL_CreateWindowWithProperties IGNORE_THIS_VERSION_OF_SDL_CreateWindowWithProperties
 #define SDL_CursorVisible IGNORE_THIS_VERSION_OF_SDL_CursorVisible
 #define SDL_DateTimeToTime IGNORE_THIS_VERSION_OF_SDL_DateTimeToTime
-#define SDL_RemoveEventWatch IGNORE_THIS_VERSION_OF_SDL_RemoveEventWatch
-#define SDL_RemoveHintCallback IGNORE_THIS_VERSION_OF_SDL_RemoveHintCallback
 #define SDL_Delay IGNORE_THIS_VERSION_OF_SDL_Delay
 #define SDL_DelayNS IGNORE_THIS_VERSION_OF_SDL_DelayNS
 #define SDL_DestroyAudioStream IGNORE_THIS_VERSION_OF_SDL_DestroyAudioStream
@@ -538,8 +536,6 @@
 #define SDL_GetUserFolder IGNORE_THIS_VERSION_OF_SDL_GetUserFolder
 #define SDL_GetVersion IGNORE_THIS_VERSION_OF_SDL_GetVersion
 #define SDL_GetVideoDriver IGNORE_THIS_VERSION_OF_SDL_GetVideoDriver
-#define SDL_GetWinRTDeviceFamily IGNORE_THIS_VERSION_OF_SDL_GetWinRTDeviceFamily
-#define SDL_GetWinRTFSPath IGNORE_THIS_VERSION_OF_SDL_GetWinRTFSPath
 #define SDL_GetWindowAspectRatio IGNORE_THIS_VERSION_OF_SDL_GetWindowAspectRatio
 #define SDL_GetWindowBordersSize IGNORE_THIS_VERSION_OF_SDL_GetWindowBordersSize
 #define SDL_GetWindowDisplayScale IGNORE_THIS_VERSION_OF_SDL_GetWindowDisplayScale
@@ -735,6 +731,8 @@
 #define SDL_ReleaseGPUTransferBuffer IGNORE_THIS_VERSION_OF_SDL_ReleaseGPUTransferBuffer
 #define SDL_ReleaseWindowFromGPUDevice IGNORE_THIS_VERSION_OF_SDL_ReleaseWindowFromGPUDevice
 #define SDL_ReloadGamepadMappings IGNORE_THIS_VERSION_OF_SDL_ReloadGamepadMappings
+#define SDL_RemoveEventWatch IGNORE_THIS_VERSION_OF_SDL_RemoveEventWatch
+#define SDL_RemoveHintCallback IGNORE_THIS_VERSION_OF_SDL_RemoveHintCallback
 #define SDL_RemovePath IGNORE_THIS_VERSION_OF_SDL_RemovePath
 #define SDL_RemoveStoragePath IGNORE_THIS_VERSION_OF_SDL_RemoveStoragePath
 #define SDL_RemoveSurfaceAlternateImages IGNORE_THIS_VERSION_OF_SDL_RemoveSurfaceAlternateImages
@@ -810,8 +808,10 @@
 #define SDL_SetEventEnabled IGNORE_THIS_VERSION_OF_SDL_SetEventEnabled
 #define SDL_SetEventFilter IGNORE_THIS_VERSION_OF_SDL_SetEventFilter
 #define SDL_SetFloatProperty IGNORE_THIS_VERSION_OF_SDL_SetFloatProperty
+#define SDL_SetGPUBlendConstants IGNORE_THIS_VERSION_OF_SDL_SetGPUBlendConstants
 #define SDL_SetGPUBufferName IGNORE_THIS_VERSION_OF_SDL_SetGPUBufferName
 #define SDL_SetGPUScissor IGNORE_THIS_VERSION_OF_SDL_SetGPUScissor
+#define SDL_SetGPUStencilReference IGNORE_THIS_VERSION_OF_SDL_SetGPUStencilReference
 #define SDL_SetGPUSwapchainParameters IGNORE_THIS_VERSION_OF_SDL_SetGPUSwapchainParameters
 #define SDL_SetGPUTextureName IGNORE_THIS_VERSION_OF_SDL_SetGPUTextureName
 #define SDL_SetGPUViewport IGNORE_THIS_VERSION_OF_SDL_SetGPUViewport
@@ -1134,6 +1134,7 @@
 #define SDL_strndup IGNORE_THIS_VERSION_OF_SDL_strndup
 #define SDL_strnlen IGNORE_THIS_VERSION_OF_SDL_strnlen
 #define SDL_strnstr IGNORE_THIS_VERSION_OF_SDL_strnstr
+#define SDL_strpbrk IGNORE_THIS_VERSION_OF_SDL_strpbrk
 #define SDL_strrchr IGNORE_THIS_VERSION_OF_SDL_strrchr
 #define SDL_strrev IGNORE_THIS_VERSION_OF_SDL_strrev
 #define SDL_strstr IGNORE_THIS_VERSION_OF_SDL_strstr
@@ -1660,14 +1661,6 @@
 
 #ifdef SDL_DateTimeToTime
 #undef SDL_DateTimeToTime
-#endif
-
-#ifdef SDL_RemoveEventWatch
-#undef SDL_RemoveEventWatch
-#endif
-
-#ifdef SDL_RemoveHintCallback
-#undef SDL_RemoveHintCallback
 #endif
 
 #ifdef SDL_Delay
@@ -3218,14 +3211,6 @@
 #undef SDL_GetVideoDriver
 #endif
 
-#ifdef SDL_GetWinRTDeviceFamily
-#undef SDL_GetWinRTDeviceFamily
-#endif
-
-#ifdef SDL_GetWinRTFSPath
-#undef SDL_GetWinRTFSPath
-#endif
-
 #ifdef SDL_GetWindowAspectRatio
 #undef SDL_GetWindowAspectRatio
 #endif
@@ -4006,6 +3991,14 @@
 #undef SDL_ReloadGamepadMappings
 #endif
 
+#ifdef SDL_RemoveEventWatch
+#undef SDL_RemoveEventWatch
+#endif
+
+#ifdef SDL_RemoveHintCallback
+#undef SDL_RemoveHintCallback
+#endif
+
 #ifdef SDL_RemovePath
 #undef SDL_RemovePath
 #endif
@@ -4306,12 +4299,20 @@
 #undef SDL_SetFloatProperty
 #endif
 
+#ifdef SDL_SetGPUBlendConstants
+#undef SDL_SetGPUBlendConstants
+#endif
+
 #ifdef SDL_SetGPUBufferName
 #undef SDL_SetGPUBufferName
 #endif
 
 #ifdef SDL_SetGPUScissor
 #undef SDL_SetGPUScissor
+#endif
+
+#ifdef SDL_SetGPUStencilReference
+#undef SDL_SetGPUStencilReference
 #endif
 
 #ifdef SDL_SetGPUSwapchainParameters
@@ -5600,6 +5601,10 @@
 
 #ifdef SDL_strnstr
 #undef SDL_strnstr
+#endif
+
+#ifdef SDL_strpbrk
+#undef SDL_strpbrk
 #endif
 
 #ifdef SDL_strrchr
