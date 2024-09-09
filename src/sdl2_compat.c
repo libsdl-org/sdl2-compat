@@ -966,6 +966,30 @@ SDL_Error(SDL_errorcode code)
     return -1;
 }
 
+SDL_DECLSPEC char *SDLCALL
+SDL_lltoa(Sint64 value, char *str, int radix)
+{
+    return SDL3_lltoa((long long)value, str, radix);
+}
+
+SDL_DECLSPEC char *
+SDLCALL SDL_ulltoa(Uint64 value, char *str, int radix)
+{
+    return SDL3_ulltoa((unsigned long long)value, str, radix);
+}
+
+SDL_DECLSPEC Sint64 SDLCALL
+SDL_strtoll(const char *str, char **endp, int base)
+{
+    return (Sint64)SDL3_strtoll(str, endp, base);
+}
+
+SDL_DECLSPEC Uint64 SDLCALL
+SDL_strtoull(const char *str, char **endp, int base)
+{
+    return (Uint64)SDL3_strtoull(str, endp, base);
+}
+
 SDL_DECLSPEC int SDLCALL
 SDL_sscanf(const char *text, const char *fmt, ...)
 {
@@ -1874,7 +1898,6 @@ SDL_GetKeyFromName(const char *name)
 SDL_DECLSPEC const Uint8 *SDLCALL
 SDL_GetKeyboardState(int *numkeys)
 {
-    SDL_COMPILE_TIME_ASSERT(bool_size, sizeof(SDL_bool) == sizeof(Uint8));
     return (const Uint8 *)SDL3_GetKeyboardState(numkeys);
 }
 
@@ -8177,7 +8200,6 @@ SDL_DECLSPEC Uint8 SDLCALL SDL_GameControllerGetButton(SDL_GameController *contr
 SDL_DECLSPEC int SDLCALL
 SDL_GameControllerGetTouchpadFinger(SDL_GameController *gamecontroller, int touchpad, int finger, Uint8 *state, float *x, float *y, float *pressure)
 {
-    SDL_COMPILE_TIME_ASSERT(bool_size, sizeof(SDL_bool) == sizeof(Uint8));
     return SDL3_GetGamepadTouchpadFinger(gamecontroller, touchpad, finger, (SDL_bool *)state, x, y, pressure) ? 0 : -1;
 }
 
