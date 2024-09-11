@@ -61,6 +61,7 @@
 #define SDL_BindAudioStream IGNORE_THIS_VERSION_OF_SDL_BindAudioStream
 #define SDL_BindAudioStreams IGNORE_THIS_VERSION_OF_SDL_BindAudioStreams
 #define SDL_BindGPUComputePipeline IGNORE_THIS_VERSION_OF_SDL_BindGPUComputePipeline
+#define SDL_BindGPUComputeSamplers IGNORE_THIS_VERSION_OF_SDL_BindGPUComputeSamplers
 #define SDL_BindGPUComputeStorageBuffers IGNORE_THIS_VERSION_OF_SDL_BindGPUComputeStorageBuffers
 #define SDL_BindGPUComputeStorageTextures IGNORE_THIS_VERSION_OF_SDL_BindGPUComputeStorageTextures
 #define SDL_BindGPUFragmentSamplers IGNORE_THIS_VERSION_OF_SDL_BindGPUFragmentSamplers
@@ -1309,6 +1310,10 @@
 
 #ifdef SDL_BindGPUComputePipeline
 #undef SDL_BindGPUComputePipeline
+#endif
+
+#ifdef SDL_BindGPUComputeSamplers
+#undef SDL_BindGPUComputeSamplers
 #endif
 
 #ifdef SDL_BindGPUComputeStorageBuffers
