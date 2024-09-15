@@ -530,15 +530,15 @@ SDL2Compat_ApplyQuirks(SDL_bool force_x11)
 
     /* if you change this, update also SDL2_to_SDL3_hint() */
     for (i = 0; i < SDL_arraysize(renamed_hints); ++i) {
-        old_env = SDL3_GetEnvironmentVariable(SDL3_GetEnvironment(), renamed_hints[i].old_hint);
+        old_env = SDL3_getenv(renamed_hints[i].old_hint);
         if (old_env) {
-            SDL3_SetEnvironmentVariable(SDL3_GetEnvironment(), renamed_hints[i].new_hint, old_env, SDL_TRUE);
+            SDL3_setenv_unsafe(renamed_hints[i].new_hint, old_env, 1);
         }
     }
 
     #ifdef __linux__
     if (force_x11) {
-        const char *videodriver_env = SDL3_GetEnvironmentVariable(SDL3_GetEnvironment(), "SDL_VIDEODRIVER");
+        const char *videodriver_env = SDL3_getenv("SDL_VIDEODRIVER");
         if (videodriver_env && (SDL3_strcmp(videodriver_env, "x11") != 0)) {
             if (WantDebugLogging) {
                 SDL3_Log("This app looks like it requires X11, but the SDL_VIDEODRIVER environment variable is set to \"%s\". If you have issues, try setting SDL_VIDEODRIVER=x11", videodriver_env);
@@ -547,7 +547,7 @@ SDL2Compat_ApplyQuirks(SDL_bool force_x11)
             if (WantDebugLogging) {
                 SDL3_Log("sdl2-compat: We are forcing this app to use X11, because it probably talks to an X server directly, outside of SDL. If possible, this app should be fixed, to be compatible with Wayland, etc.");
             }
-            SDL3_SetEnvironmentVariable(SDL3_GetEnvironment(), "SDL_VIDEO_DRIVER", "x11", SDL_TRUE);
+            SDL3_setenv_unsafe("SDL_VIDEO_DRIVER", "x11", 1);
         }
     }
     #endif
@@ -557,12 +557,12 @@ SDL2Compat_ApplyQuirks(SDL_bool force_x11)
     }
     for (i = 0; i < SDL_arraysize(quirks); i++) {
         if (!SDL3_strcmp(exe_name, quirks[i].exe_name)) {
-            const char *var = SDL3_GetEnvironmentVariable(SDL3_GetEnvironment(), quirks[i].hint_name);
+            const char *var = SDL3_getenv(quirks[i].hint_name);
             if (!var) {
                 if (WantDebugLogging) {
                     SDL3_Log("Applying compatibility quirk %s=\"%s\" for \"%s\"", quirks[i].hint_name, quirks[i].hint_value, exe_name);
                 }
-                SDL3_SetEnvironmentVariable(SDL3_GetEnvironment(), quirks[i].hint_name, quirks[i].hint_value, SDL_TRUE);
+                SDL3_setenv_unsafe(quirks[i].hint_name, quirks[i].hint_value, 1);
             } else {
                 if (WantDebugLogging) {
                     SDL3_Log("Not applying compatibility quirk %s=\"%s\" for \"%s\" due to environment variable override (\"%s\")\n",
