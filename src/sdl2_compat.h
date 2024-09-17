@@ -24,6 +24,8 @@
 
 #include <SDL3/SDL_begin_code.h> /* for correct structure alignment, just in case */
 
+/* #define SDL_INIT_TIMER 0x00000001u */ /* removed in SDL3. not used here. */
+
 #ifdef __CC_ARM
 /* ARM's compiler throws warnings if we use an enum: like "SDL2_bool x = a < b;" */
 #define SDL2_FALSE 0

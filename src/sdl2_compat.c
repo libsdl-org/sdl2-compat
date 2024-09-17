@@ -157,8 +157,8 @@ extern "C" {
 
 
 /* these are macros (etc) in the SDL headers, so make our own. */
-#define SDL3_AtomicIncRef(a)  SDL3_AtomicAdd(a, 1)
-#define SDL3_AtomicDecRef(a) (SDL3_AtomicAdd(a,-1) == 1)
+#define SDL3_AtomicIncRef(a)  SDL3_AddAtomicInt(a, 1)
+#define SDL3_AtomicDecRef(a) (SDL3_AddAtomicInt(a,-1) == 1)
 #define SDL3_Unsupported()            SDL3_SetError("That operation is not supported")
 #define SDL3_InvalidParamError(param) SDL3_SetError("Parameter '%s' is invalid", (param))
 #define SDL3_zero(x) SDL3_memset(&(x), 0, sizeof((x)))
@@ -9516,32 +9516,30 @@ SDL_AndroidGetExternalStorageState(void)
     return (int)SDL3_GetAndroidExternalStorageState();
 }
 
-static void SDLCALL AndroidRequestPermissionBlockingCallback(void *userdata, const char *permission, SDL2_bool granted)
+static void SDLCALL AndroidRequestPermissionBlockingCallback(void *userdata, const char *permission, SDL_bool granted)
 {
-    SDL3_AtomicSet((SDL_AtomicInt *) userdata, granted ? 1 : -1);
+    SDL3_SetAtomicInt((SDL_AtomicInt *) userdata, granted ? 1 : -1);
 }
 
 SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_AndroidRequestPermission(const char *permission)
 {
     SDL_AtomicInt response;
-    SDL3_AtomicSet(&response, 0);
+    SDL3_SetAtomicInt(&response, 0);
 
     if (!SDL3_RequestAndroidPermission(permission, AndroidRequestPermissionBlockingCallback, &response)) {
         return SDL2_FALSE;
     }
 
     /* Wait for the request to complete */
-    while (SDL3_AtomicGet(&response) == 0) {
+    while (SDL3_GetAtomicInt(&response) == 0) {
         SDL3_Delay(10);
     }
 
-    return (SDL3_AtomicGet(&response) < 0) ? SDL2_FALSE : SDL2_TRUE;
+    return (SDL3_GetAtomicInt(&response) < 0) ? SDL2_FALSE : SDL2_TRUE;
 }
 #endif
 
 #ifdef __cplusplus
 }
 #endif
-
-/* vi: set ts=4 sw=4 expandtab: */

@@ -37,6 +37,7 @@
 #define SDL_AcquireCameraFrame IGNORE_THIS_VERSION_OF_SDL_AcquireCameraFrame
 #define SDL_AcquireGPUCommandBuffer IGNORE_THIS_VERSION_OF_SDL_AcquireGPUCommandBuffer
 #define SDL_AcquireGPUSwapchainTexture IGNORE_THIS_VERSION_OF_SDL_AcquireGPUSwapchainTexture
+#define SDL_AddAtomicInt IGNORE_THIS_VERSION_OF_SDL_AddAtomicInt
 #define SDL_AddEventWatch IGNORE_THIS_VERSION_OF_SDL_AddEventWatch
 #define SDL_AddGamepadMapping IGNORE_THIS_VERSION_OF_SDL_AddGamepadMapping
 #define SDL_AddGamepadMappingsFromFile IGNORE_THIS_VERSION_OF_SDL_AddGamepadMappingsFromFile
@@ -46,13 +47,6 @@
 #define SDL_AddTimer IGNORE_THIS_VERSION_OF_SDL_AddTimer
 #define SDL_AddTimerNS IGNORE_THIS_VERSION_OF_SDL_AddTimerNS
 #define SDL_AddVulkanRenderSemaphores IGNORE_THIS_VERSION_OF_SDL_AddVulkanRenderSemaphores
-#define SDL_AtomicAdd IGNORE_THIS_VERSION_OF_SDL_AtomicAdd
-#define SDL_AtomicCompareAndSwap IGNORE_THIS_VERSION_OF_SDL_AtomicCompareAndSwap
-#define SDL_AtomicCompareAndSwapPointer IGNORE_THIS_VERSION_OF_SDL_AtomicCompareAndSwapPointer
-#define SDL_AtomicGet IGNORE_THIS_VERSION_OF_SDL_AtomicGet
-#define SDL_AtomicGetPointer IGNORE_THIS_VERSION_OF_SDL_AtomicGetPointer
-#define SDL_AtomicSet IGNORE_THIS_VERSION_OF_SDL_AtomicSet
-#define SDL_AtomicSetPointer IGNORE_THIS_VERSION_OF_SDL_AtomicSetPointer
 #define SDL_AttachVirtualJoystick IGNORE_THIS_VERSION_OF_SDL_AttachVirtualJoystick
 #define SDL_AudioDevicePaused IGNORE_THIS_VERSION_OF_SDL_AudioDevicePaused
 #define SDL_BeginGPUComputePass IGNORE_THIS_VERSION_OF_SDL_BeginGPUComputePass
@@ -99,6 +93,9 @@
 #define SDL_CloseJoystick IGNORE_THIS_VERSION_OF_SDL_CloseJoystick
 #define SDL_CloseSensor IGNORE_THIS_VERSION_OF_SDL_CloseSensor
 #define SDL_CloseStorage IGNORE_THIS_VERSION_OF_SDL_CloseStorage
+#define SDL_CompareAndSwapAtomicInt IGNORE_THIS_VERSION_OF_SDL_CompareAndSwapAtomicInt
+#define SDL_CompareAndSwapAtomicPointer IGNORE_THIS_VERSION_OF_SDL_CompareAndSwapAtomicPointer
+#define SDL_CompareAndSwapAtomicU32 IGNORE_THIS_VERSION_OF_SDL_CompareAndSwapAtomicU32
 #define SDL_ComposeCustomBlendMode IGNORE_THIS_VERSION_OF_SDL_ComposeCustomBlendMode
 #define SDL_ConvertAudioSamples IGNORE_THIS_VERSION_OF_SDL_ConvertAudioSamples
 #define SDL_ConvertEventToRenderCoordinates IGNORE_THIS_VERSION_OF_SDL_ConvertEventToRenderCoordinates
@@ -249,6 +246,9 @@
 #define SDL_GetAppMetadataProperty IGNORE_THIS_VERSION_OF_SDL_GetAppMetadataProperty
 #define SDL_GetAssertionHandler IGNORE_THIS_VERSION_OF_SDL_GetAssertionHandler
 #define SDL_GetAssertionReport IGNORE_THIS_VERSION_OF_SDL_GetAssertionReport
+#define SDL_GetAtomicInt IGNORE_THIS_VERSION_OF_SDL_GetAtomicInt
+#define SDL_GetAtomicPointer IGNORE_THIS_VERSION_OF_SDL_GetAtomicPointer
+#define SDL_GetAtomicU32 IGNORE_THIS_VERSION_OF_SDL_GetAtomicU32
 #define SDL_GetAudioDeviceChannelMap IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceChannelMap
 #define SDL_GetAudioDeviceFormat IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceFormat
 #define SDL_GetAudioDeviceGain IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceGain
@@ -812,6 +812,9 @@
 #define SDL_SetAppMetadata IGNORE_THIS_VERSION_OF_SDL_SetAppMetadata
 #define SDL_SetAppMetadataProperty IGNORE_THIS_VERSION_OF_SDL_SetAppMetadataProperty
 #define SDL_SetAssertionHandler IGNORE_THIS_VERSION_OF_SDL_SetAssertionHandler
+#define SDL_SetAtomicInt IGNORE_THIS_VERSION_OF_SDL_SetAtomicInt
+#define SDL_SetAtomicPointer IGNORE_THIS_VERSION_OF_SDL_SetAtomicPointer
+#define SDL_SetAtomicU32 IGNORE_THIS_VERSION_OF_SDL_SetAtomicU32
 #define SDL_SetAudioDeviceGain IGNORE_THIS_VERSION_OF_SDL_SetAudioDeviceGain
 #define SDL_SetAudioPostmixCallback IGNORE_THIS_VERSION_OF_SDL_SetAudioPostmixCallback
 #define SDL_SetAudioStreamFormat IGNORE_THIS_VERSION_OF_SDL_SetAudioStreamFormat
@@ -1240,6 +1243,10 @@
 #undef SDL_AcquireGPUSwapchainTexture
 #endif
 
+#ifdef SDL_AddAtomicInt
+#undef SDL_AddAtomicInt
+#endif
+
 #ifdef SDL_AddEventWatch
 #undef SDL_AddEventWatch
 #endif
@@ -1274,34 +1281,6 @@
 
 #ifdef SDL_AddVulkanRenderSemaphores
 #undef SDL_AddVulkanRenderSemaphores
-#endif
-
-#ifdef SDL_AtomicAdd
-#undef SDL_AtomicAdd
-#endif
-
-#ifdef SDL_AtomicCompareAndSwap
-#undef SDL_AtomicCompareAndSwap
-#endif
-
-#ifdef SDL_AtomicCompareAndSwapPointer
-#undef SDL_AtomicCompareAndSwapPointer
-#endif
-
-#ifdef SDL_AtomicGet
-#undef SDL_AtomicGet
-#endif
-
-#ifdef SDL_AtomicGetPointer
-#undef SDL_AtomicGetPointer
-#endif
-
-#ifdef SDL_AtomicSet
-#undef SDL_AtomicSet
-#endif
-
-#ifdef SDL_AtomicSetPointer
-#undef SDL_AtomicSetPointer
 #endif
 
 #ifdef SDL_AttachVirtualJoystick
@@ -1486,6 +1465,18 @@
 
 #ifdef SDL_CloseStorage
 #undef SDL_CloseStorage
+#endif
+
+#ifdef SDL_CompareAndSwapAtomicInt
+#undef SDL_CompareAndSwapAtomicInt
+#endif
+
+#ifdef SDL_CompareAndSwapAtomicPointer
+#undef SDL_CompareAndSwapAtomicPointer
+#endif
+
+#ifdef SDL_CompareAndSwapAtomicU32
+#undef SDL_CompareAndSwapAtomicU32
 #endif
 
 #ifdef SDL_ComposeCustomBlendMode
@@ -2086,6 +2077,18 @@
 
 #ifdef SDL_GetAssertionReport
 #undef SDL_GetAssertionReport
+#endif
+
+#ifdef SDL_GetAtomicInt
+#undef SDL_GetAtomicInt
+#endif
+
+#ifdef SDL_GetAtomicPointer
+#undef SDL_GetAtomicPointer
+#endif
+
+#ifdef SDL_GetAtomicU32
+#undef SDL_GetAtomicU32
 #endif
 
 #ifdef SDL_GetAudioDeviceChannelMap
@@ -4338,6 +4341,18 @@
 
 #ifdef SDL_SetAssertionHandler
 #undef SDL_SetAssertionHandler
+#endif
+
+#ifdef SDL_SetAtomicInt
+#undef SDL_SetAtomicInt
+#endif
+
+#ifdef SDL_SetAtomicPointer
+#undef SDL_SetAtomicPointer
+#endif
+
+#ifdef SDL_SetAtomicU32
+#undef SDL_SetAtomicU32
 #endif
 
 #ifdef SDL_SetAudioDeviceGain
