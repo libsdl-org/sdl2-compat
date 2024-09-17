@@ -107,6 +107,17 @@ typedef enum SDL_errorcode
     SDL_LASTERROR
 } SDL_errorcode;
 
+typedef enum SDL2_LogPriority
+{
+    SDL2_LOG_PRIORITY_VERBOSE = 1,
+    SDL2_LOG_PRIORITY_DEBUG,
+    SDL2_LOG_PRIORITY_INFO,
+    SDL2_LOG_PRIORITY_WARN,
+    SDL2_LOG_PRIORITY_ERROR,
+    SDL2_LOG_PRIORITY_CRITICAL,
+    SDL2_NUM_LOG_PRIORITIES
+} SDL2_LogPriority;
+
 typedef SDL_AtomicInt SDL_atomic_t;
 
 typedef SDL_Condition SDL_cond;

@@ -454,8 +454,7 @@ static struct {
     { "SDL_VIDEO_X11_WMCLASS", "SDL_APP_ID" },
 };
 
-static const char *
-SDL2_to_SDL3_hint(const char *name)
+static const char *SDL2_to_SDL3_hint(const char *name)
 {
     unsigned int i;
 
@@ -467,16 +466,43 @@ SDL2_to_SDL3_hint(const char *name)
     return name;
 }
 
+static const char *SDL2_to_SDL3_hint_value(const char *name, const char *value, SDL_bool *free_value)
+{
+    if (name && value && SDL3_strcmp(name, SDL_HINT_LOGGING) == 0) {
+        /* Rewrite numeric priorities for SDL3 */
+        char *value3 = SDL_strdup(value);
+        if (value3) {
+            char *sep;
+            for (sep = SDL3_strchr(value3, '='); sep; sep = SDL3_strchr(sep + 1, '=')) {
+                if (SDL3_isdigit(sep[1]) && sep[1] != '0') {
+                    sep[1] = '0' + SDL_atoi(&sep[1]) + 1;
+                }
+            }
+        }
+        *free_value = SDL_TRUE;
+        return value3;
+    } else {
+        *free_value = SDL_FALSE;
+        return value;
+    }
+}
+
 SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_SetHintWithPriority(const char *name, const char *value, SDL_HintPriority priority)
 {
-    return SDL3_SetHintWithPriority(SDL2_to_SDL3_hint(name), value, priority) ? SDL2_TRUE : SDL2_FALSE;
+    SDL_bool free_value = SDL_FALSE;
+    const char *value3 = SDL2_to_SDL3_hint_value(name, value, &free_value);
+    SDL2_bool result = SDL3_SetHintWithPriority(SDL2_to_SDL3_hint(name), value3, priority) ? SDL2_TRUE : SDL2_FALSE;
+    if (free_value) {
+        SDL3_free((void *)value3);
+    }
+    return result;
 }
 
 SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_SetHint(const char *name, const char *value)
 {
-    return SDL3_SetHint(SDL2_to_SDL3_hint(name), value) ? SDL2_TRUE : SDL2_FALSE;
+    return SDL_SetHintWithPriority(name, value, SDL_HINT_NORMAL);
 }
 
 SDL_DECLSPEC const char * SDLCALL
@@ -1024,6 +1050,61 @@ SDL_asprintf(char **str, SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
     return retval;
 }
 
+static SDL2_LogPriority LogPriority3to2(SDL_LogPriority priority)
+{
+    switch (priority) {
+    case SDL_LOG_PRIORITY_VERBOSE:
+        return SDL2_LOG_PRIORITY_VERBOSE;
+    case SDL_LOG_PRIORITY_DEBUG:
+        return SDL2_LOG_PRIORITY_DEBUG;
+    case SDL_LOG_PRIORITY_INFO:
+        return SDL2_LOG_PRIORITY_INFO;
+    case SDL_LOG_PRIORITY_WARN:
+        return SDL2_LOG_PRIORITY_WARN;
+    case SDL_LOG_PRIORITY_ERROR:
+        return SDL2_LOG_PRIORITY_ERROR;
+    case SDL_LOG_PRIORITY_CRITICAL:
+        return SDL2_LOG_PRIORITY_CRITICAL;
+    default:
+        return SDL2_NUM_LOG_PRIORITIES;
+    }
+}
+
+static SDL_LogPriority LogPriority2to3(SDL2_LogPriority priority)
+{
+    switch (priority) {
+    case SDL2_LOG_PRIORITY_VERBOSE:
+        return SDL_LOG_PRIORITY_VERBOSE;
+    case SDL2_LOG_PRIORITY_DEBUG:
+        return SDL_LOG_PRIORITY_DEBUG;
+    case SDL2_LOG_PRIORITY_INFO:
+        return SDL_LOG_PRIORITY_INFO;
+    case SDL2_LOG_PRIORITY_WARN:
+        return SDL_LOG_PRIORITY_WARN;
+    case SDL2_LOG_PRIORITY_ERROR:
+        return SDL_LOG_PRIORITY_ERROR;
+    case SDL2_LOG_PRIORITY_CRITICAL:
+        return SDL_LOG_PRIORITY_CRITICAL;
+    default:
+        return SDL_LOG_PRIORITY_INVALID;
+    }
+}
+
+SDL_DECLSPEC void SDLCALL SDL_LogSetAllPriority(SDL2_LogPriority priority)
+{
+    SDL3_SetLogPriorities(LogPriority2to3(priority));
+}
+
+SDL_DECLSPEC void SDLCALL SDL_LogSetPriority(int category, SDL2_LogPriority priority)
+{
+    SDL3_SetLogPriority(category, LogPriority2to3(priority));
+}
+
+SDL_DECLSPEC SDL2_LogPriority SDLCALL SDL_LogGetPriority(int category)
+{
+    return LogPriority3to2(SDL3_GetLogPriority(category));
+}
+
 SDL_DECLSPEC void SDLCALL
 SDL_Log(SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
 {
@@ -1034,12 +1115,17 @@ SDL_Log(SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
 }
 
 SDL_DECLSPEC void SDLCALL
-SDL_LogMessage(int category, SDL_LogPriority priority, SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
+SDL_LogMessage(int category, SDL2_LogPriority priority, SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
-    SDL3_LogMessageV(category, priority, fmt, ap);
+    SDL3_LogMessageV(category, LogPriority2to3(priority), fmt, ap);
     va_end(ap);
+}
+
+SDL_DECLSPEC void SDLCALL SDL_LogMessageV(int category, SDL2_LogPriority priority, const char *fmt, va_list ap)
+{
+    SDL3_LogMessageV(category, LogPriority2to3(priority), fmt, ap);
 }
 
 #define SDL_LOG_IMPL(name, prio)                                             \

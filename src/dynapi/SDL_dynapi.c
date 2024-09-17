@@ -72,7 +72,7 @@ static void SDL_InitDynamicAPI(void);
         va_list ap;                                                                                          \
         initcall;                                                                                            \
         va_start(ap, fmt);                                                                                   \
-        jump_table.SDL_LogMessageV(category, SDL_LOG_PRIORITY_##prio, fmt, ap);                              \
+        jump_table.SDL_LogMessageV(category, SDL2_LOG_PRIORITY_##prio, fmt, ap);                              \
         va_end(ap);                                                                                          \
     }
 
@@ -138,10 +138,10 @@ static void SDL_InitDynamicAPI(void);
         va_list ap;                                                                                                                       \
         initcall;                                                                                                                         \
         va_start(ap, fmt);                                                                                                                \
-        jump_table.SDL_LogMessageV(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, fmt, ap);                                         \
+        jump_table.SDL_LogMessageV(SDL_LOG_CATEGORY_APPLICATION, SDL2_LOG_PRIORITY_INFO, fmt, ap);                                         \
         va_end(ap);                                                                                                                       \
     }                                                                                                                                     \
-    _static void SDLCALL SDL_LogMessage##name(int category, SDL_LogPriority priority, SDL_PRINTF_FORMAT_STRING const char *fmt, ...)      \
+    _static void SDLCALL SDL_LogMessage##name(int category, SDL2_LogPriority priority, SDL_PRINTF_FORMAT_STRING const char *fmt, ...)      \
     {                                                                                                                                     \
         va_list ap;                                                                                                                       \
         initcall;                                                                                                                         \
@@ -269,10 +269,10 @@ static void SDLCALL SDL_Log_LOGSDLCALLS(SDL_PRINTF_FORMAT_STRING const char *fmt
     va_list ap;
     SDL_Log_REAL("SDL2CALL SDL_Log");
     va_start(ap, fmt);
-    SDL_LogMessageV_REAL(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, fmt, ap);
+    SDL_LogMessageV_REAL(SDL_LOG_CATEGORY_APPLICATION, SDL2_LOG_PRIORITY_INFO, fmt, ap);
     va_end(ap);
 }
-static void SDLCALL SDL_LogMessage_LOGSDLCALLS(int category, SDL_LogPriority priority, SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
+static void SDLCALL SDL_LogMessage_LOGSDLCALLS(int category, SDL2_LogPriority priority, SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
 {
     va_list ap;
     SDL_Log_REAL("SDL2CALL SDL_LogMessage");
@@ -284,7 +284,7 @@ static void SDLCALL SDL_LogMessage_LOGSDLCALLS(int category, SDL_LogPriority pri
     static void SDLCALL SDL_Log##logname##_LOGSDLCALLS(int category, SDL_PRINTF_FORMAT_STRING const char *fmt, ...) { \
         va_list ap; va_start(ap, fmt); \
         SDL_Log_REAL("SDL2CALL SDL_Log%s", #logname); \
-        SDL_LogMessageV_REAL(category, SDL_LOG_PRIORITY_##prio, fmt, ap); \
+        SDL_LogMessageV_REAL(category, SDL2_LOG_PRIORITY_##prio, fmt, ap); \
         va_end(ap); \
     }
 SDL_DYNAPI_VARARGS_LOGFN_LOGSDLCALLS(Verbose, VERBOSE)
