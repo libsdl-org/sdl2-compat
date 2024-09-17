@@ -661,6 +661,7 @@
 #define SDL_LogInfo IGNORE_THIS_VERSION_OF_SDL_LogInfo
 #define SDL_LogMessage IGNORE_THIS_VERSION_OF_SDL_LogMessage
 #define SDL_LogMessageV IGNORE_THIS_VERSION_OF_SDL_LogMessageV
+#define SDL_LogTrace IGNORE_THIS_VERSION_OF_SDL_LogTrace
 #define SDL_LogVerbose IGNORE_THIS_VERSION_OF_SDL_LogVerbose
 #define SDL_LogWarn IGNORE_THIS_VERSION_OF_SDL_LogWarn
 #define SDL_MapGPUTransferBuffer IGNORE_THIS_VERSION_OF_SDL_MapGPUTransferBuffer
@@ -3733,6 +3734,10 @@
 
 #ifdef SDL_LogMessageV
 #undef SDL_LogMessageV
+#endif
+
+#ifdef SDL_LogTrace
+#undef SDL_LogTrace
 #endif
 
 #ifdef SDL_LogVerbose
