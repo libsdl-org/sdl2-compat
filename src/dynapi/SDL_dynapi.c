@@ -318,7 +318,7 @@ static Sint32 initialize_jumptable(Uint32 apiver, void *table, Uint32 tablesize)
 #if ENABLE_SDL_CALL_LOGGING
     {
         const char *env = SDL_getenv_REAL("SDL_DYNAPI_LOG_CALLS");
-        const SDL_bool log_calls = (env && SDL_atoi_REAL(env));
+        const bool log_calls = (env && SDL_atoi_REAL(env));
         if (log_calls) {
 #define SDL_DYNAPI_PROC(rc, fn, params, args, ret) jump_table.fn = fn##_LOGSDLCALLS;
 #include "SDL_dynapi_procs.h"
@@ -449,13 +449,13 @@ static void SDL_InitDynamicAPILocked(void)
 {
     const char *libname = SDL_getenv_REAL(SDL_DYNAMIC_API_ENVVAR);
     SDL_DYNAPI_ENTRYFN entry = NULL; /* funcs from here by default. */
-    SDL_bool use_internal = SDL_TRUE;
+    bool use_internal = true;
 
     if (libname) {
         while (*libname && !entry) {
             // This is evil, but we're not making any permanent changes...
             char *ptr = (char *)libname;
-            while (SDL_TRUE) {
+            while (true) {
                 char ch = *ptr;
                 if ((ch == ',') || (ch == '\0')) {
                     *ptr = '\0';
@@ -479,7 +479,7 @@ static void SDL_InitDynamicAPILocked(void)
             dynapi_warn("Couldn't override SDL library. Using a newer SDL build might help. Please fix or remove the " SDL_DYNAMIC_API_ENVVAR " environment variable. Using the default SDL.");
             /* Just fill in the function pointers from this library, later. */
         } else {
-            use_internal = SDL_FALSE; /* We overrode SDL! Don't use the internal version! */
+            use_internal = false; /* We overrode SDL! Don't use the internal version! */
         }
     }
 
@@ -508,7 +508,7 @@ static void SDL_InitDynamicAPI(void)
      *  SDL_CreateThread() would also call this function before building the
      *  new thread).
      */
-    static SDL_bool already_initialized = SDL_FALSE;
+    static bool already_initialized = false;
 
     /* SDL_AtomicLock calls SDL mutex functions to emulate if
        SDL_ATOMIC_DISABLED, which we can't do here, so in such a
@@ -520,7 +520,7 @@ static void SDL_InitDynamicAPI(void)
 
     if (!already_initialized) {
         SDL_InitDynamicAPILocked();
-        already_initialized = SDL_TRUE;
+        already_initialized = true;
     }
 
     #ifndef SDL_ATOMIC_DISABLED
@@ -529,5 +529,3 @@ static void SDL_InitDynamicAPI(void)
 }
 
 #endif /* SDL_DYNAMIC_API */
-
-/* vi: set ts=4 sw=4 expandtab: */
