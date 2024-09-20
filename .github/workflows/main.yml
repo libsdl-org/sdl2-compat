@@ -52,7 +52,7 @@ jobs:
           ${{ matrix.platform.msys-env }}-crt
           ${{ matrix.platform.msys-env }}-ninja
     - name: Get sdl2-compat sources
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Install Ninja
       if: ${{ !contains(matrix.platform.shell, 'msys2') }}
       uses: aseprite/get-ninja@main
@@ -145,7 +145,7 @@ jobs:
       run: |
         export PKG_CONFIG_PATH=${{ env.SDL2_ROOT }}/lib/pkgconfig
         cmake/test/test_pkgconfig.sh ${{ !matrix.platform.static && '--no-static' }}
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: ${{ always() && steps.build.outcome == 'success' }}
       with:
         if-no-files-found: error
