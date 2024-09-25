@@ -1353,7 +1353,7 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
         renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->motion.windowID));
         if (renderer) {
             SDL_RendererLogicalPresentation mode = SDL_LOGICAL_PRESENTATION_DISABLED;
-            SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode, NULL);
+            SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode);
             if (mode != SDL_LOGICAL_PRESENTATION_DISABLED) {
                 SDL3_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
                 SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
@@ -1370,7 +1370,7 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
         renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->button.windowID));
         if (renderer) {
             SDL_RendererLogicalPresentation mode = SDL_LOGICAL_PRESENTATION_DISABLED;
-            SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode, NULL);
+            SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode);
             if (mode != SDL_LOGICAL_PRESENTATION_DISABLED) {
                 SDL3_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
                 SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
@@ -1384,7 +1384,7 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
         renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->wheel.windowID));
         if (renderer) {
             SDL_RendererLogicalPresentation mode = SDL_LOGICAL_PRESENTATION_DISABLED;
-            SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode, NULL);
+            SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode);
             if (mode != SDL_LOGICAL_PRESENTATION_DISABLED) {
                 SDL3_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
                 SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
@@ -4407,9 +4407,9 @@ SDL_RenderSetLogicalSize(SDL_Renderer *renderer, int w, int h)
 {
     int retval;
     if (w == 0 && h == 0) {
-        retval = SDL3_SetRenderLogicalPresentation(renderer, 0, 0, SDL_LOGICAL_PRESENTATION_DISABLED, SDL_SCALEMODE_NEAREST) ? 0 : -1;
+        retval = SDL3_SetRenderLogicalPresentation(renderer, 0, 0, SDL_LOGICAL_PRESENTATION_DISABLED) ? 0 : -1;
     } else {
-        retval = SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_LETTERBOX, SDL_SCALEMODE_LINEAR) ? 0 : -1;
+        retval = SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_LETTERBOX) ? 0 : -1;
     }
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
@@ -4417,18 +4417,17 @@ SDL_RenderSetLogicalSize(SDL_Renderer *renderer, int w, int h)
 SDL_DECLSPEC void SDLCALL
 SDL_RenderGetLogicalSize(SDL_Renderer *renderer, int *w, int *h)
 {
-    SDL3_GetRenderLogicalPresentation(renderer, w, h, NULL, NULL);
+    SDL3_GetRenderLogicalPresentation(renderer, w, h, NULL);
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_RenderSetIntegerScale(SDL_Renderer *renderer, SDL2_bool enable)
 {
-    SDL_ScaleMode scale_mode;
     SDL_RendererLogicalPresentation mode;
     int w, h;
     int retval;
 
-    retval = SDL3_GetRenderLogicalPresentation(renderer, &w, &h, &mode, &scale_mode) ? 0 : -1;
+    retval = SDL3_GetRenderLogicalPresentation(renderer, &w, &h, &mode) ? 0 : -1;
     if (retval < 0) {
         return retval;
     }
@@ -4442,9 +4441,9 @@ SDL_RenderSetIntegerScale(SDL_Renderer *renderer, SDL2_bool enable)
     }
 
     if (enable) {
-        retval = SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE, scale_mode) ? 0 : -1;
+        retval = SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE) ? 0 : -1;
     } else {
-        retval = SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_DISABLED, scale_mode) ? 0 : -1;
+        retval = SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_DISABLED) ? 0 : -1;
     }
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
@@ -4453,7 +4452,7 @@ SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_RenderGetIntegerScale(SDL_Renderer *renderer)
 {
     SDL_RendererLogicalPresentation mode;
-    if (SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode, NULL)) {
+    if (SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode)) {
         if (mode == SDL_LOGICAL_PRESENTATION_INTEGER_SCALE) {
             return SDL2_TRUE;
         }
