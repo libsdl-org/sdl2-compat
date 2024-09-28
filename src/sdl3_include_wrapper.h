@@ -280,6 +280,7 @@
 #define SDL_GetCameraSupportedFormats IGNORE_THIS_VERSION_OF_SDL_GetCameraSupportedFormats
 #define SDL_GetCameras IGNORE_THIS_VERSION_OF_SDL_GetCameras
 #define SDL_GetClipboardData IGNORE_THIS_VERSION_OF_SDL_GetClipboardData
+#define SDL_GetClipboardMimeTypes IGNORE_THIS_VERSION_OF_SDL_GetClipboardMimeTypes
 #define SDL_GetClipboardText IGNORE_THIS_VERSION_OF_SDL_GetClipboardText
 #define SDL_GetClosestFullscreenDisplayMode IGNORE_THIS_VERSION_OF_SDL_GetClosestFullscreenDisplayMode
 #define SDL_GetCurrentAudioDriver IGNORE_THIS_VERSION_OF_SDL_GetCurrentAudioDriver
@@ -849,6 +850,7 @@
 #define SDL_SetHapticGain IGNORE_THIS_VERSION_OF_SDL_SetHapticGain
 #define SDL_SetHint IGNORE_THIS_VERSION_OF_SDL_SetHint
 #define SDL_SetHintWithPriority IGNORE_THIS_VERSION_OF_SDL_SetHintWithPriority
+#define SDL_SetInitialized IGNORE_THIS_VERSION_OF_SDL_SetInitialized
 #define SDL_SetJoystickEventsEnabled IGNORE_THIS_VERSION_OF_SDL_SetJoystickEventsEnabled
 #define SDL_SetJoystickLED IGNORE_THIS_VERSION_OF_SDL_SetJoystickLED
 #define SDL_SetJoystickPlayerIndex IGNORE_THIS_VERSION_OF_SDL_SetJoystickPlayerIndex
@@ -927,6 +929,8 @@
 #define SDL_SetX11EventHook IGNORE_THIS_VERSION_OF_SDL_SetX11EventHook
 #define SDL_SetiOSAnimationCallback IGNORE_THIS_VERSION_OF_SDL_SetiOSAnimationCallback
 #define SDL_SetiOSEventPump IGNORE_THIS_VERSION_OF_SDL_SetiOSEventPump
+#define SDL_ShouldInit IGNORE_THIS_VERSION_OF_SDL_ShouldInit
+#define SDL_ShouldQuit IGNORE_THIS_VERSION_OF_SDL_ShouldQuit
 #define SDL_ShowAndroidToast IGNORE_THIS_VERSION_OF_SDL_ShowAndroidToast
 #define SDL_ShowCursor IGNORE_THIS_VERSION_OF_SDL_ShowCursor
 #define SDL_ShowMessageBox IGNORE_THIS_VERSION_OF_SDL_ShowMessageBox
@@ -2213,6 +2217,10 @@
 
 #ifdef SDL_GetClipboardData
 #undef SDL_GetClipboardData
+#endif
+
+#ifdef SDL_GetClipboardMimeTypes
+#undef SDL_GetClipboardMimeTypes
 #endif
 
 #ifdef SDL_GetClipboardText
@@ -4491,6 +4499,10 @@
 #undef SDL_SetHintWithPriority
 #endif
 
+#ifdef SDL_SetInitialized
+#undef SDL_SetInitialized
+#endif
+
 #ifdef SDL_SetJoystickEventsEnabled
 #undef SDL_SetJoystickEventsEnabled
 #endif
@@ -4801,6 +4813,14 @@
 
 #ifdef SDL_SetiOSEventPump
 #undef SDL_SetiOSEventPump
+#endif
+
+#ifdef SDL_ShouldInit
+#undef SDL_ShouldInit
+#endif
+
+#ifdef SDL_ShouldQuit
+#undef SDL_ShouldQuit
 #endif
 
 #ifdef SDL_ShowAndroidToast
