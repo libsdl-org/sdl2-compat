@@ -76,7 +76,7 @@ If necessary, you might have to fill in the location of the SDL3 headers
 when using CMake. sdl2-compat does not need SDL3's library to _build_,
 just its headers (although it may complain about the missing library,
 you can ignore that). From the command line, add
-`-DSDL3_INCLUDE_DIR=/path/to/SDL3/include`, or find this in the CMake
+`-DSDL3_INCLUDE_DIRS=/path/to/SDL3/include`, or find this in the CMake
 GUI and set it appropriately, click "Configure" again, and then "Generate."
 
 When the build is complete, you'll have a shared library you can drop in
