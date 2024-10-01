@@ -9454,7 +9454,7 @@ SDL_LoadFunction(void *lib, const char *sym)
 SDL_DECLSPEC void SDLCALL
 SDL_UnloadObject(void *lib)
 {
-    return SDL3_UnloadObject((SDL_SharedObject *) lib);
+    SDL3_UnloadObject((SDL_SharedObject *) lib);
 }
 
 
