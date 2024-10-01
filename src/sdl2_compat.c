@@ -9559,6 +9559,12 @@ SDL_AndroidRequestPermission(const char *permission)
 
     return (SDL3_GetAtomicInt(&response) < 0) ? SDL2_FALSE : SDL2_TRUE;
 }
+
+SDL_DECLSPEC SDL2_bool SDLCALL
+SDL_IsAndroidTV(void)
+{
+    return SDL3_IsTV() ? SDL2_TRUE : SDL2_FALSE;
+}
 #endif
 
 #ifdef __cplusplus

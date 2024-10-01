@@ -626,7 +626,6 @@
 #define SDL_InitHapticRumble IGNORE_THIS_VERSION_OF_SDL_InitHapticRumble
 #define SDL_InitSubSystem IGNORE_THIS_VERSION_OF_SDL_InitSubSystem
 #define SDL_InsertGPUDebugLabel IGNORE_THIS_VERSION_OF_SDL_InsertGPUDebugLabel
-#define SDL_IsAndroidTV IGNORE_THIS_VERSION_OF_SDL_IsAndroidTV
 #define SDL_IsChromebook IGNORE_THIS_VERSION_OF_SDL_IsChromebook
 #define SDL_IsDeXMode IGNORE_THIS_VERSION_OF_SDL_IsDeXMode
 #define SDL_IsGamepad IGNORE_THIS_VERSION_OF_SDL_IsGamepad
@@ -634,6 +633,7 @@
 #define SDL_IsJoystickVirtual IGNORE_THIS_VERSION_OF_SDL_IsJoystickVirtual
 #define SDL_IsMouseHaptic IGNORE_THIS_VERSION_OF_SDL_IsMouseHaptic
 #define SDL_IsTablet IGNORE_THIS_VERSION_OF_SDL_IsTablet
+#define SDL_IsTV IGNORE_THIS_VERSION_OF_SDL_IsTV
 #define SDL_JoystickConnected IGNORE_THIS_VERSION_OF_SDL_JoystickConnected
 #define SDL_JoystickEventsEnabled IGNORE_THIS_VERSION_OF_SDL_JoystickEventsEnabled
 #define SDL_KillProcess IGNORE_THIS_VERSION_OF_SDL_KillProcess
@@ -1129,6 +1129,7 @@
 #define SDL_memset4 IGNORE_THIS_VERSION_OF_SDL_memset4
 #define SDL_modf IGNORE_THIS_VERSION_OF_SDL_modf
 #define SDL_modff IGNORE_THIS_VERSION_OF_SDL_modff
+#define SDL_murmur3_32 IGNORE_THIS_VERSION_OF_SDL_murmur3_32
 #define SDL_pow IGNORE_THIS_VERSION_OF_SDL_pow
 #define SDL_powf IGNORE_THIS_VERSION_OF_SDL_powf
 #define SDL_qsort IGNORE_THIS_VERSION_OF_SDL_qsort
@@ -1222,7 +1223,7 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL_vulkan.h>
 
-#ifdef _WIN32 /**/
+#if defined(_WIN32)
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
 #endif
@@ -3603,10 +3604,6 @@
 #undef SDL_InsertGPUDebugLabel
 #endif
 
-#ifdef SDL_IsAndroidTV
-#undef SDL_IsAndroidTV
-#endif
-
 #ifdef SDL_IsChromebook
 #undef SDL_IsChromebook
 #endif
@@ -3633,6 +3630,10 @@
 
 #ifdef SDL_IsTablet
 #undef SDL_IsTablet
+#endif
+
+#ifdef SDL_IsTV
+#undef SDL_IsTV
 #endif
 
 #ifdef SDL_JoystickConnected
@@ -5613,6 +5614,10 @@
 
 #ifdef SDL_modff
 #undef SDL_modff
+#endif
+
+#ifdef SDL_murmur3_32
+#undef SDL_murmur3_32
 #endif
 
 #ifdef SDL_pow
