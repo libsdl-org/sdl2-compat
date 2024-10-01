@@ -9436,6 +9436,28 @@ SDL_DECLSPEC void SDLCALL SDL_hid_ble_scan(SDL2_bool active)
     SDL3_hid_ble_scan(active);
 }
 
+
+/* SDL_loadso Replaced void * with SDL_SharedObject * in SDL3. */
+
+SDL_DECLSPEC void * SDLCALL
+SDL_LoadObject(const char *soname)
+{
+    return (void *) SDL3_LoadObject(soname);
+}
+
+SDL_DECLSPEC void * SDLCALL
+SDL_LoadFunction(void *lib, const char *sym)
+{
+    return (void *) SDL3_LoadFunction((SDL_SharedObject *) lib, sym);
+}
+
+SDL_DECLSPEC void SDLCALL
+SDL_UnloadObject(void *lib)
+{
+    return SDL3_UnloadObject((SDL_SharedObject *) lib);
+}
+
+
 #if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)
 static SDL2_WindowsMessageHook g_WindowsMessageHook = NULL;
 
