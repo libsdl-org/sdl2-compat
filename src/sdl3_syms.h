@@ -581,7 +581,7 @@ SDL3_SYM(bool,RenderRects,(SDL_Renderer *a, const SDL_FRect *b, int c),(a,b,c),r
 SDL3_SYM_RENAMED_RETCODE(bool,RenderSetScale,SetRenderScale,(SDL_Renderer *a, float b, float c),(a,b,c),return)
 SDL3_SYM_RENAMED_RETCODE(bool,RenderSetVSync,SetRenderVSync,(SDL_Renderer *a, int b),(a,b),return)
 SDL3_SYM(bool,RenderTexture,(SDL_Renderer *a, SDL_Texture *b, const SDL_FRect *c, const SDL_FRect *d),(a,b,c,d),return)
-SDL3_SYM(bool,RenderTextureRotated,(SDL_Renderer *a, SDL_Texture *b, const SDL_FRect *c, const SDL_FRect *d, const double e, const SDL_FPoint *f, const SDL_FlipMode g),(a,b,c,d,e,f,g),return)
+SDL3_SYM(bool,RenderTextureRotated,(SDL_Renderer *a, SDL_Texture *b, const SDL_FRect *c, const SDL_FRect *d, double e, const SDL_FPoint *f, SDL_FlipMode g),(a,b,c,d,e,f,g),return)
 SDL3_SYM_PASSTHROUGH(SDL_AssertState,ReportAssertion,(SDL_AssertData *a, const char *b, const char *c, int d),(a,b,c,d),return)
 SDL3_SYM_PASSTHROUGH(void,ResetAssertionReport,(void),(),)
 SDL3_SYM(bool,ResetHint,(const char *a),(a),return)
