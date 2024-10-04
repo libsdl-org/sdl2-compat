@@ -1654,7 +1654,7 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
         default: break;
     }
 
-    return SDL2_TRUE;
+    return true;
 }
 
 static void CheckEventFilter(void)

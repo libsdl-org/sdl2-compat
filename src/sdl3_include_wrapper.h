@@ -632,8 +632,8 @@
 #define SDL_IsJoystickHaptic IGNORE_THIS_VERSION_OF_SDL_IsJoystickHaptic
 #define SDL_IsJoystickVirtual IGNORE_THIS_VERSION_OF_SDL_IsJoystickVirtual
 #define SDL_IsMouseHaptic IGNORE_THIS_VERSION_OF_SDL_IsMouseHaptic
-#define SDL_IsTablet IGNORE_THIS_VERSION_OF_SDL_IsTablet
 #define SDL_IsTV IGNORE_THIS_VERSION_OF_SDL_IsTV
+#define SDL_IsTablet IGNORE_THIS_VERSION_OF_SDL_IsTablet
 #define SDL_JoystickConnected IGNORE_THIS_VERSION_OF_SDL_JoystickConnected
 #define SDL_JoystickEventsEnabled IGNORE_THIS_VERSION_OF_SDL_JoystickEventsEnabled
 #define SDL_KillProcess IGNORE_THIS_VERSION_OF_SDL_KillProcess
@@ -828,6 +828,7 @@
 #define SDL_SetBooleanProperty IGNORE_THIS_VERSION_OF_SDL_SetBooleanProperty
 #define SDL_SetClipboardData IGNORE_THIS_VERSION_OF_SDL_SetClipboardData
 #define SDL_SetClipboardText IGNORE_THIS_VERSION_OF_SDL_SetClipboardText
+#define SDL_SetCurrentThreadPriority IGNORE_THIS_VERSION_OF_SDL_SetCurrentThreadPriority
 #define SDL_SetCursor IGNORE_THIS_VERSION_OF_SDL_SetCursor
 #define SDL_SetEnvironmentVariable IGNORE_THIS_VERSION_OF_SDL_SetEnvironmentVariable
 #define SDL_SetError IGNORE_THIS_VERSION_OF_SDL_SetError
@@ -901,7 +902,6 @@
 #define SDL_SetTextureColorMod IGNORE_THIS_VERSION_OF_SDL_SetTextureColorMod
 #define SDL_SetTextureColorModFloat IGNORE_THIS_VERSION_OF_SDL_SetTextureColorModFloat
 #define SDL_SetTextureScaleMode IGNORE_THIS_VERSION_OF_SDL_SetTextureScaleMode
-#define SDL_SetThreadPriority IGNORE_THIS_VERSION_OF_SDL_SetThreadPriority
 #define SDL_SetWindowAlwaysOnTop IGNORE_THIS_VERSION_OF_SDL_SetWindowAlwaysOnTop
 #define SDL_SetWindowAspectRatio IGNORE_THIS_VERSION_OF_SDL_SetWindowAspectRatio
 #define SDL_SetWindowBordered IGNORE_THIS_VERSION_OF_SDL_SetWindowBordered
@@ -3628,12 +3628,12 @@
 #undef SDL_IsMouseHaptic
 #endif
 
-#ifdef SDL_IsTablet
-#undef SDL_IsTablet
-#endif
-
 #ifdef SDL_IsTV
 #undef SDL_IsTV
+#endif
+
+#ifdef SDL_IsTablet
+#undef SDL_IsTablet
 #endif
 
 #ifdef SDL_JoystickConnected
@@ -4412,6 +4412,10 @@
 #undef SDL_SetClipboardText
 #endif
 
+#ifdef SDL_SetCurrentThreadPriority
+#undef SDL_SetCurrentThreadPriority
+#endif
+
 #ifdef SDL_SetCursor
 #undef SDL_SetCursor
 #endif
@@ -4702,10 +4706,6 @@
 
 #ifdef SDL_SetTextureScaleMode
 #undef SDL_SetTextureScaleMode
-#endif
-
-#ifdef SDL_SetThreadPriority
-#undef SDL_SetThreadPriority
 #endif
 
 #ifdef SDL_SetWindowAlwaysOnTop

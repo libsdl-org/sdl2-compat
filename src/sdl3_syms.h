@@ -643,7 +643,7 @@ SDL3_SYM_PASSTHROUGH_RETCODE(bool,SetTextureAlphaMod,(SDL_Texture *a, Uint8 b),(
 SDL3_SYM_PASSTHROUGH_RETCODE(bool,SetTextureBlendMode,(SDL_Texture *a, SDL_BlendMode b),(a,b),return)
 SDL3_SYM_PASSTHROUGH_RETCODE(bool,SetTextureColorMod,(SDL_Texture *a, Uint8 b, Uint8 c, Uint8 d),(a,b,c,d),return)
 SDL3_SYM(bool,SetTextureScaleMode,(SDL_Texture *a, SDL_ScaleMode b),(a,b),return)
-SDL3_SYM_PASSTHROUGH_RETCODE(bool,SetThreadPriority,(SDL_ThreadPriority a),(a),return)
+SDL3_SYM_RENAMED_RETCODE(bool,SetThreadPriority,SetCurrentThreadPriority,(SDL_ThreadPriority a),(a),return)
 SDL3_SYM(bool,SetWindowAlwaysOnTop,(SDL_Window *a, bool b),(a,b),return)
 SDL3_SYM(bool,SetWindowBordered,(SDL_Window *a, bool b),(a,b),return)
 SDL3_SYM(bool,SetWindowFullscreen,(SDL_Window *a, bool b),(a,b),return)
