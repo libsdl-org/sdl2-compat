@@ -1215,7 +1215,7 @@
 #define __BUILDING_SDL2_COMPAT__ 1
 
 #include <SDL3/SDL.h>
-#if !SDL_VERSION_ATLEAST(3,0,0)
+#if !SDL_VERSION_ATLEAST(3,1,3)
 #error You need to compile against SDL >= 3.0.0 headers.
 #endif
 
