@@ -6,7 +6,7 @@ INCLUDES = -Iinclude
 CC = gcc
 LD = $(CC)
 
-CPPFLAGS = -DNDEBUG -D_THREAD_SAFE -D_REENTRANT
+CPPFLAGS = -DNDEBUG -D_THREAD_SAFE -D_REENTRANT -DSDL_INCLUDE_STDBOOL_H
 
 CFLAGS  = -fPIC -fvisibility=hidden -O3 -Wall
 LDFLAGS = -shared -Wl,-soname,libSDL2-2.0.so.0

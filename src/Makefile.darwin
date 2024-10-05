@@ -14,7 +14,7 @@ CC = $(CROSS)-gcc
 endif
 LD = $(CC)
 
-CPPFLAGS = -DNDEBUG -D_THREAD_SAFE
+CPPFLAGS = -DNDEBUG -D_THREAD_SAFE -DSDL_INCLUDE_STDBOOL_H
 
 CFLAGS  = -fPIC -fvisibility=hidden -O3 -Wall
 LDFLAGS = -dynamiclib -Wl,-undefined,error -Wl,-single_module

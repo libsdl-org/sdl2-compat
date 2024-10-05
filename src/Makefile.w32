@@ -25,7 +25,7 @@ CFLAGS+= -wcd=303
 # the include paths :
 CFLAGS+= $(INCPATH)
 # misc
-CFLAGS+= -DNDEBUG
+CFLAGS+= -DNDEBUG -DSDL_INCLUDE_STDBOOL_H
 
 CFLAGS_DLL = $(CFLAGS)
 # building dll:

@@ -13,7 +13,7 @@ RC = $(CROSS)-windres
 endif
 LD = $(CC)
 
-CPPFLAGS = -DDLL_EXPORT -DNDEBUG
+CPPFLAGS = -DDLL_EXPORT -DNDEBUG -DSDL_INCLUDE_STDBOOL_H
 
 CFLAGS  = -O3 -Wall
 LDFLAGS = -nostdlib -shared -Wl,--no-undefined -Wl,--enable-auto-image-base -Wl,--out-implib,$(IMPLIB)
