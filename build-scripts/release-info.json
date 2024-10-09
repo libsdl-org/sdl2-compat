@@ -1,0 +1,85 @@
+{
+  "name": "sdl2-compat",
+  "remote": "libsdl-org/sdl2-compat",
+  "dependencies": {
+    "SDL": {
+      "startswith": "3.",
+      "repo": "libsdl-org/SDL"
+    }
+  },
+  "version": {
+    "file": "include/SDL2/SDL_version.h",
+    "re_major": "^#define SDL_MAJOR_VERSION\\s+([0-9]+)$",
+    "re_minor": "^#define SDL_MINOR_VERSION\\s+([0-9]+)$",
+    "re_micro": "^#define SDL_PATCHLEVEL\\s+([0-9]+)$"
+  },
+  "source": {
+    "checks": [
+      "src/sdl2_compat.c",
+      "include/SDL2/SDL_pixels.h",
+      "test/testsprite2.c"
+    ],
+    "files": {
+      "include/SDL2": [
+        "build-scripts/pkg-support/source/include/SDL_revision.h.in:SDL_revision.h"
+      ]
+    }
+  },
+  "msvc": {
+    "cmake": {
+      "archs": [
+        "x86",
+        "x64",
+        "arm64"
+      ],
+      "args": [
+        "-DSDL2COMPAT_VENDOR_INFO=libsdl.org",
+        "-DSDL2COMPAT_INSTALL_SDL3=ON",
+        "-DSDL2COMPAT_TESTS=OFF",
+        "-DSDL2COMPAT_INSTALL=ON",
+        "-DSDL2COMPAT_STATIC=OFF"
+      ],
+      "files-lib": {
+        "": [
+          "bin/SDL2.dll",
+          "bin/SDL3.dll"
+        ]
+      },
+      "files-devel": {
+        "lib/@<@ARCH@>@": [
+          "bin/SDL2.dll",
+          "bin/SDL3.dll",
+          "bin/SDL2.pdb",
+          "lib/SDL2.lib",
+          "lib/SDL2main.lib",
+          "lib/SDL2_test.lib"
+        ]
+      }
+    },
+    "files-lib": {
+      "": [
+        "README.md"
+      ]
+    },
+    "files-devel": {
+      "": [
+        "BUGS.md",
+        "LICENSE.txt",
+        "README.md"
+      ],
+      "cmake": [
+        "build-scripts/pkg-support/msvc/cmake/SDL2Config.cmake.in:SDL2Config.cmake",
+        "build-scripts/pkg-support/msvc/cmake/SDL2ConfigVersion.cmake.in:SDL2ConfigVersion.cmake",
+        "cmake/sdlcpu.cmake"
+      ],
+      "include": [
+        "include/SDL2/*"
+      ]
+    },
+    "dependencies": {
+      "SDL": {
+        "artifact": "SDL3-devel-*-VC.zip"
+      }
+    }
+  }
+}
