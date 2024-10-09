@@ -79,8 +79,8 @@ set(SDL_DYLIB_CURRENT_VERSION_MICRO "0")
 set(SDL_DYLIB_CURRENT_VERSION "${SDL_DYLIB_CURRENT_VERSION_MAJOR}.${SDL_DYLIB_CURRENT_VERSION_MINOR}.${SDL_DYLIB_CURRENT_VERSION_MICRO}")
 set(SDL_DYLIB_COMPAT_VERSION "${SDL_DYLIB_COMPAT_VERSION_MAJOR}.${SDL_DYLIB_COMPAT_VERSION_MINOR}.${SDL_DYLIB_COMPAT_VERSION_MICRO}")
 
-option(SDL2COMPAT_TESTS "Enable to build SDL2 test programs" ON)
-option(SDL2COMPAT_INSTALL "Enable installing SDL2-compat" ON)
+option(SDL2COMPAT_TESTS "Enable to build SDL2 test programs" ${SDL2COMPAT_MAINPROJECT})
+option(SDL2COMPAT_INSTALL "Enable installing SDL2-compat" ${SDL2COMPAT_MAINPROJECT})
 cmake_dependent_option(SDL2COMPAT_INSTALL_CPACK "Create binary SDL2_compat archive using CPack" ${SDL2COMPAT_MAINPROJECT} "SDL2COMPAT_INSTALL" OFF)
 cmake_dependent_option(SDL2COMPAT_INSTALL_TESTS "Install test-cases" OFF "SDL2COMPAT_INSTALL;SDL2COMPAT_TESTS" OFF)
 cmake_dependent_option(SDL2COMPAT_INSTALL_SDL3 "Install SDL3 next to SDL2" OFF "WIN32;SDL2COMPAT_INSTALL" OFF)
@@ -125,29 +125,34 @@ if(NOT TARGET SDL3::Headers)
   set_property(TARGET SDL3::Headers PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${SDL3_INCLUDE_DIRS}")
 endif()
 
-find_package(Git)
-if(Git_FOUND)
-  execute_process(COMMAND
-      "${GIT_EXECUTABLE}" describe --always --tags --long
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/REVISION.txt")
+  file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/REVISION.txt" REVISION_txt_lines)
+  list(GET REVISION_txt_lines 0 SDL_REVISION)
+else()
+  find_package(Git)
+  if(Git_FOUND)
+    execute_process(
+      COMMAND "${GIT_EXECUTABLE}" describe --always --tags --long
       WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
       RESULT_VARIABLE GIT_REVISION_STATUS
       OUTPUT_VARIABLE GIT_REVISION
       ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
-else()
-  set(GIT_REVISION_STATUS 1)
-  set(GIT_REVISION "")
-endif()
-
-if(GIT_REVISION_STATUS EQUAL 0)
-  if(GIT_REVISION MATCHES "^[0-9a-f]+$")
-    # Just a truncated sha1, so prefix it with the version number
-    set(SDL_REVISION "SDL-${SDL_VERSION}-g${GIT_REVISION}")
   else()
-    # e.g. release-2.24.0-542-g96361fc47
-    set(SDL_REVISION "SDL-${GIT_REVISION}")
+    set(GIT_REVISION_STATUS 1)
+    set(GIT_REVISION "")
   endif()
-else()
-  set(SDL_REVISION "SDL-${SDL_VERSION}-no-vcs")
+
+  if(GIT_REVISION_STATUS EQUAL 0)
+    if(GIT_REVISION MATCHES "^[0-9a-f]+$")
+      # Just a truncated sha1, so prefix it with the version number
+      set(SDL_REVISION "SDL-${SDL_VERSION}-g${GIT_REVISION}")
+    else()
+      # e.g. release-2.24.0-542-g96361fc47
+      set(SDL_REVISION "SDL-${GIT_REVISION}")
+    endif()
+  else()
+    set(SDL_REVISION "SDL-${SDL_VERSION}-no-vcs")
+  endif()
 endif()
 
 if(SDL2COMPAT_VENDOR_INFO)
@@ -155,7 +160,6 @@ if(SDL2COMPAT_VENDOR_INFO)
 else()
   set(SDL2COMPAT_REVISION "${SDL_REVISION}")
 endif()
-
 configure_file(include/SDL2/SDL_revision.h.cmake include/SDL2/SDL_revision.h @ONLY)
 
 set(SDL2COMPAT_SRCS
