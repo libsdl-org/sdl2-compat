@@ -1208,6 +1208,8 @@
 #define SDL_wcsnstr IGNORE_THIS_VERSION_OF_SDL_wcsnstr
 #define SDL_wcsstr IGNORE_THIS_VERSION_OF_SDL_wcsstr
 #define SDL_wcstol IGNORE_THIS_VERSION_OF_SDL_wcstol
+#define SDL_StepBackUTF8 IGNORE_THIS_VERSION_OF_SDL_StepBackUTF8
+#define SDL_DelayPrecise IGNORE_THIS_VERSION_OF_SDL_DelayPrecise
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -5930,6 +5932,14 @@
 
 #ifdef SDL_wcstol
 #undef SDL_wcstol
+#endif
+
+#ifdef SDL_StepBackUTF8
+#undef SDL_StepBackUTF8
+#endif
+
+#ifdef SDL_DelayPrecise
+#undef SDL_DelayPrecise
 #endif
 
 #undef SDL_ThreadID /* see at top. */
