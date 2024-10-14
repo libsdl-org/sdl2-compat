@@ -446,6 +446,9 @@ if(SDL2COMPAT_INSTALL)
       DESTINATION "${SDL2COMPAT_INSTALL_CMAKEDIR}"
     )
   endforeach()
+  install(FILES "${PROJECT_SOURCE_DIR}/LICENSE.txt"
+    DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/licenses/sdl2-compat"
+  )
   if(MSVC)
     SDL_install_pdb(SDL2 "${CMAKE_INSTALL_BINDIR}")
     SDL_install_pdb(SDL2main "${CMAKE_INSTALL_LIBDIR}")
@@ -484,8 +487,8 @@ if(SDL2COMPAT_INSTALL)
     if(WIN32)
       set(SDL_CFLAGS "")
       set(SDL_RLD_FLAGS "")
-      set(SDL_LIBS "-lmingw32 -lSDL2main -lshell32 -lSDL2 -mwindows")
-      set(SDL_STATIC_LIBS "")
+      set(SDL_LIBS "-lmingw32 -lSDL2main -lSDL2 -mwindows")
+      set(SDL_STATIC_LIBS "-lshell32")
     elseif(APPLE)
       set(SDL_CFLAGS "-D_THREAD_SAFE")
       set(SDL_LIBS "-lSDL2main -lSDL2 -Wl,-framework,Cocoa")
@@ -517,8 +520,8 @@ if(SDL2COMPAT_INSTALL)
 
     configure_file(sdl2_compat.pc.in sdl2_compat.pc @ONLY)
     install(FILES ${CMAKE_BINARY_DIR}/sdl2_compat.pc
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
-      )
+      DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+    )
 
     configure_file("${CMAKE_SOURCE_DIR}/sdl2-config.in" "${CMAKE_BINARY_DIR}/sdl2-config" @ONLY)
     install(PROGRAMS "${CMAKE_BINARY_DIR}/sdl2-config" DESTINATION "${CMAKE_INSTALL_BINDIR}")
