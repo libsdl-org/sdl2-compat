@@ -83,6 +83,7 @@ option(SDL2COMPAT_TESTS "Enable to build SDL2 test programs" ON)
 option(SDL2COMPAT_INSTALL "Enable installing SDL2-compat" ON)
 cmake_dependent_option(SDL2COMPAT_INSTALL_CPACK "Create binary SDL2_compat archive using CPack" ${SDL2COMPAT_MAINPROJECT} "SDL2COMPAT_INSTALL" OFF)
 cmake_dependent_option(SDL2COMPAT_INSTALL_TESTS "Install test-cases" OFF "SDL2COMPAT_INSTALL;SDL2COMPAT_TESTS" OFF)
+cmake_dependent_option(SDL2COMPAT_INSTALL_SDL3 "Install SDL3 next to SDL2" OFF "WIN32;SDL2COMPAT_INSTALL" OFF)
 option(SDL2COMPAT_STATIC "Enable building static SDL2 link library" OFF)
 option(SDL2COMPAT_WERROR "Treat warnings as errors" OFF)
 set(SDL2COMPAT_VENDOR_INFO "" CACHE STRING "Vendor name and/or version to add to SDL_REVISION")
@@ -449,6 +450,15 @@ if(SDL2COMPAT_INSTALL)
   install(FILES "${PROJECT_SOURCE_DIR}/LICENSE.txt"
     DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/licenses/sdl2-compat"
   )
+  if(SDL2COMPAT_INSTALL_SDL3 AND TARGET SDL3::SDL3-shared)
+    if(WIN32)
+      install(FILES $<TARGET_FILE:SDL3::SDL3-shared>
+        DESTINATION "${CMAKE_INSTALL_BINDIR}"
+      )
+    else()
+      message(WARNING "SDL2COMPAT_INSTALL_SDL3 not implemented for current platform")
+    endif()
+  endif()
   if(MSVC)
     SDL_install_pdb(SDL2 "${CMAKE_INSTALL_BINDIR}")
     SDL_install_pdb(SDL2main "${CMAKE_INSTALL_LIBDIR}")
