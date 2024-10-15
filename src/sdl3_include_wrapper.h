@@ -1210,6 +1210,10 @@
 #define SDL_wcstol IGNORE_THIS_VERSION_OF_SDL_wcstol
 #define SDL_StepBackUTF8 IGNORE_THIS_VERSION_OF_SDL_StepBackUTF8
 #define SDL_DelayPrecise IGNORE_THIS_VERSION_OF_SDL_DelayPrecise
+#define SDL_CalculateGPUTextureFormatSize IGNORE_THIS_VERSION_OF_SDL_CalculateGPUTextureFormatSize
+#define SDL_SetErrorV IGNORE_THIS_VERSION_OF_SDL_SetErrorV
+#define SDL_GetDefaultLogOutputFunction IGNORE_THIS_VERSION_OF_SDL_GetDefaultLogOutputFunction
+#define SDL_RenderDebugText IGNORE_THIS_VERSION_OF_SDL_RenderDebugText
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -5940,6 +5944,22 @@
 
 #ifdef SDL_DelayPrecise
 #undef SDL_DelayPrecise
+#endif
+
+#ifdef SDL_CalculateGPUTextureFormatSize
+#undef SDL_CalculateGPUTextureFormatSize
+#endif
+
+#ifdef SDL_SetErrorV
+#undef SDL_SetErrorV
+#endif
+
+#ifdef SDL_GetDefaultLogOutputFunction
+#undef SDL_GetDefaultLogOutputFunction
+#endif
+
+#ifdef SDL_RenderDebugText
+#undef SDL_RenderDebugText
 #endif
 
 #undef SDL_ThreadID /* see at top. */
