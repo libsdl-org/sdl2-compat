@@ -1565,6 +1565,47 @@ WindowEventType3To2(Uint32 event_type3)
     }
 }
 
+typedef struct RemovePendingSizeChangedAndResizedEvents_Data
+{
+    const SDL2_Event *new_event;
+    bool saw_resized;
+} RemovePendingSizeChangedAndResizedEvents_Data;
+
+static int SDLCALL
+RemovePendingSizeChangedAndResizedEvents(void *userdata, SDL2_Event *event)
+{
+    RemovePendingSizeChangedAndResizedEvents_Data *resizedata = (RemovePendingSizeChangedAndResizedEvents_Data *)userdata;
+    const SDL2_Event *new_event = resizedata->new_event;
+
+    if (event->type == SDL2_WINDOWEVENT &&
+        (event->window.event == SDL_WINDOWEVENT_SIZE_CHANGED ||
+         event->window.event == SDL_WINDOWEVENT_RESIZED) &&
+        event->window.windowID == new_event->window.windowID) {
+
+        if (event->window.event == SDL_WINDOWEVENT_RESIZED) {
+            resizedata->saw_resized = true;
+        }
+
+        /* We're about to post a new size event, drop the old one */
+        return 0;
+    }
+    return 1;
+}
+
+static int SDLCALL
+RemoveSupercededWindowEvents(void *userdata, SDL2_Event *event)
+{
+    SDL2_Event *new_event = (SDL2_Event *)userdata;
+
+    if (event->type == SDL2_WINDOWEVENT &&
+        event->window.type == new_event->window.type &&
+        event->window.windowID == new_event->window.windowID) {
+        /* We're about to post a new move event, drop the old one */
+        return 0;
+    }
+    return 1;
+}
+
 static bool SDLCALL
 EventFilter3to2(void *userdata, SDL_Event *event3)
 {
@@ -1647,6 +1688,24 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
                 event2.window.padding3 = 0;
                 event2.window.data1 = event3->window.data1;
                 event2.window.data2 = event3->window.data2;
+
+                /* Fixes queue overflow with resize events that aren't processed */
+                if (event2.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+                    RemovePendingSizeChangedAndResizedEvents_Data resizedata = {
+                        &event2,
+                        false
+                    };
+                    SDL_FilterEvents(RemovePendingSizeChangedAndResizedEvents, &resizedata);
+                    if (resizedata.saw_resized) { /* if there was a pending resize, make sure one at the new dimensions remains. */
+                        event2.window.event = SDL_WINDOWEVENT_RESIZED;
+                        SDL_PushEvent(&event2);
+                        event2.window.event = SDL_WINDOWEVENT_SIZE_CHANGED; /* then push the actual event next. */
+                    }
+                } else if (event2.window.event == SDL_WINDOWEVENT_MOVED || event2.window.event == SDL_WINDOWEVENT_EXPOSED) {
+                    /* Flush old move and exposure events */
+                    SDL_FilterEvents(RemoveSupercededWindowEvents, &event2);
+                }
+
                 SDL_PushEvent(&event2);
             }
             break;
