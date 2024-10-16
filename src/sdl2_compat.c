@@ -1691,10 +1691,9 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
 
                 /* Fixes queue overflow with resize events that aren't processed */
                 if (event2.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                    RemovePendingSizeChangedAndResizedEvents_Data resizedata = {
-                        &event2,
-                        false
-                    };
+                    RemovePendingSizeChangedAndResizedEvents_Data resizedata;
+                    resizedata.new_event = &event2;
+                    resizedata.saw_resized = false;
                     SDL_FilterEvents(RemovePendingSizeChangedAndResizedEvents, &resizedata);
                     if (resizedata.saw_resized) { /* if there was a pending resize, make sure one at the new dimensions remains. */
                         event2.window.event = SDL_WINDOWEVENT_RESIZED;
