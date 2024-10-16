@@ -1222,7 +1222,7 @@
 
 #include <SDL3/SDL.h>
 #if !SDL_VERSION_ATLEAST(3,1,3)
-#error You need to compile against SDL >= 3.0.0 headers.
+#error You need to compile against SDL >= 3.1.3 headers
 #endif
 
 #define SDL_MAIN_HANDLED 1
