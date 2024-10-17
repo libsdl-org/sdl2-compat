@@ -9623,6 +9623,12 @@ SDL_IsAndroidTV(void)
 {
     return SDL3_IsTV() ? SDL2_TRUE : SDL2_FALSE;
 }
+
+SDL_DECLSPEC void * SDLCALL
+SDL_AndroidGetJNIEnv(void)
+{
+    return SDL3_GetAndroidJNIEnv();
+}
 #endif
 
 #ifdef __cplusplus

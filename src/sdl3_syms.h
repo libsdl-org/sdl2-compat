@@ -87,7 +87,7 @@ SDL3_SYM_RENAMED_RETCODE(bool,LinuxSetThreadPriorityAndPolicy,SetLinuxThreadPrio
 #endif
 
 #ifdef SDL_PLATFORM_ANDROID
-SDL3_SYM_RENAMED(void*,AndroidGetJNIEnv,GetAndroidJNIEnv,(void),(),return)
+SDL3_SYM(JNIEnv*,GetAndroidJNIEnv,(void),(),return)
 SDL3_SYM_RENAMED(void*,AndroidGetActivity,GetAndroidActivity,(void),(),return)
 SDL3_SYM_RENAMED(const char*,AndroidGetInternalStoragePath,GetAndroidInternalStoragePath,(void),(),return)
 SDL3_SYM(Uint32,GetAndroidExternalStorageState,(void),(),return)

@@ -1214,6 +1214,7 @@
 #define SDL_SetErrorV IGNORE_THIS_VERSION_OF_SDL_SetErrorV
 #define SDL_GetDefaultLogOutputFunction IGNORE_THIS_VERSION_OF_SDL_GetDefaultLogOutputFunction
 #define SDL_RenderDebugText IGNORE_THIS_VERSION_OF_SDL_RenderDebugText
+#define SDL_GetSandbox IGNORE_THIS_VERSION_OF_SDL_GetSandbox
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -5960,6 +5961,10 @@
 
 #ifdef SDL_RenderDebugText
 #undef SDL_RenderDebugText
+#endif
+
+#ifdef SDL_GetSandbox
+#undef SDL_GetSandbox
 #endif
 
 #undef SDL_ThreadID /* see at top. */
