@@ -6107,19 +6107,6 @@ SDL_UnlockSensors(void)
     SDL3_UnlockMutex(sensor_lock);
 }
 
-
-static void
-DisplayMode_2to3(const SDL2_DisplayMode *in, SDL_DisplayMode *out) {
-    if (in && out) {
-        out->format = (SDL_PixelFormat)in->format;
-        out->w = in->w;
-        out->h = in->h;
-        out->refresh_rate = (float) in->refresh_rate;
-        out->pixel_density = 1.0f;
-        out->internal = (SDL_DisplayModeData *)in->driverdata;
-    }
-}
-
 static void
 DisplayMode_3to2(const SDL_DisplayMode *in, SDL2_DisplayMode *out) {
     if (in && out) {
@@ -6352,12 +6339,17 @@ SDL_GetDesktopDisplayMode(int displayIndex, SDL2_DisplayMode *mode)
 static int
 ApplyFullscreenMode(SDL_Window *window)
 {
-    SDL_DisplayMode *mode = (SDL_DisplayMode *) SDL3_GetPointerProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_FULLSCREEN_MODE, NULL);
-    if (mode) {
+    SDL2_DisplayMode *property = (SDL2_DisplayMode *) SDL3_GetPointerProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_FULLSCREEN_MODE, NULL);
+    SDL_DisplayMode mode;
+    SDL3_zero(mode);
+    if (property) {
         /* Always try to enter fullscreen on the current display */
-        mode->displayID = SDL3_GetDisplayForWindow(window);
+        const SDL_DisplayID displayID = SDL3_GetDisplayForWindow(window);
+
+        /* The SDL2 refresh rate is rounded off, and SDL3 checks that the mode parameters match exactly, so try to find the closest matching SDL3 mode. */
+        SDL3_GetClosestFullscreenDisplayMode(displayID, property->w, property->h, (float)property->refresh_rate, false, &mode);
     }
-    if (mode && SDL3_SetWindowFullscreenMode(window, mode)) {
+    if (mode.displayID && SDL3_SetWindowFullscreenMode(window, &mode)) {
         return 0;
     } else {
         int count = 0;
@@ -6387,7 +6379,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_GetWindowDisplayMode(SDL_Window *window, SDL2_DisplayMode *mode)
 {
     /* returns a pointer to the fullscreen mode to use or NULL for desktop mode */
-    const SDL_DisplayMode *dp;
+    const SDL2_DisplayMode *dp;
 
     if (!window) {
         SDL3_SetError("Invalid window");
@@ -6399,10 +6391,11 @@ SDL_GetWindowDisplayMode(SDL_Window *window, SDL2_DisplayMode *mode)
         return -1;
     }
 
-    dp = (SDL_DisplayMode *) SDL3_GetPointerProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_FULLSCREEN_MODE, (void *)SDL3_GetWindowFullscreenMode(window));
+    dp = (SDL2_DisplayMode *) SDL3_GetPointerProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_FULLSCREEN_MODE, NULL);
     if (dp) {
-        DisplayMode_3to2(dp, mode);
+        SDL3_copyp(mode, dp);
     } else {
+        const SDL_DisplayMode *dp3;
         SDL_DisplayID displayID = SDL3_GetDisplayForWindow(window);
         if (!displayID) {
             displayID = SDL3_GetPrimaryDisplay();
@@ -6410,11 +6403,11 @@ SDL_GetWindowDisplayMode(SDL_Window *window, SDL2_DisplayMode *mode)
 
         /* Desktop mode */
         /* FIXME: is this correct ? */
-        dp = SDL3_GetDesktopDisplayMode(displayID);
-        if (dp == NULL) {
+        dp3 = SDL3_GetDesktopDisplayMode(displayID);
+        if (dp3 == NULL) {
             return -1;
         }
-        DisplayMode_3to2(dp, mode);
+        DisplayMode_3to2(dp3, mode);
 
         /* When returning the desktop mode, make sure the refresh is some nonzero value. */
         if (mode->refresh_rate == 0) {
@@ -6463,16 +6456,12 @@ SDL_DECLSPEC int SDLCALL
 SDL_SetWindowDisplayMode(SDL_Window *window, const SDL2_DisplayMode *mode)
 {
     int result;
-    SDL_DisplayMode dp;
-
-    SDL3_zero(dp);
-    DisplayMode_2to3(mode, &dp);
 
     /* Store the requested mode in case we aren't in full-screen exclusive mode yet (or ever) */
     if (mode) {
-        SDL_DisplayMode *property = (SDL_DisplayMode *) SDL3_malloc(sizeof(*property));
+        SDL2_DisplayMode *property = (SDL2_DisplayMode *) SDL3_malloc(sizeof(*property));
         if (property) {
-            SDL3_copyp(property, &dp);
+            SDL3_copyp(property, mode);
             result = SDL3_SetPointerPropertyWithCleanup(SDL3_GetWindowProperties(window), PROP_WINDOW_FULLSCREEN_MODE, property, CleanupFreeableProperty, NULL) ? 0 : -1;
         } else {
             result = -1;
