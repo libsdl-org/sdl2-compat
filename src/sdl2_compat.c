@@ -1598,7 +1598,7 @@ RemoveSupercededWindowEvents(void *userdata, SDL2_Event *event)
     SDL2_Event *new_event = (SDL2_Event *)userdata;
 
     if (event->type == SDL2_WINDOWEVENT &&
-        event->window.type == new_event->window.type &&
+        event->window.event == new_event->window.event &&
         event->window.windowID == new_event->window.windowID) {
         /* We're about to post a new move event, drop the old one */
         return 0;
