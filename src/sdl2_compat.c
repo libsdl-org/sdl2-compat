@@ -1610,6 +1610,7 @@ static bool SDLCALL
 EventFilter3to2(void *userdata, SDL_Event *event3)
 {
     SDL2_Event event2;  /* note that event filters do not receive events as const! So we have to convert or copy it for each one! */
+    bool post_event = true;
 
     GestureProcessEvent(event3);  /* this might need to generate new gesture events from touch input. */
 
@@ -1625,11 +1626,10 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
     }
 
     if (EventFilter2) {
-        /* !!! FIXME: this needs to not return if the filter gives its blessing, as we still have more to do. */
-        return EventFilter2(EventFilterUserData2, Event3to2(event3, &event2));
+        post_event = !!EventFilter2(EventFilterUserData2, Event3to2(event3, &event2));
     }
 
-    if (EventWatchers2 != NULL) {
+    if (post_event && EventWatchers2 != NULL) {
         EventFilterWrapperData *i;
         SDL3_LockMutex(EventWatchListMutex);
         for (i = EventWatchers2; i != NULL; i = i->next) {
@@ -1712,7 +1712,7 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
         default: break;
     }
 
-    return true;
+    return post_event;
 }
 
 static void CheckEventFilter(void)
