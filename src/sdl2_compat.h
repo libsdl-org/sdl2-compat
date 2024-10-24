@@ -26,6 +26,14 @@
 
 /* #define SDL_INIT_TIMER 0x00000001u */ /* removed in SDL3. not used here. */
 
+/* Make sure that the SDL2 SDL_GLattr (an enum) and the SDL3 one (an Uint32) are compatible. */
+typedef enum
+{
+   DUMMY_ENUM_VALUE0,
+   DUMMY_ENUM_VALUE1
+} SDL2_DUMMY_ENUM;
+SDL_COMPILE_TIME_ASSERT(SDL23GLattr, sizeof(SDL2_DUMMY_ENUM) == sizeof(SDL_GLAttr));
+
 #ifdef __CC_ARM
 /* ARM's compiler throws warnings if we use an enum: like "SDL2_bool x = a < b;" */
 #define SDL2_FALSE 0
