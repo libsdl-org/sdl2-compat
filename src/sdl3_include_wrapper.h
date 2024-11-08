@@ -1216,6 +1216,8 @@
 #define SDL_RenderDebugText IGNORE_THIS_VERSION_OF_SDL_RenderDebugText
 #define SDL_GetSandbox IGNORE_THIS_VERSION_OF_SDL_GetSandbox
 #define SDL_CancelGPUCommandBuffer IGNORE_THIS_VERSION_OF_SDL_CancelGPUCommandBuffer
+#define SDL_SaveFile_IO IGNORE_THIS_VERSION_OF_SDL_SaveFile_IO
+#define SDL_SaveFile IGNORE_THIS_VERSION_OF_SDL_SaveFile
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -5970,6 +5972,14 @@
 
 #ifdef SDL_CancelGPUCommandBuffer
 #undef SDL_CancelGPUCommandBuffer
+#endif
+
+#ifdef SDL_SaveFile_IO
+#undef SDL_SaveFile_IO
+#endif
+
+#ifdef SDL_SaveFile
+#undef SDL_SaveFile
 #endif
 
 #undef SDL_ThreadID /* see at top. */
