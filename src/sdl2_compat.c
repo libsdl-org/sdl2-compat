@@ -1753,7 +1753,8 @@ SDL_GetEventFilter(SDL2_EventFilter *filter2, void **userdata)
 SDL_DECLSPEC int SDLCALL
 SDL_PeepEvents(SDL2_Event *events2, int numevents, SDL_eventaction action, Uint32 minType, Uint32 maxType)
 {
-    SDL_Event *events3 = (SDL_Event *) SDL3_malloc(numevents * sizeof (SDL_Event));
+    int isstack = 0;
+    SDL_Event *events3 = SDL3_small_alloc(SDL_Event, numevents ? numevents : 1, &isstack);
     int retval = 0;
     int i;
 
@@ -1772,7 +1773,7 @@ SDL_PeepEvents(SDL2_Event *events2, int numevents, SDL_eventaction action, Uint3
         }
     }
 
-    SDL3_free(events3);
+    SDL3_small_free(events3, isstack);
     return retval;
 }
 
