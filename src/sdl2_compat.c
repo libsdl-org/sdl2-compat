@@ -1780,8 +1780,8 @@ SDL_DECLSPEC int SDLCALL
 SDL_WaitEventTimeout(SDL2_Event *event2, int timeout)
 {
     SDL_Event event3;
-    const int retval = SDL3_WaitEventTimeout(&event3, timeout);
-    if (retval == 1) {
+    const int retval = SDL3_WaitEventTimeout(event2 ? &event3 : NULL, timeout);
+    if ((retval == 1) && event2) {
         Event3to2(&event3, event2);
     }
     return retval;
