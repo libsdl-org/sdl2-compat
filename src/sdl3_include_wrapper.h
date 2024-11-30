@@ -1218,6 +1218,9 @@
 #define SDL_CancelGPUCommandBuffer IGNORE_THIS_VERSION_OF_SDL_CancelGPUCommandBuffer
 #define SDL_SaveFile_IO IGNORE_THIS_VERSION_OF_SDL_SaveFile_IO
 #define SDL_SaveFile IGNORE_THIS_VERSION_OF_SDL_SaveFile
+#define SDL_GetCurrentDirectory IGNORE_THIS_VERSION_OF_SDL_GetCurrentDirectory
+#define SDL_IsAudioDevicePhysical IGNORE_THIS_VERSION_OF_SDL_IsAudioDevicePhysical
+#define SDL_IsAudioDevicePlayback IGNORE_THIS_VERSION_OF_SDL_IsAudioDevicePlayback
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -5980,6 +5983,18 @@
 
 #ifdef SDL_SaveFile
 #undef SDL_SaveFile
+#endif
+
+#ifdef SDL_GetCurrentDirectory
+#undef SDL_GetCurrentDirectory
+#endif
+
+#ifdef SDL_IsAudioDevicePhysical
+#undef SDL_IsAudioDevicePhysical
+#endif
+
+#ifdef SDL_IsAudioDevicePlayback
+#undef SDL_IsAudioDevicePlayback
 #endif
 
 #undef SDL_ThreadID /* see at top. */
