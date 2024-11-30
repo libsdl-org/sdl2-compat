@@ -53,11 +53,7 @@ SDL_DYNAPI_PROC(SDL_Thread*,SDL_CreateThread,(SDL_ThreadFunction a, const char *
 SDL_DYNAPI_PROC(SDL_Thread*,SDL_CreateThread,(SDL_ThreadFunction a, const char *b, void *c),(a,b,c),return)
 #endif
 
-#ifdef HAVE_STDIO_H
-SDL_DYNAPI_PROC(SDL2_RWops*,SDL_RWFromFP,(FILE *a, SDL2_bool b),(a,b),return)
-#else
-SDL_DYNAPI_PROC(SDL2_RWops*,SDL_RWFromFP,(void *a, SDL2_bool b),(a,b),return)
-#endif
+SDL_DYNAPI_PROC(SDL2_RWops*,SDL_RWFromFP,(void *a, SDL2_bool b),(a,b),return)   /* FILE *a */
 
 #if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)
 SDL_DYNAPI_PROC(int,SDL_RegisterApp,(const char *a, Uint32 b, void *c),(a,b,c),return)

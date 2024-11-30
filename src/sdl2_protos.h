@@ -51,11 +51,7 @@ SDL2_PROTO(SDL_Thread*,CreateThread,(SDL_ThreadFunction a, const char *b, void *
 SDL2_PROTO(SDL_Thread*,CreateThread,(SDL_ThreadFunction a, const char *b, void *c))
 #endif
 
-#ifdef HAVE_STDIO_H
-SDL2_PROTO(SDL2_RWops*,RWFromFP,(FILE *a, SDL2_bool b))
-#else
-SDL2_PROTO(SDL2_RWops*,RWFromFP,(void *a, SDL2_bool b))
-#endif
+SDL2_PROTO(SDL2_RWops*,RWFromFP,(void *a, SDL2_bool b))     /* FILE *a */
 
 #if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)
 SDL2_PROTO(int,RegisterApp,(const char *a, Uint32 b, void *c))

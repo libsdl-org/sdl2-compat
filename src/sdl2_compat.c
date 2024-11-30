@@ -2490,7 +2490,7 @@ stdio_close(SDL2_RWops *rwops2)
 }
 
 SDL_DECLSPEC SDL2_RWops * SDLCALL
-SDL_RWFromFP(FILE *fp, SDL2_bool autoclose)
+SDL_RWFromFP(void *fp, SDL2_bool autoclose)
 {
     SDL2_RWops *rwops = SDL_AllocRW();
     if (rwops != NULL) {
@@ -2499,7 +2499,7 @@ SDL_RWFromFP(FILE *fp, SDL2_bool autoclose)
         rwops->read = stdio_read;
         rwops->write = stdio_write;
         rwops->close = stdio_close;
-        rwops->hidden.stdio.fp = fp;
+        rwops->hidden.stdio.fp = (FILE *) fp;
         rwops->hidden.stdio.autoclose = autoclose;
         rwops->type = SDL_RWOPS_STDFILE;
     }
