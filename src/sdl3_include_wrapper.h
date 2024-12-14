@@ -1006,6 +1006,7 @@
 #define SDL_WaitEventTimeout IGNORE_THIS_VERSION_OF_SDL_WaitEventTimeout
 #define SDL_WaitForGPUFences IGNORE_THIS_VERSION_OF_SDL_WaitForGPUFences
 #define SDL_WaitForGPUIdle IGNORE_THIS_VERSION_OF_SDL_WaitForGPUIdle
+#define SDL_WaitForGPUSwapchain IGNORE_THIS_VERSION_OF_SDL_WaitForGPUSwapchain
 #define SDL_WaitProcess IGNORE_THIS_VERSION_OF_SDL_WaitProcess
 #define SDL_WaitSemaphore IGNORE_THIS_VERSION_OF_SDL_WaitSemaphore
 #define SDL_WaitSemaphoreTimeout IGNORE_THIS_VERSION_OF_SDL_WaitSemaphoreTimeout
@@ -1221,6 +1222,23 @@
 #define SDL_GetCurrentDirectory IGNORE_THIS_VERSION_OF_SDL_GetCurrentDirectory
 #define SDL_IsAudioDevicePhysical IGNORE_THIS_VERSION_OF_SDL_IsAudioDevicePhysical
 #define SDL_IsAudioDevicePlayback IGNORE_THIS_VERSION_OF_SDL_IsAudioDevicePlayback
+#define SDL_AsyncIOFromFile IGNORE_THIS_VERSION_OF_SDL_AsyncIOFromFile
+#define SDL_GetAsyncIOSize IGNORE_THIS_VERSION_OF_SDL_GetAsyncIOSize
+#define SDL_ReadAsyncIO IGNORE_THIS_VERSION_OF_SDL_ReadAsyncIO
+#define SDL_WriteAsyncIO IGNORE_THIS_VERSION_OF_SDL_WriteAsyncIO
+#define SDL_CloseAsyncIO IGNORE_THIS_VERSION_OF_SDL_CloseAsyncIO
+#define SDL_CreateAsyncIOQueue IGNORE_THIS_VERSION_OF_SDL_CreateAsyncIOQueue
+#define SDL_DestroyAsyncIOQueue IGNORE_THIS_VERSION_OF_SDL_DestroyAsyncIOQueue
+#define SDL_GetAsyncIOResult IGNORE_THIS_VERSION_OF_SDL_GetAsyncIOResult
+#define SDL_WaitAsyncIOResult IGNORE_THIS_VERSION_OF_SDL_WaitAsyncIOResult
+#define SDL_SignalAsyncIOQueue IGNORE_THIS_VERSION_OF_SDL_SignalAsyncIOQueue
+#define SDL_LoadFileAsync IGNORE_THIS_VERSION_OF_SDL_LoadFileAsync
+#define SDL_ShowFileDialogWithProperties IGNORE_THIS_VERSION_OF_SDL_ShowFileDialogWithProperties
+#define SDL_IsMainThread IGNORE_THIS_VERSION_OF_SDL_IsMainThread
+#define SDL_RunOnMainThread IGNORE_THIS_VERSION_OF_SDL_RunOnMainThread
+#define SDL_SetGPUAllowedFramesInFlight IGNORE_THIS_VERSION_OF_SDL_SetGPUAllowedFramesInFlight
+#define SDL_RenderTextureAffine IGNORE_THIS_VERSION_OF_SDL_RenderTextureAffine
+#define SDL_WaitAndAcquireGPUSwapchainTexture IGNORE_THIS_VERSION_OF_SDL_WaitAndAcquireGPUSwapchainTexture
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -5137,6 +5155,10 @@
 #undef SDL_WaitForGPUIdle
 #endif
 
+#ifdef SDL_WaitForGPUSwapchain
+#undef SDL_WaitForGPUSwapchain
+#endif
+
 #ifdef SDL_WaitProcess
 #undef SDL_WaitProcess
 #endif
@@ -5995,6 +6017,74 @@
 
 #ifdef SDL_IsAudioDevicePlayback
 #undef SDL_IsAudioDevicePlayback
+#endif
+
+#ifdef SDL_AsyncIOFromFile
+#undef SDL_AsyncIOFromFile
+#endif
+
+#ifdef SDL_GetAsyncIOSize
+#undef SDL_GetAsyncIOSize
+#endif
+
+#ifdef SDL_ReadAsyncIO
+#undef SDL_ReadAsyncIO
+#endif
+
+#ifdef SDL_WriteAsyncIO
+#undef SDL_WriteAsyncIO
+#endif
+
+#ifdef SDL_CloseAsyncIO
+#undef SDL_CloseAsyncIO
+#endif
+
+#ifdef SDL_CreateAsyncIOQueue
+#undef SDL_CreateAsyncIOQueue
+#endif
+
+#ifdef SDL_DestroyAsyncIOQueue
+#undef SDL_DestroyAsyncIOQueue
+#endif
+
+#ifdef SDL_GetAsyncIOResult
+#undef SDL_GetAsyncIOResult
+#endif
+
+#ifdef SDL_WaitAsyncIOResult
+#undef SDL_WaitAsyncIOResult
+#endif
+
+#ifdef SDL_SignalAsyncIOQueue
+#undef SDL_SignalAsyncIOQueue
+#endif
+
+#ifdef SDL_LoadFileAsync
+#undef SDL_LoadFileAsync
+#endif
+
+#ifdef SDL_ShowFileDialogWithProperties
+#undef SDL_ShowFileDialogWithProperties
+#endif
+
+#ifdef SDL_IsMainThread
+#undef SDL_IsMainThread
+#endif
+
+#ifdef SDL_RunOnMainThread
+#undef SDL_RunOnMainThread
+#endif
+
+#ifdef SDL_SetGPUAllowedFramesInFlight
+#undef SDL_SetGPUAllowedFramesInFlight
+#endif
+
+#ifdef SDL_RenderTextureAffine
+#undef SDL_RenderTextureAffine
+#endif
+
+#ifdef SDL_WaitAndAcquireGPUSwapchainTexture
+#undef SDL_WaitAndAcquireGPUSwapchainTexture
 #endif
 
 #undef SDL_ThreadID /* see at top. */
