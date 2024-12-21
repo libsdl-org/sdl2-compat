@@ -1239,6 +1239,7 @@
 #define SDL_SetGPUAllowedFramesInFlight IGNORE_THIS_VERSION_OF_SDL_SetGPUAllowedFramesInFlight
 #define SDL_RenderTextureAffine IGNORE_THIS_VERSION_OF_SDL_RenderTextureAffine
 #define SDL_WaitAndAcquireGPUSwapchainTexture IGNORE_THIS_VERSION_OF_SDL_WaitAndAcquireGPUSwapchainTexture
+#define SDL_RenderDebugTextFormat IGNORE_THIS_VERSION_OF_SDL_RenderDebugTextFormat
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6085,6 +6086,10 @@
 
 #ifdef SDL_WaitAndAcquireGPUSwapchainTexture
 #undef SDL_WaitAndAcquireGPUSwapchainTexture
+#endif
+
+#ifdef SDL_RenderDebugTextFormat
+#undef SDL_RenderDebugTextFormat
 #endif
 
 #undef SDL_ThreadID /* see at top. */
