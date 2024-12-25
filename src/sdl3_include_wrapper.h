@@ -1240,6 +1240,27 @@
 #define SDL_RenderTextureAffine IGNORE_THIS_VERSION_OF_SDL_RenderTextureAffine
 #define SDL_WaitAndAcquireGPUSwapchainTexture IGNORE_THIS_VERSION_OF_SDL_WaitAndAcquireGPUSwapchainTexture
 #define SDL_RenderDebugTextFormat IGNORE_THIS_VERSION_OF_SDL_RenderDebugTextFormat
+#define SDL_CreateTray IGNORE_THIS_VERSION_OF_SDL_CreateTray
+#define SDL_SetTrayIcon IGNORE_THIS_VERSION_OF_SDL_SetTrayIcon
+#define SDL_SetTrayTooltip IGNORE_THIS_VERSION_OF_SDL_SetTrayTooltip
+#define SDL_CreateTrayMenu IGNORE_THIS_VERSION_OF_SDL_CreateTrayMenu
+#define SDL_CreateTraySubmenu IGNORE_THIS_VERSION_OF_SDL_CreateTraySubmenu
+#define SDL_GetTrayMenu IGNORE_THIS_VERSION_OF_SDL_GetTrayMenu
+#define SDL_GetTraySubmenu IGNORE_THIS_VERSION_OF_SDL_GetTraySubmenu
+#define SDL_GetTrayEntries IGNORE_THIS_VERSION_OF_SDL_GetTrayEntries
+#define SDL_RemoveTrayEntry IGNORE_THIS_VERSION_OF_SDL_RemoveTrayEntry
+#define SDL_InsertTrayEntryAt IGNORE_THIS_VERSION_OF_SDL_InsertTrayEntryAt
+#define SDL_SetTrayEntryLabel IGNORE_THIS_VERSION_OF_SDL_SetTrayEntryLabel
+#define SDL_GetTrayEntryLabel IGNORE_THIS_VERSION_OF_SDL_GetTrayEntryLabel
+#define SDL_SetTrayEntryChecked IGNORE_THIS_VERSION_OF_SDL_SetTrayEntryChecked
+#define SDL_GetTrayEntryChecked IGNORE_THIS_VERSION_OF_SDL_GetTrayEntryChecked
+#define SDL_SetTrayEntryEnabled IGNORE_THIS_VERSION_OF_SDL_SetTrayEntryEnabled
+#define SDL_GetTrayEntryEnabled IGNORE_THIS_VERSION_OF_SDL_GetTrayEntryEnabled
+#define SDL_SetTrayEntryCallback IGNORE_THIS_VERSION_OF_SDL_SetTrayEntryCallback
+#define SDL_DestroyTray IGNORE_THIS_VERSION_OF_SDL_DestroyTray
+#define SDL_GetTrayEntryParent IGNORE_THIS_VERSION_OF_SDL_GetTrayEntryParent
+#define SDL_GetTrayMenuParentEntry IGNORE_THIS_VERSION_OF_SDL_GetTrayMenuParentEntry
+#define SDL_GetTrayMenuParentTray IGNORE_THIS_VERSION_OF_SDL_GetTrayMenuParentTray
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6092,6 +6113,90 @@
 #undef SDL_RenderDebugTextFormat
 #endif
 
+#ifdef SDL_CreateTray
+#undef SDL_CreateTray
+#endif
+
+#ifdef SDL_SetTrayIcon
+#undef SDL_SetTrayIcon
+#endif
+
+#ifdef SDL_SetTrayTooltip
+#undef SDL_SetTrayTooltip
+#endif
+
+#ifdef SDL_CreateTrayMenu
+#undef SDL_CreateTrayMenu
+#endif
+
+#ifdef SDL_CreateTraySubmenu
+#undef SDL_CreateTraySubmenu
+#endif
+
+#ifdef SDL_GetTrayMenu
+#undef SDL_GetTrayMenu
+#endif
+
+#ifdef SDL_GetTraySubmenu
+#undef SDL_GetTraySubmenu
+#endif
+
+#ifdef SDL_GetTrayEntries
+#undef SDL_GetTrayEntries
+#endif
+
+#ifdef SDL_RemoveTrayEntry
+#undef SDL_RemoveTrayEntry
+#endif
+
+#ifdef SDL_InsertTrayEntryAt
+#undef SDL_InsertTrayEntryAt
+#endif
+
+#ifdef SDL_SetTrayEntryLabel
+#undef SDL_SetTrayEntryLabel
+#endif
+
+#ifdef SDL_GetTrayEntryLabel
+#undef SDL_GetTrayEntryLabel
+#endif
+
+#ifdef SDL_SetTrayEntryChecked
+#undef SDL_SetTrayEntryChecked
+#endif
+
+#ifdef SDL_GetTrayEntryChecked
+#undef SDL_GetTrayEntryChecked
+#endif
+
+#ifdef SDL_SetTrayEntryEnabled
+#undef SDL_SetTrayEntryEnabled
+#endif
+
+#ifdef SDL_GetTrayEntryEnabled
+#undef SDL_GetTrayEntryEnabled
+#endif
+
+#ifdef SDL_SetTrayEntryCallback
+#undef SDL_SetTrayEntryCallback
+#endif
+
+#ifdef SDL_DestroyTray
+#undef SDL_DestroyTray
+#endif
+
+#ifdef SDL_GetTrayEntryParent
+#undef SDL_GetTrayEntryParent
+#endif
+
+#ifdef SDL_GetTrayMenuParentEntry
+#undef SDL_GetTrayMenuParentEntry
+#endif
+
+#ifdef SDL_GetTrayMenuParentTray
+#undef SDL_GetTrayMenuParentTray
+#endif
+
 #undef SDL_ThreadID /* see at top. */
 
 /* dump the macro CreateThread versions, too. */
@@ -6103,8 +6208,8 @@
 #undef SDL_CreateThreadWithProperties
 #endif
 
-/* undefine these macros, too: redefine as SDL3_xxx, if needed. */
-
+/* undefine these macros, too: redefine as SDL3_xxx, if needed
+ */
 #ifdef SDL_enabled_assert
 #undef SDL_enabled_assert
 #endif
