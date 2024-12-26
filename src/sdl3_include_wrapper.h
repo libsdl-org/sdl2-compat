@@ -1261,6 +1261,7 @@
 #define SDL_GetTrayEntryParent IGNORE_THIS_VERSION_OF_SDL_GetTrayEntryParent
 #define SDL_GetTrayMenuParentEntry IGNORE_THIS_VERSION_OF_SDL_GetTrayMenuParentEntry
 #define SDL_GetTrayMenuParentTray IGNORE_THIS_VERSION_OF_SDL_GetTrayMenuParentTray
+#define SDL_GetThreadState IGNORE_THIS_VERSION_OF_SDL_GetThreadState
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6195,6 +6196,10 @@
 
 #ifdef SDL_GetTrayMenuParentTray
 #undef SDL_GetTrayMenuParentTray
+#endif
+
+#ifdef SDL_GetThreadState
+#undef SDL_GetThreadState
 #endif
 
 #undef SDL_ThreadID /* see at top. */
