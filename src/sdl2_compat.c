@@ -1783,6 +1783,16 @@ SDL_WaitEventTimeout(SDL2_Event *event2, int timeout)
     SDL_Event event3;
     const int retval = SDL3_WaitEventTimeout(event2 ? &event3 : NULL, timeout);
     if ((retval == 1) && event2) {
+        /* Ensure joystick and haptic IDs are updated before calling Event3to2() */
+        switch (event3.type) {
+            case SDL_EVENT_JOYSTICK_ADDED:
+            case SDL_EVENT_GAMEPAD_ADDED:
+            case SDL_EVENT_GAMEPAD_REMOVED:
+            case SDL_EVENT_JOYSTICK_REMOVED:
+                SDL_NumJoysticks(); /* Refresh */
+                SDL_NumHaptics(); /* Refresh */
+                break;
+        }
         Event3to2(&event3, event2);
     }
     return retval;
