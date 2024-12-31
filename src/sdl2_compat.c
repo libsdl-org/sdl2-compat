@@ -1783,6 +1783,16 @@ SDL_WaitEventTimeout(SDL2_Event *event2, int timeout)
     SDL_Event event3;
     const int retval = SDL3_WaitEventTimeout(event2 ? &event3 : NULL, timeout);
     if ((retval == 1) && event2) {
+        /* Ensure joystick and haptic IDs are updated before calling Event3to2() */
+        switch (event3.type) {
+            case SDL_EVENT_JOYSTICK_ADDED:
+            case SDL_EVENT_GAMEPAD_ADDED:
+            case SDL_EVENT_GAMEPAD_REMOVED:
+            case SDL_EVENT_JOYSTICK_REMOVED:
+                SDL_NumJoysticks(); /* Refresh */
+                SDL_NumHaptics(); /* Refresh */
+                break;
+        }
         Event3to2(&event3, event2);
     }
     return retval;
@@ -8698,6 +8708,15 @@ SDL_HapticIndex(SDL_Haptic *haptic)
     }
     SDL3_SetError("Haptic: Invalid haptic device identifier");
     return -1;
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_HapticRumbleSupported(SDL_Haptic *haptic)
+{
+    if (SDL3_GetHapticID(haptic) == 0) {
+        return -1;
+    }
+    return SDL3_HapticRumbleSupported(haptic) ? SDL2_TRUE : SDL2_FALSE;
 }
 
 static Uint16 HapticFeatures3to2(Uint32 features)
