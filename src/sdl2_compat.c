@@ -8710,6 +8710,15 @@ SDL_HapticIndex(SDL_Haptic *haptic)
     return -1;
 }
 
+SDL_DECLSPEC int SDLCALL
+SDL_HapticRumbleSupported(SDL_Haptic *haptic)
+{
+    if (SDL3_GetHapticID(haptic) == 0) {
+        return -1;
+    }
+    return SDL3_HapticRumbleSupported(haptic) ? SDL2_TRUE : SDL2_FALSE;
+}
+
 static Uint16 HapticFeatures3to2(Uint32 features)
 {
     Uint16 features2 = 0;
