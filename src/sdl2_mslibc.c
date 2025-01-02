@@ -723,13 +723,4 @@ void __declspec(naked) _alloca_probe_16(void)
 
 #endif /* _M_IX86 */
 
-#ifdef _M_ARM64
-
-/* !!! FIXME !!! */
-void __chkstk(void);
-void __chkstk() {
-}
-
-#endif
-
 #endif /* MSC_VER */

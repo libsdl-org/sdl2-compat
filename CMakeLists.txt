@@ -194,9 +194,14 @@ if(MSVC)
     )
     enable_language(ASM_MASM)
     set_property(SOURCE "src/sdl2_mslibc_x64.masm" PROPERTY LANGUAGE "ASM_MASM")
-  elseif(SDL_CPU_ARM32 OR SDL_CPU_ARM64)
-    # FIXME: ARM assembler (armasm.exe/armasm64.exe) is NOT ASM_MASM, and does currently not work with CMake
-    # (https://gitlab.kitware.com/cmake/cmake/-/issues/18912)
+  elseif(SDL_CPU_ARM64)
+    list(APPEND SDL2COMPAT_SRCS
+      "src/sdl2_mslibc_arm64.masm"
+    )
+    enable_language(ASM_MARMASM)
+    set_property(SOURCE "src/sdl2_mslibc_arm64.masm" PROPERTY LANGUAGE "ASM_MARMASM")
+  elseif(SDL_CPU_ARM32)
+    # FIXME: Add ARM32 _chkstk implementation
   endif()
 endif()
 
