@@ -20,7 +20,7 @@ Here's how to test games with sdl2-compat.
 Unlike SDL 1.2, where we didn't build the compatibility layer until almost
 a decade in and most major projects had already migrated, there are _tons_
 of SDL2 games at the time of this writing; almost any Linux game on Steam
-in 2023 is using SDL2, not to mention almost any game that is in a Linux
+in 2025 is using SDL2, not to mention almost any game that is in a Linux
 distribution's package manager, etc.
 
 As such, while we kept a spreadsheet for known SDL 1.2 titles, we don't
