@@ -454,6 +454,8 @@ static struct {
     { "SDL_VIDEO_WAYLAND_WMCLASS", "SDL_APP_ID" },
     { "SDL_VIDEO_X11_FORCE_EGL", "SDL_VIDEO_FORCE_EGL" },
     { "SDL_VIDEO_X11_WMCLASS", "SDL_APP_ID" },
+    { "SDL_VIDEO_GL_DRIVER", "SDL_OPENGL_LIBRARY" },
+    { "SDL_VIDEO_EGL_DRIVER", "SDL_EGL_LIBRARY" },
 };
 
 static const char *SDL2_to_SDL3_hint(const char *name)
