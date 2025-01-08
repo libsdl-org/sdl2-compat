@@ -1006,7 +1006,6 @@
 #define SDL_WaitEventTimeout IGNORE_THIS_VERSION_OF_SDL_WaitEventTimeout
 #define SDL_WaitForGPUFences IGNORE_THIS_VERSION_OF_SDL_WaitForGPUFences
 #define SDL_WaitForGPUIdle IGNORE_THIS_VERSION_OF_SDL_WaitForGPUIdle
-#define SDL_WaitForGPUSwapchain IGNORE_THIS_VERSION_OF_SDL_WaitForGPUSwapchain
 #define SDL_WaitProcess IGNORE_THIS_VERSION_OF_SDL_WaitProcess
 #define SDL_WaitSemaphore IGNORE_THIS_VERSION_OF_SDL_WaitSemaphore
 #define SDL_WaitSemaphoreTimeout IGNORE_THIS_VERSION_OF_SDL_WaitSemaphoreTimeout
@@ -1238,6 +1237,7 @@
 #define SDL_RunOnMainThread IGNORE_THIS_VERSION_OF_SDL_RunOnMainThread
 #define SDL_SetGPUAllowedFramesInFlight IGNORE_THIS_VERSION_OF_SDL_SetGPUAllowedFramesInFlight
 #define SDL_RenderTextureAffine IGNORE_THIS_VERSION_OF_SDL_RenderTextureAffine
+#define SDL_WaitForGPUSwapchain IGNORE_THIS_VERSION_OF_SDL_WaitForGPUSwapchain
 #define SDL_WaitAndAcquireGPUSwapchainTexture IGNORE_THIS_VERSION_OF_SDL_WaitAndAcquireGPUSwapchainTexture
 #define SDL_RenderDebugTextFormat IGNORE_THIS_VERSION_OF_SDL_RenderDebugTextFormat
 #define SDL_CreateTray IGNORE_THIS_VERSION_OF_SDL_CreateTray
@@ -1269,8 +1269,8 @@
 #define __BUILDING_SDL2_COMPAT__ 1
 
 #include <SDL3/SDL.h>
-#if !SDL_VERSION_ATLEAST(3,1,6)
-#error You need to compile against SDL >= 3.1.6 headers
+#if !SDL_VERSION_ATLEAST(3,1,8)
+#error You need to compile against SDL >= 3.1.8 headers
 #endif
 
 #define SDL_MAIN_HANDLED 1
@@ -5178,10 +5178,6 @@
 #undef SDL_WaitForGPUIdle
 #endif
 
-#ifdef SDL_WaitForGPUSwapchain
-#undef SDL_WaitForGPUSwapchain
-#endif
-
 #ifdef SDL_WaitProcess
 #undef SDL_WaitProcess
 #endif
@@ -6104,6 +6100,10 @@
 
 #ifdef SDL_RenderTextureAffine
 #undef SDL_RenderTextureAffine
+#endif
+
+#ifdef SDL_WaitForGPUSwapchain
+#undef SDL_WaitForGPUSwapchain
 #endif
 
 #ifdef SDL_WaitAndAcquireGPUSwapchainTexture
