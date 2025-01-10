@@ -1281,6 +1281,24 @@ static SDL2_Scancode SDL3ScancodeToSDL2Scancode(SDL_Scancode scancode)
     }
 }
 
+static SDL_Keycode SDL3KeycodeToSDL2Keycode(SDL_Scancode scancode, SDL_Keycode keycode)
+{
+    /* Keys without the extended mask are passed through. */
+    if (!(keycode & SDLK_EXTENDED_MASK)) {
+        return keycode;
+    }
+
+    /* SDLK_TAB is an ASCII value and can't be converted directly from a scancode. */
+    if (keycode == SDLK_LEFT_TAB) {
+        return SDLK_TAB;
+    }
+
+    /* Convert the scancode directly to the keycode. This matches the mapping behavior
+     * of SDL2 backends unless some very esoteric key remapping is being used.
+     */
+    return SDL_SCANCODE_TO_KEYCODE(scancode);
+}
+
 /* (current) strategy for SDL_Events:
    in sdl12-compat, we built our own event queue, so when the SDL2 queue is pumped, we
    took the events we cared about and added them to the sdl12-compat queue, and otherwise
@@ -1322,7 +1340,7 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     case SDL_EVENT_KEY_DOWN:
     case SDL_EVENT_KEY_UP:
         event2->key.keysym.scancode = SDL3ScancodeToSDL2Scancode(event3->key.scancode);
-        event2->key.keysym.sym = event3->key.key;
+        event2->key.keysym.sym = SDL3KeycodeToSDL2Keycode(event3->key.scancode, event3->key.key);
         event2->key.keysym.mod = event3->key.mod;
         event2->key.state = event3->key.down;
         event2->key.repeat = event3->key.repeat;
@@ -1902,11 +1920,14 @@ SDL_GetKeyFromScancode(SDL2_Scancode scancode)
     }
 
     if (scancode <= SDL2_SCANCODE_MODE) {
-        // They're the same
-        return SDL3_GetKeyFromScancode(SDL2ScancodeToSDL3Scancode(scancode), SDL_KMOD_NONE, true);
-    } else {
-        return SDL_SCANCODE_TO_KEYCODE(scancode);
+        /* Filter out extended keycodes. This matches the key mapping behavior of SDL2 backends. */
+        const SDL_Keycode keycode = SDL3_GetKeyFromScancode(SDL2ScancodeToSDL3Scancode(scancode), SDL_KMOD_NONE, true);
+        if (!(keycode & SDLK_EXTENDED_MASK)) {
+            return keycode;
+        }
     }
+
+    return SDL_SCANCODE_TO_KEYCODE(scancode);
 }
 
 SDL_DECLSPEC SDL2_Scancode SDLCALL
@@ -1914,6 +1935,33 @@ SDL_GetScancodeFromKey(SDL_Keycode key)
 {
     SDL_Keymod modstate = SDL_KMOD_NONE;
     SDL_Scancode scancode = SDL3_GetScancodeFromKey(key, &modstate);
+
+    if (scancode == SDL_SCANCODE_UNKNOWN) {
+        /* Keys commonly remapped to extended keycodes in SDL3.
+         * If the keymap returns no mapping, convert the key to a scancode directly.
+         */
+        switch (key) {
+        case SDLK_LCTRL:
+        case SDLK_RCTRL:
+        case SDLK_LALT:
+        case SDLK_RALT:
+        case SDLK_LGUI:
+        case SDLK_RGUI:
+        case SDLK_CAPSLOCK:
+        case SDLK_SCROLLLOCK:
+        case SDLK_PRINTSCREEN:
+        case SDLK_INSERT:
+            scancode = (SDL_Scancode)(key & ~SDLK_SCANCODE_MASK);
+            break;
+        case SDLK_TAB:
+            /* ASCII value that can't be directly converted to a scancode. */
+            scancode = SDL_SCANCODE_TAB;
+            break;
+        default:
+            break;
+        }
+    }
+
     if (modstate != SDL_KMOD_NONE) {
         return SDL2_SCANCODE_UNKNOWN;
     }
