@@ -6944,7 +6944,6 @@ WindowPos2To3(int *x, int *y)
 SDL_DECLSPEC SDL_Window * SDLCALL
 SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
 {
-    const char *driver;
     SDL_Window *window = NULL;
     const Uint32 is_popup = flags & (SDL_WINDOW_POPUP_MENU | SDL_WINDOW_TOOLTIP);
 
@@ -6957,14 +6956,6 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
     if (flags & SDL2_WINDOW_SKIP_TASKBAR) {
         flags &= ~SDL2_WINDOW_SKIP_TASKBAR;
         flags |= SDL_WINDOW_UTILITY;
-    }
-
-    /* Preserve behavior in https://github.com/libsdl-org/SDL/commit/120b8d4189d0979e4838daeb25d5a69e6260f5e0 */
-    driver = SDL3_GetCurrentVideoDriver();
-    if (driver && SDL3_strcmp(driver, "wayland") == 0) {
-        if (!(flags & SDL_WINDOW_VULKAN)) {
-            flags |= SDL_WINDOW_OPENGL;
-        }
     }
 
     if (!is_popup) {
