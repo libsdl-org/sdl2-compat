@@ -56,4 +56,17 @@
 #error Wrong SDL_config.h, check your include path?
 #endif
 
+
+/* DEFINES ADDED BY SDL2-COMPAT */
+
+/* Some programs (incorrectly, probably) check defines that aren't available
+   with an SDL2 that doesn't have a configure-generated SDL_config.h, so force
+   a few that might be important. */
+#ifndef SDL_VIDEO_OPENGL
+#define SDL_VIDEO_OPENGL 1
+#endif
+
+/* END DEFINES ADDED BY SDL2-COMPAT */
+
+
 #endif /* SDL_config_h_ */
