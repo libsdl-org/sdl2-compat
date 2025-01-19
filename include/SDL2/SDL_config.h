@@ -65,6 +65,24 @@
 #ifndef SDL_VIDEO_OPENGL
 #define SDL_VIDEO_OPENGL 1
 #endif
+#if defined(__WIN32__)
+#define SDL_VIDEO_DRIVER_WINDOWS 1
+#endif
+#if defined (__LINUX__) || defined(__FREEBSD__) || defined(__NETBSD__) || defined(__OPENBSD__) || defined(__SOLARIS__)
+#define SDL_VIDEO_DRIVER_X11 1
+#endif
+#if defined(__LINUX__)
+#define SDL_VIDEO_DRIVER_KMSDRM 1
+#endif
+#if defined(__MACOSX__)
+#define SDL_VIDEO_DRIVER_COCOA 1
+#endif
+#if defined(__IPHONEOS__) || defined(__TVOS__)
+#define SDL_VIDEO_DRIVER_UIKIT 1
+#endif
+#if defined(__ANDROID__)
+#define SDL_VIDEO_DRIVER_ANDROID 1
+#endif
 
 /* END DEFINES ADDED BY SDL2-COMPAT */
 
