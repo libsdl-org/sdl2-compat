@@ -110,7 +110,7 @@ jobs:
         id: deps-build
         run: |
           tar -C /tmp -v -x -f "${{ steps.deps.outputs.dep-path }}/SDL3-${{ steps.deps.outputs.dep-sdl-version }}.tar.gz"
-          cmake -S /tmp/SDL3-${{ steps.deps.outputs.dep-sdl-version }} -B /tmp/SDL-build -DCMAKE_INSTALL_PREFIX=/tmp/deps-prefix
+          cmake -S /tmp/SDL3-${{ steps.deps.outputs.dep-sdl-version }} -B /tmp/SDL-build -DSDL_UNIX_CONSOLE_BUILD=ON -DCMAKE_INSTALL_PREFIX=/tmp/deps-prefix
           cmake --build /tmp/SDL-build
           cmake --install /tmp/SDL-build
           echo "path=/tmp/deps-prefix" >>$GITHUB_OUTPUT
