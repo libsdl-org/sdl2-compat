@@ -58,14 +58,16 @@
     },
     "files-lib": {
       "": [
-        "README.md"
+        "build-scripts/pkg-support/msvc/@<@ARCH@>@/INSTALL.md.in:INSTALL.md",
+        "LICENSE.txt"
+        "build-scripts/pkg-support/msvc/README.md"
       ]
     },
     "files-devel": {
       "": [
-        "BUGS.md",
+        "build-scripts/pkg-support/msvc/INSTALL.md"
         "LICENSE.txt",
-        "README.md"
+        "build-scripts/pkg-support/msvc/README.md"
       ],
       "cmake": [
         "build-scripts/pkg-support/msvc/cmake/SDL2Config.cmake.in:SDL2Config.cmake",
