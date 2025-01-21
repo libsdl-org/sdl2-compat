@@ -59,13 +59,13 @@
     "files-lib": {
       "": [
         "build-scripts/pkg-support/msvc/@<@ARCH@>@/INSTALL.md.in:INSTALL.md",
-        "LICENSE.txt"
+        "LICENSE.txt",
         "build-scripts/pkg-support/msvc/README.md"
       ]
     },
     "files-devel": {
       "": [
-        "build-scripts/pkg-support/msvc/INSTALL.md"
+        "build-scripts/pkg-support/msvc/INSTALL.md",
         "LICENSE.txt",
         "build-scripts/pkg-support/msvc/README.md"
       ],
