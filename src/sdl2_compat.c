@@ -2753,8 +2753,8 @@ static SDL_Surface *Surface2to3(SDL2_Surface *surface)
          * The application might have changed memory allocation, e.g.:
          * https://github.com/libsdl-org/SDL_ttf/blob/7e4a456bf463b887b94c191030dd742d7654d6ff/SDL_ttf.c#L1476-L1478
          */
-        SDL_assert(surface->w == surface3->w);
-        SDL_assert(surface->h == surface3->h);
+        surface3->w = surface->w;
+        surface3->h = surface->h;
         surface3->flags &= ~(surface->flags & SHARED_SURFACE_FLAGS);
         surface3->flags |= (surface->flags & SHARED_SURFACE_FLAGS);
         surface3->pixels = surface->pixels;
