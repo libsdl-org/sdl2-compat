@@ -6988,6 +6988,11 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
             SDL_SetWindowData(window, PROP_WINDOW_PARENT_POINTER, parent);
         }
     }
+
+    #if !defined(SDL_PLATFORM_IOS) && !defined(SDL_PLATFORM_ANDROID)  // (and maybe others...?)
+    SDL3_StartTextInput(window);
+    #endif
+
     return window;
 }
 

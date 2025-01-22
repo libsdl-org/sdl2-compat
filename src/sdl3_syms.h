@@ -670,6 +670,7 @@ SDL3_SYM_PASSTHROUGH_RETCODE(bool,ShowSimpleMessageBox,(Uint32 a, const char *b,
 SDL3_SYM(bool,ShowWindow,(SDL_Window *a),(a),return)
 SDL3_SYM(void,SignalCondition,(SDL_Condition *a),(a),return)
 SDL3_SYM(void,SignalSemaphore,(SDL_Semaphore *a),(a),return)
+SDL3_SYM(bool,StartTextInput,(SDL_Window *a),(a),return)
 SDL3_SYM(bool,StartTextInputWithProperties,(SDL_Window *a, SDL_PropertiesID b),(a,b),return)
 SDL3_SYM(bool,StopTextInput,(SDL_Window *a),(a),return)
 SDL3_SYM(bool,SurfaceHasColorKey,(SDL_Surface *a),(a),return)
