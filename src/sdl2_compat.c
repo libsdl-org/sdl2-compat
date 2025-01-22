@@ -4444,7 +4444,7 @@ SDL_CreateRenderer(SDL_Window *window, int idx, Uint32 flags)
     renderer = SDL3_CreateRenderer(window, name);
     props = SDL3_GetRendererProperties(renderer);
     if (props) {
-        SDL3_SetBooleanProperty(props, PROP_RENDERER_BATCHING, SDL2Compat_GetHintBoolean("SDL_RENDER_BATCHING", false));
+        SDL3_SetBooleanProperty(props, PROP_RENDERER_BATCHING, SDL2Compat_GetHintBoolean("SDL_RENDER_BATCHING", (name == NULL)));
     }
     if (flags & SDL2_RENDERER_PRESENTVSYNC) {
         SDL3_SetRenderVSync(renderer, 1);
