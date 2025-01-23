@@ -4304,15 +4304,26 @@ SDL_GetShapedWindowMode(SDL_Window *window, SDL_WindowShapeMode *shape_mode)
 SDL_DECLSPEC int SDLCALL
 SDL_GetRendererInfo(SDL_Renderer *renderer, SDL2_RendererInfo *info)
 {
+    const char *name;
     SDL_PropertiesID props;
     unsigned int i;
     const SDL_PixelFormat *formats;
+
+    if (!info) {
+        SDL3_InvalidParamError("info");
+        return -1;
+    }
+
+    name = SDL3_GetRendererName(renderer);
+    if (!name) {
+        return -1;
+    }
 
     SDL3_zerop(info);
 
     props = SDL3_GetRendererProperties(renderer);
 
-    info->name = SDL3_GetRendererName(renderer);
+    info->name = name;
     info->max_texture_width = (int)SDL3_GetNumberProperty(props, SDL_PROP_RENDERER_MAX_TEXTURE_SIZE_NUMBER, 0);
     info->max_texture_height = info->max_texture_width;
 
