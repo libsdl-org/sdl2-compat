@@ -5699,6 +5699,12 @@ static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devicename, int iscap
 
     SDL_assert(obtained2 != NULL);  /* we checked this before locking. */
 
+    /* Source 1 games pass SDL_AUDIO_ALLOW_ANY_CHANGE, but can't actually handle change.
+       It's probably safer just to give the app back what they expect, and SDL3 will
+       handle conversion, possibly more efficiently.
+     */
+    allowed_changes = 0;
+
     /* Find an available device ID... */
     for (id = min_id - 1; id < (int)SDL_arraysize(AudioOpenDevices); id++) {
         if (AudioOpenDevices[id] == NULL) {
