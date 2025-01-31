@@ -544,6 +544,11 @@ if(SDL2COMPAT_INSTALL)
 
     configure_file("${CMAKE_SOURCE_DIR}/sdl2-config.in" "${CMAKE_BINARY_DIR}/sdl2-config" @ONLY)
     install(PROGRAMS "${CMAKE_BINARY_DIR}/sdl2-config" DESTINATION "${CMAKE_INSTALL_BINDIR}")
+
+    # uninstall
+    configure_file(cmake/cmake_uninstall.cmake.in cmake_uninstall.cmake IMMEDIATE @ONLY)
+    add_custom_target(uninstall
+            COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
   endif()
 
   set(SOEXT ${CMAKE_SHARED_LIBRARY_SUFFIX})
