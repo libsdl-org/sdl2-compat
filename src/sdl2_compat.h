@@ -1164,6 +1164,8 @@ typedef struct SDL2_AudioStream
     SDL2_AudioFormat dst_format;
 
     /* these are used when this stream is powering an opened audio device, and not when just used as an SDL2 audio stream. */
+    int bytes_per_callbacks;
+    void *callback2_buffer;
     SDL2_AudioCallback callback2;
     void *callback2_userdata;
     SDL_AudioStream *dataqueue3;

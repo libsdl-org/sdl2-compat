@@ -5563,6 +5563,20 @@ static SDL2_AudioFormat ParseAudioFormat(const char *string)
     return 0;
 }
 
+static void UpdateAudiospec(SDL2_AudioSpec *spec2)
+{
+    /* Calculate the silence and size of the audio specification */
+    if ((spec2->format == SDL_AUDIO_U8) || (spec2->format == (SDL_AUDIO_S16LE & ~SDL_AUDIO_MASK_SIGNED)) || (spec2->format == (SDL_AUDIO_S16BE & ~SDL_AUDIO_MASK_SIGNED))) {
+        spec2->silence = 0x80;
+    } else {
+        spec2->silence = 0x00;
+    }
+
+    spec2->size = SDL_AUDIO_BITSIZE(spec2->format) / 8;
+    spec2->size *= spec2->channels;
+    spec2->size *= spec2->samples;
+}
+
 static int PrepareAudiospec(const SDL2_AudioSpec *orig2, SDL2_AudioSpec *prepared2)
 {
     SDL3_memcpy(prepared2, orig2, sizeof(*orig2));
@@ -5611,16 +5625,7 @@ static int PrepareAudiospec(const SDL2_AudioSpec *orig2, SDL2_AudioSpec *prepare
         }
     }
 
-    /* Calculate the silence and size of the audio specification */
-    if ((prepared2->format == SDL_AUDIO_U8) || (prepared2->format == (SDL_AUDIO_S16LE & ~SDL_AUDIO_MASK_SIGNED)) || (prepared2->format == (SDL_AUDIO_S16BE & ~SDL_AUDIO_MASK_SIGNED))) {
-        prepared2->silence = 0x80;
-    } else {
-        prepared2->silence = 0x00;
-    }
-
-    prepared2->size = SDL_AUDIO_BITSIZE(prepared2->format) / 8;
-    prepared2->size *= prepared2->channels;
-    prepared2->size *= prepared2->samples;
+    UpdateAudiospec(prepared2);
 
     return 1;
 }
@@ -5628,7 +5633,6 @@ static int PrepareAudiospec(const SDL2_AudioSpec *orig2, SDL2_AudioSpec *prepare
 static void SDLCALL SDL2AudioDeviceQueueingCallback(void *userdata, SDL_AudioStream *stream3, int approx_amount, int total_amount)
 {
     SDL2_AudioStream *stream2 = (SDL2_AudioStream *) userdata;
-    Uint8 *buffer;
 
     SDL_assert(stream2 != NULL);
     SDL_assert(stream3 == stream2->stream3);
@@ -5638,30 +5642,22 @@ static void SDLCALL SDL2AudioDeviceQueueingCallback(void *userdata, SDL_AudioStr
         return;  /* nothing to do right now. */
     }
 
-    buffer = (Uint8 *) SDL3_malloc(approx_amount);
-    if (!buffer) {
-        return;  /* oh well */
-    }
-
     if (stream2->iscapture) {
-        const int br = SDL_AudioStreamGet(stream2, buffer, approx_amount);
+        const int br = SDL_AudioStreamGet(stream2, stream2->callback2_buffer, SDL_min(stream2->bytes_per_callbacks, approx_amount));
         if (br > 0) {
-            SDL3_PutAudioStreamData(stream2->dataqueue3, buffer, br);
+            SDL3_PutAudioStreamData(stream2->dataqueue3, stream2->callback2_buffer, br);
         }
     } else {
-        const int br = SDL3_GetAudioStreamData(stream2->dataqueue3, buffer, approx_amount);
+        const int br = SDL3_GetAudioStreamData(stream2->dataqueue3, stream2->callback2_buffer, SDL_min(stream2->bytes_per_callbacks, approx_amount));
         if (br > 0) {
-            SDL_AudioStreamPut(stream2, buffer, br);
+            SDL_AudioStreamPut(stream2, stream2->callback2_buffer, br);
         }
     }
-
-    SDL3_free(buffer);
 }
 
 static void SDLCALL SDL2AudioDeviceCallbackBridge(void *userdata, SDL_AudioStream *stream3, int approx_amount, int total_amount)
 {
     SDL2_AudioStream *stream2 = (SDL2_AudioStream *) userdata;
-    Uint8 *buffer;
 
     if (approx_amount == 0) {
         return;  /* nothing to do right now. */
@@ -5671,20 +5667,23 @@ static void SDLCALL SDL2AudioDeviceCallbackBridge(void *userdata, SDL_AudioStrea
     SDL_assert(stream3 == stream2->stream3);
     SDL_assert(stream2->dataqueue3 == NULL);
 
-    buffer = (Uint8 *) SDL3_malloc(approx_amount);
-    if (!buffer) {
-        return;  /* oh well */
-    }
-
     if (stream2->iscapture) {
-        const int br = SDL_AudioStreamGet(stream2, buffer, approx_amount);
-        stream2->callback2(stream2->callback2_userdata, buffer, br);
+        while (SDL_AudioStreamAvailable(stream2) >= stream2->bytes_per_callbacks) {
+            const int br = SDL_AudioStreamGet(stream2, stream2->callback2_buffer, stream2->bytes_per_callbacks);
+            SDL_assert(br == stream2->bytes_per_callbacks);
+            approx_amount -= br;
+            stream2->callback2(stream2->callback2_userdata, stream2->callback2_buffer, br);
+        }
     } else {
-        stream2->callback2(stream2->callback2_userdata, buffer, approx_amount);
-        SDL_AudioStreamPut(stream2, buffer, approx_amount);
+        while (approx_amount > 0) {
+            stream2->callback2(stream2->callback2_userdata, stream2->callback2_buffer, stream2->bytes_per_callbacks);
+            SDL_AudioStreamPut(stream2, stream2->callback2_buffer, stream2->bytes_per_callbacks);
+            approx_amount -= stream2->bytes_per_callbacks;
+            if (approx_amount < 0) {
+                approx_amount = 0;
+            }
+        }
     }
-
-    SDL3_free(buffer);
 }
 
 static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devicename, int iscapture,
@@ -5774,6 +5773,8 @@ static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devicename, int iscap
         obtained2->freq = spec3.freq;
     }
 
+    UpdateAudiospec(obtained2);
+
     if (iscapture) {
         stream2 = SDL_NewAudioStream((SDL2_AudioFormat)spec3.format, spec3.channels, spec3.freq, obtained2->format, obtained2->channels, obtained2->freq);
     } else {
@@ -5781,6 +5782,14 @@ static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devicename, int iscap
     }
 
     if (!stream2) {
+        SDL3_CloseAudioDevice(device3);
+        return 0;
+    }
+
+    stream2->bytes_per_callbacks = obtained2->size;
+    stream2->callback2_buffer = SDL3_malloc(stream2->bytes_per_callbacks);
+    if (!stream2->callback2_buffer) {
+        SDL_FreeAudioStream(stream2);
         SDL3_CloseAudioDevice(device3);
         return 0;
     }
@@ -6026,6 +6035,7 @@ SDL_FreeAudioStream(SDL2_AudioStream *stream2)
     if (stream2) {
         SDL3_DestroyAudioStream(stream2->stream3);
         SDL3_DestroyAudioStream(stream2->dataqueue3);
+        SDL3_free(stream2->callback2_buffer);
         SDL3_free(stream2);
     }
 }
