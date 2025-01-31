@@ -47,6 +47,8 @@
 #include "SDL_config_emscripten.h"
 #elif defined(__NGAGE__)
 #include "SDL_config_ngage.h"
+#elif defined (__LINUX__) || defined(__FREEBSD__) || defined(__NETBSD__) || defined(__OPENBSD__) || defined(__SOLARIS__)
+#include "SDL_config_unix.h"
 #else
 /* This is a minimal configuration just to get SDL running on new platforms. */
 #include "SDL_config_minimal.h"
@@ -55,46 +57,5 @@
 #ifdef USING_GENERATED_CONFIG_H
 #error Wrong SDL_config.h, check your include path?
 #endif
-
-
-/* DEFINES ADDED BY SDL2-COMPAT */
-
-#define STDC_HEADERS 1
-#define HAVE_CTYPE_H 1
-#define HAVE_LIMITS_H 1
-#define HAVE_MATH_H 1
-#define HAVE_SIGNAL_H 1
-#define HAVE_STDINT_H 1
-#define HAVE_STDIO_H 1
-#define HAVE_STRING_H 1
-
-/* Some programs (incorrectly, probably) check defines that aren't available
-   with an SDL2 that doesn't have a configure-generated SDL_config.h, so force
-   a few that might be important. */
-#ifndef SDL_VIDEO_OPENGL
-#define SDL_VIDEO_OPENGL 1
-#endif
-#if defined(__WIN32__)
-#define SDL_VIDEO_DRIVER_WINDOWS 1
-#endif
-#if defined (__LINUX__) || defined(__FREEBSD__) || defined(__NETBSD__) || defined(__OPENBSD__) || defined(__SOLARIS__)
-#define SDL_VIDEO_DRIVER_X11 1
-#endif
-#if defined(__LINUX__)
-#define SDL_VIDEO_DRIVER_KMSDRM 1
-#define SDL_VIDEO_DRIVER_WAYLAND 1
-#endif
-#if defined(__MACOSX__)
-#define SDL_VIDEO_DRIVER_COCOA 1
-#endif
-#if defined(__IPHONEOS__) || defined(__TVOS__)
-#define SDL_VIDEO_DRIVER_UIKIT 1
-#endif
-#if defined(__ANDROID__)
-#define SDL_VIDEO_DRIVER_ANDROID 1
-#endif
-
-/* END DEFINES ADDED BY SDL2-COMPAT */
-
 
 #endif /* SDL_config_h_ */
