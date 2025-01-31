@@ -5687,9 +5687,6 @@ static void SDLCALL SDL2AudioDeviceCallbackBridge(void *userdata, SDL_AudioStrea
             stream2->callback2(stream2->callback2_userdata, (Uint8 *) stream2->callback2_buffer, stream2->bytes_per_callbacks);
             SDL_AudioStreamPut(stream2, stream2->callback2_buffer, stream2->bytes_per_callbacks);
             approx_amount -= stream2->bytes_per_callbacks;
-            if (approx_amount < 0) {
-                approx_amount = 0;
-            }
         }
     }
 }
