@@ -1700,6 +1700,14 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
         case SDL_EVENT_WINDOW_DISPLAY_CHANGED:
             if (SDL3_EventEnabled(SDL2_WINDOWEVENT)) {
 
+                /* initial releases of SDL3 accidentally send these events to hidden windows, which breaks ffplay. Filter it out if necessary. */
+                if (event3->type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
+                    SDL_Window *window = SDL3_GetWindowFromID(event3->window.windowID);
+                    if (window && (SDL3_GetWindowFlags(window) & SDL_WINDOW_HIDDEN)) {
+                        post_event = false;
+                        break;  /* drop it. */
+                    }
+                }
 
                 event2.window.type = SDL2_WINDOWEVENT;
                 event2.window.timestamp = (Uint32) SDL_NS_TO_MS(event3->window.timestamp);
