@@ -5672,11 +5672,11 @@ static void SDLCALL SDL2AudioDeviceCallbackBridge(void *userdata, SDL_AudioStrea
             const int br = SDL_AudioStreamGet(stream2, stream2->callback2_buffer, stream2->bytes_per_callbacks);
             SDL_assert(br == stream2->bytes_per_callbacks);
             approx_amount -= br;
-            stream2->callback2(stream2->callback2_userdata, stream2->callback2_buffer, br);
+            stream2->callback2(stream2->callback2_userdata, (Uint8 *) stream2->callback2_buffer, br);
         }
     } else {
         while (approx_amount > 0) {
-            stream2->callback2(stream2->callback2_userdata, stream2->callback2_buffer, stream2->bytes_per_callbacks);
+            stream2->callback2(stream2->callback2_userdata, (Uint8 *) stream2->callback2_buffer, stream2->bytes_per_callbacks);
             SDL_AudioStreamPut(stream2, stream2->callback2_buffer, stream2->bytes_per_callbacks);
             approx_amount -= stream2->bytes_per_callbacks;
             if (approx_amount < 0) {
