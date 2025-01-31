@@ -59,6 +59,15 @@
 
 /* DEFINES ADDED BY SDL2-COMPAT */
 
+#define STDC_HEADERS 1
+#define HAVE_CTYPE_H 1
+#define HAVE_LIMITS_H 1
+#define HAVE_MATH_H 1
+#define HAVE_SIGNAL_H 1
+#define HAVE_STDINT_H 1
+#define HAVE_STDIO_H 1
+#define HAVE_STRING_H 1
+
 /* Some programs (incorrectly, probably) check defines that aren't available
    with an SDL2 that doesn't have a configure-generated SDL_config.h, so force
    a few that might be important. */
