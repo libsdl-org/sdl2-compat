@@ -73,6 +73,7 @@
 #endif
 #if defined(__LINUX__)
 #define SDL_VIDEO_DRIVER_KMSDRM 1
+#define SDL_VIDEO_DRIVER_WAYLAND 1
 #endif
 #if defined(__MACOSX__)
 #define SDL_VIDEO_DRIVER_COCOA 1
