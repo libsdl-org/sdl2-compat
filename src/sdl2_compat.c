@@ -5255,6 +5255,198 @@ SDL_AudioQuit(void)
 }
 
 SDL_DECLSPEC int SDLCALL
+SDL_GL_GetAttribute(SDL2_GLattr attr, int* value)
+{
+    bool ret = false;
+
+    switch (attr)
+    {
+    case SDL2_GL_RED_SIZE:
+        ret = SDL3_GL_GetAttribute(SDL_GL_RED_SIZE, value);
+        break;
+    case SDL2_GL_GREEN_SIZE:
+        ret = SDL3_GL_GetAttribute(SDL_GL_GREEN_SIZE, value);
+        break;
+    case SDL2_GL_BLUE_SIZE:
+        ret = SDL3_GL_GetAttribute(SDL_GL_BLUE_SIZE, value);
+        break;
+    case SDL2_GL_ALPHA_SIZE:
+        ret = SDL3_GL_GetAttribute(SDL_GL_ALPHA_SIZE, value);
+        break;
+    case SDL2_GL_BUFFER_SIZE:
+        ret = SDL3_GL_GetAttribute(SDL_GL_BUFFER_SIZE, value);
+        break;
+    case SDL2_GL_DOUBLEBUFFER:
+        ret = SDL3_GL_GetAttribute(SDL_GL_DOUBLEBUFFER, value);
+        break;
+    case SDL2_GL_DEPTH_SIZE:
+        ret = SDL3_GL_GetAttribute(SDL_GL_DEPTH_SIZE, value);
+        break;
+    case SDL2_GL_STENCIL_SIZE:
+        ret = SDL3_GL_GetAttribute(SDL_GL_STENCIL_SIZE, value);
+        break;
+    case SDL2_GL_ACCUM_RED_SIZE:
+        ret = SDL3_GL_GetAttribute(SDL_GL_ACCUM_RED_SIZE, value);
+        break;
+    case SDL2_GL_ACCUM_GREEN_SIZE:
+        ret = SDL3_GL_GetAttribute(SDL_GL_ACCUM_GREEN_SIZE, value);
+        break;
+    case SDL2_GL_ACCUM_BLUE_SIZE:
+        ret = SDL3_GL_GetAttribute(SDL_GL_ACCUM_BLUE_SIZE, value);
+        break;
+    case SDL2_GL_ACCUM_ALPHA_SIZE:
+        ret = SDL3_GL_GetAttribute(SDL_GL_ACCUM_ALPHA_SIZE, value);
+        break;
+    case SDL2_GL_STEREO:
+        ret = SDL3_GL_GetAttribute(SDL_GL_STEREO, value);
+        break;
+    case SDL2_GL_MULTISAMPLEBUFFERS:
+        ret = SDL3_GL_GetAttribute(SDL_GL_MULTISAMPLEBUFFERS, value);
+        break;
+    case SDL2_GL_MULTISAMPLESAMPLES:
+        ret = SDL3_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, value);
+        break;
+    case SDL2_GL_ACCELERATED_VISUAL:
+        ret = SDL3_GL_GetAttribute(SDL_GL_ACCELERATED_VISUAL, value);
+        break;
+    case SDL2_GL_RETAINED_BACKING:
+        ret = SDL3_GL_GetAttribute(SDL_GL_RETAINED_BACKING, value);
+        break;
+    case SDL2_GL_CONTEXT_MAJOR_VERSION:
+        ret = SDL3_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, value);
+        break;
+    case SDL2_GL_CONTEXT_MINOR_VERSION:
+        ret = SDL3_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, value);
+        break;
+    case SDL2_GL_CONTEXT_FLAGS:
+        ret = SDL3_GL_GetAttribute(SDL_GL_CONTEXT_FLAGS, value);
+        break;
+    case SDL2_GL_CONTEXT_PROFILE_MASK:
+        ret = SDL3_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, value);
+        break;
+    case SDL2_GL_SHARE_WITH_CURRENT_CONTEXT:
+        ret = SDL3_GL_GetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, value);
+        break;
+    case SDL2_GL_FRAMEBUFFER_SRGB_CAPABLE:
+        ret = SDL3_GL_GetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, value);
+        break;
+    case SDL2_GL_CONTEXT_RELEASE_BEHAVIOR:
+        ret = SDL3_GL_GetAttribute(SDL_GL_CONTEXT_RELEASE_BEHAVIOR, value);
+        break;
+    case SDL2_GL_CONTEXT_RESET_NOTIFICATION:
+        ret = SDL3_GL_GetAttribute(SDL_GL_CONTEXT_RESET_NOTIFICATION, value);
+        break;
+    case SDL2_GL_CONTEXT_NO_ERROR:
+        ret = SDL3_GL_GetAttribute(SDL_GL_CONTEXT_NO_ERROR, value);
+        break;
+    case SDL2_GL_FLOATBUFFERS:
+        ret = SDL3_GL_GetAttribute(SDL_GL_FLOATBUFFERS, value);
+        break;
+    case SDL2_GL_CONTEXT_EGL:
+        ret = SDL3_GL_GetAttribute(SDL_GL_EGL_PLATFORM, value);
+        break;
+    }
+
+    return ret ? 0 : -1;
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_GL_SetAttribute(SDL2_GLattr attr, int value)
+{
+    bool ret = false;
+
+    switch (attr)
+    {
+    case SDL2_GL_RED_SIZE:
+        ret = SDL3_GL_SetAttribute(SDL_GL_RED_SIZE, value);
+        break;
+    case SDL2_GL_GREEN_SIZE:
+        ret = SDL3_GL_SetAttribute(SDL_GL_GREEN_SIZE, value);
+        break;
+    case SDL2_GL_BLUE_SIZE:
+        ret = SDL3_GL_SetAttribute(SDL_GL_BLUE_SIZE, value);
+        break;
+    case SDL2_GL_ALPHA_SIZE:
+        ret = SDL3_GL_SetAttribute(SDL_GL_ALPHA_SIZE, value);
+        break;
+    case SDL2_GL_BUFFER_SIZE:
+        ret = SDL3_GL_SetAttribute(SDL_GL_BUFFER_SIZE, value);
+        break;
+    case SDL2_GL_DOUBLEBUFFER:
+        ret = SDL3_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, value);
+        break;
+    case SDL2_GL_DEPTH_SIZE:
+        ret = SDL3_GL_SetAttribute(SDL_GL_DEPTH_SIZE, value);
+        break;
+    case SDL2_GL_STENCIL_SIZE:
+        ret = SDL3_GL_SetAttribute(SDL_GL_STENCIL_SIZE, value);
+        break;
+    case SDL2_GL_ACCUM_RED_SIZE:
+        ret = SDL3_GL_SetAttribute(SDL_GL_ACCUM_RED_SIZE, value);
+        break;
+    case SDL2_GL_ACCUM_GREEN_SIZE:
+        ret = SDL3_GL_SetAttribute(SDL_GL_ACCUM_GREEN_SIZE, value);
+        break;
+    case SDL2_GL_ACCUM_BLUE_SIZE:
+        ret = SDL3_GL_SetAttribute(SDL_GL_ACCUM_BLUE_SIZE, value);
+        break;
+    case SDL2_GL_ACCUM_ALPHA_SIZE:
+        ret = SDL3_GL_SetAttribute(SDL_GL_ACCUM_ALPHA_SIZE, value);
+        break;
+    case SDL2_GL_STEREO:
+        ret = SDL3_GL_SetAttribute(SDL_GL_STEREO, value);
+        break;
+    case SDL2_GL_MULTISAMPLEBUFFERS:
+        ret = SDL3_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, value);
+        break;
+    case SDL2_GL_MULTISAMPLESAMPLES:
+        ret = SDL3_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, value);
+        break;
+    case SDL2_GL_ACCELERATED_VISUAL:
+        ret = SDL3_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, value);
+        break;
+    case SDL2_GL_RETAINED_BACKING:
+        ret = SDL3_GL_SetAttribute(SDL_GL_RETAINED_BACKING, value);
+        break;
+    case SDL2_GL_CONTEXT_MAJOR_VERSION:
+        ret = SDL3_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, value);
+        break;
+    case SDL2_GL_CONTEXT_MINOR_VERSION:
+        ret = SDL3_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, value);
+        break;
+    case SDL2_GL_CONTEXT_FLAGS:
+        ret = SDL3_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, value);
+        break;
+    case SDL2_GL_CONTEXT_PROFILE_MASK:
+        ret = SDL3_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, value);
+        break;
+    case SDL2_GL_SHARE_WITH_CURRENT_CONTEXT:
+        ret = SDL3_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, value);
+        break;
+    case SDL2_GL_FRAMEBUFFER_SRGB_CAPABLE:
+        ret = SDL3_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, value);
+        break;
+    case SDL2_GL_CONTEXT_RELEASE_BEHAVIOR:
+        ret = SDL3_GL_SetAttribute(SDL_GL_CONTEXT_RELEASE_BEHAVIOR, value);
+        break;
+    case SDL2_GL_CONTEXT_RESET_NOTIFICATION:
+        ret = SDL3_GL_SetAttribute(SDL_GL_CONTEXT_RESET_NOTIFICATION, value);
+        break;
+    case SDL2_GL_CONTEXT_NO_ERROR:
+        ret = SDL3_GL_SetAttribute(SDL_GL_CONTEXT_NO_ERROR, value);
+        break;
+    case SDL2_GL_FLOATBUFFERS:
+        ret = SDL3_GL_SetAttribute(SDL_GL_FLOATBUFFERS, value);
+        break;
+    case SDL2_GL_CONTEXT_EGL:
+        ret = SDL3_GL_SetAttribute(SDL_GL_EGL_PLATFORM, value);
+        break;
+    }
+
+    return ret ? 0 : -1;
+}
+
+SDL_DECLSPEC int SDLCALL
 SDL_VideoInit(const char *driver_name)
 {
     int ret;
@@ -5265,10 +5457,10 @@ SDL_VideoInit(const char *driver_name)
     ret = SDL3_InitSubSystem(SDL_INIT_VIDEO) ? 0 : -1;
 
     /* default SDL2 GL attributes */
-    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 3);
-    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 3);
-    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 2);
-    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 0);
+    SDL_GL_SetAttribute(SDL2_GL_RED_SIZE, 3);
+    SDL_GL_SetAttribute(SDL2_GL_GREEN_SIZE, 3);
+    SDL_GL_SetAttribute(SDL2_GL_BLUE_SIZE, 2);
+    SDL_GL_SetAttribute(SDL2_GL_ALPHA_SIZE, 0);
 
     return ret;
 }
@@ -5287,10 +5479,10 @@ SDL_Init(Uint32 flags)
     ret = SDL3_InitSubSystem(flags) ? 0 : -1;
     if (flags & SDL_INIT_VIDEO) {
         /* default SDL2 GL attributes */
-        SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 3);
-        SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 3);
-        SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 2);
-        SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 0);
+        SDL_GL_SetAttribute(SDL2_GL_RED_SIZE, 3);
+        SDL_GL_SetAttribute(SDL2_GL_GREEN_SIZE, 3);
+        SDL_GL_SetAttribute(SDL2_GL_BLUE_SIZE, 2);
+        SDL_GL_SetAttribute(SDL2_GL_ALPHA_SIZE, 0);
     }
 
     return ret;
@@ -5329,10 +5521,10 @@ SDL_InitSubSystem(Uint32 flags)
     ret = SDL3_InitSubSystem(flags) ? 0 : -1;
     if (flags & SDL_INIT_VIDEO) {
         /* default SDL2 GL attributes */
-        SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 3);
-        SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 3);
-        SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 2);
-        SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 0);
+        SDL_GL_SetAttribute(SDL2_GL_RED_SIZE, 3);
+        SDL_GL_SetAttribute(SDL2_GL_GREEN_SIZE, 3);
+        SDL_GL_SetAttribute(SDL2_GL_BLUE_SIZE, 2);
+        SDL_GL_SetAttribute(SDL2_GL_ALPHA_SIZE, 0);
     }
     return ret;
 }
