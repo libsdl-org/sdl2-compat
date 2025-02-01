@@ -1452,10 +1452,9 @@ typedef struct SDL2_Surface
     int refcount;               /**< Read-mostly */
 } SDL2_Surface;
 
-
-//SDL3 has different SDL_GLattr enum since 19
-// (SDL_GL_CONTEXT_EGL in SDL2 vs SDL_GL_CONTEXT_FLAGS in SDL3), SDL2 apps like GoldSrc will be unhappy with SDL_GL_CONTEXT_PROFILE_MASK or sth.
-
+/* SDL3 has different SDL_GLattr enum since 19 (SDL_GL_CONTEXT_EGL in SDL2 vs SDL_GL_CONTEXT_FLAGS in SDL3),
+ * SDL2 apps like GoldSrc will be unhappy with SDL_GL_CONTEXT_PROFILE_MASK or sth.
+ */
 typedef enum SDL2_GLattr
 {
     SDL2_GL_RED_SIZE,                    /**< the minimum number of bits for the red channel of the color buffer; defaults to 3. */

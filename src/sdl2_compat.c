@@ -5255,12 +5255,11 @@ SDL_AudioQuit(void)
 }
 
 SDL_DECLSPEC int SDLCALL
-SDL_GL_GetAttribute(SDL2_GLattr attr, int* value)
+SDL_GL_GetAttribute(SDL2_GLattr attr, int *value)
 {
     bool ret = false;
 
-    switch (attr)
-    {
+    switch (attr) {
     case SDL2_GL_RED_SIZE:
         ret = SDL3_GL_GetAttribute(SDL_GL_RED_SIZE, value);
         break;
@@ -5355,8 +5354,7 @@ SDL_GL_SetAttribute(SDL2_GLattr attr, int value)
 {
     bool ret = false;
 
-    switch (attr)
-    {
+    switch (attr) {
     case SDL2_GL_RED_SIZE:
         ret = SDL3_GL_SetAttribute(SDL_GL_RED_SIZE, value);
         break;
