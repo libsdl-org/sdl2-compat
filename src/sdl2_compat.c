@@ -1816,26 +1816,37 @@ SDL_DECLSPEC int SDLCALL
 SDL_PeepEvents(SDL2_Event *events2, int numevents, SDL_eventaction action, Uint32 minType, Uint32 maxType)
 {
     int isstack = 0;
-    SDL_Event *events3 = SDL3_small_alloc(SDL_Event, numevents ? numevents : 1, &isstack);
+    SDL_Event *events3 = NULL;
     int retval = 0;
     int i;
 
-    if (!events3) {
-        return -1;
+    // For GET/PEEK the event may be NULL, so avoid allocation.
+    if (events2) {
+        events3 = SDL3_small_alloc(SDL_Event, numevents ? numevents : 1, &isstack);
+        if (!events3) {
+            return -1;
+        }
     }
     if (action == SDL_ADDEVENT) {
-        for (i = 0; i < numevents; i++) {
-            Event2to3(&events2[i], &events3[i]);
+        if (events2 && events3) {
+            for (i = 0; i < numevents; i++) {
+                Event2to3(&events2[i], &events3[i]);
+            }
         }
         retval = SDL3_PeepEvents(events3, numevents, action, minType, maxType);
     } else {  /* SDL2 assumes it's SDL_PEEKEVENT if it isn't SDL_ADDEVENT or SDL_GETEVENT. */
         retval = SDL3_PeepEvents(events3, numevents, action, minType, maxType);
-        for (i = 0; i < retval; i++) {
-            Event3to2(&events3[i], &events2[i]);
+        if (events3) {
+            for (i = 0; i < retval; i++) {
+                Event3to2(&events3[i], &events2[i]);
+            }
         }
     }
 
-    SDL3_small_free(events3, isstack);
+    if (events3) {
+        SDL3_small_free(events3, isstack);
+    }
+
     return retval;
 }
 
