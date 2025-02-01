@@ -5257,6 +5257,9 @@ SDL_GL_GetAttribute(SDL2_GLattr attr, int* value)
     case SDL2_GL_ACCELERATED_VISUAL:
         ret = SDL3_GL_GetAttribute(SDL_GL_ACCELERATED_VISUAL, value);
         break;
+    case SDL2_GL_RETAINED_BACKING:
+        ret = SDL3_GL_GetAttribute(SDL_GL_RETAINED_BACKING, value);
+        break;
     case SDL2_GL_CONTEXT_MAJOR_VERSION:
         ret = SDL3_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, value);
         break;
@@ -5349,6 +5352,9 @@ SDL_GL_SetAttribute(SDL2_GLattr attr, int value)
         break;
     case SDL2_GL_ACCELERATED_VISUAL:
         ret = SDL3_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, value);
+        break;
+    case SDL2_GL_RETAINED_BACKING:
+        ret = SDL3_GL_SetAttribute(SDL_GL_RETAINED_BACKING, value);
         break;
     case SDL2_GL_CONTEXT_MAJOR_VERSION:
         ret = SDL3_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, value);
