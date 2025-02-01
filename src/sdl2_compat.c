@@ -2956,6 +2956,9 @@ SDL_GetWindowOpacity(SDL_Window *window, float *out_opacity)
 SDL_DECLSPEC SDL2_Surface * SDLCALL
 SDL_ConvertSurface(SDL2_Surface *surface, const SDL2_PixelFormat *format, Uint32 flags)
 {
+    SDL_Palette *palette = NULL;
+    SDL2_Surface *result;
+
     (void) flags; /* SDL3 removed the (unused) `flags` argument */
 
     if (!surface) {
@@ -2967,7 +2970,24 @@ SDL_ConvertSurface(SDL2_Surface *surface, const SDL2_PixelFormat *format, Uint32
         return NULL;
     }
 
-    return Surface3to2(SDL3_ConvertSurfaceAndColorspace(Surface2to3(surface), (SDL_PixelFormat)format->format, format->palette, SDL_COLORSPACE_SRGB, 0));
+    if (format->palette) {
+        // This conversion is going to assign the new surface this palette,
+        // but it might be on the stack, so always allocate a new one to be
+        // safe. Real SDL2 always allocated a new palette in this function.
+        const int ncolors = format->palette->ncolors;
+        palette = SDL3_CreatePalette(ncolors);
+        if (!palette) {
+            return NULL;
+        }
+        SDL3_SetPaletteColors(palette, format->palette->colors, 0, ncolors);
+    }
+
+    result = Surface3to2(SDL3_ConvertSurfaceAndColorspace(Surface2to3(surface), (SDL_PixelFormat)format->format, palette, SDL_COLORSPACE_SRGB, 0));
+
+    if (palette) {
+        SDL3_DestroyPalette(palette);
+    }
+    return result;
 }
 
 SDL_DECLSPEC SDL2_Surface * SDLCALL
