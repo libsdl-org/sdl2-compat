@@ -352,6 +352,9 @@ UnloadSDL3(void)
     CloseSDL3Library();
 }
 
+// This is used for the Torchlight Linux port which predates the official SDL2 release
+static bool UseSDL2PrereleaseEvents;
+
 typedef struct QuirkEntryType
 {
     const char *exe_name;
@@ -600,6 +603,9 @@ SDL2Compat_ApplyQuirks(bool force_x11)
                 }
             }
         }
+    }
+    if (SDL3_strcmp(exe_name, "Torchlight.bin.x86_64") == 0) {
+        UseSDL2PrereleaseEvents = true;
     }
 }
 
@@ -1382,10 +1388,20 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
                 event3 = &cvtevent3;
             }
         }
-        event2->motion.x = (Sint32)event3->motion.x;
-        event2->motion.y = (Sint32)event3->motion.y;
-        event2->motion.xrel = (Sint32)event3->motion.xrel;
-        event2->motion.yrel = (Sint32)event3->motion.yrel;
+        if (UseSDL2PrereleaseEvents) {
+            SDL2PRERELEASE_MouseMotionEvent *motion = (SDL2PRERELEASE_MouseMotionEvent *)&event2->motion;
+            motion->state = (Uint8)event3->motion.state;
+            motion->x = (Sint32)event3->motion.x;
+            motion->y = (Sint32)event3->motion.y;
+            motion->xrel = (Sint32)event3->motion.xrel;
+            motion->yrel = (Sint32)event3->motion.yrel;
+        } else {
+            SDL2_MouseMotionEvent *motion = &event2->motion;
+            motion->x = (Sint32)event3->motion.x;
+            motion->y = (Sint32)event3->motion.y;
+            motion->xrel = (Sint32)event3->motion.xrel;
+            motion->yrel = (Sint32)event3->motion.yrel;
+        }
         break;
     case SDL_EVENT_MOUSE_BUTTON_DOWN:
     case SDL_EVENT_MOUSE_BUTTON_UP:
@@ -1399,8 +1415,17 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
                 event3 = &cvtevent3;
             }
         }
-        event2->button.x = (Sint32)event3->button.x;
-        event2->button.y = (Sint32)event3->button.y;
+        if (UseSDL2PrereleaseEvents) {
+            SDL2PRERELEASE_MouseButtonEvent *button = (SDL2PRERELEASE_MouseButtonEvent *)&event2->button;
+            button->button = event3->button.button;
+            button->state = event3->button.down;
+            button->x = (Sint32)event3->button.x;
+            button->y = (Sint32)event3->button.y;
+        } else {
+            SDL2_MouseButtonEvent *button = &event2->button;
+            button->x = (Sint32)event3->button.x;
+            button->y = (Sint32)event3->button.y;
+        }
         break;
     case SDL_EVENT_MOUSE_WHEEL:
         renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->wheel.windowID));
@@ -1413,12 +1438,19 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
                 event3 = &cvtevent3;
             }
         }
-        event2->wheel.x = (Sint32)event3->wheel.x;
-        event2->wheel.y = (Sint32)event3->wheel.y;
-        event2->wheel.preciseX = event3->wheel.x;
-        event2->wheel.preciseY = event3->wheel.y;
-        event2->wheel.mouseX = (Sint32)event3->wheel.mouse_x;
-        event2->wheel.mouseY = (Sint32)event3->wheel.mouse_y;
+        if (UseSDL2PrereleaseEvents) {
+            SDL2PRERELEASE_MouseWheelEvent *wheel = (SDL2PRERELEASE_MouseWheelEvent *)&event2->wheel;
+            wheel->x = (Sint32)event3->wheel.x;
+            wheel->y = (Sint32)event3->wheel.y;
+        } else {
+            SDL2_MouseWheelEvent *wheel = &event2->wheel;
+            wheel->x = (Sint32)event3->wheel.x;
+            wheel->y = (Sint32)event3->wheel.y;
+            wheel->preciseX = event3->wheel.x;
+            wheel->preciseY = event3->wheel.y;
+            wheel->mouseX = (Sint32)event3->wheel.mouse_x;
+            wheel->mouseY = (Sint32)event3->wheel.mouse_y;
+        }
         break;
     case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
     case SDL_EVENT_GAMEPAD_BUTTON_UP:
