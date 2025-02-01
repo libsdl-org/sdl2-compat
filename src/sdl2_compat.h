@@ -785,6 +785,21 @@ typedef struct SDL2_MouseMotionEvent
     Sint32 yrel;
 } SDL2_MouseMotionEvent;
 
+typedef struct SDL2PRERELEASE_MouseMotionEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    Uint32 windowID;
+    Uint8 state;
+    Uint8 padding1;
+    Uint8 padding2;
+    Uint8 padding3;
+    int x;
+    int y;
+    int xrel;
+    int yrel;
+} SDL2PRERELEASE_MouseMotionEvent;
+
 typedef struct SDL2_MouseButtonEvent
 {
     Uint32 type;
@@ -798,6 +813,19 @@ typedef struct SDL2_MouseButtonEvent
     Sint32 x;
     Sint32 y;
 } SDL2_MouseButtonEvent;
+
+typedef struct SDL2PRERELEASE_MouseButtonEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    Uint32 windowID;
+    Uint8 button;
+    Uint8 state;
+    Uint8 padding1;
+    Uint8 padding2;
+    int x;
+    int y;
+} SDL2PRERELEASE_MouseButtonEvent;
 
 typedef struct SDL2_MouseWheelEvent
 {
@@ -813,6 +841,15 @@ typedef struct SDL2_MouseWheelEvent
     Sint32 mouseX;
     Sint32 mouseY;
 } SDL2_MouseWheelEvent;
+
+typedef struct SDL2PRERELEASE_MouseWheelEvent
+{
+    Uint32 type;
+    Uint32 timestamp;
+    Uint32 windowID;
+    int x;
+    int y;
+} SDL2PRERELEASE_MouseWheelEvent;
 
 typedef struct SDL2_JoyAxisEvent
 {
