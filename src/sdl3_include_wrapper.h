@@ -1264,6 +1264,7 @@
 #define SDL_GetThreadState IGNORE_THIS_VERSION_OF_SDL_GetThreadState
 #define SDL_AudioStreamDevicePaused IGNORE_THIS_VERSION_OF_SDL_AudioStreamDevicePaused
 #define SDL_ClickTrayEntry IGNORE_THIS_VERSION_OF_SDL_ClickTrayEntry
+#define SDL_UpdateTrays IGNORE_THIS_VERSION_OF_SDL_UpdateTrays
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6210,6 +6211,10 @@
 
 #ifdef SDL_ClickTrayEntry
 #undef SDL_ClickTrayEntry
+#endif
+
+#ifdef SDL_UpdateTrays
+#undef SDL_UpdateTrays
 #endif
 
 #undef SDL_ThreadID /* see at top. */
