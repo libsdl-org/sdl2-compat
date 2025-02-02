@@ -2792,6 +2792,20 @@ static SDL2_Surface *Surface3to2(SDL_Surface *surface)
     return surface2;
 }
 
+static void SynchronizeSurface3to2(SDL_Surface *surface, SDL2_Surface *surface2)
+{
+    /* Synchronize any changes made by SDL to the SDL3 surface
+     * SDL might have changed flags or freed the pixels, e.g.:
+     * https://github.com/libsdl-org/SDL/blob/be991239d9bc6df06b0ca7a9ae9dbb7251e93c12/src/video/SDL_RLEaccel.c#L1180-L1189
+     */
+    if (surface && surface->pixels != surface2->pixels) {
+        surface2->flags &= ~(surface->flags & SHARED_SURFACE_FLAGS);
+        surface2->flags |= (surface->flags & SHARED_SURFACE_FLAGS);
+        surface2->pixels = surface->pixels;
+        surface2->pitch = surface->pitch;
+    }
+}
+
 static SDL_Surface *Surface2to3(SDL2_Surface *surface)
 {
     SDL_Surface *surface3 = NULL;
@@ -3207,9 +3221,13 @@ end:
 }
 
 SDL_DECLSPEC int SDLCALL
-SDL_LowerBlit(SDL2_Surface *src, SDL_Rect *srcrect, SDL2_Surface *dst, SDL_Rect *dstrect)
+SDL_LowerBlit(SDL2_Surface *src2, SDL_Rect *srcrect, SDL2_Surface *dst2, SDL_Rect *dstrect)
 {
-    return SDL3_BlitSurfaceUnchecked(Surface2to3(src), srcrect, Surface2to3(dst), dstrect) ? 0 : -1;
+    SDL_Surface *src = Surface2to3(src2);
+    SDL_Surface *dst = Surface2to3(dst2);
+    int result = SDL3_BlitSurfaceUnchecked(src, srcrect, dst, dstrect) ? 0 : -1;
+    SynchronizeSurface3to2(src, src2);
+    return result;
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -3373,9 +3391,13 @@ SDL_UpperBlitScaled(SDL2_Surface *src, const SDL_Rect *srcrect, SDL2_Surface *ds
 }
 
 SDL_DECLSPEC int SDLCALL
-SDL_LowerBlitScaled(SDL2_Surface *src, SDL_Rect *srcrect, SDL2_Surface *dst, SDL_Rect *dstrect)
+SDL_LowerBlitScaled(SDL2_Surface *src2, SDL_Rect *srcrect, SDL2_Surface *dst2, SDL_Rect *dstrect)
 {
-    return SDL3_BlitSurfaceUncheckedScaled(Surface2to3(src), srcrect, Surface2to3(dst), dstrect, SDL_SCALEMODE_NEAREST) ? 0 : -1;
+    SDL_Surface *src = Surface2to3(src2);
+    SDL_Surface *dst = Surface2to3(dst2);
+    int result = SDL3_BlitSurfaceUncheckedScaled(src, srcrect, dst, dstrect, SDL_SCALEMODE_NEAREST) ? 0 : -1;
+    SynchronizeSurface3to2(src, src2);
+    return result;
 }
 
 SDL_DECLSPEC int SDLCALL
