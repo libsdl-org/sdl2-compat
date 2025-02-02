@@ -2787,7 +2787,16 @@ static SDL2_Surface *Surface3to2(SDL_Surface *surface)
 
     if (surface) {
         surface2 = (SDL2_Surface *)SDL3_GetPointerProperty(SDL3_GetSurfaceProperties(surface), PROP_SURFACE2, NULL);
-        if (!surface2) {
+        if (surface2) {
+            /* Synchronize any changes made by SDL to the SDL3 surface
+             * SDL might have changed flags or freed the pixels, e.g.:
+             * https://github.com/libsdl-org/SDL/blob/be991239d9bc6df06b0ca7a9ae9dbb7251e93c12/src/video/SDL_RLEaccel.c#L1180-L1189
+             */
+            surface2->flags &= ~(surface->flags & SHARED_SURFACE_FLAGS);
+            surface2->flags |= (surface->flags & SHARED_SURFACE_FLAGS);
+            surface2->pixels = surface->pixels;
+            surface2->pitch = surface->pitch;
+        } else {
             surface2 = CreateSurface2from3(surface);
         }
     }
