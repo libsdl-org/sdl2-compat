@@ -942,6 +942,7 @@
 #define SDL_ShowWindowSystemMenu IGNORE_THIS_VERSION_OF_SDL_ShowWindowSystemMenu
 #define SDL_SignalCondition IGNORE_THIS_VERSION_OF_SDL_SignalCondition
 #define SDL_SignalSemaphore IGNORE_THIS_VERSION_OF_SDL_SignalSemaphore
+#define SDL_SoftStretch IGNORE_THIS_VERSION_OF_SDL_SoftStretch
 #define SDL_StartTextInput IGNORE_THIS_VERSION_OF_SDL_StartTextInput
 #define SDL_StartTextInputWithProperties IGNORE_THIS_VERSION_OF_SDL_StartTextInputWithProperties
 #define SDL_StepUTF8 IGNORE_THIS_VERSION_OF_SDL_StepUTF8
@@ -4923,6 +4924,10 @@
 
 #ifdef SDL_SignalSemaphore
 #undef SDL_SignalSemaphore
+#endif
+
+#ifdef SDL_SoftStretch
+#undef SDL_SoftStretch
 #endif
 
 #ifdef SDL_StartTextInput
