@@ -1440,8 +1440,10 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
         }
         if (UseSDL2PrereleaseEvents) {
             SDL2PRERELEASE_MouseWheelEvent *wheel = (SDL2PRERELEASE_MouseWheelEvent *)&event2->wheel;
-            wheel->x = (Sint32)event3->wheel.x;
-            wheel->y = (Sint32)event3->wheel.y;
+            // Torchlight appears to use the wrong axis and expect the values in Windows units
+            // This is certainly a bug in the game, but we're just trying to make it work, so give it what it expects.
+            wheel->x = (Sint32)(event3->wheel.y * 120);
+            wheel->y = (Sint32)(event3->wheel.x * 120);
         } else {
             SDL2_MouseWheelEvent *wheel = &event2->wheel;
             wheel->x = (Sint32)event3->wheel.x;
