@@ -3405,13 +3405,13 @@ SDL_LowerBlitScaled(SDL2_Surface *src2, SDL_Rect *srcrect, SDL2_Surface *dst2, S
 SDL_DECLSPEC int SDLCALL
 SDL_SoftStretch(SDL2_Surface *src, const SDL_Rect *srcrect, SDL2_Surface *dst, const SDL_Rect *dstrect)
 {
-    return SDL3_BlitSurfaceScaled(Surface2to3(src), srcrect, Surface2to3(dst), dstrect, SDL_SCALEMODE_NEAREST) ? 0 : -1;
+    return SDL3_SoftStretch(Surface2to3(src), srcrect, Surface2to3(dst), dstrect, SDL_SCALEMODE_NEAREST) ? 0 : -1;
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_SoftStretchLinear(SDL2_Surface *src, const SDL_Rect *srcrect, SDL2_Surface *dst, const SDL_Rect *dstrect)
 {
-    return SDL3_BlitSurfaceScaled(Surface2to3(src), srcrect, Surface2to3(dst), dstrect, SDL_SCALEMODE_LINEAR) ? 0 : -1;
+    return SDL3_SoftStretch(Surface2to3(src), srcrect, Surface2to3(dst), dstrect, SDL_SCALEMODE_LINEAR) ? 0 : -1;
 }
 
 /* SDL_GetTicks is 64-bit in SDL3. Clamp it for SDL2. */
