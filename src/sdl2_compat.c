@@ -2812,7 +2812,7 @@ static void SynchronizeSurface3to2(SDL_Surface *surface, SDL2_Surface *surface2)
      * https://github.com/libsdl-org/SDL/blob/be991239d9bc6df06b0ca7a9ae9dbb7251e93c12/src/video/SDL_RLEaccel.c#L1180-L1189
      */
     if (surface && surface->pixels != surface2->pixels) {
-        surface2->flags &= ~(surface->flags & SHARED_SURFACE_FLAGS);
+        surface2->flags &= ~SHARED_SURFACE_FLAGS;
         surface2->flags |= (surface->flags & SHARED_SURFACE_FLAGS);
         surface2->pixels = surface->pixels;
         surface2->pitch = surface->pitch;
@@ -2833,7 +2833,7 @@ static SDL_Surface *Surface2to3(SDL2_Surface *surface)
          */
         surface3->w = surface->w;
         surface3->h = surface->h;
-        surface3->flags &= ~(surface->flags & SHARED_SURFACE_FLAGS);
+        surface3->flags &= ~SHARED_SURFACE_FLAGS;
         surface3->flags |= (surface->flags & SHARED_SURFACE_FLAGS);
         surface3->pixels = surface->pixels;
         surface3->pitch = surface->pitch;
