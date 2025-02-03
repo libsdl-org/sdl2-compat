@@ -5,7 +5,11 @@
 #include <stdio.h>
 
 #include "SDL.h"
+#include "SDL_config.h"
 #include "SDL_test.h"
+
+/* Compile-time assertions: even better than runtime assertions! */
+SDL_COMPILE_TIME_ASSERT(SIZEOF_VOIDP, SIZEOF_VOIDP == sizeof(void *));
 
 /* Test case functions */
 
