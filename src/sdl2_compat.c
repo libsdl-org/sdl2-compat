@@ -802,6 +802,7 @@ BOOL WINAPI _DllMainCRTStartup(HANDLE dllhandle, DWORD reason, LPVOID reserved)
 /* Some SDL2 state we need to keep... */
 
 /* !!! FIXME: unify coding convention on the globals: some are MyVariableName and some are my_variable_name */
+static SDL2_Surface *OldWindowSurfaces[16];
 static SDL2_EventFilter EventFilter2 = NULL;
 static void *EventFilterUserData2 = NULL;
 static SDL_mutex *EventWatchListMutex = NULL;
@@ -3136,7 +3137,20 @@ SDL_CreateRGBSurfaceWithFormatFrom(void *pixels, int width, int height, int dept
 SDL_DECLSPEC void SDLCALL
 SDL_FreeSurface(SDL2_Surface *surface)
 {
+    const int total = (int) (SDL_arraysize(OldWindowSurfaces));
+    int i;
+
     if (!surface) {
+        return;
+    }
+
+    for (i = 0; (i < total) && OldWindowSurfaces[i]; i++) {
+        if (OldWindowSurfaces[i] == surface) {
+            return;  /* this is a pointer from SDL_GetWindowSurface--a bug in the app--refuse to free it. */
+        }
+    }
+
+    if (surface->flags & SDL_DONTFREE) {
         return;
     }
 
@@ -8300,7 +8314,32 @@ SDL_GetSurfaceBlendMode(SDL2_Surface *surface, SDL_BlendMode *blendMode)
 SDL_DECLSPEC SDL2_Surface * SDLCALL
 SDL_GetWindowSurface(SDL_Window *window)
 {
-    return Surface3to2(SDL3_GetWindowSurface(window));
+    SDL2_Surface *surface2 = Surface3to2(SDL3_GetWindowSurface(window));
+    if (surface2) {
+        surface2->flags |= SDL_DONTFREE;
+    }
+
+    if (surface2) {
+        /* if the window was resized, SDL_GetWindowSurface() will destroy the previous surface and create a new one.
+           This takes the previous SDL2 surface with it. It's not legal to SDL_FreeSurface() a window surface, but
+           in SDL2, it didn't dereference free'd memory to do so, so we need to keep track of old pointers in case
+           an app tries to free them. */
+        int i;
+        const int total = (int) (SDL_arraysize(OldWindowSurfaces));
+        for (i = 0; i < total; i++) {
+            if (OldWindowSurfaces[i] == surface2) {
+                break;
+            }
+        }
+
+        /* just keep the last X surfaces; this is a hack to keep buggy legacy code running. */
+        if (i == total) {
+            SDL3_memmove(&OldWindowSurfaces[1], &OldWindowSurfaces[0], sizeof (OldWindowSurfaces) - sizeof (OldWindowSurfaces[0]));
+            OldWindowSurfaces[0] = surface2;
+        }
+    }
+
+    return surface2;
 }
 
 SDL_DECLSPEC int SDLCALL
