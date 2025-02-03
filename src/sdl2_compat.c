@@ -6593,7 +6593,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_GetNumVideoDisplays(void)
 {
     int count = 0;
-    SDL3_GetDisplays(&count);
+    SDL_free(SDL3_GetDisplays(&count));
     return count;
 }
 
