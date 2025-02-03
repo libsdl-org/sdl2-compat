@@ -1265,7 +1265,7 @@
 #define SDL_AudioStreamDevicePaused IGNORE_THIS_VERSION_OF_SDL_AudioStreamDevicePaused
 #define SDL_ClickTrayEntry IGNORE_THIS_VERSION_OF_SDL_ClickTrayEntry
 #define SDL_UpdateTrays IGNORE_THIS_VERSION_OF_SDL_UpdateTrays
-#define SDL_SoftStretch IGNORE_THIS_VERSION_OF_SDL_SoftStretch
+#define SDL_StretchSurface IGNORE_THIS_VERSION_OF_SDL_StretchSurface
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -1273,8 +1273,8 @@
 #define __BUILDING_SDL2_COMPAT__ 1
 
 #include <SDL3/SDL.h>
-#if !SDL_VERSION_ATLEAST(3,2,3)
-#error You need to compile against SDL >= 3.2.3 headers
+#if !SDL_VERSION_ATLEAST(3,2,0)
+#error You need to compile against SDL >= 3.2.0 headers
 #endif
 
 #define SDL_MAIN_HANDLED 1
@@ -6218,8 +6218,8 @@
 #undef SDL_UpdateTrays
 #endif
 
-#ifdef SDL_SoftStretch
-#undef SDL_SoftStretch
+#ifdef SDL_StretchSurface
+#undef SDL_StretchSurface
 #endif
 
 #undef SDL_ThreadID /* see at top. */
