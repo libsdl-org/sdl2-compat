@@ -477,12 +477,12 @@ static const char *SDL2_to_SDL3_hint_value(const char *name, const char *value, 
 {
     if (name && value && SDL3_strcmp(name, SDL_HINT_LOGGING) == 0) {
         /* Rewrite numeric priorities for SDL3 */
-        char *value3 = SDL_strdup(value);
+        char *value3 = SDL3_strdup(value);
         if (value3) {
             char *sep;
             for (sep = SDL3_strchr(value3, '='); sep; sep = SDL3_strchr(sep + 1, '=')) {
                 if (SDL3_isdigit(sep[1]) && sep[1] != '0') {
-                    sep[1] = '0' + SDL_atoi(&sep[1]) + 1;
+                    sep[1] = '0' + SDL3_atoi(&sep[1]) + 1;
                 }
             }
         }
@@ -2117,7 +2117,7 @@ SDL_GetKeyFromName(const char *name)
     /* If it's a single UTF-8 character, then that's the keycode itself */
     key = *(const unsigned char *)name;
     if (key >= 0xF0) {
-        if (SDL_strlen(name) == 4) {
+        if (SDL3_strlen(name) == 4) {
             int i = 0;
             key = (Uint16)(name[i] & 0x07) << 18;
             key |= (Uint16)(name[++i] & 0x3F) << 12;
@@ -2127,7 +2127,7 @@ SDL_GetKeyFromName(const char *name)
         }
         return SDLK_UNKNOWN;
     } else if (key >= 0xE0) {
-        if (SDL_strlen(name) == 3) {
+        if (SDL3_strlen(name) == 3) {
             int i = 0;
             key = (Uint16)(name[i] & 0x0F) << 12;
             key |= (Uint16)(name[++i] & 0x3F) << 6;
@@ -2136,7 +2136,7 @@ SDL_GetKeyFromName(const char *name)
         }
         return SDLK_UNKNOWN;
     } else if (key >= 0xC0) {
-        if (SDL_strlen(name) == 2) {
+        if (SDL3_strlen(name) == 2) {
             int i = 0;
             key = (Uint16)(name[i] & 0x1F) << 6;
             key |= (Uint16)(name[++i] & 0x3F);
@@ -2144,7 +2144,7 @@ SDL_GetKeyFromName(const char *name)
         }
         return SDLK_UNKNOWN;
     } else {
-        if (SDL_strlen(name) == 1) {
+        if (SDL3_strlen(name) == 1) {
             if (key >= 'A' && key <= 'Z') {
                 key += 32;
             }
@@ -2166,7 +2166,7 @@ SDL_GetKeyboardState(int *numkeys)
 static const char *ReplaceVideoBackendName(const char *name)
 {
     if (name) {
-        #define CHECKBACKEND(sdl2name) if (SDL_strcasecmp(name, sdl2name) == 0) { return sdl2name; }
+        #define CHECKBACKEND(sdl2name) if (SDL3_strcasecmp(name, sdl2name) == 0) { return sdl2name; }
         CHECKBACKEND("KMSDRM");
         CHECKBACKEND("RPI");
         CHECKBACKEND("Android");
@@ -2249,7 +2249,7 @@ SDL_SetRelativeMouseMode(SDL2_bool enabled)
             }
         }
 
-        SDL_free(windows);
+        SDL3_free(windows);
     }
     if (retval == 0) {
         relative_mouse_mode = enabled;
@@ -2375,7 +2375,7 @@ SDL_RWFromFile(const char *file, const char *mode)
                 return NULL;
             }
             rwops2 = RWops3to2(SDL3_IOFromFile(adjusted_path, mode), SDL_RWOPS_PLATFORM_FILE);
-            SDL_free(adjusted_path);
+            SDL3_free(adjusted_path);
         }
     }
     if (!rwops2) {
@@ -2745,7 +2745,7 @@ static void SDLCALL CleanupSurface2(void *userdata, void *value)
         SDL_FreeFormat(surface->format);
         surface->format = NULL;
     }
-    SDL_free(surface);
+    SDL3_free(surface);
 }
 
 static SDL2_Surface *CreateSurface2from3(SDL_Surface *surface3)
@@ -3465,29 +3465,29 @@ SDL_DECLSPEC SDL2_bool SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWM
 
     props = SDL3_GetWindowProperties(window);
 
-    if (SDL_strcmp(driver, "android") == 0) {
+    if (SDL3_strcmp(driver, "android") == 0) {
         info->subsystem = SDL2_SYSWM_ANDROID;
         info->info.android.window = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_ANDROID_WINDOW_POINTER, NULL);
         info->info.android.surface = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_ANDROID_SURFACE_POINTER, NULL);
-    } else if (SDL_strcmp(driver, "cocoa") == 0) {
+    } else if (SDL3_strcmp(driver, "cocoa") == 0) {
         info->subsystem = SDL2_SYSWM_COCOA;
         info->info.cocoa.window = (NSWindow *)SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_COCOA_WINDOW_POINTER, NULL);
-    } else if (SDL_strcmp(driver, "kmsdrm") == 0) {
+    } else if (SDL3_strcmp(driver, "kmsdrm") == 0) {
         info->subsystem = SDL2_SYSWM_KMSDRM;
         info->info.kmsdrm.dev_index = (int)SDL3_GetNumberProperty(props, SDL_PROP_WINDOW_KMSDRM_DEVICE_INDEX_NUMBER, 0);
         info->info.kmsdrm.drm_fd = (int)SDL3_GetNumberProperty(props, SDL_PROP_WINDOW_KMSDRM_DRM_FD_NUMBER, -1);
         info->info.kmsdrm.gbm_dev = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_KMSDRM_GBM_DEVICE_POINTER, NULL);
-    } else if (SDL_strcmp(driver, "uikit") == 0) {
+    } else if (SDL3_strcmp(driver, "uikit") == 0) {
         info->subsystem = SDL2_SYSWM_UIKIT;
         info->info.uikit.window = (UIWindow *)SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_UIKIT_WINDOW_POINTER, NULL);
         info->info.uikit.colorbuffer = 0;
         info->info.uikit.framebuffer = 0;
         info->info.uikit.resolveFramebuffer = 0;
-    } else if (SDL_strcmp(driver, "vivante") == 0) {
+    } else if (SDL3_strcmp(driver, "vivante") == 0) {
         info->subsystem = SDL2_SYSWM_VIVANTE;
         info->info.vivante.display = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_VIVANTE_DISPLAY_POINTER, NULL);
         info->info.vivante.window = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_VIVANTE_WINDOW_POINTER, NULL);
-    } else if (SDL_strcmp(driver, "wayland") == 0) {
+    } else if (SDL3_strcmp(driver, "wayland") == 0) {
         Uint32 version2 = SDL_VERSIONNUM((Uint32)info->version.major,
                                          (Uint32)info->version.minor,
                                          (Uint32)info->version.patch);
@@ -3525,12 +3525,12 @@ SDL_DECLSPEC SDL2_bool SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWM
                 }
             }
         }
-    } else if (SDL_strcmp(driver, "windows") == 0) {
+    } else if (SDL3_strcmp(driver, "windows") == 0) {
         info->subsystem = SDL2_SYSWM_WINDOWS;
         info->info.win.window = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
         info->info.win.hdc = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_HDC_POINTER, NULL);
         info->info.win.hinstance = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_INSTANCE_POINTER, NULL);
-    } else if (SDL_strcmp(driver, "x11") == 0) {
+    } else if (SDL3_strcmp(driver, "x11") == 0) {
         info->subsystem = SDL2_SYSWM_X11;
         info->info.x11.display = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, NULL);
         info->info.x11.window = (unsigned long)SDL3_GetNumberProperty(props, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0);
@@ -3687,12 +3687,12 @@ SDL_RecordGesture(SDL_TouchID touchId)
         SDL_TouchID thistouch = touchdevs[i];
         if (!GestureGetTouch(thistouch)) {
             if (!GestureAddTouch(thistouch)) {
-                SDL_free(touchdevs);
+                SDL3_free(touchdevs);
                 return 0;  /* uhoh, out of memory */
             }
         }
     }
-    SDL_free(touchdevs);
+    SDL3_free(touchdevs);
 
     if (touchId == (SDL_TouchID)-1) {
         GestureRecordAll = true;  /* !!! FIXME: this is never set back to SDL2_FALSE anywhere, that's probably a bug. */
@@ -5694,7 +5694,7 @@ static int GetNumAudioDevices(int iscapture)
         newlist.num_devices = num_devices;
         newlist.devices = (AudioDeviceInfo *) SDL3_malloc(sizeof (AudioDeviceInfo) * num_devices);
         if (!newlist.devices) {
-            SDL_free(devices);
+            SDL3_free(devices);
             return list->num_devices;  /* just return the existing one for now. Oh well. */
         }
 
@@ -5716,7 +5716,7 @@ static int GetNumAudioDevices(int iscapture)
                     SDL3_free(newlist.devices[i].name);
                 }
                 SDL3_free(fullname);
-                SDL_free(devices);
+                SDL3_free(devices);
                 return list->num_devices;  /* just return the existing one for now. Oh well. */
             }
 
@@ -5729,7 +5729,7 @@ static int GetNumAudioDevices(int iscapture)
         SDL3_free(list->devices[i].name);
     }
     SDL3_free(list->devices);
-    SDL_free(devices);
+    SDL3_free(devices);
 
     SDL3_memcpy(list, &newlist, sizeof (AudioDeviceList));
     return num_devices;
@@ -6593,7 +6593,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_GetNumVideoDisplays(void)
 {
     int count = 0;
-    SDL_free(SDL3_GetDisplays(&count));
+    SDL3_free(SDL3_GetDisplays(&count));
     return count;
 }
 
@@ -6818,7 +6818,7 @@ ApplyFullscreenMode(SDL_Window *window)
             /* If no exclusive modes, use the fullscreen desktop mode. */
             ret = SDL3_SetWindowFullscreenMode(window, NULL) ? 0 : -1;
         }
-        SDL_free(list);
+        SDL3_free(list);
         return ret;
     }
 }
@@ -7507,7 +7507,7 @@ SDL_StartTextInput(void)
         }
         SDL3_DestroyProperties(props);
 
-        SDL_free(windows);
+        SDL3_free(windows);
     }
 }
 
@@ -7525,7 +7525,7 @@ SDL_IsTextInputActive(void)
                 break;
             }
         }
-        SDL_free(windows);
+        SDL3_free(windows);
     }
     return result;
 }
@@ -7540,7 +7540,7 @@ SDL_StopTextInput(void)
         for (i = 0; windows[i]; ++i) {
             SDL3_StopTextInput(windows[i]);
         }
-        SDL_free(windows);
+        SDL3_free(windows);
     }
 }
 
@@ -7554,7 +7554,7 @@ SDL_ClearComposition(void)
         for (i = 0; windows[i]; ++i) {
             SDL3_ClearComposition(windows[i]);
         }
-        SDL_free(windows);
+        SDL3_free(windows);
     }
 }
 
@@ -7581,7 +7581,7 @@ SDL_SetTextInputRect(const SDL_Rect *rect)
         for ( i = 0; windows[i]; ++i ) {
             SDL3_SetTextInputArea(windows[i], rect, 0);
         }
-        SDL_free(windows);
+        SDL3_free(windows);
     }
 }
 
@@ -7667,7 +7667,7 @@ SDL_FreeFormat(SDL2_PixelFormat *format)
     if (format->palette) {
         SDL_FreePalette(format->palette);
     }
-    SDL_free(format);
+    SDL3_free(format);
 }
 
 SDL_DECLSPEC void SDLCALL
@@ -8750,7 +8750,7 @@ SDL_GameControllerGetBindForAxis(SDL_GameController *controller,
                     break;
                 }
             }
-            SDL_free(bindings);
+            SDL3_free(bindings);
         }
     }
 
@@ -8784,7 +8784,7 @@ SDL_GameControllerGetBindForButton(SDL_GameController *controller,
                     break;
                 }
             }
-            SDL_free(bindings);
+            SDL3_free(bindings);
         }
     }
 
@@ -8865,7 +8865,7 @@ static bool SDLCALL VirtualJoystick_SendEffect(void *userdata, const void *data,
 
 static void SDLCALL VirtualJoystick_Cleanup(void *userdata)
 {
-    SDL_free(userdata);
+    SDL3_free(userdata);
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -8895,12 +8895,12 @@ SDL_JoystickAttachVirtualEx(const SDL2_VirtualJoystickDesc *desc2)
     SETDESCFIELD(name);
     #undef SETDESCFIELD
 
-    desc3.userdata = SDL_malloc(sizeof(*desc2));
+    desc3.userdata = SDL3_malloc(sizeof(*desc2));
     if (!desc3.userdata) {
         SDL3_OutOfMemory();
         return -1;
     }
-    SDL_memcpy(desc3.userdata, desc2, sizeof(*desc2));
+    SDL3_memcpy(desc3.userdata, desc2, sizeof(*desc2));
 
     if (desc2->Update) {
         desc3.Update = VirtualJoystick_Update;
@@ -9680,7 +9680,7 @@ SDL_DECLSPEC SDL_Locale *SDL_GetPreferredLocales(void)
                 }
             }
         }
-        SDL_free(locales);
+        SDL3_free(locales);
     }
     return retval;
 }
