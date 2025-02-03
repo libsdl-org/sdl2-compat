@@ -2279,12 +2279,6 @@ SDL_AllocRW(void)
     return rwops2;
 }
 
-SDL_DECLSPEC void SDLCALL
-SDL_FreeRW(SDL2_RWops *rwops2)
-{
-    SDL3_free(rwops2);
-}
-
 static Sint64 SDLCALL
 RWops3to2_size(SDL2_RWops *rwops2)
 {
@@ -2320,7 +2314,13 @@ RWops3to2_write(SDL2_RWops *rwops2, const void *ptr, size_t size, size_t maxnum)
 static int SDLCALL
 RWops3to2_close(SDL2_RWops *rwops2)
 {
-    const int retval = SDL3_CloseIO(rwops2->hidden.sdl3.iostrm) ? 0 : -1;
+    int retval = 0;
+    if (rwops2->hidden.sdl3.iostrm) {
+        if (!SDL3_CloseIO(rwops2->hidden.sdl3.iostrm)) {
+            retval = -1;
+        }
+        rwops2->hidden.sdl3.iostrm = NULL;
+    }
     SDL_FreeRW(rwops2);
     return retval;
 }
@@ -2346,6 +2346,17 @@ RWops3to2(SDL_IOStream *iostrm3, Uint32 type)
         rwops2->hidden.sdl3.iostrm = iostrm3;
     }
     return rwops2;
+}
+
+SDL_DECLSPEC void SDLCALL
+SDL_FreeRW(SDL2_RWops *rwops2)
+{
+    if (rwops2->close == RWops3to2_close &&
+        rwops2->hidden.sdl3.iostrm) {
+        SDL3_CloseIO(rwops2->hidden.sdl3.iostrm);
+        rwops2->hidden.sdl3.iostrm = NULL;
+    }
+    SDL3_free(rwops2);
 }
 
 SDL_DECLSPEC SDL2_RWops *SDLCALL
