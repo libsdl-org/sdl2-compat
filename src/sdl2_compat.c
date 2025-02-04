@@ -9540,6 +9540,20 @@ SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
             cvt->needed = 0;
         }
 
+        if (src_format != dst_format) {
+            const Uint16 src_bitsize = SDL_AUDIO_BITSIZE(src_format);
+            const Uint16 dst_bitsize = SDL_AUDIO_BITSIZE(dst_format);
+
+            if (src_bitsize < dst_bitsize) {
+                const int mult = (dst_bitsize / src_bitsize);
+                cvt->len_mult *= mult;
+                cvt->len_ratio *= mult;
+            } else if (src_bitsize > dst_bitsize) {
+                const int div = (src_bitsize / dst_bitsize);
+                cvt->len_ratio /= div;
+            }
+        }
+
         if (src_channels < dst_channels) {
             cvt->len_mult = ((cvt->len_mult * dst_channels) + (src_channels - 1)) / src_channels;
         }
