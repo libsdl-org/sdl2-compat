@@ -44,6 +44,9 @@ typedef enum
 #define SDL2_WINDOW_FULLSCREEN_DESKTOP (0x00001000 | SDL_WINDOW_FULLSCREEN)
 #define SDL2_WINDOW_SKIP_TASKBAR 0x00010000
 
+/* has a different bit set for SDL3. */
+#define SDL2_WINDOW_ALWAYS_ON_TOP 0x00008000
+
 /* removed in SDL3 (APIs like this were split into getter/setter functions). */
 #define SDL2_QUERY   -1
 #define SDL2_DISABLE  0

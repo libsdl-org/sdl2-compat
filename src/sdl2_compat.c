@@ -7299,6 +7299,12 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
         flags |= SDL_WINDOW_UTILITY;
     }
 
+    /* whoops, this changed values in SDL3. */
+    if (flags & SDL2_WINDOW_ALWAYS_ON_TOP) {
+        flags &= ~SDL2_WINDOW_ALWAYS_ON_TOP;
+        flags |= SDL_WINDOW_ALWAYS_ON_TOP;
+    }
+
     if (!is_popup) {
         SDL_PropertiesID props = SDL3_CreateProperties();
 
