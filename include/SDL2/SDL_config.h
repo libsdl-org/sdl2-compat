@@ -47,7 +47,7 @@
 #include "SDL_config_emscripten.h"
 #elif defined(__NGAGE__)
 #include "SDL_config_ngage.h"
-#elif defined (__LINUX__) || defined(__FREEBSD__) || defined(__NETBSD__) || defined(__OPENBSD__) || defined(__SOLARIS__)
+#elif defined(__unix__)
 #include "SDL_config_unix.h"
 #else
 /* This is a minimal configuration just to get SDL running on new platforms. */
