@@ -5947,31 +5947,6 @@ static int PrepareAudiospec(const SDL2_AudioSpec *orig2, SDL2_AudioSpec *prepare
     return 1;
 }
 
-static void SDLCALL SDL2AudioDeviceQueueingCallback(void *userdata, SDL_AudioStream *stream3, int approx_amount, int total_amount)
-{
-    SDL2_AudioStream *stream2 = (SDL2_AudioStream *) userdata;
-
-    SDL_assert(stream2 != NULL);
-    SDL_assert(stream3 == stream2->stream3);
-    SDL_assert(stream2->dataqueue3 != NULL);
-
-    if (approx_amount == 0) {
-        return;  /* nothing to do right now. */
-    }
-
-    if (stream2->iscapture) {
-        const int br = SDL_AudioStreamGet(stream2, stream2->callback2_buffer, SDL_min(stream2->bytes_per_callbacks, approx_amount));
-        if (br > 0) {
-            SDL3_PutAudioStreamData(stream2->dataqueue3, stream2->callback2_buffer, br);
-        }
-    } else {
-        const int br = SDL3_GetAudioStreamData(stream2->dataqueue3, stream2->callback2_buffer, SDL_min(stream2->bytes_per_callbacks, approx_amount));
-        if (br > 0) {
-            SDL_AudioStreamPut(stream2, stream2->callback2_buffer, br);
-        }
-    }
-}
-
 static void SDLCALL SDL2AudioDeviceCallbackBridge(void *userdata, SDL_AudioStream *stream3, int approx_amount, int total_amount)
 {
     SDL2_AudioStream *stream2 = (SDL2_AudioStream *) userdata;
@@ -5982,7 +5957,7 @@ static void SDLCALL SDL2AudioDeviceCallbackBridge(void *userdata, SDL_AudioStrea
 
     SDL_assert(stream2 != NULL);
     SDL_assert(stream3 == stream2->stream3);
-    SDL_assert(stream2->dataqueue3 == NULL);
+    SDL_assert(stream2->callback2 != NULL);
 
     if (stream2->iscapture) {
         while (SDL_AudioStreamAvailable(stream2) >= stream2->bytes_per_callbacks) {
@@ -6115,19 +6090,6 @@ static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devicename, int iscap
             SDL3_SetAudioStreamPutCallback(stream2->stream3, SDL2AudioDeviceCallbackBridge, stream2);
         } else {
             SDL3_SetAudioStreamGetCallback(stream2->stream3, SDL2AudioDeviceCallbackBridge, stream2);
-        }
-    } else {
-        /* SDL2 treats this as a simple data queue that doesn't convert before the audio callback gets it,
-           so just make a second audiostream with no conversion and let it work like a flexible buffer. */
-        stream2->dataqueue3 = SDL3_CreateAudioStream(&spec3, &spec3);
-        if (!stream2->dataqueue3) {
-            SDL3_CloseAudioDevice(device3);
-            SDL_FreeAudioStream(stream2);
-        }
-        if (iscapture) {
-            SDL3_SetAudioStreamPutCallback(stream2->stream3, SDL2AudioDeviceQueueingCallback, stream2);
-        } else {
-            SDL3_SetAudioStreamGetCallback(stream2->stream3, SDL2AudioDeviceQueueingCallback, stream2);
         }
     }
 
@@ -6348,7 +6310,6 @@ SDL_FreeAudioStream(SDL2_AudioStream *stream2)
 {
     if (stream2) {
         SDL3_DestroyAudioStream(stream2->stream3);
-        SDL3_DestroyAudioStream(stream2->dataqueue3);
         SDL3_free(stream2->callback2_buffer);
         SDL3_free(stream2);
     }
@@ -6407,7 +6368,7 @@ SDL_DECLSPEC Uint32 SDLCALL
 SDL_GetQueuedAudioSize(SDL_AudioDeviceID dev)
 {
     SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
-    return (stream2 && (stream2->dataqueue3 != NULL)) ? SDL3_GetAudioStreamAvailable(stream2->dataqueue3) : 0;
+    return (stream2 && (stream2->callback2 == NULL)) ? SDL3_GetAudioStreamAvailable(stream2->stream3) : 0;
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -6419,15 +6380,15 @@ SDL_QueueAudio(SDL_AudioDeviceID dev, const void *data, Uint32 len)
     } else if (stream2->iscapture) {
         SDL3_SetError("This is a capture device, queueing not allowed");
         return -1;
-    } else if (stream2->dataqueue3 == NULL) {
+    } else if (stream2->callback2 != NULL) {
         SDL3_SetError("Audio device has a callback, queueing not allowed");
         return -1;
     } else if (len == 0) {
         return 0;  /* nothing to do. */
     }
 
-    SDL_assert(stream2->dataqueue3 != NULL);
-    return SDL3_PutAudioStreamData(stream2->dataqueue3, data, len) ? 0 : -1;
+    SDL_assert(stream2->stream3 != NULL);
+    return SDL3_PutAudioStreamData(stream2->stream3, data, len) ? 0 : -1;
 }
 
 SDL_DECLSPEC Uint32 SDLCALL
@@ -6437,20 +6398,20 @@ SDL_DequeueAudio(SDL_AudioDeviceID dev, void *data, Uint32 len)
     if ((len == 0) ||                      /* nothing to do? */
         (!stream2) ||                      /* called with bogus device id */
         (!stream2->iscapture) ||           /* playback devices can't dequeue */
-        (stream2->dataqueue3 == NULL)) {   /* not set for queueing */
+        (stream2->callback2 != NULL)) {    /* not set for queueing */
         return 0;                          /* just report zero bytes dequeued. */
     }
 
-    SDL_assert(stream2->dataqueue3 != NULL);
-    return SDL3_GetAudioStreamData(stream2->dataqueue3, data, len);
+    SDL_assert(stream2->stream3 != NULL);
+    return SDL3_GetAudioStreamData(stream2->stream3, data, len);
 }
 
 SDL_DECLSPEC void SDLCALL
 SDL_ClearQueuedAudio(SDL_AudioDeviceID dev)
 {
     SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
-    if (stream2 && stream2->dataqueue3) {
-        SDL3_ClearAudioStream(stream2->dataqueue3);
+    if (stream2 && !stream2->callback2) {
+        SDL3_ClearAudioStream(stream2->stream3);
     }
 }
 

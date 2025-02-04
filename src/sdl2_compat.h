@@ -1208,7 +1208,6 @@ typedef struct SDL2_AudioStream
     void *callback2_buffer;
     SDL2_AudioCallback callback2;
     void *callback2_userdata;
-    SDL_AudioStream *dataqueue3;
     SDL2_bool iscapture;
 } SDL2_AudioStream;
 
