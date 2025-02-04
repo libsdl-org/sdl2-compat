@@ -4556,8 +4556,31 @@ SDL_CreateRenderer(SDL_Window *window, int idx, Uint32 flags)
     SDL_PropertiesID props;
     SDL_Renderer *renderer;
     const char *name = NULL;
+    char *namecpy = NULL;
 
-    if (idx != -1) {
+    if (idx == -1) {
+        /* SDL2, if given a bogus render driver name in a hint, would find no match, and then try everything.
+           SDL3 reports failure in this case. PCem tries to create a renderer named "auto" so we need to deal
+           with this. */
+        name = SDL3_GetHint(SDL_HINT_RENDER_DRIVER);
+        if (name) {
+            const int total = SDL3_GetNumRenderDrivers();
+            int i;
+            for (i = 0; i < total; i++) {
+                if (SDL3_strcasecmp(name, SDL3_GetRenderDriver(i)) == 0) {
+                    break;
+                }
+            }
+            if (i == total) {
+                namecpy = SDL3_strdup(name);
+                if (!namecpy) {
+                    return NULL;
+                }
+                name = NULL;  /* set it to NULL so SDL3 will choose a default. */
+                SDL3_SetHint(SDL_HINT_RENDER_DRIVER, NULL);
+            }
+        }
+    } else {
         name = SDL3_GetRenderDriver(idx);
         if (!name) {
             return NULL;  /* assume SDL3_GetRenderDriver set the SDL error. */
@@ -4586,6 +4609,12 @@ SDL_CreateRenderer(SDL_Window *window, int idx, Uint32 flags)
     }
     if (flags & SDL2_RENDERER_PRESENTVSYNC) {
         SDL3_SetRenderVSync(renderer, 1);
+    }
+
+    /* restore original hint. */
+    if (namecpy) {
+        SDL3_SetHint(SDL_HINT_RENDER_DRIVER, namecpy);
+        SDL3_free(namecpy);
     }
 
     return renderer;
