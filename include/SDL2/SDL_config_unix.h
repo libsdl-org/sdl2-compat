@@ -25,7 +25,9 @@
 #include "SDL_platform.h"
 
 /* C datatypes */
-#if defined(__LP64__) || defined(_LP64) || defined(_WIN64)
+#if defined(__SIZEOF_POINTER__)
+#define SIZEOF_VOIDP (__SIZEOF_POINTER__)
+#elif defined(__LP64__) || defined(_LP64) || defined(_WIN64)
 #define SIZEOF_VOIDP 8
 #else
 #define SIZEOF_VOIDP 4
