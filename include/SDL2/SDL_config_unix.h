@@ -31,7 +31,9 @@
 #define SIZEOF_VOIDP 4
 #endif
 
+#if defined(__GNUC__) || defined(__clang__)
 #define HAVE_GCC_ATOMICS 1
+#endif
 
 /* Assume that any reasonable Unix platform has Standard C headers */
 #define STDC_HEADERS 1
