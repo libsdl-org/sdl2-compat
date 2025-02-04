@@ -51,6 +51,7 @@
 #include "SDL_config_unix.h"
 #else
 /* This is a minimal configuration just to get SDL running on new platforms. */
+#warning SDL_config.h might be incomplete, good luck
 #include "SDL_config_minimal.h"
 #endif /* platform config */
 
