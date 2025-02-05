@@ -24,6 +24,9 @@
 
 #include "SDL_platform.h"
 
+/* A harmless way to get __GLIBC__ defined on glibc systems */
+#include <limits.h>
+
 /* C datatypes */
 #if defined(__SIZEOF_POINTER__)
 #define SIZEOF_VOIDP (__SIZEOF_POINTER__)
@@ -176,6 +179,19 @@
 #define HAVE_BCOPY 1    /* required by POSIX until 2008 */
 #define HAVE_INDEX 1    /* required by POSIX until 2008 */
 #define HAVE_RINDEX 1   /* required by POSIX until 2008 */
+
+/* GNU extensions, known to be provided by glibc, probably not provided
+ * by other libc implementations */
+#if defined(__GLIBC__)
+#define HAVE_GETAUXVAL 1
+#define HAVE_STRCASESTR 1
+#define HAVE_PTHREAD_SETNAME_NP 1
+#endif
+
+#if defined(__GLIBC__) && \
+    (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 27))
+#define HAVE_MEMFD_CREATE 1
+#endif
 
 #define SDL_VIDEO_DRIVER_X11 1
 
