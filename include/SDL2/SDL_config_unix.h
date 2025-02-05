@@ -209,6 +209,7 @@
 /* Enable OpenGL support */
 #define SDL_VIDEO_OPENGL 1
 #define SDL_VIDEO_OPENGL_ES 1
+#define SDL_VIDEO_OPENGL_GLX 1
 
 /* Enable Vulkan support */
 #if defined(__LINUX__)
