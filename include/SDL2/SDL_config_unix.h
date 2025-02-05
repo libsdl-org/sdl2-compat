@@ -193,6 +193,27 @@
 #define HAVE_MEMFD_CREATE 1
 #endif
 
+#if defined(__LINUX__)
+#define HAVE_LINUX_INPUT_H 1
+#define HAVE_SYS_INOTIFY_H 1
+#define HAVE_INOTIFY_INIT 1
+#define HAVE_INOTIFY_INIT1 1
+#endif
+
+#if defined(__LINUX__)
+#define HAVE_DBUS_DBUS_H 1
+#define HAVE_LIBUDEV_H 1
+#endif
+
+#if defined(__GLIBC__) && defined(__LINUX__)
+#define HAVE_FOPEN64 1
+#define HAVE_FSEEKO64 1
+#endif
+
+#if defined(__GLIBC__) && defined(__LINUX__) && (defined(__i386__) || defined(__x86_64__))
+#define HAVE_IMMINTRIN_H 1
+#endif
+
 /* In practice these should be available on any POSIX platform */
 #define DYNAPI_NEEDS_DLOPEN 1
 #define SDL_FILESYSTEM_UNIX 1
@@ -202,8 +223,28 @@
 #define SDL_VIDEO_DRIVER_X11 1
 
 #if defined(__LINUX__)
+/* Assume SDL on Linux most likely enables these */
+#define HAVE_LIBDECOR_H 1
 #define SDL_VIDEO_DRIVER_KMSDRM 1
 #define SDL_VIDEO_DRIVER_WAYLAND 1
+#endif
+
+#if defined(__LINUX__)
+/* These are not strictly guaranteed, but probably fine to assume */
+#define SDL_AUDIO_DRIVER_ALSA 1
+#define SDL_AUDIO_DRIVER_OSS 1
+#define SDL_AUDIO_DRIVER_PULSEAUDIO 1
+#endif
+
+#if defined(__LINUX__)
+#define SDL_INPUT_LINUXEV 1
+#define SDL_INPUT_LINUXKD 1
+#define SDL_JOYSTICK_LINUX 1
+#define SDL_HAPTIC_LINUX 1
+#define SDL_POWER_LINUX 1
+#define SDL_THREAD_PTHREAD_RECURSIVE_MUTEX 1
+#define SDL_UDEV_DYNAMIC "libudev.so.1"
+#define SDL_USE_IME 1
 #endif
 
 /* Enable OpenGL support */
