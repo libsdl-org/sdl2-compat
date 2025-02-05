@@ -1470,8 +1470,10 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
         break;
     /* Change SDL3 InstanceID to index */
     case SDL_EVENT_JOYSTICK_ADDED:
+        event2->jdevice.which = GetIndexFromJoystickInstance(event3->jdevice.which);
+        break;
     case SDL_EVENT_GAMEPAD_ADDED:
-        event2->jaxis.which = GetIndexFromJoystickInstance(event3->jaxis.which);
+        event2->cdevice.which = GetIndexFromJoystickInstance(event3->gdevice.which);
         break;
     case SDL_EVENT_JOYSTICK_BATTERY_UPDATED:
         switch (event3->jbattery.state) {
@@ -1552,6 +1554,22 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
         event3->wheel.y = (float)event2->wheel.y;
         event3->wheel.mouse_x = (float)event2->wheel.mouseX;
         event3->wheel.mouse_y = (float)event2->wheel.mouseY;
+        break;
+    case SDL_EVENT_JOYSTICK_ADDED:
+        if (event2->jdevice.which >= 0 &&
+            event2->jdevice.which < num_joysticks) {
+            event3->jdevice.which = joystick_list[event2->jdevice.which];
+        } else {
+            event3->jdevice.which = 0;
+        }
+        break;
+    case SDL_EVENT_GAMEPAD_ADDED:
+        if (event2->cdevice.which >= 0 &&
+            event2->cdevice.which < num_joysticks) {
+            event3->gdevice.which = joystick_list[event2->cdevice.which];
+        } else {
+            event3->gdevice.which = 0;
+        }
         break;
     case SDL_EVENT_JOYSTICK_BATTERY_UPDATED:
         /* This should never happen, but see Event3to2() for details */
