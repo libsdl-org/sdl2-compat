@@ -164,10 +164,18 @@
 /* Specified by POSIX */
 #define HAVE_O_CLOEXEC 1
 
-/* Non-standardized, but we assume they exist anyway */
+/* Non-standardized headers, but we assume they exist anyway
+ * (please report a bug if your Unix platform doesn't have these) */
 #define HAVE_ALLOCA_H 1
 #define HAVE_MALLOC_H 1
 #define HAVE_MEMORY_H 1
+
+/* Non-standardized functions, but we assume they exist anyway
+ * (please report a bug if your Unix platform doesn't have these) */
+#define HAVE_ALLOCA 1
+#define HAVE_BCOPY 1    /* required by POSIX until 2008 */
+#define HAVE_INDEX 1    /* required by POSIX until 2008 */
+#define HAVE_RINDEX 1   /* required by POSIX until 2008 */
 
 #define SDL_VIDEO_DRIVER_X11 1
 
