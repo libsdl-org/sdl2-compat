@@ -193,6 +193,12 @@
 #define HAVE_MEMFD_CREATE 1
 #endif
 
+/* In practice these should be available on any POSIX platform */
+#define DYNAPI_NEEDS_DLOPEN 1
+#define SDL_FILESYSTEM_UNIX 1
+#define SDL_LOADSO_DLOPEN 1
+#define SDL_THREAD_PTHREAD 1
+#define SDL_TIMER_UNIX 1
 #define SDL_VIDEO_DRIVER_X11 1
 
 #if defined(__LINUX__)
