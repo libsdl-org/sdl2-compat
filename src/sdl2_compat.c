@@ -802,6 +802,7 @@ BOOL WINAPI _DllMainCRTStartup(HANDLE dllhandle, DWORD reason, LPVOID reserved)
 /* Some SDL2 state we need to keep... */
 
 /* !!! FIXME: unify coding convention on the globals: some are MyVariableName and some are my_variable_name */
+static int timer_init = 0;
 static SDL2_Surface *OldWindowSurfaces[16];
 static SDL2_EventFilter EventFilter2 = NULL;
 static void *EventFilterUserData2 = NULL;
@@ -5568,24 +5569,13 @@ SDL_VideoQuit(void)
 SDL_DECLSPEC int SDLCALL
 SDL_Init(Uint32 flags)
 {
-    int ret;
-
-    ret = SDL3_InitSubSystem(flags) ? 0 : -1;
-    if (flags & SDL_INIT_VIDEO) {
-        /* default SDL2 GL attributes */
-        SDL_GL_SetAttribute(SDL2_GL_RED_SIZE, 3);
-        SDL_GL_SetAttribute(SDL2_GL_GREEN_SIZE, 3);
-        SDL_GL_SetAttribute(SDL2_GL_BLUE_SIZE, 2);
-        SDL_GL_SetAttribute(SDL2_GL_ALPHA_SIZE, 0);
-    }
-
-    return ret;
+    return SDL_InitSubSystem(flags);
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_InitSubSystem(Uint32 flags)
 {
-    int ret;
+    int result;
 
     SDL2Compat_InitLogPrefixes();
 
@@ -5612,15 +5602,30 @@ SDL_InitSubSystem(Uint32 flags)
         SDL_SetHint(SDL_HINT_IME_IMPLEMENTED_UI, hint);
     }
 
-    ret = SDL3_InitSubSystem(flags) ? 0 : -1;
-    if (flags & SDL_INIT_VIDEO) {
-        /* default SDL2 GL attributes */
-        SDL_GL_SetAttribute(SDL2_GL_RED_SIZE, 3);
-        SDL_GL_SetAttribute(SDL2_GL_GREEN_SIZE, 3);
-        SDL_GL_SetAttribute(SDL2_GL_BLUE_SIZE, 2);
-        SDL_GL_SetAttribute(SDL2_GL_ALPHA_SIZE, 0);
+    result = SDL3_InitSubSystem(flags) ? 0 : -1;
+    if (result == 0) {
+        if (flags & SDL2_INIT_TIMER) {
+            ++timer_init;
+        }
+        if (flags & SDL_INIT_VIDEO) {
+            /* default SDL2 GL attributes */
+            SDL_GL_SetAttribute(SDL2_GL_RED_SIZE, 3);
+            SDL_GL_SetAttribute(SDL2_GL_GREEN_SIZE, 3);
+            SDL_GL_SetAttribute(SDL2_GL_BLUE_SIZE, 2);
+            SDL_GL_SetAttribute(SDL2_GL_ALPHA_SIZE, 0);
+        }
     }
-    return ret;
+    return result;
+}
+
+SDL_DECLSPEC Uint32 SDLCALL
+SDL_WasInit(Uint32 flags)
+{
+    Uint32 result = SDL3_WasInit(flags);
+    if ((flags & SDL2_INIT_TIMER) && timer_init) {
+        result |= SDL2_INIT_TIMER;
+    }
+    return result;
 }
 
 SDL_DECLSPEC void SDLCALL
@@ -5629,6 +5634,8 @@ SDL_Quit(void)
     int i;
     SDL_LogPriority priorities[SDL_LOG_CATEGORY_CUSTOM];
     relative_mouse_mode = SDL2_FALSE;
+
+    timer_init = 0;
 
     if (SDL3_WasInit(SDL_INIT_VIDEO)) {
         GestureQuit();
@@ -5689,6 +5696,10 @@ SDL_Quit(void)
 SDL_DECLSPEC void SDLCALL
 SDL_QuitSubSystem(Uint32 flags)
 {
+    if ((flags & SDL2_INIT_TIMER) && timer_init > 0) {
+        --timer_init;
+    }
+
     if (flags & SDL_INIT_VIDEO) {
         GestureQuit();
     }

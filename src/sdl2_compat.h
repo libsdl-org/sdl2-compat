@@ -39,6 +39,9 @@ typedef enum
 } SDL2_bool;
 #endif
 
+/* removed in SDL3 */
+#define SDL2_INIT_TIMER 0x00000001u
+
 /* removed in SDL3 (which only uses SDL_WINDOW_HIDDEN now). */
 #define SDL2_WINDOW_SHOWN 0x000000004
 #define SDL2_WINDOW_FULLSCREEN_DESKTOP (0x00001000 | SDL_WINDOW_FULLSCREEN)
