@@ -139,6 +139,31 @@
 #define HAVE_STRINGS_H 1
 #define HAVE_SYS_TYPES_H 1
 
+/* Assume that any reasonable Unix platform has POSIX functions */
+#define HAVE_CLOCK_GETTIME 1
+#define HAVE_DLOPEN 1
+#define HAVE_FSEEKO 1
+#define HAVE_ICONV 1
+#define HAVE_MPROTECT 1
+#define HAVE_NANOSLEEP 1
+#define HAVE_POLL 1
+#define HAVE_POSIX_FALLOCATE 1
+#define HAVE_PUTENV 1
+#define HAVE_SEM_TIMEDWAIT 1
+#define HAVE_SETENV 1
+#define HAVE_SIGACTION 1
+#define HAVE_STRCASECMP 1
+#define HAVE_STRNCASECMP 1
+#define HAVE_STRTOK_R 1
+#define HAVE_SYSCONF 1
+#define HAVE_UNSETENV 1
+#define HAVE_WCSCASECMP 1
+#define HAVE_WCSDUP 1
+#define HAVE__EXIT 1
+
+/* Specified by POSIX */
+#define HAVE_O_CLOEXEC 1
+
 /* Non-standardized, but we assume they exist anyway */
 #define HAVE_ALLOCA_H 1
 #define HAVE_MALLOC_H 1
