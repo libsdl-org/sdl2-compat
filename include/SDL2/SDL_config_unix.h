@@ -37,6 +37,9 @@
 #define HAVE_GCC_ATOMICS 1
 #endif
 
+/* Assume that on Unix, it's conventional to build with a libc dependency */
+#define HAVE_LIBC 1
+
 /* Assume that any reasonable Unix platform has Standard C headers */
 #define STDC_HEADERS 1
 #define HAVE_CTYPE_H 1
