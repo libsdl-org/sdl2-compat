@@ -223,6 +223,11 @@
 #define SDL_VIDEO_DRIVER_X11 1
 
 #if defined(__LINUX__)
+/* glvis wants this */
+#define SDL_VIDEO_DRIVER_X11_XINPUT2 1
+#endif
+
+#if defined(__LINUX__)
 /* Assume SDL on Linux most likely enables these */
 #define HAVE_LIBDECOR_H 1
 #define SDL_VIDEO_DRIVER_KMSDRM 1
