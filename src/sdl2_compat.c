@@ -207,6 +207,10 @@ do { \
 #include <SDL3/SDL_opengl.h>
 #include <SDL3/SDL_opengl_glext.h>
 
+/* !!! FIXME: collect all the properties in one place near the top of the source file */
+#define PROP_WINDOW_FILTERED_FIRST_RESIZE "sdl2-compat.window.filtered_first_resize"
+
+
 static bool WantDebugLogging = false;
 
 
@@ -1927,11 +1931,12 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
         case SDL_EVENT_WINDOW_ICCPROF_CHANGED:
         case SDL_EVENT_WINDOW_DISPLAY_CHANGED:
             if (SDL3_EventEnabled(SDL2_WINDOWEVENT)) {
-
-                /* initial releases of SDL3 accidentally send these events to hidden windows, which breaks ffplay. Filter it out if necessary. */
+                /* SDL3 promises a resize event when creating a window, but SDL2 did not, and this breaks ffplay, so filter it out to match SDL2. */
                 if (event3->type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
                     SDL_Window *window = SDL3_GetWindowFromID(event3->window.windowID);
-                    if (window && (SDL3_GetWindowFlags(window) & SDL_WINDOW_HIDDEN)) {
+                    const SDL_PropertiesID winprops = SDL3_GetWindowProperties(window);
+                    if (winprops && !SDL3_GetBooleanProperty(winprops, PROP_WINDOW_FILTERED_FIRST_RESIZE, false)) {
+                        SDL3_SetBooleanProperty(winprops, PROP_WINDOW_FILTERED_FIRST_RESIZE, true);
                         post_event = false;
                         break;  /* drop it. */
                     }
