@@ -795,7 +795,7 @@ LoadSDL3(void)
                     p = SDL2COMPAT_stpcpy(p, ": SDL3 library is too old (have ");
                     p = SDL2COMPAT_stpcpy(p, sdl3verstr);
                     p = SDL2COMPAT_stpcpy(p, ", but need at least ");
-                    p = SDL2COMPAT_stpcpy(p, sdl3verstr);
+                    p = SDL2COMPAT_stpcpy(p, sdl3reqverstr);
                     p = SDL2COMPAT_stpcpy(p, ").");
                 } else {
                     if (WantDebugLogging) {
