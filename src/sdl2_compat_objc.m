@@ -34,6 +34,19 @@
 #define NSAlertStyleCritical NSCriticalAlertStyle
 #endif
 
+SDL2_PRIVATE void SDL2Compat_NSLog(const char *prefix, const char *text)
+{
+    @autoreleasepool {
+        NSString *nsText = [NSString stringWithUTF8String:text];
+        if (prefix && *prefix) {
+            NSString *nsPrefix = [NSString stringWithUTF8String:prefix];
+            NSLog(@"%@%@", nsPrefix, nsText);
+        } else {
+            NSLog(@"%@", nsText);
+        }
+    }
+}
+
 SDL2_PRIVATE void error_dialog(const char *errorMsg)
 {
     NSAlert *alert;

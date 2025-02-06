@@ -244,6 +244,82 @@ SDL2COMPAT_itoa(char *dst, int val)
     } while (ptr > dst);
 }
 
+/* you can use SDL3_strlen once we're past startup. */
+static int SDL2Compat_strlen(const char *str)
+{
+    int retval = 0;
+    while (str[retval]) {
+        retval++;
+    }
+    return retval;
+}
+
+/* you can use SDL3_strcmp once we're past startup. */
+static bool SDL2Compat_strequal(const char *a, const char *b)
+{
+    while (true) {
+        const char cha = *a;
+        if (cha != *b) {
+            return false;
+        } else if (!cha) {
+            break;
+        }
+        a++;
+        b++;
+    }
+    return true;
+}
+
+/* log a string using platform-specific code for before SDL3 is fully available. */
+static void SDL2Compat_LogAtStartup(const char *str)
+{
+    #ifdef SDL_PLATFORM_WINDOWS
+    OutputDebugStringA(str);
+    #elif defined(SDL_PLATFORM_ANDROID)
+    __android_log_write(ANDROID_LOG_INFO, "sdl2-compat", str);
+    #elif defined(SDL_PLATFORM_APPLE)
+    extern void SDL2Compat_NSLog(const char *prefix, const char *text);
+    SDL2Compat_NSLog(NULL, str);
+    #else
+    fputs(str, stderr);
+    fputs("\n", stderr);
+    #endif
+}
+
+/* this talks right to the OS environment table. Don't use SDL3_setenv at startup. */
+static void SDL2Compat_SetEnvAtStartup(const char *name, const char *value)
+{
+    #ifdef SDL_PLATFORM_WINDOWS
+    SetEnvironmentVariableA(name, value);
+    #else  /* we might need other platforms, or a simple `return;` for platforms without an environment table. */
+    if (value) {
+        setenv(name, value, 1);
+    } else {
+        unsetenv(name);
+    }
+    #endif
+}
+
+/* this talks right to the OS environment table. Don't use SDL3_getenv at startup. */
+static const char *SDL2Compat_GetEnvAtStartup(const char *name)
+{
+    #ifdef SDL_PLATFORM_WINDOWS
+    static char buf[256];  /* overflows will just report as environment variable being unset. But most of our environment vars don't come through here. */
+    const DWORD rc = GetEnvironmentVariableA(name, buf, (DWORD) sizeof (buf));
+    return ((rc != 0) && (rc < sizeof (buf))) ? buf : NULL;
+    #else  /* we might need other platforms, or a simple `return NULL;` for platforms without an environment table. */
+    return getenv(name);
+    #endif
+}
+
+
+/* this can't call into SDL3_getenv because things aren't set up yet, so try for platform-specific getenv checks. */
+static bool SDL2Compat_CheckDebugLogging(void)
+{
+    const char *value = SDL2Compat_GetEnvAtStartup("SDL2COMPAT_DEBUG_LOGGING");
+    return (value != NULL) && SDL2Compat_strequal(value, "1");
+}
+
 
 /* Obviously we can't use SDL_LoadObject() to load SDL3.  :)  */
 /* FIXME: Updated library names after https://github.com/libsdl-org/SDL/issues/5626 solidifies.  */
@@ -324,9 +400,6 @@ static char loaderror[256];
 #ifndef DIRSEP
 #define DIRSEP "/"
 #endif
-
-/* init stuff we want to do after SDL3 is loaded but before the app has access to it. */
-static int SDL2Compat_InitOnStartup(void);
 
 
 static void *
@@ -550,37 +623,52 @@ SDL_ClearHints(void)
     SDL3_ResetHints();
 }
 
+/* DO NOT USE SDL3 FUNCTIONS IN HERE! */
 static void
 SDL2Compat_ApplyQuirks(bool force_x11)
 {
     const char *exe_name = SDL2Compat_GetExeName();
-    const char *old_env;
     unsigned int i;
 
     if (WantDebugLogging) {
-        SDL3_Log("This app appears to be named '%s'", exe_name);
+        const char *lead = "sdl2-compat: This app appears to be named:";
+        char msg[256];
+        if ((SDL2Compat_strlen(lead) + SDL2Compat_strlen(exe_name) + 2) <= (int) (sizeof (msg))) {
+            char *p = msg;
+            p = SDL2COMPAT_stpcpy(p, lead);
+            p = SDL2COMPAT_stpcpy(p, " ");
+            p = SDL2COMPAT_stpcpy(p, exe_name);
+            SDL2Compat_LogAtStartup(msg);
+        } else {
+            SDL2Compat_LogAtStartup(lead);
+            SDL2Compat_LogAtStartup(exe_name);
+        }
     }
 
     /* if you change this, update also SDL2_to_SDL3_hint() */
     for (i = 0; i < SDL_arraysize(renamed_hints); ++i) {
-        old_env = SDL3_getenv(renamed_hints[i].old_hint);
+        const char *old_env = SDL2Compat_GetEnvAtStartup(renamed_hints[i].old_hint);
         if (old_env) {
-            SDL3_setenv_unsafe(renamed_hints[i].new_hint, old_env, 1);
+            SDL2Compat_SetEnvAtStartup(renamed_hints[i].new_hint, old_env);
         }
     }
 
     #ifdef __linux__
     if (force_x11) {
-        const char *videodriver_env = SDL3_getenv("SDL_VIDEODRIVER");
-        if (videodriver_env && (SDL3_strcmp(videodriver_env, "x11") != 0)) {
+        const char *videodriver_env = SDL2Compat_GetEnvAtStartup("SDL_VIDEODRIVER");
+        if (videodriver_env && !SDL2Compat_strequal(videodriver_env, "x11")) {
             if (WantDebugLogging) {
-                SDL3_Log("This app looks like it requires X11, but the SDL_VIDEODRIVER environment variable is set to \"%s\". If you have issues, try setting SDL_VIDEODRIVER=x11", videodriver_env);
+                SDL2Compat_LogAtStartup("sdl2-compat: This app looks like it requires X11, but the SDL_VIDEODRIVER environment variable is currently set to:");
+                SDL2Compat_LogAtStartup("");
+                SDL2Compat_LogAtStartup(videodriver_env);
+                SDL2Compat_LogAtStartup("");
+                SDL2Compat_LogAtStartup("If you have issues, try setting SDL_VIDEODRIVER=x11");
             }
         } else {
             if (WantDebugLogging) {
-                SDL3_Log("sdl2-compat: We are forcing this app to use X11, because it probably talks to an X server directly, outside of SDL. If possible, this app should be fixed, to be compatible with Wayland, etc.");
+                SDL2Compat_LogAtStartup("sdl2-compat: We are forcing this app to use X11, because it probably talks to an X server directly, outside of SDL. If possible, this app should be fixed, to be compatible with Wayland, etc.");
             }
-            SDL3_setenv_unsafe("SDL_VIDEO_DRIVER", "x11", 1);
+            SDL2Compat_SetEnvAtStartup("SDL_VIDEO_DRIVER", "x11");
         }
     }
     #endif
@@ -588,27 +676,62 @@ SDL2Compat_ApplyQuirks(bool force_x11)
     if (*exe_name == '\0') {
         return;
     }
+
     for (i = 0; i < SDL_arraysize(quirks); i++) {
-        if (!SDL3_strcmp(exe_name, quirks[i].exe_name)) {
-            const char *var = SDL3_getenv(quirks[i].hint_name);
+        if (SDL2Compat_strequal(exe_name, quirks[i].exe_name)) {
+            const char *var = SDL2Compat_GetEnvAtStartup(quirks[i].hint_name);
             if (!var) {
                 if (WantDebugLogging) {
-                    SDL3_Log("Applying compatibility quirk %s=\"%s\" for \"%s\"", quirks[i].hint_name, quirks[i].hint_value, exe_name);
+                    char msg[256];
+                    char *p = msg;
+                    p = SDL2COMPAT_stpcpy(p, "sdl2-compat: Applying compatibility quirk ");
+                    p = SDL2COMPAT_stpcpy(p, quirks[i].hint_name);
+                    p = SDL2COMPAT_stpcpy(p, "=\"");
+                    p = SDL2COMPAT_stpcpy(p, quirks[i].hint_value);
+                    p = SDL2COMPAT_stpcpy(p, "\".");
+                    SDL2Compat_LogAtStartup(msg);
                 }
-                SDL3_setenv_unsafe(quirks[i].hint_name, quirks[i].hint_value, 1);
+                SDL2Compat_SetEnvAtStartup(quirks[i].hint_name, quirks[i].hint_value);
             } else {
                 if (WantDebugLogging) {
-                    SDL3_Log("Not applying compatibility quirk %s=\"%s\" for \"%s\" due to environment variable override (\"%s\")\n",
-                            quirks[i].hint_name, quirks[i].hint_value, exe_name, var);
+                    char msg[256];
+                    char varbuf[32];
+                    char *p = msg;
+                    int j;
+
+                    /* copy the start of untrusted string var to a small array to prevent buffer overflows */
+                    for (j = 0; j < ((int) SDL_arraysize(varbuf)); j++) {
+                        varbuf[j] = var[j];
+                        if (var[j] == 0) {
+                            break;
+                        }
+                    }
+
+                    if (j == SDL_arraysize(varbuf)) {  /* truncate and terminate the string if necessary. */
+                        SDL2COMPAT_stpcpy(varbuf + (SDL_arraysize(varbuf) - 6), "[...]");
+                    }
+
+                    p = SDL2COMPAT_stpcpy(p, "sdl2-compat: Not applying compatibility quirk ");
+                    p = SDL2COMPAT_stpcpy(p, quirks[i].hint_name);
+                    p = SDL2COMPAT_stpcpy(p, "=\"");
+                    p = SDL2COMPAT_stpcpy(p, quirks[i].hint_value);
+                    p = SDL2COMPAT_stpcpy(p, "\" due to environment variable override (\"");
+                    p = SDL2COMPAT_stpcpy(p, varbuf);
+                    p = SDL2COMPAT_stpcpy(p, "\").");
+                    SDL2Compat_LogAtStartup(msg);
                 }
             }
         }
     }
-    if (SDL3_strcmp(exe_name, "Torchlight.bin.x86_64") == 0) {
+    if (SDL2Compat_strequal(exe_name, "Torchlight.bin.x86_64")) {
         UseSDL2PrereleaseEvents = true;
     }
 }
 
+
+/* DO NOT CALL THINGS THAT USE SDL ALLOCATORS HERE. It runs before main(), so app-supplied allocators are not set at this point.
+   This means no SDL_Log, no hint subsystem, nothing that might call SDL_SetError! In fact, favor code in this file, using
+   platform-specific #ifdefs, to calling into SDL3 at all, if you can help it. */
 static int
 LoadSDL3(void)
 {
@@ -632,6 +755,8 @@ LoadSDL3(void)
         }
         #endif
 
+        WantDebugLogging = SDL2Compat_CheckDebugLogging();
+
         okay = LoadSDL3Library();
         if (!okay) {
             SDL2COMPAT_stpcpy(loaderror, "Failed loading SDL3 library.");
@@ -639,40 +764,59 @@ LoadSDL3(void)
             #define SDL3_SYM(rc,fn,params,args,ret) SDL3_##fn = (SDL3_##fn##_t) LoadSDL3Symbol("SDL_" #fn, &okay);
             #include "sdl3_syms.h"
             if (okay) {
+                char sdl3verstr[16];
+                char sdl3reqverstr[16];
+                char sdl2compatverstr[16];
                 const int sdl3version = SDL3_GetVersion();
                 const int sdl3major = SDL_VERSIONNUM_MAJOR(sdl3version);
                 const int sdl3minor = SDL_VERSIONNUM_MINOR(sdl3version);
                 const int sdl3micro = SDL_VERSIONNUM_MICRO(sdl3version);
+                char *p;
+
+                #define SETVERSTR(str, major, minor, micro) { \
+                    char value[16]; \
+                    p = str; \
+                    SDL2COMPAT_itoa(value, major); p = SDL2COMPAT_stpcpy(p, value); *p++ = '.'; \
+                    SDL2COMPAT_itoa(value, minor); p = SDL2COMPAT_stpcpy(p, value); *p++ = '.'; \
+                    SDL2COMPAT_itoa(value, micro); p = SDL2COMPAT_stpcpy(p, value); \
+                }
+
+                SETVERSTR(sdl3verstr, sdl3major, sdl3minor, sdl3micro);
+                SETVERSTR(sdl3reqverstr, SDL_VERSIONNUM_MAJOR(SDL3_REQUIRED_VER), SDL_VERSIONNUM_MINOR(SDL3_REQUIRED_VER), SDL_VERSIONNUM_MICRO(SDL3_REQUIRED_VER));
+                SETVERSTR(sdl2compatverstr, 2, SDL2_COMPAT_VERSION_MINOR, SDL2_COMPAT_VERSION_PATCH);
+
+                #undef SETVERSTR
 
                 okay = (sdl3version >= SDL3_REQUIRED_VER);
                 if (!okay) {
-                    char value[12];
-                    char *p = SDL2COMPAT_stpcpy(loaderror, "SDL3 ");
-
-                    SDL2COMPAT_itoa(value, sdl3major);
-                    p = SDL2COMPAT_stpcpy(p, value); *p++ = '.';
-                    SDL2COMPAT_itoa(value, sdl3minor);
-                    p = SDL2COMPAT_stpcpy(p, value); *p++ = '.';
-                    SDL2COMPAT_itoa(value, sdl3micro);
-                    p = SDL2COMPAT_stpcpy(p, value);
-
-                    SDL2COMPAT_stpcpy(p, " library is too old.");
+                    p = loaderror;
+                    p = SDL2COMPAT_stpcpy(p, "sdl2-compat ");
+                    p = SDL2COMPAT_stpcpy(p, sdl2compatverstr);
+                    p = SDL2COMPAT_stpcpy(p, ": SDL3 library is too old (have ");
+                    p = SDL2COMPAT_stpcpy(p, sdl3verstr);
+                    p = SDL2COMPAT_stpcpy(p, ", but need at least ");
+                    p = SDL2COMPAT_stpcpy(p, sdl3verstr);
+                    p = SDL2COMPAT_stpcpy(p, ").");
                 } else {
-                    WantDebugLogging = SDL2Compat_GetHintBoolean("SDL2COMPAT_DEBUG_LOGGING", false);
                     if (WantDebugLogging) {
+                        char debugmsg[128];  /* can't use SDL log or malloc, just write to a stack buffer and do a simple platform-specific logging. */
+
+                        p = debugmsg;
+                        p = SDL2COMPAT_stpcpy(p, "sdl2-compat ");
+                        p = SDL2COMPAT_stpcpy(p, sdl2compatverstr);
+                        p = SDL2COMPAT_stpcpy(p, ", ");
+
                         #if defined(__DATE__) && defined(__TIME__)
-                        SDL3_Log("sdl2-compat 2.%d.%d, built on " __DATE__ " at " __TIME__ ", talking to SDL3 %d.%d.%d",
-                                 SDL2_COMPAT_VERSION_MINOR, SDL2_COMPAT_VERSION_PATCH, sdl3major, sdl3minor, sdl3micro);
-                        #else
-                        SDL3_Log("sdl2-compat 2.%d.%d, talking to SDL3 %d.%d.%d",
-                                 SDL2_COMPAT_VERSION_MINOR, SDL2_COMPAT_VERSION_PATCH, sdl3major, sdl3minor, sdl3micro);
+                        p = SDL2COMPAT_stpcpy(p, "built on " __DATE__ " at " __TIME__ ", ");
                         #endif
+
+                        p = SDL2COMPAT_stpcpy(p, "talking to SDL3 ");
+                        p = SDL2COMPAT_stpcpy(p, sdl3verstr);
+
+                        SDL2Compat_LogAtStartup(debugmsg);
                     }
                     SDL2Compat_ApplyQuirks(force_x11);  /* Apply and maybe print a list of any enabled quirks. */
                 }
-            }
-            if (okay) {
-                okay = SDL2Compat_InitOnStartup();
             }
             if (!okay) {
                 UnloadSDL3();
@@ -851,6 +995,37 @@ static SDL_PropertiesID timers = 0;
 
 /* Functions! */
 
+static SDL_InitState InitSDL2CompatGlobals;
+
+static void SDL2Compat_QuitInternal(void)
+{
+    if (EventWatchListMutex) {
+        SDL3_DestroyMutex(EventWatchListMutex);
+        EventWatchListMutex = NULL;
+    }
+    if (sensor_lock) {
+        SDL3_DestroyMutex(sensor_lock);
+        sensor_lock = NULL;
+    }
+    if (joystick_lock) {
+        SDL3_DestroyMutex(joystick_lock);
+        joystick_lock = NULL;
+    }
+    if (AudioDeviceLock) {
+        SDL3_DestroyMutex(AudioDeviceLock);
+        AudioDeviceLock = NULL;
+    }
+}
+
+static void SDL2Compat_Quit(void)
+{
+    if (SDL3_ShouldQuit(&InitSDL2CompatGlobals)) {
+        SDL2Compat_QuitInternal();
+        SDL3_SetInitialized(&InitSDL2CompatGlobals, false);
+    }
+}
+
+/* !!! FIXME: move this function closer to SDL_InitSubSystem */
 static void
 SDL2Compat_InitLogPrefixes(void)
 {
@@ -862,9 +1037,10 @@ SDL2Compat_InitLogPrefixes(void)
     SDL3_SetLogPriorityPrefix(SDL_LOG_PRIORITY_CRITICAL, "CRITICAL: ");
 }
 
-/* this stuff _might_ move to SDL_Init later */
-static int
-SDL2Compat_InitOnStartup(void)
+/* init stuff we want to do after SDL3 is loaded but before the app has access to it. */
+/* !!! FIXME: move this function closer to SDL_InitSubSystem */
+static bool
+SDL2Compat_InitOnStartupInternal(void)
 {
     EventWatchListMutex = SDL3_CreateMutex();
     if (!EventWatchListMutex) {
@@ -892,26 +1068,24 @@ SDL2Compat_InitOnStartup(void)
 
     SDL2Compat_InitLogPrefixes();
 
-    return 1;
+    return true;
 
 fail:
-    SDL2COMPAT_stpcpy(loaderror, "Failed to initialize sdl2-compat library.");
+    SDL2Compat_QuitInternal();
+    SDL3_SetError("Failed to initialize sdl2-compat library.");
 
-    if (EventWatchListMutex) {
-        SDL3_DestroyMutex(EventWatchListMutex);
-    }
-    if (sensor_lock) {
-        SDL3_DestroyMutex(sensor_lock);
-    }
-    if (joystick_lock) {
-        SDL3_DestroyMutex(joystick_lock);
-    }
-    if (AudioDeviceLock) {
-        SDL3_DestroyMutex(AudioDeviceLock);
-    }
-    return 0;
+    return false;
 }
 
+static bool SDL2Compat_InitOnStartup(void)
+{
+    bool retval = true;
+    if (SDL3_ShouldInit(&InitSDL2CompatGlobals)) {
+        retval = SDL2Compat_InitOnStartupInternal();
+        SDL3_SetInitialized(&InitSDL2CompatGlobals, retval);
+    }
+    return retval;
+}
 
 /* obviously we have to override this so we don't report ourselves as SDL3. */
 SDL_DECLSPEC void SDLCALL
@@ -5595,7 +5769,9 @@ SDL_InitSubSystem(Uint32 flags)
 {
     int result;
 
-    SDL2Compat_InitLogPrefixes();
+    if (!SDL2Compat_InitOnStartup()) {
+        return -1;
+    }
 
     /* Update IME UI hint */
     if (flags & SDL_INIT_VIDEO) {
@@ -5703,6 +5879,8 @@ SDL_Quit(void)
     for (i = 0; i < SDL_LOG_CATEGORY_CUSTOM; i++) {
         priorities[i] = SDL3_GetLogPriority(i);
     }
+
+    SDL2Compat_Quit();
 
     SDL3_Quit();
 
