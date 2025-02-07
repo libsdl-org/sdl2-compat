@@ -5946,7 +5946,7 @@ static int GetNumAudioDevices(int iscapture)
     AudioDeviceList *list = iscapture ? &AudioSDL3RecordingDevices : &AudioSDL3PlaybackDevices;
     SDL_AudioDeviceID *devices;
     int num_devices;
-    int i;
+    int i, j;
 
     /* SDL_GetNumAudioDevices triggers a device redetect in SDL2, so we'll just build our list from here. */
     devices = iscapture ? SDL3_GetAudioRecordingDevices(&num_devices) : SDL3_GetAudioPlaybackDevices(&num_devices);
@@ -5955,10 +5955,18 @@ static int GetNumAudioDevices(int iscapture)
     }
 
     SDL3_zero(newlist);
+
     if (num_devices > 0) {
+        const char **orignames = (const char **) SDL3_malloc(num_devices * sizeof (*orignames));
+        if (!orignames) {
+            SDL3_free(devices);
+            return list->num_devices;  /* just return the existing one for now. Oh well. */
+        }
+
         newlist.num_devices = num_devices;
         newlist.devices = (AudioDeviceInfo *) SDL3_malloc(sizeof (AudioDeviceInfo) * num_devices);
         if (!newlist.devices) {
+            SDL3_free(orignames);
             SDL3_free(devices);
             return list->num_devices;  /* just return the existing one for now. Oh well. */
         }
@@ -5966,21 +5974,39 @@ static int GetNumAudioDevices(int iscapture)
         for (i = 0; i < num_devices; i++) {
             const char *newname = SDL3_GetAudioDeviceName(devices[i]);
             char *fullname = NULL;
+            unsigned int dupenum = 0;
+
             if (newname == NULL) {
                 /* ugh, whatever, just make up a name. */
                 newname = "Unidentified device";
             }
 
+            orignames[i] = newname;
+
             /* Device names must be unique in SDL2, as that's how we open them.
-               SDL2 took serious pains to try to add numbers to the end of duplicate device names ("SoundBlaster Pro" and then "SoundBlaster Pro (2)"),
-               but here we're just putting the actual SDL3 instance id at the end of everything. Good enough. I hope. */
-            if (!newname || (SDL3_asprintf(&fullname, "%s (id=%u)", newname, (unsigned int) devices[i]) < 0)) {
-                /* we're in real trouble now.  :/  */
-                int j;
-                for (j = 0; j < i; j++) {
-                    SDL3_free(newlist.devices[i].name);
+               So if you have two "SoundBlaster Pro 16" devices, one will be
+               "SoundBlaster Pro 16" and the other will be "SoundBlaster Pro 16 (2)" */
+            for (j = 0; j < i; j++) {
+                if (SDL_strcmp(newname, orignames[j]) == 0) {
+                    dupenum++;
                 }
-                SDL3_free(fullname);
+            }
+
+            if (!dupenum) {
+                fullname = SDL3_strdup(newname);
+            } else {
+                char *ptr = NULL;
+                if (SDL3_asprintf(&ptr, "%s (%u)", newname, dupenum + 1) > 0) {
+                    fullname = ptr;
+                }
+            }
+
+            if (!fullname) {
+                /* we're in real trouble now.  :/  */
+                for (j = 0; j < (i-1); j++) {
+                    SDL3_free(newlist.devices[j].name);
+                }
+                SDL3_free(orignames);
                 SDL3_free(devices);
                 return list->num_devices;  /* just return the existing one for now. Oh well. */
             }
@@ -5988,6 +6014,8 @@ static int GetNumAudioDevices(int iscapture)
             newlist.devices[i].devid = devices[i];
             newlist.devices[i].name = fullname;
         }
+
+        SDL3_free(orignames);
     }
 
     for (i = 0; i < list->num_devices; i++) {
