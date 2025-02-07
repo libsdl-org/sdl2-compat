@@ -5813,6 +5813,16 @@ SDL_InitSubSystem(Uint32 flags)
             SDL_GL_SetAttribute(SDL2_GL_BLUE_SIZE, 2);
             SDL_GL_SetAttribute(SDL2_GL_ALPHA_SIZE, 0);
         }
+
+        /* if audio was initialized and there are no devices enumerated yet, build some initial device lists. */
+        if ((flags & SDL_INIT_AUDIO) && SDL3_WasInit(SDL_INIT_AUDIO)) {
+            if (AudioSDL3PlaybackDevices.num_devices == 0) {
+                SDL_GetNumAudioDevices(SDL2_FALSE);
+            }
+            if (AudioSDL3RecordingDevices.num_devices == 0) {
+                SDL_GetNumAudioDevices(SDL2_TRUE);
+            }
+        }
     }
     return result;
 }
