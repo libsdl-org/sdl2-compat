@@ -85,13 +85,15 @@ fi
 
 if [ "x$(($ref_minor%2))" = "x0" ]; then
     so_version="$((100 * $ref_minor)).$ref_micro"
+    compat_version="$((100 * $ref_minor + 1)).0"
     dylib_version="$((100 * $ref_minor + 1)).$ref_micro"
 else
     so_version="$((100 * $ref_minor + $ref_micro)).0"
+    compat_version="$((100 * $ref_minor + $ref_micro + 1)).0"
     dylib_version="$((100 * $ref_minor + $ref_micro + 1)).0"
 fi
 
-ref_dylib_versions="$dylib_version $dylib_version"
+ref_dylib_versions="$compat_version $dylib_version"
 dylib_versions=$(sed -Ene 's/^LDFLAGS\+= -Wl,-compatibility_version,([0-9.]+) -Wl,-current_version,([0-9.]+)$/\1 \2/p' src/Makefile.darwin)
 
 if [ "$ref_dylib_versions" = "$dylib_versions" ]; then
