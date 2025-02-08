@@ -126,6 +126,8 @@ typedef enum SDL2_LogPriority
     SDL2_NUM_LOG_PRIORITIES
 } SDL2_LogPriority;
 
+typedef void (SDLCALL *SDL2_LogOutputFunction)(void *userdata, int category, SDL2_LogPriority priority, const char *message);
+
 typedef SDL_AtomicInt SDL_atomic_t;
 
 typedef SDL_Condition SDL_cond;

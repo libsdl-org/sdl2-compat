@@ -955,6 +955,7 @@ static SDL2_Surface *OldWindowSurfaces[16];
 static SDL2_EventFilter EventFilter2 = NULL;
 static void *EventFilterUserData2 = NULL;
 static SDL_mutex *EventWatchListMutex = NULL;
+static SDL2_LogOutputFunction LogOutputFunction2 = NULL;
 static EventFilterWrapperData *EventWatchers2 = NULL;
 static SDL2_bool relative_mouse_mode = SDL2_FALSE;
 static SDL_JoystickID *joystick_list = NULL;
@@ -1332,6 +1333,31 @@ SDL_LOG_IMPL(Warn, WARN)
 SDL_LOG_IMPL(Error, ERROR)
 SDL_LOG_IMPL(Critical, CRITICAL)
 #undef SDL_LOG_IMPL
+
+static void SDLCALL LogOutputFunction3to2(void *userdata, int category, SDL_LogPriority priority, const char *message)
+{
+    LogOutputFunction2(userdata, category, LogPriority3to2(priority), message);
+}
+
+SDL_DECLSPEC void SDLCALL SDL_LogSetOutputFunction(SDL2_LogOutputFunction callback, void *userdata)
+{
+    if (callback == NULL || (SDL_LogOutputFunction)callback == SDL3_GetDefaultLogOutputFunction()) {
+        /* This is the original SDL3 default logger or NULL logger. Don't use the 3to2 thunk. */
+        SDL3_SetLogOutputFunction((SDL_LogOutputFunction)callback, userdata);
+    } else {
+        LogOutputFunction2 = callback;
+        SDL3_SetLogOutputFunction(LogOutputFunction3to2, userdata);
+    }
+}
+
+SDL_DECLSPEC void SDLCALL SDL_LogGetOutputFunction(SDL2_LogOutputFunction *callback, void **userdata)
+{
+    SDL3_GetLogOutputFunction((SDL_LogOutputFunction *)callback, userdata);
+    if (callback && (SDL_LogOutputFunction)*callback == LogOutputFunction3to2) {
+        /* Return the real function, not our 3to2 thunk */
+        *callback = LogOutputFunction2;
+    }
+}
 
 static void UpdateGamepadButtonSwap(SDL_Gamepad *gamepad)
 {
