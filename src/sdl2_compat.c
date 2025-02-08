@@ -57,8 +57,8 @@ This breaks the build when creating SDL_ ## DisableScreenSaver
  * to be high by default, and usually doesn't change (and maybe never changes).
  * The number might increment past 90 if there are a ton of releases.
  */
-#define SDL2_COMPAT_VERSION_MINOR 30
-#define SDL2_COMPAT_VERSION_PATCH 55
+#define SDL2_COMPAT_VERSION_MINOR 32
+#define SDL2_COMPAT_VERSION_PATCH 50
 
 #ifndef SDL2COMPAT_REVISION
 #define SDL2COMPAT_REVISION "SDL-2." STRINGIFY(SDL2_COMPAT_VERSION_MINOR) "." STRINGIFY(SDL2_COMPAT_VERSION_PATCH) "-no-vcs"
