@@ -3764,10 +3764,19 @@ SDL_DECLSPEC SDL2_bool SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWM
             }
         }
     } else if (SDL3_strcmp(driver, "windows") == 0) {
+
+        Uint32 version2 = SDL_VERSIONNUM((Uint32)info->version.major,
+            (Uint32)info->version.minor,
+            (Uint32)info->version.patch);
+
         info->subsystem = SDL2_SYSWM_WINDOWS;
         info->info.win.window = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
-        info->info.win.hdc = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_HDC_POINTER, NULL);
-        info->info.win.hinstance = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_INSTANCE_POINTER, NULL);
+        if (version2 >= SDL_VERSIONNUM(2, 0, 4)) {
+            info->info.win.hdc = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_HDC_POINTER, NULL);
+        }
+        if (version2 >= SDL_VERSIONNUM(2, 0, 5)) {
+            info->info.win.hinstance = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_INSTANCE_POINTER, NULL);
+        }
     } else if (SDL3_strcmp(driver, "x11") == 0) {
         info->subsystem = SDL2_SYSWM_X11;
         info->info.x11.display = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, NULL);
