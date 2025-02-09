@@ -5858,6 +5858,14 @@ SDL_InitSubSystem(Uint32 flags)
                 SDL_GetNumAudioDevices(SDL2_TRUE);
             }
         }
+
+        /* enumerate joysticks and haptics to build device list */
+        if (flags & (SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD)) {
+            SDL_NumJoysticks();
+        }
+        if (flags & SDL_INIT_HAPTIC) {
+            SDL_NumHaptics();
+        }
     }
     return result;
 }
