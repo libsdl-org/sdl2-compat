@@ -3771,10 +3771,10 @@ SDL_DECLSPEC SDL2_bool SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWM
 
         info->subsystem = SDL2_SYSWM_WINDOWS;
         info->info.win.window = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
-        if (version2 > SDL_VERSIONNUM(2, 0, 4)) {
+        if (version2 >= SDL_VERSIONNUM(2, 0, 4)) {
             info->info.win.hdc = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_HDC_POINTER, NULL);
         }
-        if (version2 > SDL_VERSIONNUM(2, 0, 5)) {
+        if (version2 >= SDL_VERSIONNUM(2, 0, 5)) {
             info->info.win.hinstance = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_INSTANCE_POINTER, NULL);
         }
     } else if (SDL3_strcmp(driver, "x11") == 0) {
