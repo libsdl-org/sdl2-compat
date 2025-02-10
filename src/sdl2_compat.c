@@ -5591,6 +5591,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_AudioInit(const char *driver_name)
 {
     SynchronizeEnvironmentVariables();
+
     if (driver_name) {
         SDL3_SetHint("SDL_AUDIO_DRIVER", driver_name);
     }
