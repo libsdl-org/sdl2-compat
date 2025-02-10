@@ -5567,10 +5567,31 @@ SDL_RemoveTimer(SDL2_TimerID id)
     return SDL3_RemoveTimer((SDL_TimerID)id) ? SDL2_TRUE : SDL2_FALSE;
 }
 
+static void SynchronizeEnvironmentVariables()
+{
+    SDL_Environment *env = SDL3_GetEnvironment();
+    SDL_Environment *fresh_env = SDL3_CreateEnvironment(true);
+
+    /* Sync any changes to the C environment into SDL3's cached copy */
+    char **fresh_envp = SDL3_GetEnvironmentVariables(fresh_env);
+    if (fresh_envp) {
+        for (int i = 0; fresh_envp[i]; i++) {
+            char *sep = SDL3_strchr(fresh_envp[i], '=');
+            *sep = '\0';
+            SDL3_SetEnvironmentVariable(env, fresh_envp[i], sep + 1, true);
+        }
+
+        SDL3_free(fresh_envp);
+    }
+
+    SDL3_DestroyEnvironment(fresh_env);
+}
 
 SDL_DECLSPEC int SDLCALL
 SDL_AudioInit(const char *driver_name)
 {
+    SynchronizeEnvironmentVariables();
+
     if (driver_name) {
         SDL3_SetHint("SDL_AUDIO_DRIVER", driver_name);
     }
@@ -5777,6 +5798,9 @@ SDL_DECLSPEC int SDLCALL
 SDL_VideoInit(const char *driver_name)
 {
     int ret;
+
+    SynchronizeEnvironmentVariables();
+
     if (driver_name) {
         SDL3_SetHint("SDL_VIDEO_DRIVER", driver_name);
     }
@@ -5812,6 +5836,8 @@ SDL_InitSubSystem(Uint32 flags)
     if (!SDL2Compat_InitOnStartup()) {
         return -1;
     }
+
+    SynchronizeEnvironmentVariables();
 
     /* Update IME UI hint */
     if (flags & SDL_INIT_VIDEO) {
@@ -6464,7 +6490,7 @@ SDL_OpenAudio(SDL2_AudioSpec *desired2, SDL2_AudioSpec *obtained2)
 
     /* Start up the audio driver, if necessary. This is legacy behaviour! */
     if (!SDL3_WasInit(SDL_INIT_AUDIO)) {
-        if (!SDL3_InitSubSystem(SDL_INIT_AUDIO)) {
+        if (SDL_AudioInit(NULL) < 0) {
             return -1;
         }
     }
