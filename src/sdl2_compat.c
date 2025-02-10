@@ -5575,7 +5575,8 @@ static void SynchronizeEnvironmentVariables()
     /* Sync any changes to the C environment into SDL3's cached copy */
     char **fresh_envp = SDL3_GetEnvironmentVariables(fresh_env);
     if (fresh_envp) {
-        for (int i = 0; fresh_envp[i]; i++) {
+        int i = 0;
+        for (; fresh_envp[i]; ++i) {
             char *sep = SDL3_strchr(fresh_envp[i], '=');
             *sep = '\0';
             SDL3_SetEnvironmentVariable(env, fresh_envp[i], sep + 1, true);
