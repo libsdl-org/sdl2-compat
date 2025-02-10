@@ -1070,6 +1070,7 @@ SDL2Compat_InitOnStartupInternal(void)
     SDL3_SetHint("SDL_WINDOWS_DPI_AWARENESS", "unaware");
     SDL3_SetHint("SDL_BORDERLESS_WINDOWED_STYLE", "0");
     SDL3_SetHint("SDL_VIDEO_SYNC_WINDOW_OPERATIONS", "1");
+    SDL3_SetHint("SDL_VIDEO_WAYLAND_SCALE_TO_DISPLAY","1");
 
     SDL2Compat_InitLogPrefixes();
 
