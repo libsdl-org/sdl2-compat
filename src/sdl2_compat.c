@@ -251,7 +251,7 @@ SDL2COMPAT_itoa(char *dst, int val)
 /* you can use SDL3_strlen once we're past startup. */
 static int SDL2Compat_strlen(const char *str)
 {
-    int retval = 0;
+    volatile int retval = 0;  /* volatile prevents gcc from optimizing this into strlen() */
     while (str[retval]) {
         retval++;
     }
