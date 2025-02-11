@@ -5593,15 +5593,94 @@ static void SynchronizeEnvironmentVariables()
     SDL3_DestroyEnvironment(fresh_env);
 }
 
+static SDL_InitFlags PreInitSubsystem(SDL_InitFlags flags)
+{
+    /* If the subsystem is already initialized, mask out the flag for it */
+    flags &= ~SDL_WasInit(flags);
+
+    if (flags & SDL_INIT_VIDEO) {
+        const char *old_hint;
+        const char *hint;
+
+        /* Update IME UI hint */
+#if defined(SDL_PLATFORM_WIN32)
+        old_hint = SDL3_GetHint("SDL_IME_SHOW_UI");
+        if (old_hint && *old_hint == '1') {
+            hint = "composition";
+        } else {
+            hint = "composition,candidates";
+        }
+#else
+        old_hint = SDL3_GetHint("SDL_IME_INTERNAL_EDITING");
+        if (old_hint && *old_hint == '1') {
+            hint = "0";
+        } else {
+            hint = "composition";
+        }
+#endif
+        SDL3_SetHint(SDL_HINT_IME_IMPLEMENTED_UI, hint);
+    }
+
+    /* Return only the flags that we will expect to change */
+    return flags;
+}
+
+static void PostInitSubsystem(SDL_InitFlags new_flags)
+{
+    /* The timer subsystem flag is gone in SDL3, so we maintain it ourselves */
+    if (new_flags & SDL2_INIT_TIMER) {
+        ++timer_init;
+    }
+
+    /* If the subsystem failed to initialize, mask out the flag for it */
+    new_flags &= SDL_WasInit(new_flags);
+
+    if (new_flags & SDL_INIT_VIDEO) {
+        /* default SDL2 GL attributes */
+        SDL_GL_SetAttribute(SDL2_GL_RED_SIZE, 3);
+        SDL_GL_SetAttribute(SDL2_GL_GREEN_SIZE, 3);
+        SDL_GL_SetAttribute(SDL2_GL_BLUE_SIZE, 2);
+        SDL_GL_SetAttribute(SDL2_GL_ALPHA_SIZE, 0);
+    }
+
+    /* if audio was initialized and there are no devices enumerated yet, build some initial device lists. */
+    if (new_flags & SDL_INIT_AUDIO) {
+        if (AudioSDL3PlaybackDevices.num_devices == 0) {
+            SDL_GetNumAudioDevices(SDL2_FALSE);
+        }
+        if (AudioSDL3RecordingDevices.num_devices == 0) {
+            SDL_GetNumAudioDevices(SDL2_TRUE);
+        }
+    }
+
+    /* enumerate joysticks and haptics to build device list */
+    if (new_flags & (SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD)) {
+        SDL_NumJoysticks();
+    }
+    if (new_flags & SDL_INIT_HAPTIC) {
+        SDL_NumHaptics();
+    }
+}
+
 SDL_DECLSPEC int SDLCALL
 SDL_AudioInit(const char *driver_name)
 {
+    int ret;
+    SDL_InitFlags new_flags;
+
     SynchronizeEnvironmentVariables();
 
     if (driver_name) {
         SDL3_SetHint("SDL_AUDIO_DRIVER", driver_name);
     }
-    return SDL3_InitSubSystem(SDL_INIT_AUDIO) ? 0 : -1;
+
+    new_flags = PreInitSubsystem(SDL_INIT_AUDIO);
+
+    ret = SDL3_InitSubSystem(SDL_INIT_AUDIO) ? 0 : -1;
+
+    PostInitSubsystem(new_flags);
+
+    return ret;
 }
 
 SDL_DECLSPEC void SDLCALL
@@ -5804,6 +5883,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_VideoInit(const char *driver_name)
 {
     int ret;
+    SDL_InitFlags new_flags;
 
     SynchronizeEnvironmentVariables();
 
@@ -5811,13 +5891,11 @@ SDL_VideoInit(const char *driver_name)
         SDL3_SetHint("SDL_VIDEO_DRIVER", driver_name);
     }
 
+    new_flags = PreInitSubsystem(SDL_INIT_VIDEO);
+
     ret = SDL3_InitSubSystem(SDL_INIT_VIDEO) ? 0 : -1;
 
-    /* default SDL2 GL attributes */
-    SDL_GL_SetAttribute(SDL2_GL_RED_SIZE, 3);
-    SDL_GL_SetAttribute(SDL2_GL_GREEN_SIZE, 3);
-    SDL_GL_SetAttribute(SDL2_GL_BLUE_SIZE, 2);
-    SDL_GL_SetAttribute(SDL2_GL_ALPHA_SIZE, 0);
+    PostInitSubsystem(new_flags);
 
     return ret;
 }
@@ -5838,6 +5916,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_InitSubSystem(Uint32 flags)
 {
     int result;
+    SDL_InitFlags new_flags;
 
     if (!SDL2Compat_InitOnStartup()) {
         return -1;
@@ -5845,60 +5924,12 @@ SDL_InitSubSystem(Uint32 flags)
 
     SynchronizeEnvironmentVariables();
 
-    /* Update IME UI hint */
-    if (flags & SDL_INIT_VIDEO) {
-        const char *old_hint;
-        const char *hint;
-
-#if defined(SDL_PLATFORM_WIN32)
-        old_hint = SDL_GetHint("SDL_IME_SHOW_UI");
-        if (old_hint && *old_hint == '1') {
-            hint = "composition";
-        } else {
-            hint = "composition,candidates";
-        }
-#else
-        old_hint = SDL_GetHint("SDL_IME_INTERNAL_EDITING");
-        if (old_hint && *old_hint == '1') {
-            hint = "0";
-        } else {
-            hint = "composition";
-        }
-#endif
-        SDL_SetHint(SDL_HINT_IME_IMPLEMENTED_UI, hint);
-    }
+    new_flags = PreInitSubsystem(flags);
 
     result = SDL3_InitSubSystem(flags) ? 0 : -1;
-    if (result == 0) {
-        if (flags & SDL2_INIT_TIMER) {
-            ++timer_init;
-        }
-        if (flags & SDL_INIT_VIDEO) {
-            /* default SDL2 GL attributes */
-            SDL_GL_SetAttribute(SDL2_GL_RED_SIZE, 3);
-            SDL_GL_SetAttribute(SDL2_GL_GREEN_SIZE, 3);
-            SDL_GL_SetAttribute(SDL2_GL_BLUE_SIZE, 2);
-            SDL_GL_SetAttribute(SDL2_GL_ALPHA_SIZE, 0);
-        }
 
-        /* if audio was initialized and there are no devices enumerated yet, build some initial device lists. */
-        if ((flags & SDL_INIT_AUDIO) && SDL3_WasInit(SDL_INIT_AUDIO)) {
-            if (AudioSDL3PlaybackDevices.num_devices == 0) {
-                SDL_GetNumAudioDevices(SDL2_FALSE);
-            }
-            if (AudioSDL3RecordingDevices.num_devices == 0) {
-                SDL_GetNumAudioDevices(SDL2_TRUE);
-            }
-        }
+    PostInitSubsystem(new_flags);
 
-        /* enumerate joysticks and haptics to build device list */
-        if (flags & (SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD)) {
-            SDL_NumJoysticks();
-        }
-        if (flags & SDL_INIT_HAPTIC) {
-            SDL_NumHaptics();
-        }
-    }
     return result;
 }
 
