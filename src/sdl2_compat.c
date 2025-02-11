@@ -441,11 +441,14 @@ typedef struct QuirkEntryType
 
 static QuirkEntryType quirks[] = {
     /* TODO: Add any quirks needed for various systems. */
-    /*{"my_game_name", "SDL_RENDER_BATCHING", "0"},*/
+    /*{ "my_game_name", "SDL_RENDER_BATCHING", "0" },*/
 
     /* Apps that support high DPI properly under Wayland */
-    {"moonlight", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0"},
-    {"moonlight-qt", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0"},
+    { "moonlight", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
+    { "moonlight-qt", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
+
+    /* Stylus Labs Write does its own X11 input handling */
+    { "Write", "SDL_VIDEO_X11_XINPUT2", "0" },
 };
 
 #ifdef __linux__
