@@ -6974,7 +6974,7 @@ Display_IDToIndex(SDL_DisplayID displayID)
 {
     int displayIndex = 0;
     int count = 0, i;
-    const SDL_DisplayID *list;
+    SDL_DisplayID *list;
 
     if (displayID == 0) {
         SDL3_SetError("invalid displayID");
@@ -6985,6 +6985,7 @@ Display_IDToIndex(SDL_DisplayID displayID)
 
     if (list == NULL || count == 0) {
         SDL3_SetError("no displays");
+        SDL_free(list);
         return -1;
     }
 
@@ -6994,6 +6995,8 @@ Display_IDToIndex(SDL_DisplayID displayID)
             break;
         }
     }
+    SDL_free(list);
+
     return displayIndex;
 }
 
