@@ -100,7 +100,7 @@ This breaks the build when creating SDL_ ## DisableScreenSaver
 #include <unistd.h> /* for readlink() */
 #endif
 
-#if defined(__unix__) || defined(__APPLE__)
+#if defined(SDL_PLATFORM_UNIX) || defined(__APPLE__)
 #ifndef PATH_MAX
 #define PATH_MAX 1024
 #endif
@@ -386,7 +386,7 @@ static char loaderror[256];
 
         return false; /* didn't find it anywhere reasonable. :( */
     }
-#elif defined(__unix__)
+#elif defined(SDL_PLATFORM_UNIX)
     #include <dlfcn.h>
     #define SDL3_LIBNAME "libSDL3.so.0"
     static void *Loaded_SDL3 = NULL;
@@ -1543,12 +1543,6 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     SDL_Renderer *renderer;
     SDL_Event cvtevent3;
 
-#if 0
-    if (event3->type == SDL_SYSWMEVENT) {
-        return SDL2_FALSE;  /* !!! FIXME: figure out what to do with this. */
-    }
-#endif
-
     /* currently everything _mostly_ matches up between SDL2 and SDL3, but this might
        drift more as SDL3 development continues. */
 
@@ -1720,12 +1714,6 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
 static SDL_Event *
 Event2to3(const SDL2_Event *event2, SDL_Event *event3)
 {
-#if 0
-    if (event2->type == SDL_SYSWMEVENT) {
-        return SDL2_FALSE;  /* !!! FIXME: figure out what to do with this. */
-    }
-#endif
-
     /* currently everything _mostly_ matches up between SDL2 and SDL3, but this might
        drift more as SDL3 development continues. */
 
@@ -3693,7 +3681,7 @@ SDL_GetTicks64(void)
     return SDL3_GetTicks();
 }
 
-SDL_DECLSPEC SDL2_bool SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWMinfo *info)
+SDL_DECLSPEC SDL2_bool SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL2_SysWMinfo *info)
 {
     const char *driver = SDL3_GetCurrentVideoDriver();
     SDL_PropertiesID props;
@@ -3740,9 +3728,9 @@ SDL_DECLSPEC SDL2_bool SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL_SysWM
                                          (Uint32)info->version.patch);
 
         /* Before 2.0.6, it was possible to build an SDL with Wayland support
-         * (SDL_SysWMinfo will be large enough to hold Wayland info), but build
+         * (SDL2_SysWMinfo will be large enough to hold Wayland info), but build
          * your app against SDL headers that didn't have Wayland support
-         * (SDL_SysWMinfo could be smaller than Wayland needs. This would lead
+         * (SDL2_SysWMinfo could be smaller than Wayland needs). This would lead
          * to an app properly using SDL_GetWindowWMInfo() but we'd accidentally
          * overflow memory on the stack or heap. To protect against this, we've
          * padded out the struct unconditionally in the headers and Wayland will
@@ -5636,8 +5624,24 @@ static void PostInitSubsystem(SDL_InitFlags new_flags)
         ++timer_init;
     }
 
+    /* Gamepads imply the joystick subsystem */
+    if (new_flags & SDL_INIT_GAMEPAD) {
+        new_flags |= SDL_INIT_JOYSTICK;
+    }
+
+    /* Some subsystems imply the events subsystem */
+    if (new_flags & (SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK)) {
+        new_flags |= SDL_INIT_EVENTS;
+    }
+
     /* If the subsystem failed to initialize, mask out the flag for it */
     new_flags &= SDL_WasInit(new_flags);
+
+    if (new_flags & SDL_INIT_EVENTS) {
+        (void)SDL_EventState(SDL_EVENT_TEXT_INPUT, SDL2_DISABLE);
+        (void)SDL_EventState(SDL_EVENT_TEXT_EDITING, SDL2_DISABLE);
+        (void)SDL_EventState(SDL2_SYSWMEVENT, SDL2_DISABLE);
+    }
 
     if (new_flags & SDL_INIT_VIDEO) {
         /* default SDL2 GL attributes */
@@ -5658,7 +5662,7 @@ static void PostInitSubsystem(SDL_InitFlags new_flags)
     }
 
     /* enumerate joysticks and haptics to build device list */
-    if (new_flags & (SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD)) {
+    if (new_flags & SDL_INIT_JOYSTICK) {
         SDL_NumJoysticks();
     }
     if (new_flags & SDL_INIT_HAPTIC) {
@@ -7856,7 +7860,13 @@ SDL_JoystickSetPlayerIndex(SDL_Joystick *joystick, int player_index)
 SDL_DECLSPEC void SDLCALL
 SDL_StartTextInput(void)
 {
-    SDL_Window **windows = SDL3_GetWindows(NULL);
+    SDL_Window **windows;
+
+    /* First, enable text events */
+    (void)SDL_EventState(SDL_EVENT_TEXT_INPUT, SDL2_ENABLE);
+    (void)SDL_EventState(SDL_EVENT_TEXT_EDITING, SDL2_ENABLE);
+
+    windows = SDL3_GetWindows(NULL);
     if (windows) {
         int i;
         SDL_PropertiesID props = SDL3_CreateProperties();
@@ -7877,20 +7887,7 @@ SDL_StartTextInput(void)
 SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_IsTextInputActive(void)
 {
-    SDL2_bool result = SDL2_FALSE;
-    SDL_Window **windows = SDL3_GetWindows(NULL);
-    if (windows) {
-        int i;
-
-        for (i = 0; windows[i]; ++i) {
-            if (SDL3_TextInputActive(windows[i])) {
-                result = SDL2_TRUE;
-                break;
-            }
-        }
-        SDL3_free(windows);
-    }
-    return result;
+    return SDL3_EventEnabled(SDL_EVENT_TEXT_INPUT) ? SDL2_TRUE : SDL2_FALSE;
 }
 
 SDL_DECLSPEC void SDLCALL
@@ -7905,6 +7902,10 @@ SDL_StopTextInput(void)
         }
         SDL3_free(windows);
     }
+
+    /* Finally disable text events */
+    (void)SDL_EventState(SDL_EVENT_TEXT_INPUT, SDL2_DISABLE);
+    (void)SDL_EventState(SDL_EVENT_TEXT_EDITING, SDL2_DISABLE);
 }
 
 SDL_DECLSPEC void SDLCALL
@@ -8721,14 +8722,93 @@ SDL_JoystickGetGUIDString(SDL_GUID guid, char *pszGUID, int cbGUID)
     SDL3_GUIDToString(guid, pszGUID, cbGUID);
 }
 
+#ifdef SDL_PLATFORM_WINDOWS
+static SDL2_WindowsMessageHook g_WindowsMessageHook = NULL;
+static void *g_WindowsMessageHookData = NULL;
+
+static bool SDLCALL SDL3to2_WindowsMessageHook(void *userdata, MSG *msg)
+{
+    if (g_WindowsMessageHook) {
+        g_WindowsMessageHook(g_WindowsMessageHookData, msg->hwnd, msg->message, msg->wParam, msg->lParam);
+    }
+    if (SDL3_EventEnabled(SDL2_SYSWMEVENT)) {
+        SDL2_Event event;
+
+        SDL2_SysWMmsg wmmsg;
+        SDL_GetVersion(&wmmsg.version);
+        wmmsg.subsystem = SDL2_SYSWM_WINDOWS;
+        wmmsg.msg.win.hwnd = msg->hwnd;
+        wmmsg.msg.win.msg = msg->message;
+        wmmsg.msg.win.wParam = msg->wParam;
+        wmmsg.msg.win.lParam = msg->lParam;
+
+        SDL3_zero(event);
+        event.type = SDL2_SYSWMEVENT;
+        event.syswm.msg = &wmmsg;
+        SDL_PushEvent(&event);
+    }
+    return true;
+}
+
+SDL_DECLSPEC void SDLCALL
+SDL_SetWindowsMessageHook(SDL2_WindowsMessageHook callback, void *userdata)
+{
+    SDL_WindowsMessageHook callback3;
+    if (callback || SDL3_EventEnabled(SDL2_SYSWMEVENT)) {
+        callback3 = SDL3to2_WindowsMessageHook;
+    } else {
+        callback3 = NULL;
+    }
+    g_WindowsMessageHook = callback;
+    g_WindowsMessageHookData = userdata;
+    SDL3_SetWindowsMessageHook(callback3, NULL);
+}
+#endif /* SDL_PLATFORM_WINDOWS */
+
+#ifdef SDL_PLATFORM_UNIX
+static bool SDLCALL SDL2COMPAT_X11EventHook(void *userdata, XEvent *xevent)
+{
+    SDL2_Event event;
+
+    SDL2_SysWMmsg wmmsg;
+    SDL_GetVersion(&wmmsg.version);
+    wmmsg.subsystem = SDL2_SYSWM_X11;
+    wmmsg.msg.x11.event = *xevent;
+
+    SDL3_zero(event);
+    event.type = SDL2_SYSWMEVENT;
+    event.syswm.msg = &wmmsg;
+    SDL_PushEvent(&event);
+    return true;
+}
+#endif /* SDL_PLATFORM_UNIX */
+
 /* SDL3 split this into getter/setter functions. */
 SDL_DECLSPEC Uint8 SDLCALL
 SDL_EventState(Uint32 type, int state)
 {
     const int retval = SDL3_EventEnabled(type) ? SDL2_ENABLE : SDL2_DISABLE;
     if (state == SDL2_ENABLE) {
+        if (type == SDL2_SYSWMEVENT) {
+#ifdef SDL_PLATFORM_WINDOWS
+            SDL3_SetWindowsMessageHook(SDL3to2_WindowsMessageHook, NULL);
+#endif
+#ifdef SDL_PLATFORM_UNIX
+            SDL3_SetX11EventHook(SDL2COMPAT_X11EventHook, NULL);
+#endif
+        }
         SDL3_SetEventEnabled(type, true);
     } else if (state == SDL2_DISABLE) {
+        if (type == SDL2_SYSWMEVENT) {
+#ifdef SDL_PLATFORM_WINDOWS
+            if (!g_WindowsMessageHook) {
+                SDL_SetWindowsMessageHook(NULL, NULL);
+            }
+#endif
+#ifdef SDL_PLATFORM_UNIX
+            SDL3_SetX11EventHook(NULL, NULL);
+#endif
+        }
         SDL3_SetEventEnabled(type, false);
     }
     return retval;
@@ -10301,24 +10381,6 @@ SDL_UnloadObject(void *lib)
     SDL3_UnloadObject((SDL_SharedObject *) lib);
 }
 
-
-#if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_GDK)
-static SDL2_WindowsMessageHook g_WindowsMessageHook = NULL;
-
-static bool SDLCALL SDL3to2_WindowsMessageHook(void *userdata, MSG *msg)
-{
-    g_WindowsMessageHook(userdata, msg->hwnd, msg->message, msg->wParam, msg->lParam);
-    return true;
-}
-
-SDL_DECLSPEC void SDLCALL
-SDL_SetWindowsMessageHook(SDL2_WindowsMessageHook callback, void *userdata)
-{
-    SDL_WindowsMessageHook callback3 = (callback != NULL) ? SDL3to2_WindowsMessageHook : NULL;
-    g_WindowsMessageHook = callback;
-    SDL3_SetWindowsMessageHook(callback3, userdata);
-}
-#endif
 
 #if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_WINGDK)
 SDL_DECLSPEC int SDLCALL

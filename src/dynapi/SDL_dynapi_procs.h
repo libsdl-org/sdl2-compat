@@ -495,7 +495,7 @@ SDL_DYNAPI_PROC(int,SDL_LowerBlit,(SDL2_Surface *a, SDL_Rect *b, SDL2_Surface *c
 SDL_DYNAPI_PROC(int,SDL_SoftStretch,(SDL2_Surface *a, const SDL_Rect *b, SDL2_Surface *c, const SDL_Rect *d),(a,b,c,d),return)
 SDL_DYNAPI_PROC(int,SDL_UpperBlitScaled,(SDL2_Surface *a, const SDL_Rect *b, SDL2_Surface *c, SDL_Rect *d),(a,b,c,d),return)
 SDL_DYNAPI_PROC(int,SDL_LowerBlitScaled,(SDL2_Surface *a, SDL_Rect *b, SDL2_Surface *c, SDL_Rect *d),(a,b,c,d),return)
-SDL_DYNAPI_PROC(SDL2_bool,SDL_GetWindowWMInfo,(SDL_Window *a, SDL_SysWMinfo *b),(a,b),return)
+SDL_DYNAPI_PROC(SDL2_bool,SDL_GetWindowWMInfo,(SDL_Window *a, SDL2_SysWMinfo *b),(a,b),return)
 SDL_DYNAPI_PROC(const char*,SDL_GetThreadName,(SDL_Thread *a),(a),return)
 SDL_DYNAPI_PROC(unsigned long,SDL_ThreadID,(void),(),return)
 SDL_DYNAPI_PROC(unsigned long,SDL_GetThreadID,(SDL_Thread *a),(a),return)
