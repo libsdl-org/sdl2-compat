@@ -1071,6 +1071,11 @@ SDL2Compat_InitOnStartupInternal(void)
     SDL3_SetHint("SDL_BORDERLESS_WINDOWED_STYLE", "0");
     SDL3_SetHint("SDL_VIDEO_SYNC_WINDOW_OPERATIONS", "1");
 
+    // Pretend Wayland doesn't have fractional scaling
+    // This is more compatible with applications that have only been tested under X11 without high DPI support
+    // Full discussion is here: https://github.com/libsdl-org/SDL/issues/12158
+    SDL3_SetHint(SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "1");
+
     SDL2Compat_InitLogPrefixes();
 
     return true;
