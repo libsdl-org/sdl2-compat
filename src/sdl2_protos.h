@@ -493,7 +493,7 @@ SDL2_PROTO(int,LowerBlit,(SDL2_Surface *a, SDL_Rect *b, SDL2_Surface *c, SDL_Rec
 SDL2_PROTO(int,SoftStretch,(SDL2_Surface *a, const SDL_Rect *b, SDL2_Surface *c, const SDL_Rect *d))
 SDL2_PROTO(int,UpperBlitScaled,(SDL2_Surface *a, const SDL_Rect *b, SDL2_Surface *c, SDL_Rect *d))
 SDL2_PROTO(int,LowerBlitScaled,(SDL2_Surface *a, SDL_Rect *b, SDL2_Surface *c, SDL_Rect *d))
-SDL2_PROTO(SDL2_bool,GetWindowWMInfo,(SDL_Window *a, SDL_SysWMinfo *b))
+SDL2_PROTO(SDL2_bool,GetWindowWMInfo,(SDL_Window *a, SDL2_SysWMinfo *b))
 SDL2_PROTO(const char*,GetThreadName,(SDL_Thread *a))
 SDL2_PROTO(unsigned long,ThreadID,(void))
 SDL2_PROTO(unsigned long,GetThreadID,(SDL_Thread *a))

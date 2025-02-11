@@ -674,6 +674,7 @@ typedef struct SDL2_Keysym
 /* These values are reserved in SDL3's SDL_EventType enum to help sdl2-compat. */
 #define SDL2_DISPLAYEVENT 0x150
 #define SDL2_WINDOWEVENT 0x200
+#define SDL2_SYSWMEVENT 0x201
 
 typedef enum SDL2_WindowEventID
 {
@@ -1274,7 +1275,35 @@ typedef struct _NSWindow NSWindow;
 typedef struct _UIWindow UIWindow;
 #endif
 
-typedef struct SDL_SysWMinfo
+#ifdef SDL_PLATFORM_UNIX
+#include <X11/Xlib.h>
+#endif
+
+typedef struct SDL2_SysWMmsg
+{
+    SDL2_version version;
+    SDL2_SYSWM_TYPE subsystem;
+    union
+    {
+#ifdef SDL_PLATFORM_WINDOWS
+        struct {
+            HWND hwnd;                  /**< The window for the message */
+            UINT msg;                   /**< The type of message */
+            WPARAM wParam;              /**< WORD message parameter */
+            LPARAM lParam;              /**< LONG message parameter */
+        } win;
+#endif
+#ifdef SDL_PLATFORM_UNIX
+        struct {
+            XEvent event;
+        } x11;
+#endif
+        /* Can't have an empty union */
+        int dummy;
+    } msg;
+} SDL2_SysWMmsg;
+
+typedef struct SDL2_SysWMinfo
 {
     SDL2_version version;
     SDL2_SYSWM_TYPE subsystem;
@@ -1349,7 +1378,7 @@ typedef struct SDL_SysWMinfo
       /* Be careful not to overflow this if you add a new target! */
       Uint8 dummy[64];
     } info;
-} SDL_SysWMinfo;
+} SDL2_SysWMinfo;
 
 
 #define SDL_NONSHAPEABLE_WINDOW -1
