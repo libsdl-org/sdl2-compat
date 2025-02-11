@@ -1071,11 +1071,6 @@ SDL2Compat_InitOnStartupInternal(void)
     SDL3_SetHint("SDL_BORDERLESS_WINDOWED_STYLE", "0");
     SDL3_SetHint("SDL_VIDEO_SYNC_WINDOW_OPERATIONS", "1");
 
-    // Pretend Wayland doesn't have fractional scaling
-    // This is more compatible with applications that have only been tested under X11 without high DPI support
-    // Full discussion is here: https://github.com/libsdl-org/SDL/issues/12158
-    SDL3_SetHint(SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "1");
-
     SDL2Compat_InitLogPrefixes();
 
     return true;
@@ -5619,6 +5614,22 @@ static SDL_InitFlags PreInitSubsystem(SDL_InitFlags flags)
         }
 #endif
         SDL3_SetHint(SDL_HINT_IME_IMPLEMENTED_UI, hint);
+
+        /* Configure fractional scaling depending on the requested video driver
+         * TODO: Add quirks for this if the heuristic here isn't good enough */
+        hint = SDL3_GetHint("SDL_VIDEO_DRIVER");
+        if (!hint) {
+            hint = SDL3_GetHint("SDL_VIDEODRIVER");
+        }
+        if (!hint || SDL3_strcasecmp(hint, "wayland") != 0) {
+            /* If this app does not explicitly ask for Wayland, avoid using Wayland fractional scaling.
+             * This is more compatible with applications that have only been tested under X11 without high DPI support.
+             * Full discussion is here: https://github.com/libsdl-org/SDL/issues/12158 */
+            SDL3_SetHint(SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "1");
+        } else {
+            /* If the app did ask for Wayland, let's assume it can handle the standard Wayland behavior in SDL3 */
+            SDL3_SetHint(SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0");
+        }
     }
 
     /* Return only the flags that we will expect to change */
