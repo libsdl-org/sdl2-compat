@@ -442,7 +442,10 @@ typedef struct QuirkEntryType
 static QuirkEntryType quirks[] = {
     /* TODO: Add any quirks needed for various systems. */
     /*{"my_game_name", "SDL_RENDER_BATCHING", "0"},*/
-    {"", "", "0"} /* A dummy entry to keep compilers happy. */
+
+    /* Apps that support high DPI properly under Wayland */
+    {"moonlight", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0"},
+    {"moonlight-qt", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0"},
 };
 
 #ifdef __linux__
@@ -1071,8 +1074,9 @@ SDL2Compat_InitOnStartupInternal(void)
     SDL3_SetHint("SDL_BORDERLESS_WINDOWED_STYLE", "0");
     SDL3_SetHint("SDL_VIDEO_SYNC_WINDOW_OPERATIONS", "1");
 
-    // Pretend Wayland doesn't have fractional scaling
-    // This is more compatible with applications that have only been tested under X11 without high DPI support
+    // Pretend Wayland doesn't have fractional scaling by default.
+    // This is more compatible with applications that have only been tested under X11 without high DPI support.
+    // For apps that support high DPI on Wayland, add a SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY=0 quirk for them.
     // Full discussion is here: https://github.com/libsdl-org/SDL/issues/12158
     SDL3_SetHint(SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "1");
 
