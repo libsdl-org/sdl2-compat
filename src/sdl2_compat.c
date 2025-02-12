@@ -4923,11 +4923,20 @@ SDL_DECLSPEC int SDLCALL
 SDL_RenderSetLogicalSize(SDL_Renderer *renderer, int w, int h)
 {
     int retval;
+    SDL_RendererLogicalPresentation mode;
+
     if (w == 0 && h == 0) {
-        retval = SDL3_SetRenderLogicalPresentation(renderer, 0, 0, SDL_LOGICAL_PRESENTATION_DISABLED) ? 0 : -1;
+        mode = SDL_LOGICAL_PRESENTATION_DISABLED;
     } else {
-        retval = SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_LETTERBOX) ? 0 : -1;
+        const char *hint = SDL3_GetHint("SDL_RENDER_LOGICAL_SIZE_MODE");
+        if (hint && (*hint == '1' || SDL3_strcasecmp(hint, "overscan") == 0)) {
+            mode = SDL_LOGICAL_PRESENTATION_OVERSCAN;
+        } else {
+            mode = SDL_LOGICAL_PRESENTATION_LETTERBOX;
+        }
     }
+
+    retval = SDL3_SetRenderLogicalPresentation(renderer, w, h, mode) ? 0 : -1;
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
