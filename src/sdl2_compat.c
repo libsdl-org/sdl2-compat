@@ -500,25 +500,6 @@ SDL2Compat_GetExeName(void)
     return exename;
 }
 
-static const char *
-SDL2Compat_GetHint(const char *name)
-{
-    return SDL3_getenv(name);
-}
-
-static bool
-SDL2Compat_GetHintBoolean(const char *name, bool default_value)
-{
-    const char *val = SDL2Compat_GetHint(name);
-
-    if (!val) {
-        return default_value;
-    }
-
-    return (SDL3_atoi(val) != 0);
-}
-
-
 static struct {
     const char *old_hint;
     const char *new_hint;
@@ -4847,7 +4828,7 @@ SDL_CreateRenderer(SDL_Window *window, int idx, Uint32 flags)
     renderer = SDL3_CreateRenderer(window, name);
     props = SDL3_GetRendererProperties(renderer);
     if (props) {
-        SDL3_SetBooleanProperty(props, PROP_RENDERER_BATCHING, SDL2Compat_GetHintBoolean("SDL_RENDER_BATCHING", (name == NULL)));
+        SDL3_SetBooleanProperty(props, PROP_RENDERER_BATCHING, SDL3_GetHintBoolean("SDL_RENDER_BATCHING", (name == NULL)));
     }
     if (flags & SDL2_RENDERER_PRESENTVSYNC) {
         SDL3_SetRenderVSync(renderer, 1);
