@@ -7655,6 +7655,10 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
         flags |= SDL_WINDOW_ALWAYS_ON_TOP;
     }
 
+    if ((flags & SDL_WINDOW_HIGH_PIXEL_DENSITY) && SDL3_GetHintBoolean("SDL_VIDEO_HIGHDPI_DISABLED", false)) {
+        flags &= ~SDL_WINDOW_HIGH_PIXEL_DENSITY;
+    }
+
     if (!is_popup) {
         SDL_PropertiesID props = SDL3_CreateProperties();
 
