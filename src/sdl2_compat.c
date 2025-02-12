@@ -542,6 +542,9 @@ static struct {
     { "SDL_VIDEO_X11_WMCLASS", "SDL_APP_ID" },
     { "SDL_VIDEO_GL_DRIVER", "SDL_OPENGL_LIBRARY" },
     { "SDL_VIDEO_EGL_DRIVER", "SDL_EGL_LIBRARY" },
+
+    /* This value is inverted in SDL2_to_SDL3_hint_value() */
+    { "SDL_WINDOWS_NO_CLOSE_ON_ALT_F4", "SDL_WINDOWS_CLOSE_ON_ALT_F4" },
 };
 
 static const char *SDL2_to_SDL3_hint(const char *name)
@@ -558,23 +561,29 @@ static const char *SDL2_to_SDL3_hint(const char *name)
 
 static const char *SDL2_to_SDL3_hint_value(const char *name, const char *value, bool *free_value)
 {
-    if (name && value && SDL3_strcmp(name, SDL_HINT_LOGGING) == 0) {
-        /* Rewrite numeric priorities for SDL3 */
-        char *value3 = SDL3_strdup(value);
-        if (value3) {
-            char *sep;
-            for (sep = SDL3_strchr(value3, '='); sep; sep = SDL3_strchr(sep + 1, '=')) {
-                if (SDL3_isdigit(sep[1]) && sep[1] != '0') {
-                    sep[1] = '0' + SDL3_atoi(&sep[1]) + 1;
+    *free_value = false;
+
+    if (name && value && *value) {
+        if (SDL3_strcmp(name, SDL_HINT_LOGGING) == 0) {
+            /* Rewrite numeric priorities for SDL3 */
+            char *value3 = SDL3_strdup(value);
+            if (value3) {
+                char *sep;
+                for (sep = SDL3_strchr(value3, '='); sep; sep = SDL3_strchr(sep + 1, '=')) {
+                    if (SDL3_isdigit(sep[1]) && sep[1] != '0') {
+                        sep[1] = '0' + SDL3_atoi(&sep[1]) + 1;
+                    }
                 }
             }
+            *free_value = true;
+            return value3;
+        } else if (SDL3_strcmp(name, "SDL_WINDOWS_NO_CLOSE_ON_ALT_F4") == 0) {
+            /* Invert the boolean value for SDL3 */
+            return (*value == '0' || SDL3_strcasecmp(value, "false") == 0) ? "1" : "0";
         }
-        *free_value = true;
-        return value3;
-    } else {
-        *free_value = false;
-        return value;
     }
+
+    return value;
 }
 
 SDL_DECLSPEC SDL2_bool SDLCALL
