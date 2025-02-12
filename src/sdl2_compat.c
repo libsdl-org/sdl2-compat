@@ -209,6 +209,8 @@ do { \
 
 /* !!! FIXME: collect all the properties in one place near the top of the source file */
 #define PROP_WINDOW_FILTERED_FIRST_RESIZE "sdl2-compat.window.filtered_first_resize"
+#define PROP_RENDERER_BATCHING "sdl2-compat.renderer.batching"
+#define PROP_RENDERER_RELATIVE_SCALING "sdl2-compat.renderer.relative-scaling"
 
 
 static bool WantDebugLogging = false;
@@ -1587,6 +1589,11 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
             if (mode != SDL_LOGICAL_PRESENTATION_DISABLED) {
                 SDL3_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
                 SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
+                if (!SDL3_GetBooleanProperty(SDL3_GetRendererProperties(renderer), PROP_RENDERER_RELATIVE_SCALING, true)) {
+                    /* Undo the relative scaling that SDL_ConvertEventToRenderCoordinates() performed */
+                    cvtevent3.motion.xrel = event3->motion.xrel;
+                    cvtevent3.motion.yrel = event3->motion.yrel;
+                }
                 event3 = &cvtevent3;
             }
         }
@@ -4761,8 +4768,6 @@ SDL_GetRenderDriverInfo(int idx, SDL2_RendererInfo *info)
     return 0;
 }
 
-#define PROP_RENDERER_BATCHING "sdl2-compat.renderer.batching"
-
 static int FlushRendererIfNotBatching(SDL_Renderer *renderer)
 {
     const SDL_PropertiesID props = SDL3_GetRendererProperties(renderer);
@@ -4829,6 +4834,7 @@ SDL_CreateRenderer(SDL_Window *window, int idx, Uint32 flags)
     props = SDL3_GetRendererProperties(renderer);
     if (props) {
         SDL3_SetBooleanProperty(props, PROP_RENDERER_BATCHING, SDL3_GetHintBoolean("SDL_RENDER_BATCHING", (name == NULL)));
+        SDL3_SetBooleanProperty(props, PROP_RENDERER_RELATIVE_SCALING, SDL3_GetHintBoolean("SDL_MOUSE_RELATIVE_SCALING", true));
     }
     if (flags & SDL2_RENDERER_PRESENTVSYNC) {
         SDL3_SetRenderVSync(renderer, 1);
