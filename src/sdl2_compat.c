@@ -8768,7 +8768,7 @@ SDL_SetWindowsMessageHook(SDL2_WindowsMessageHook callback, void *userdata)
 }
 #endif /* SDL_PLATFORM_WINDOWS */
 
-#ifdef SDL_PLATFORM_UNIX
+#if defined(SDL_PLATFORM_UNIX) && !defined(SDL_PLATFORM_ANDROID)
 static bool SDLCALL SDL2COMPAT_X11EventHook(void *userdata, XEvent *xevent)
 {
     SDL2_Event event;
@@ -8796,7 +8796,7 @@ SDL_EventState(Uint32 type, int state)
 #ifdef SDL_PLATFORM_WINDOWS
             SDL3_SetWindowsMessageHook(SDL3to2_WindowsMessageHook, NULL);
 #endif
-#ifdef SDL_PLATFORM_UNIX
+#if defined(SDL_PLATFORM_UNIX) && !defined(SDL_PLATFORM_ANDROID)
             SDL3_SetX11EventHook(SDL2COMPAT_X11EventHook, NULL);
 #endif
         }
@@ -8808,7 +8808,7 @@ SDL_EventState(Uint32 type, int state)
                 SDL_SetWindowsMessageHook(NULL, NULL);
             }
 #endif
-#ifdef SDL_PLATFORM_UNIX
+#if defined(SDL_PLATFORM_UNIX) && !defined(SDL_PLATFORM_ANDROID)
             SDL3_SetX11EventHook(NULL, NULL);
 #endif
         }
