@@ -208,7 +208,9 @@ do { \
 #include <SDL3/SDL_opengl_glext.h>
 
 /* !!! FIXME: collect all the properties in one place near the top of the source file */
-#define PROP_WINDOW_FILTERED_FIRST_RESIZE "sdl2-compat.window.filtered_first_resize"
+#define PROP_WINDOW_EXPECTED_WIDTH "sdl2-compat.window.expected_width"
+#define PROP_WINDOW_EXPECTED_HEIGHT "sdl2-compat.window.expected_height"
+#define PROP_WINDOW_EXPECTED_SCALE "sdl2-compat.window.expected_scale"
 #define PROP_RENDERER_BATCHING "sdl2-compat.renderer.batching"
 #define PROP_RENDERER_RELATIVE_SCALING "sdl2-compat.renderer.relative-scaling"
 
@@ -1954,15 +1956,9 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
         case SDL_EVENT_WINDOW_ICCPROF_CHANGED:
         case SDL_EVENT_WINDOW_DISPLAY_CHANGED:
             if (SDL3_EventEnabled(SDL2_WINDOWEVENT)) {
-                /* SDL3 promises a resize event when creating a window, but SDL2 did not, and this breaks ffplay, so filter it out to match SDL2. */
-                if (event3->type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
-                    SDL_Window *window = SDL3_GetWindowFromID(event3->window.windowID);
-                    const SDL_PropertiesID winprops = SDL3_GetWindowProperties(window);
-                    if (winprops && !SDL3_GetBooleanProperty(winprops, PROP_WINDOW_FILTERED_FIRST_RESIZE, false)) {
-                        SDL3_SetBooleanProperty(winprops, PROP_WINDOW_FILTERED_FIRST_RESIZE, true);
-                        post_event = false;
-                        break;  /* drop it. */
-                    }
+                if (event3->type == SDL_EVENT_WINDOW_RESIZED) {
+                    /* Do resize handling based on SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED, which always fires */
+                    break;
                 }
 
                 event2.window.type = SDL2_WINDOWEVENT;
@@ -1975,16 +1971,48 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
                 event2.window.data1 = event3->window.data1;
                 event2.window.data2 = event3->window.data2;
 
-                /* Fixes queue overflow with resize events that aren't processed */
                 if (event2.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                    RemovePendingSizeChangedAndResizedEvents_Data resizedata;
-                    resizedata.new_event = &event2;
-                    resizedata.saw_resized = false;
-                    SDL_FilterEvents(RemovePendingSizeChangedAndResizedEvents, &resizedata);
-                    if (resizedata.saw_resized) { /* if there was a pending resize, make sure one at the new dimensions remains. */
-                        event2.window.event = SDL_WINDOWEVENT_RESIZED;
-                        SDL_PushEvent(&event2);
-                        event2.window.event = SDL_WINDOWEVENT_SIZE_CHANGED; /* then push the actual event next. */
+                    SDL_Window *window = SDL3_GetWindowFromID(event3->window.windowID);
+                    if (!window) {
+                        break;
+                    }
+
+                    /* The size changed event has the window size, not pixel size */
+                    SDL3_GetWindowSize(window, &event2.window.data1, &event2.window.data2);
+
+                    /* Fixes queue overflow with resize events that aren't processed */
+                    {
+                        SDL_PropertiesID props = SDL3_GetWindowProperties(window);
+                        RemovePendingSizeChangedAndResizedEvents_Data resizedata;
+                        resizedata.new_event = &event2;
+                        resizedata.saw_resized = false;
+                        SDL_FilterEvents(RemovePendingSizeChangedAndResizedEvents, &resizedata);
+                        if (resizedata.saw_resized) { /* if there was a pending resize, make sure one at the new dimensions remains. */
+                            event2.window.event = SDL_WINDOWEVENT_RESIZED;
+                            SDL_PushEvent(&event2);
+                            event2.window.event = SDL_WINDOWEVENT_SIZE_CHANGED; /* then push the actual event next. */
+                        } else {
+                            int expected_w = (int)SDL3_GetNumberProperty(props, PROP_WINDOW_EXPECTED_WIDTH, 0);
+                            int expected_h = (int)SDL3_GetNumberProperty(props, PROP_WINDOW_EXPECTED_HEIGHT, 0);
+                            float expected_scale = SDL3_GetFloatProperty(props, PROP_WINDOW_EXPECTED_SCALE, 0.0f);
+
+                            /* Store off the expected values for next time */
+                            SDL3_SetNumberProperty(props, PROP_WINDOW_EXPECTED_WIDTH, event2.window.data1);
+                            SDL3_SetNumberProperty(props, PROP_WINDOW_EXPECTED_HEIGHT, event2.window.data2);
+                            SDL3_SetFloatProperty(props, PROP_WINDOW_EXPECTED_SCALE, SDL3_GetWindowDisplayScale(window));
+                            if (!expected_w || !expected_h) {
+                                /* Don't send the initial size, SDL2 didn't in this case */
+                                break;
+                            }
+
+                            if (event2.window.data1 != expected_w ||
+                                event2.window.data2 != expected_h ||
+                                SDL3_GetWindowDisplayScale(window) != expected_scale) {
+                                event2.window.event = SDL_WINDOWEVENT_RESIZED;
+                                SDL_PushEvent(&event2);
+                                event2.window.event = SDL_WINDOWEVENT_SIZE_CHANGED; /* then push the actual event next. */
+                            }
+                        }
                     }
                 } else if (event2.window.event == SDL_WINDOWEVENT_MOVED || event2.window.event == SDL_WINDOWEVENT_EXPOSED) {
                     /* Flush old move and exposure events */
@@ -7803,6 +7831,9 @@ SDL_SetWindowIcon(SDL_Window *window, SDL2_Surface *icon)
 SDL_DECLSPEC void SDLCALL
 SDL_SetWindowSize(SDL_Window *window, int w, int h)
 {
+    SDL_PropertiesID props = SDL3_GetWindowProperties(window);
+    SDL3_SetNumberProperty(props, PROP_WINDOW_EXPECTED_WIDTH, w);
+    SDL3_SetNumberProperty(props, PROP_WINDOW_EXPECTED_HEIGHT, h);
     SDL3_SetWindowSize(window, w, h);
 }
 
