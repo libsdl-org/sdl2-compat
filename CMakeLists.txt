@@ -84,6 +84,7 @@ option(SDL2COMPAT_INSTALL "Enable installing SDL2-compat" ${SDL2COMPAT_MAINPROJE
 cmake_dependent_option(SDL2COMPAT_INSTALL_CPACK "Create binary SDL2_compat archive using CPack" ${SDL2COMPAT_MAINPROJECT} "SDL2COMPAT_INSTALL" OFF)
 cmake_dependent_option(SDL2COMPAT_INSTALL_TESTS "Install test-cases" OFF "SDL2COMPAT_INSTALL;SDL2COMPAT_TESTS" OFF)
 cmake_dependent_option(SDL2COMPAT_INSTALL_SDL3 "Install SDL3 next to SDL2" OFF "WIN32;SDL2COMPAT_INSTALL" OFF)
+option(SDL2COMPAT_ASAN "Use AddressSanitizer to detect memory errors" OFF)
 option(SDL2COMPAT_STATIC "Enable building static SDL2 link library" OFF)
 option(SDL2COMPAT_WERROR "Treat warnings as errors" OFF)
 set(SDL2COMPAT_VENDOR_INFO "" CACHE STRING "Vendor name and/or version to add to SDL_REVISION")
@@ -92,6 +93,61 @@ set(SDL2COMPAT_FRAMEWORK FALSE)
 
 if(SDL2COMPAT_STATIC AND NOT (CMAKE_SYSTEM_NAME MATCHES "Linux"))
   message(FATAL_ERROR "Static builds are only supported on Linux.")
+endif()
+
+macro(check_add_debug_flag FLAG SUFFIX)
+  check_c_compiler_flag(${FLAG} HAS_C_FLAG_${SUFFIX})
+  if(HAS_C_FLAG_${SUFFIX})
+    string(APPEND CMAKE_C_FLAGS_DEBUG " ${FLAG}")
+  endif()
+endmacro()
+
+macro(asan_check_add_debug_flag ASAN_FLAG)
+  check_add_debug_flag("-fsanitize=${ASAN_FLAG}" "${ASAN_FLAG}")
+  if(HAS_C_${ASAN_FLAG} OR HAS_CXX_${ASAN_FLAG})
+    set(HAVE_ASAN ON)
+  endif()
+endmacro()
+
+macro(asan_check_add_debug_flag2 ASAN_FLAG)
+  # for some sanitize flags we have to manipulate the CMAKE_REQUIRED_LIBRARIES:
+  # http://cmake.3232098.n2.nabble.com/CHECK-CXX-COMPILER-FLAG-doesn-t-give-correct-result-for-fsanitize-address-tp7600216p7600217.html
+
+  set(FLAG "-fsanitize=${ASAN_FLAG}")
+
+  cmake_push_check_state()
+  list(APPEND CMAKE_REQUIRED_LIBRARIES ${FLAG} asan)
+
+  check_c_compiler_flag (${FLAG} HAS_C_FLAG_${ASAN_FLAG})
+  if (HAS_C_FLAG_${ASAN_FLAG})
+    string(APPEND CMAKE_C_FLAGS_DEBUG " ${FLAG}")
+  endif()
+
+  cmake_pop_check_state()
+  if(HAS_C_${ASAN_FLAG} OR HAS_CXX_${ASAN_FLAG})
+    set(HAVE_ASAN ON)
+  endif()
+endmacro()
+
+# enable AddressSanitizer if supported
+if(SDL2COMPAT_ASAN)
+  asan_check_add_debug_flag2("address")
+  asan_check_add_debug_flag("bool")
+  asan_check_add_debug_flag("bounds")
+  asan_check_add_debug_flag("enum")
+  asan_check_add_debug_flag("float-cast-overflow")
+  asan_check_add_debug_flag("float-divide-by-zero")
+  asan_check_add_debug_flag("nonnull-attribute")
+  asan_check_add_debug_flag("returns-nonnull-attribute")
+  asan_check_add_debug_flag("signed-integer-overflow")
+  asan_check_add_debug_flag("undefined")
+  asan_check_add_debug_flag("vla-bound")
+  asan_check_add_debug_flag("leak")
+  # The object size sanitizer has no effect on unoptimized builds on Clang,
+  # but causes warnings.
+  if(NOT USE_CLANG OR CMAKE_BUILD_TYPE STREQUAL "")
+    asan_check_add_debug_flag("object-size")
+  endif()
 endif()
 
 SDL_DetectCompiler()
