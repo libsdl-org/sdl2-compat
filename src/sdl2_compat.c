@@ -502,7 +502,7 @@ static void OS_GetExeName(char *buf, const unsigned maxpath, bool *use_base_path
                         }
                         spot = sep;
                     }
-                    strlcpy(buf, spot, maxpath);
+                    snprintf(buf, maxpath, "%s", spot);
                 }
                 *use_base_path = false;
             }
