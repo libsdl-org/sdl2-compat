@@ -10113,19 +10113,19 @@ failure:
 SDL_DECLSPEC void SDLCALL
 SDL_GL_GetDrawableSize(SDL_Window *window, int *w, int *h)
 {
-    SDL_GetWindowSizeInPixels(window, w, h);
+    SDL3_GetWindowSizeInPixels(window, w, h);
 }
 
 SDL_DECLSPEC void SDLCALL
 SDL_Vulkan_GetDrawableSize(SDL_Window *window, int *w, int *h)
 {
-    SDL_GetWindowSizeInPixels(window, w, h);
+    SDL3_GetWindowSizeInPixels(window, w, h);
 }
 
 SDL_DECLSPEC void SDLCALL
 SDL_Metal_GetDrawableSize(SDL_Window *window, int *w, int *h)
 {
-    SDL_GetWindowSizeInPixels(window, w, h);
+    SDL3_GetWindowSizeInPixels(window, w, h);
 }
 
 SDL_DECLSPEC char * SDLCALL
