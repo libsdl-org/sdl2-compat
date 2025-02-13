@@ -456,19 +456,62 @@ static QuirkEntryType quirks[] = {
 };
 
 #ifdef __linux__
-static void OS_GetExeName(char *buf, const unsigned maxpath) {
+static void OS_GetExeName(char *buf, const unsigned maxpath, bool *use_base_path)
+{
     int ret;
     buf[0] = '\0';
     ret = readlink("/proc/self/exe", buf, maxpath);
     (void)ret;
+    if (strstr(buf, "/python")) {
+        /* Get the name of the script Python is running */
+        FILE *fp = fopen("/proc/self/cmdline", "r");
+        if (fp) {
+            char tmp[SDL2COMPAT_MAXPATH];
+            size_t len = fread(tmp, 1, sizeof(tmp) - 1, fp);
+            if (len > 0) {
+                char *spot = tmp, *end = tmp + len;
+                if (strstr(tmp, "python")) {
+                    /* Skip the name of the interpreter */
+                    while (spot < end) {
+                        if (*spot == '\0') {
+                            ++spot;
+                            break;
+                        }
+                        ++spot;
+                    }
+                }
+                if (spot < end) {
+                    /* Get the name of the script, including the directory containing it
+                     * e.g. /app/bin/src/tauon/__main__.py -> tauon/__main__.py
+                     */
+                    char *sep = strrchr(spot, '/');
+                    if (sep) {
+                        while (sep > spot) {
+                            --sep;
+                            if (*sep == '/') {
+                                ++sep;
+                                break;
+                            }
+                        }
+                        spot = sep;
+                    }
+                    strlcpy(buf, spot, maxpath);
+                }
+                *use_base_path = false;
+            }
+            fclose(fp);
+        }
+    }
 }
 #elif defined(_WIN32)
-static void OS_GetExeName(char *buf, const unsigned maxpath) {
+static void OS_GetExeName(char *buf, const unsigned maxpath, bool *use_base_path)
+{
     buf[0] = '\0';
     GetModuleFileNameA(NULL, buf, maxpath);
 }
 #elif defined(__APPLE__) || defined(SDL_PLATFORM_FREEBSD)
-static void OS_GetExeName(char *buf, const unsigned maxpath) {
+static void OS_GetExeName(char *buf, const unsigned maxpath, bool *use_base_path)
+{
     const char *progname = getprogname();
     if (progname != NULL) {
         strlcpy(buf, progname, maxpath);
@@ -478,7 +521,8 @@ static void OS_GetExeName(char *buf, const unsigned maxpath) {
 }
 #else
 #warning Please implement this for your platform.
-static void OS_GetExeName(char *buf, const unsigned maxpath) {
+static void OS_GetExeName(char *buf, const unsigned maxpath, bool *use_base_path)
+{
     buf[0] = '\0';
     (void)maxpath;
 }
@@ -491,9 +535,10 @@ SDL2Compat_GetExeName(void)
     if (exename == NULL) {
         static char path_buf[SDL2COMPAT_MAXPATH];
         static char *base_path;
-        OS_GetExeName(path_buf, SDL2COMPAT_MAXPATH);
+        bool use_base_path = true;
+        OS_GetExeName(path_buf, SDL2COMPAT_MAXPATH, &use_base_path);
         base_path = SDL3_strrchr(path_buf, *DIRSEP);
-        if (base_path) {
+        if (base_path && use_base_path) {
             /* We have a '\\' component. */
             exename = base_path + 1;
         } else {
