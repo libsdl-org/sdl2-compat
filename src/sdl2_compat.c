@@ -447,9 +447,16 @@ static QuirkEntryType quirks[] = {
     /* TODO: Add any quirks needed for various systems. */
     /*{ "my_game_name", "SDL_RENDER_BATCHING", "0" },*/
 
-    /* Apps that support high DPI properly under Wayland */
+    /* Moonlight supports high DPI properly under Wayland */
     { "moonlight", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
     { "moonlight-qt", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
+
+    /* Tauon Music Box supports high DPI properly under Wayland.
+     * It also pumps events off the main thread, which causes crashes in libdecor.
+     * It draws its own window border, so we don't actually need window decorations.
+     */
+    { "tauon/__main__.py", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
+    { "tauon/__main__.py", SDL_HINT_VIDEO_WAYLAND_ALLOW_LIBDECOR, "0" },
 
     /* Stylus Labs Write does its own X11 input handling */
     { "Write", "SDL_VIDEO_X11_XINPUT2", "0" },
