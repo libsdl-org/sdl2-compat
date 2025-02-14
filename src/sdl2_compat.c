@@ -213,6 +213,9 @@ do { \
 #define PROP_WINDOW_EXPECTED_SCALE "sdl2-compat.window.expected_scale"
 #define PROP_RENDERER_BATCHING "sdl2-compat.renderer.batching"
 #define PROP_RENDERER_RELATIVE_SCALING "sdl2-compat.renderer.relative-scaling"
+#define PROP_SURFACE2 "sdl2-compat.surface2"
+#define PROP_STREAM2 "sdl2-compat.stream2"
+
 
 
 static bool WantDebugLogging = false;
@@ -3038,18 +3041,23 @@ SDL_LoadWAV_RW(SDL2_RWops *rwops2, int freesrc, SDL2_AudioSpec *spec2, Uint8 **a
     return retval;
 }
 
-#define PROP_SURFACE2 "sdl2-compat.surface2"
-
 static void SDLCALL CleanupSurface2(void *userdata, void *value)
 {
     SDL2_Surface *surface = (SDL2_Surface *)value;
+    unsigned int i;
 
-    if (surface->format) {
-        SDL_SetPixelFormatPalette(surface->format, NULL);
-        SDL_FreeFormat(surface->format);
-        surface->format = NULL;
+    /* The application will clean up all surfaces except window surfaces */
+    for (i = 0; (i < SDL_arraysize(OldWindowSurfaces)) && OldWindowSurfaces[i]; i++) {
+        if (OldWindowSurfaces[i] == surface) {
+            OldWindowSurfaces[i] = NULL;
+            surface->flags &= ~SDL_DONTFREE;
+            surface->refcount = 1;
+            surface->map = NULL;
+            SDL_FreeSurface(surface);
+            OldWindowSurfaces[i] = surface;
+            break;
+        }
     }
-    SDL3_free(surface);
 }
 
 static SDL2_Surface *CreateSurface2from3(SDL_Surface *surface3)
@@ -3440,14 +3448,13 @@ SDL_CreateRGBSurfaceWithFormatFrom(void *pixels, int width, int height, int dept
 SDL_DECLSPEC void SDLCALL
 SDL_FreeSurface(SDL2_Surface *surface)
 {
-    const int total = (int) (SDL_arraysize(OldWindowSurfaces));
-    int i;
+    unsigned int i;
 
     if (!surface) {
         return;
     }
 
-    for (i = 0; (i < total) && OldWindowSurfaces[i]; i++) {
+    for (i = 0; (i < SDL_arraysize(OldWindowSurfaces)) && OldWindowSurfaces[i]; i++) {
         if (OldWindowSurfaces[i] == surface) {
             return;  /* this is a pointer from SDL_GetWindowSurface--a bug in the app--refuse to free it. */
         }
@@ -3461,7 +3468,19 @@ SDL_FreeSurface(SDL2_Surface *surface)
         return;
     }
 
-    SDL3_DestroySurface(Surface2to3(surface));
+    if (surface->map) {
+        SDL_Surface *surface3 = (SDL_Surface *)surface->map;
+        SDL3_DestroySurface(surface3);
+        surface->map = NULL;
+    }
+
+    if (surface->format) {
+        SDL_SetPixelFormatPalette(surface->format, NULL);
+        SDL_FreeFormat(surface->format);
+        surface->format = NULL;
+    }
+
+    SDL3_free(surface);
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -6678,6 +6697,16 @@ static void AudioSi16SysToUi16MSB(Uint16 *dst, const Sint16 *src, const size_t n
     }
 }
 
+static void SDLCALL CleanupStream2(void *userdata, void *value)
+{
+    SDL2_AudioStream *stream = (SDL2_AudioStream *)value;
+
+    /* The SDL3 audio stream is being cleaned up, make sure we don't double-free
+     * if the application frees the SDL2 audio stream later.
+     */
+    stream->stream3 = NULL;
+}
+
 SDL_DECLSPEC SDL2_AudioStream * SDLCALL
 SDL_NewAudioStream(const SDL2_AudioFormat real_src_format, const Uint8 src_channels, const int src_rate, const SDL2_AudioFormat real_dst_format, const Uint8 dst_channels, const int dst_rate)
 {
@@ -6709,6 +6738,7 @@ SDL_NewAudioStream(const SDL2_AudioFormat real_src_format, const Uint8 src_chann
         SDL3_free(retval);
         return NULL;
     }
+    SDL3_SetPointerPropertyWithCleanup(SDL3_GetAudioStreamProperties(retval->stream3), PROP_STREAM2, retval, CleanupStream2, NULL);
 
     retval->src_format = real_src_format;
     retval->dst_format = real_dst_format;
@@ -6779,7 +6809,9 @@ SDL_DECLSPEC void SDLCALL
 SDL_FreeAudioStream(SDL2_AudioStream *stream2)
 {
     if (stream2) {
-        SDL3_DestroyAudioStream(stream2->stream3);
+        if (stream2->stream3) {
+            SDL3_DestroyAudioStream(stream2->stream3);
+        }
         SDL3_free(stream2->callback2_buffer);
         SDL3_free(stream2);
     }
