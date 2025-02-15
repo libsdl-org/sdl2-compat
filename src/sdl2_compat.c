@@ -834,8 +834,8 @@ LoadSDL3(void)
         if (!okay) {
             SDL2COMPAT_stpcpy(loaderror, "Failed loading SDL3 library.");
         } else {
-            #define SDL3_SYM(rc,fn,params,args,ret) SDL3_##fn = (SDL3_##fn##_t) LoadSDL3Symbol("SDL_" #fn, &okay);
-            #include "sdl3_syms.h"
+            /* Load SDL_GetVersion() alone first to allow us to check and log the required SDL3 version */
+            SDL3_GetVersion = (SDL3_GetVersion_t) LoadSDL3Symbol("SDL_GetVersion", &okay);
             if (okay) {
                 char sdl3verstr[16];
                 char sdl3reqverstr[16];
@@ -891,6 +891,8 @@ LoadSDL3(void)
                     SDL2Compat_ApplyQuirks(force_x11);  /* Apply and maybe print a list of any enabled quirks. */
                 }
             }
+            #define SDL3_SYM(rc,fn,params,args,ret) SDL3_##fn = (SDL3_##fn##_t) LoadSDL3Symbol("SDL_" #fn, &okay);
+            #include "sdl3_syms.h"
             if (!okay) {
                 UnloadSDL3();
             }
