@@ -5694,6 +5694,79 @@ SDL_RemoveTimer(SDL2_TimerID id)
     return SDL3_RemoveTimer((SDL_TimerID)id) ? SDL2_TRUE : SDL2_FALSE;
 }
 
+typedef enum {
+    V2H_PASSTHROUGH,   /* Leave value unchanged */
+    V2H_BOOL,          /* 0 = value unset, 1 = value set */
+    V2H_BOOL_INVERTED, /* 1 = value unset, 0 = value set */
+} VarToHintConversionType;
+
+static struct {
+    const char *old_envvar;
+    const char *new_hint;
+    VarToHintConversionType type;
+} envvars_to_hints[] = {
+    { "SDL_DISKAUDIOFILE", SDL_HINT_AUDIO_DISK_OUTPUT_FILE, V2H_PASSTHROUGH },
+    { "SDL_DISKAUDIOFILEIN", SDL_HINT_AUDIO_DISK_INPUT_FILE, V2H_PASSTHROUGH },
+    { "SDL_HIDAPI_DISABLE_LIBUSB", SDL_HINT_HIDAPI_LIBUSB, V2H_BOOL_INVERTED },
+    { "SDL_HIDAPI_JOYSTICK_DISABLE_UDEV", SDL_HINT_HIDAPI_UDEV, V2H_BOOL_INVERTED },
+#ifdef SDL_PLATFORM_FREEBSD
+    { "SDL_INPUT_FREEBSD_KEEP_KBD", SDL_HINT_MUTE_CONSOLE_KEYBOARD, V2H_BOOL_INVERTED },
+#endif
+#ifdef SDL_PLATFORM_LINUX
+    { "SDL_INPUT_LINUX_KEEP_KBD", SDL_HINT_MUTE_CONSOLE_KEYBOARD, V2H_BOOL_INVERTED },
+#endif
+#ifdef SDL_PLATFORM_VITA
+    { "VITA_DISABLE_TOUCH_BACK", SDL_HINT_VITA_ENABLE_BACK_TOUCH, V2H_BOOL_INVERTED },
+    { "VITA_DISABLE_TOUCH_FRONT", SDL_HINT_VITA_ENABLE_FRONT_TOUCH, V2H_BOOL_INVERTED },
+    { "VITA_MODULE_PATH", SDL_HINT_VITA_MODULE_PATH, V2H_PASSTHROUGH },
+    { "VITA_PVR_OGL", SDL_HINT_VITA_PVR_OPENGL, V2H_BOOL },
+    { "VITA_PVR_SKIP_INIT", SDL_HINT_VITA_PVR_INIT, V2H_BOOL_INVERTED },
+    { "VITA_RESOLUTION", SDL_HINT_VITA_RESOLUTION, V2H_PASSTHROUGH },
+#endif
+};
+
+/* TODO: Handle variables that were set previously and later cleared */
+static void SDL2COMPAT_SetEnvironmentVariable(SDL_Environment *env, const char *name, const char *value)
+{
+    unsigned int i;
+
+    /* Propagate the original variable name and value, so SDL_getenv() works as expected */
+    SDL3_SetEnvironmentVariable(env, name, value, true);
+
+    /* Handle environment variables that became hints in SDL3  */
+    for (i = 0; i < SDL_arraysize(envvars_to_hints); ++i) {
+        if (SDL3_strcmp(name, envvars_to_hints[i].old_envvar) == 0) {
+            const char *value3;
+
+            switch (envvars_to_hints[i].type) {
+            case V2H_BOOL:
+                value3 = value ? "1" : "0";
+                break;
+            case V2H_BOOL_INVERTED:
+                value3 = value ? "0" : "1";
+                break;
+            case V2H_PASSTHROUGH:
+                value3 = value;
+                break;
+            }
+
+            SDL3_SetEnvironmentVariable(env, envvars_to_hints[i].new_hint, value3, true);
+        }
+    }
+
+    /* Handle renamed hints set via environment variables */
+    for (i = 0; i < SDL_arraysize(renamed_hints); ++i) {
+        if (SDL3_strcmp(name, renamed_hints[i].old_hint) == 0) {
+            bool free_value = false;
+            const char *value3 = SDL2_to_SDL3_hint_value(name, value, &free_value);
+            SDL3_SetEnvironmentVariable(env, renamed_hints[i].new_hint, value3, true);
+            if (free_value) {
+                SDL3_free((void *)value3);
+            }
+        }
+    }
+}
+
 static void SynchronizeEnvironmentVariables()
 {
     SDL_Environment *env = SDL3_GetEnvironment();
@@ -5706,7 +5779,7 @@ static void SynchronizeEnvironmentVariables()
         for (; fresh_envp[i]; ++i) {
             char *sep = SDL3_strchr(fresh_envp[i], '=');
             *sep = '\0';
-            SDL3_SetEnvironmentVariable(env, fresh_envp[i], sep + 1, true);
+            SDL2COMPAT_SetEnvironmentVariable(env, fresh_envp[i], sep + 1);
         }
 
         SDL3_free(fresh_envp);
