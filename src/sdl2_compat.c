@@ -213,6 +213,7 @@ do { \
 #define PROP_WINDOW_EXPECTED_SCALE "sdl2-compat.window.expected_scale"
 #define PROP_RENDERER_BATCHING "sdl2-compat.renderer.batching"
 #define PROP_RENDERER_RELATIVE_SCALING "sdl2-compat.renderer.relative-scaling"
+#define PROP_RENDERER_INTEGER_SCALE "sdl2-compat.renderer.integer_scale"
 #define PROP_SURFACE2 "sdl2-compat.surface2"
 #define PROP_STREAM2 "sdl2-compat.stream2"
 
@@ -5000,6 +5001,8 @@ SDL_RenderSetLogicalSize(SDL_Renderer *renderer, int w, int h)
 
     if (w == 0 && h == 0) {
         mode = SDL_LOGICAL_PRESENTATION_DISABLED;
+    } else if (SDL3_GetBooleanProperty(SDL3_GetRendererProperties(renderer), PROP_RENDERER_INTEGER_SCALE, false)) {
+        mode = SDL_LOGICAL_PRESENTATION_INTEGER_SCALE;
     } else {
         const char *hint = SDL3_GetHint("SDL_RENDER_LOGICAL_SIZE_MODE");
         if (hint && (*hint == '1' || SDL3_strcasecmp(hint, "overscan") == 0)) {
@@ -5022,41 +5025,17 @@ SDL_RenderGetLogicalSize(SDL_Renderer *renderer, int *w, int *h)
 SDL_DECLSPEC int SDLCALL
 SDL_RenderSetIntegerScale(SDL_Renderer *renderer, SDL2_bool enable)
 {
-    SDL_RendererLogicalPresentation mode;
-    int w, h;
-    int retval;
+    int w = 0, h = 0;
 
-    retval = SDL3_GetRenderLogicalPresentation(renderer, &w, &h, &mode) ? 0 : -1;
-    if (retval < 0) {
-        return retval;
-    }
-
-    if (enable && mode == SDL_LOGICAL_PRESENTATION_INTEGER_SCALE) {
-        return 0;
-    }
-
-    if (!enable && mode != SDL_LOGICAL_PRESENTATION_INTEGER_SCALE) {
-        return 0;
-    }
-
-    if (enable) {
-        retval = SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE) ? 0 : -1;
-    } else {
-        retval = SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_DISABLED) ? 0 : -1;
-    }
-    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
+    SDL3_SetBooleanProperty(SDL3_GetRendererProperties(renderer), PROP_RENDERER_INTEGER_SCALE, enable);
+    SDL_RenderGetLogicalSize(renderer, &w, &h);
+    return SDL_RenderSetLogicalSize(renderer, w, h);
 }
 
 SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_RenderGetIntegerScale(SDL_Renderer *renderer)
 {
-    SDL_RendererLogicalPresentation mode;
-    if (SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode)) {
-        if (mode == SDL_LOGICAL_PRESENTATION_INTEGER_SCALE) {
-            return SDL2_TRUE;
-        }
-    }
-    return SDL2_FALSE;
+    return SDL3_GetBooleanProperty(SDL3_GetRendererProperties(renderer), PROP_RENDERER_INTEGER_SCALE, false) ? SDL2_TRUE : SDL2_FALSE;
 }
 
 SDL_DECLSPEC int SDLCALL
