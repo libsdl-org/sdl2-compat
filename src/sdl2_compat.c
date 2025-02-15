@@ -5775,7 +5775,7 @@ SDL_AudioInit(const char *driver_name)
     SynchronizeEnvironmentVariables();
 
     if (driver_name) {
-        SDL3_SetHint("SDL_AUDIO_DRIVER", driver_name);
+        SDL3_SetHint(SDL_HINT_AUDIO_DRIVER, driver_name);
     }
 
     return InitSubsystemInternal(SDL_INIT_AUDIO);
@@ -5983,7 +5983,7 @@ SDL_VideoInit(const char *driver_name)
     SynchronizeEnvironmentVariables();
 
     if (driver_name) {
-        SDL3_SetHint("SDL_VIDEO_DRIVER", driver_name);
+        SDL3_SetHint(SDL_HINT_VIDEO_DRIVER, driver_name);
     }
 
     return InitSubsystemInternal(SDL_INIT_VIDEO);
