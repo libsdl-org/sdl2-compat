@@ -282,6 +282,19 @@ static bool SDL2Compat_strequal(const char *a, const char *b)
     return true;
 }
 
+/* you can use SDL3_strrchr once we're past startup. */
+static char *SDL2Compat_strrchr(const char *string, int c)
+{
+    const char *bufp = string + SDL2Compat_strlen(string);
+    while (bufp >= string) {
+        if (*bufp == c) {
+            return (char *)bufp;
+        }
+        --bufp;
+    }
+    return NULL;
+}
+
 /* log a string using platform-specific code for before SDL3 is fully available. */
 static void SDL2Compat_LogAtStartup(const char *str)
 {
@@ -548,7 +561,7 @@ SDL2Compat_GetExeName(void)
         static char *base_path;
         bool use_base_path = true;
         OS_GetExeName(path_buf, SDL2COMPAT_MAXPATH, &use_base_path);
-        base_path = SDL3_strrchr(path_buf, *DIRSEP);
+        base_path = SDL2Compat_strrchr(path_buf, *DIRSEP);
         if (base_path && use_base_path) {
             /* We have a '\\' component. */
             exename = base_path + 1;
