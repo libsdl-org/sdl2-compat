@@ -1006,7 +1006,6 @@ BOOL WINAPI _DllMainCRTStartup(HANDLE dllhandle, DWORD reason, LPVOID reserved)
 
 /* !!! FIXME: unify coding convention on the globals: some are MyVariableName and some are my_variable_name */
 static int timer_init = 0;
-static SDL2_Surface *OldWindowSurfaces[16];
 static SDL2_EventFilter EventFilter2 = NULL;
 static void *EventFilterUserData2 = NULL;
 static SDL_mutex *EventWatchListMutex = NULL;
@@ -3041,25 +3040,6 @@ SDL_LoadWAV_RW(SDL2_RWops *rwops2, int freesrc, SDL2_AudioSpec *spec2, Uint8 **a
     return retval;
 }
 
-static void SDLCALL CleanupSurface2(void *userdata, void *value)
-{
-    SDL2_Surface *surface = (SDL2_Surface *)value;
-    unsigned int i;
-
-    /* The application will clean up all surfaces except window surfaces */
-    for (i = 0; (i < SDL_arraysize(OldWindowSurfaces)) && OldWindowSurfaces[i]; i++) {
-        if (OldWindowSurfaces[i] == surface) {
-            OldWindowSurfaces[i] = NULL;
-            surface->flags &= ~SDL_DONTFREE;
-            surface->refcount = 1;
-            surface->map = NULL;
-            SDL_FreeSurface(surface);
-            OldWindowSurfaces[i] = surface;
-            break;
-        }
-    }
-}
-
 static SDL2_Surface *CreateSurface2from3(SDL_Surface *surface3)
 {
     /* Allocate the surface */
@@ -3071,7 +3051,7 @@ static SDL2_Surface *CreateSurface2from3(SDL_Surface *surface3)
 
     /* Link the surfaces */
     surface->map = (SDL_BlitMap *)surface3;
-    SDL3_SetPointerPropertyWithCleanup(SDL3_GetSurfaceProperties(surface3), PROP_SURFACE2, surface, CleanupSurface2, NULL);
+    SDL3_SetPointerProperty(SDL3_GetSurfaceProperties(surface3), PROP_SURFACE2, surface);
 
     surface->format = SDL_AllocFormat(surface3->format);
     if (!surface->format) {
@@ -3448,16 +3428,8 @@ SDL_CreateRGBSurfaceWithFormatFrom(void *pixels, int width, int height, int dept
 SDL_DECLSPEC void SDLCALL
 SDL_FreeSurface(SDL2_Surface *surface)
 {
-    unsigned int i;
-
     if (!surface) {
         return;
-    }
-
-    for (i = 0; (i < SDL_arraysize(OldWindowSurfaces)) && OldWindowSurfaces[i]; i++) {
-        if (OldWindowSurfaces[i] == surface) {
-            return;  /* this is a pointer from SDL_GetWindowSurface--a bug in the app--refuse to free it. */
-        }
     }
 
     if (surface->flags & SDL_DONTFREE) {
@@ -8790,34 +8762,46 @@ SDL_GetSurfaceBlendMode(SDL2_Surface *surface, SDL_BlendMode *blendMode)
     return SDL3_GetSurfaceBlendMode(Surface2to3(surface), blendMode) ? 0 : -1;
 }
 
+static void SDLCALL CleanupWindowSurface(void *userdata, void *value)
+{
+    SDL2_Surface *surface = (SDL2_Surface *)value;
+    surface->flags &= ~SDL_DONTFREE;
+    surface->map = NULL;
+    SDL_FreeSurface(surface);
+}
+
 SDL_DECLSPEC SDL2_Surface * SDLCALL
 SDL_GetWindowSurface(SDL_Window *window)
 {
-    SDL2_Surface *surface2 = Surface3to2(SDL3_GetWindowSurface(window));
-    if (surface2) {
-        surface2->flags |= SDL_DONTFREE;
-    }
+    SDL_Surface *surface = SDL3_GetWindowSurface(window);
+    SDL2_Surface *surface2 = NULL;
+    if (surface) {
+        surface2 = (SDL2_Surface *)SDL3_GetPointerProperty(SDL3_GetSurfaceProperties(surface), PROP_SURFACE2, NULL);
+        if (!surface2) {
+            /* See if we can reuse an existing surface */
+            surface2 = (SDL2_Surface *)SDL3_GetPointerProperty(SDL3_GetWindowProperties(window), PROP_SURFACE2, NULL);
+            if (surface2) {
+                /* Link the new window surface to the SDL2 window surface */
+                surface2->map = (SDL_BlitMap *)surface;
+                SDL3_SetPointerProperty(SDL3_GetSurfaceProperties(surface), PROP_SURFACE2, surface2);
 
-    if (surface2) {
-        /* if the window was resized, SDL_GetWindowSurface() will destroy the previous surface and create a new one.
-           This takes the previous SDL2 surface with it. It's not legal to SDL_FreeSurface() a window surface, but
-           in SDL2, it didn't dereference free'd memory to do so, so we need to keep track of old pointers in case
-           an app tries to free them. */
-        int i;
-        const int total = (int) (SDL_arraysize(OldWindowSurfaces));
-        for (i = 0; i < total; i++) {
-            if (OldWindowSurfaces[i] == surface2) {
-                break;
+                surface2->flags = (surface->flags & SHARED_SURFACE_FLAGS) | SDL_DONTFREE;
+                surface2->w = surface->w;
+                surface2->h = surface->h;
+                surface2->pixels = surface->pixels;
+                surface2->pitch = surface->pitch;
+
+                SDL3_GetSurfaceClipRect(surface, &surface2->clip_rect);
+            } else {
+                surface2 = CreateSurface2from3(surface);
+                if (surface2) {
+                    surface2->flags |= SDL_DONTFREE;
+
+                    SDL3_SetPointerPropertyWithCleanup(SDL3_GetWindowProperties(window), PROP_SURFACE2, surface2, CleanupWindowSurface, NULL);
+                }
             }
         }
-
-        /* just keep the last X surfaces; this is a hack to keep buggy legacy code running. */
-        if (i == total) {
-            SDL3_memmove(&OldWindowSurfaces[1], &OldWindowSurfaces[0], sizeof (OldWindowSurfaces) - sizeof (OldWindowSurfaces[0]));
-            OldWindowSurfaces[0] = surface2;
-        }
     }
-
     return surface2;
 }
 
