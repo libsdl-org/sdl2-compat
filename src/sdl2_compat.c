@@ -4971,7 +4971,20 @@ SDL_RenderGetClipRect(SDL_Renderer *renderer, SDL_Rect *rect)
 SDL_DECLSPEC void SDLCALL
 SDL_RenderGetScale(SDL_Renderer *renderer, float *scaleX, float *scaleY)
 {
+    int w = 0, h = 0;
+    SDL_FRect rect;
+
     SDL3_GetRenderScale(renderer, scaleX, scaleY);
+
+    /* Include the logical scale */
+    SDL3_GetRenderLogicalPresentation(renderer, &w, &h, NULL);
+    SDL3_GetRenderLogicalPresentationRect(renderer, &rect);
+    if (scaleX && w > 0) {
+        *scaleX *= rect.w / w;
+    }
+    if (scaleY && h > 0) {
+        *scaleY *= rect.h / h;
+    }
 }
 
 SDL_DECLSPEC void SDLCALL
