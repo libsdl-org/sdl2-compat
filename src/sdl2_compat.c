@@ -1572,6 +1572,20 @@ static SDL_Keycode SDL3KeycodeToSDL2Keycode(SDL_Scancode scancode, SDL_Keycode k
     return SDL_SCANCODE_TO_KEYCODE(scancode);
 }
 
+static int GetIndexFromAudioDeviceInstance(SDL_AudioDeviceID devid, bool recording)
+{
+    AudioDeviceList *list = recording ? &AudioSDL3RecordingDevices : &AudioSDL3PlaybackDevices;
+    int i;
+
+    for (i = 0; i < list->num_devices; i++) {
+        if (devid == list->devices[i].devid) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
 /* (current) strategy for SDL_Events:
    in sdl12-compat, we built our own event queue, so when the SDL2 queue is pumped, we
    took the events we cared about and added them to the sdl12-compat queue, and otherwise
@@ -1762,6 +1776,9 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
             break;
         }
         break;
+    case SDL_EVENT_AUDIO_DEVICE_ADDED:
+        event2->adevice.which = GetIndexFromAudioDeviceInstance(event3->adevice.which, event3->adevice.recording);
+        break;
     default:
         break;
     }
@@ -1832,6 +1849,23 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
         break;
     case SDL_EVENT_JOYSTICK_BATTERY_UPDATED:
         /* This should never happen, but see Event3to2() for details */
+        break;
+    case SDL_EVENT_AUDIO_DEVICE_ADDED:
+        if (event2->adevice.iscapture) {
+            if (event2->adevice.which >= 0 &&
+                event2->adevice.which < (Uint32)AudioSDL3RecordingDevices.num_devices) {
+                event3->adevice.which = AudioSDL3RecordingDevices.devices[event2->adevice.which].devid;
+            } else {
+                event3->adevice.which = 0;
+            }
+        } else {
+            if (event2->adevice.which >= 0 &&
+                event2->adevice.which < (Uint32)AudioSDL3PlaybackDevices.num_devices) {
+                event3->adevice.which = AudioSDL3PlaybackDevices.devices[event2->adevice.which].devid;
+            } else {
+                event3->adevice.which = 0;
+            }
+        }
         break;
     default:
         break;
@@ -1956,6 +1990,11 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
         case SDL_EVENT_JOYSTICK_REMOVED:
             SDL_NumJoysticks(); /* Refresh */
             SDL_NumHaptics(); /* Refresh */
+            break;
+
+        case SDL_EVENT_AUDIO_DEVICE_ADDED:
+        case SDL_EVENT_AUDIO_DEVICE_REMOVED:
+            SDL_GetNumAudioDevices(event3->adevice.recording ? SDL2_TRUE : SDL2_FALSE); /* Refresh */
             break;
     }
 
@@ -2173,6 +2212,11 @@ SDL_WaitEventTimeout(SDL2_Event *event2, int timeout)
             case SDL_EVENT_JOYSTICK_REMOVED:
                 SDL_NumJoysticks(); /* Refresh */
                 SDL_NumHaptics(); /* Refresh */
+                break;
+
+            case SDL_EVENT_AUDIO_DEVICE_ADDED:
+            case SDL_EVENT_AUDIO_DEVICE_REMOVED:
+                SDL_GetNumAudioDevices(event3.adevice.recording ? SDL2_TRUE : SDL2_FALSE); /* Refresh */
                 break;
         }
         Event3to2(&event3, event2);
