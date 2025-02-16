@@ -358,6 +358,7 @@ SDL3_SYM_PASSTHROUGH_RETCODE(bool,GetRenderDrawBlendMode,(SDL_Renderer *a, SDL_B
 SDL3_SYM_PASSTHROUGH_RETCODE(bool,GetRenderDrawColor,(SDL_Renderer *a, Uint8 *b, Uint8 *c, Uint8 *d, Uint8 *e),(a,b,c,d,e),return)
 SDL3_SYM(const char *,GetRenderDriver,(int a),(a),return);
 SDL3_SYM(bool,GetRenderLogicalPresentation,(SDL_Renderer *a, int *b, int *c, SDL_RendererLogicalPresentation *d),(a,b,c,d),return)
+SDL3_SYM(bool,GetRenderLogicalPresentationRect,(SDL_Renderer *a, SDL_FRect *b),(a,b),return)
 SDL3_SYM(bool,GetRenderScale,(SDL_Renderer *a, float *b, float *c),(a,b,c),return)
 SDL3_SYM_PASSTHROUGH(SDL_Texture*,GetRenderTarget,(SDL_Renderer *a),(a),return)
 SDL3_SYM(bool,GetRenderViewport,(SDL_Renderer *a, SDL_Rect *b),(a,b),return)
