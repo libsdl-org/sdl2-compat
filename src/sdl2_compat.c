@@ -5725,13 +5725,16 @@ static struct {
 #endif
 };
 
-/* TODO: Handle variables that were set previously and later cleared */
-static void SDL2COMPAT_SetEnvironmentVariable(SDL_Environment *env, const char *name, const char *value)
+static void SDL2COMPAT_SetEnvironmentVariable(SDL_Environment *env, const char *name, const char *value, bool overwrite)
 {
     unsigned int i;
 
     /* Propagate the original variable name and value, so SDL_getenv() works as expected */
-    SDL3_SetEnvironmentVariable(env, name, value, true);
+    if (value) {
+        SDL3_SetEnvironmentVariable(env, name, value, overwrite);
+    } else {
+        SDL3_UnsetEnvironmentVariable(env, name);
+    }
 
     /* Handle environment variables that became hints in SDL3  */
     for (i = 0; i < SDL_arraysize(envvars_to_hints); ++i) {
@@ -5750,7 +5753,11 @@ static void SDL2COMPAT_SetEnvironmentVariable(SDL_Environment *env, const char *
                 break;
             }
 
-            SDL3_SetEnvironmentVariable(env, envvars_to_hints[i].new_hint, value3, true);
+            if (value3) {
+                SDL3_SetEnvironmentVariable(env, envvars_to_hints[i].new_hint, value3, overwrite);
+            } else {
+                SDL3_UnsetEnvironmentVariable(env, envvars_to_hints[i].new_hint);
+            }
         }
     }
 
@@ -5759,7 +5766,13 @@ static void SDL2COMPAT_SetEnvironmentVariable(SDL_Environment *env, const char *
         if (SDL3_strcmp(name, renamed_hints[i].old_hint) == 0) {
             bool free_value = false;
             const char *value3 = SDL2_to_SDL3_hint_value(name, value, &free_value);
-            SDL3_SetEnvironmentVariable(env, renamed_hints[i].new_hint, value3, true);
+
+            if (value3) {
+                SDL3_SetEnvironmentVariable(env, renamed_hints[i].new_hint, value3, overwrite);
+            } else {
+                SDL3_UnsetEnvironmentVariable(env, renamed_hints[i].new_hint);
+            }
+
             if (free_value) {
                 SDL3_free((void *)value3);
             }
@@ -5771,15 +5784,32 @@ static void SynchronizeEnvironmentVariables()
 {
     SDL_Environment *env = SDL3_GetEnvironment();
     SDL_Environment *fresh_env = SDL3_CreateEnvironment(true);
+    char **envp;
+    char **fresh_envp;
+    int i;
 
-    /* Sync any changes to the C environment into SDL3's cached copy */
-    char **fresh_envp = SDL3_GetEnvironmentVariables(fresh_env);
+    /* Clear variables that are no longer set in the environment */
+    envp = SDL3_GetEnvironmentVariables(env);
+    if (envp) {
+        for (i = 0; envp[i]; ++i) {
+            char *sep = SDL3_strchr(envp[i], '=');
+            *sep = '\0';
+
+            if (SDL3_GetEnvironmentVariable(fresh_env, envp[i]) == NULL) {
+                SDL2COMPAT_SetEnvironmentVariable(env, envp[i], NULL, true);
+            }
+        }
+
+        SDL3_free(envp);
+    }
+
+    /* Set variables that are present in the environment */
+    fresh_envp = SDL3_GetEnvironmentVariables(fresh_env);
     if (fresh_envp) {
-        int i = 0;
-        for (; fresh_envp[i]; ++i) {
+        for (i = 0; fresh_envp[i]; ++i) {
             char *sep = SDL3_strchr(fresh_envp[i], '=');
             *sep = '\0';
-            SDL2COMPAT_SetEnvironmentVariable(env, fresh_envp[i], sep + 1);
+            SDL2COMPAT_SetEnvironmentVariable(env, fresh_envp[i], sep + 1, true);
         }
 
         SDL3_free(fresh_envp);
