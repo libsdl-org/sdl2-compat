@@ -1867,15 +1867,13 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
         break;
     case SDL_EVENT_AUDIO_DEVICE_ADDED:
         if (event2->adevice.iscapture) {
-            if (event2->adevice.which >= 0 &&
-                event2->adevice.which < (Uint32)AudioSDL3RecordingDevices.num_devices) {
+            if (event2->adevice.which < (Uint32)AudioSDL3RecordingDevices.num_devices) {
                 event3->adevice.which = AudioSDL3RecordingDevices.devices[event2->adevice.which].devid;
             } else {
                 event3->adevice.which = 0;
             }
         } else {
-            if (event2->adevice.which >= 0 &&
-                event2->adevice.which < (Uint32)AudioSDL3PlaybackDevices.num_devices) {
+            if (event2->adevice.which < (Uint32)AudioSDL3PlaybackDevices.num_devices) {
                 event3->adevice.which = AudioSDL3PlaybackDevices.devices[event2->adevice.which].devid;
             } else {
                 event3->adevice.which = 0;
