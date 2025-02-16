@@ -5818,6 +5818,19 @@ static void SynchronizeEnvironmentVariables()
     SDL3_DestroyEnvironment(fresh_env);
 }
 
+SDL_DECLSPEC int SDLCALL
+SDL_setenv(const char *name, const char *value, int overwrite)
+{
+    int retval;
+
+    retval = SDL3_setenv_unsafe(name, value, overwrite);
+    if (retval == 0) {
+        SDL2COMPAT_SetEnvironmentVariable(SDL3_GetEnvironment(), name, value, overwrite != 0);
+    }
+
+    return retval;
+}
+
 static SDL_InitFlags PreInitSubsystem(SDL_InitFlags flags)
 {
     /* If the subsystem is already initialized, mask out the flag for it */
