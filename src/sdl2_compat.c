@@ -7831,7 +7831,7 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
     }
 
     #if !defined(SDL_PLATFORM_IOS) && !defined(SDL_PLATFORM_ANDROID)  // (and maybe others...?)
-    SDL3_StartTextInput(window);
+    SDL_StartTextInput();
     #endif
 
     return window;
