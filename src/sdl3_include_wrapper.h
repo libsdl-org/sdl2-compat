@@ -1291,6 +1291,8 @@
 #undef CreateThread
 #undef CreateSemaphore
 #undef CreateMutex
+#undef GetEnvironmentVariable
+#undef SetEnvironmentVariable
 #endif /* _WIN32 */
 
 
