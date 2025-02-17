@@ -7060,7 +7060,9 @@ SDL_PauseAudioDevice(SDL_AudioDeviceID dev, int pause_on)
     SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
     if (stream2) {
         const SDL_AudioDeviceID device3 = SDL3_GetAudioStreamDevice(stream2->stream3);
-        SDL3_ClearAudioStream(stream2->stream3);
+        if (stream2->callback2) {  // don't clear the stream for queued audio, just callback audio.
+            SDL3_ClearAudioStream(stream2->stream3);
+        }
         if (device3) {
             if (pause_on) {
                 SDL3_PauseAudioDevice(device3);
