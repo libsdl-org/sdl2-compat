@@ -6701,15 +6701,15 @@ static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devicename, int iscap
         return 0;
     }
 
-    stream2->bytes_per_callbacks = obtained2->size;
-    stream2->callback2_buffer = SDL3_malloc(stream2->bytes_per_callbacks);
-    if (!stream2->callback2_buffer) {
-        SDL_FreeAudioStream(stream2);
-        SDL3_CloseAudioDevice(device3);
-        return 0;
-    }
-
     if (desired2->callback) {
+        stream2->bytes_per_callbacks = obtained2->size;
+        stream2->callback2_buffer = SDL3_malloc(stream2->bytes_per_callbacks);
+        if (!stream2->callback2_buffer) {
+            SDL_FreeAudioStream(stream2);
+            SDL3_CloseAudioDevice(device3);
+            return 0;
+        }
+
         stream2->callback2 = desired2->callback;
         stream2->callback2_userdata = desired2->userdata;
         if (iscapture) {
