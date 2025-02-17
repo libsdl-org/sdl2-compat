@@ -1028,10 +1028,14 @@ static SDL_mutex *EventWatchListMutex = NULL;
 static SDL2_LogOutputFunction LogOutputFunction2 = NULL;
 static EventFilterWrapperData *EventWatchers2 = NULL;
 static SDL2_bool relative_mouse_mode = SDL2_FALSE;
+static SDL_JoystickID *joystick_instance_list = NULL;
+static int num_joystick_instances = 0;
 static SDL_JoystickID *joystick_list = NULL;
 static int num_joysticks = 0;
 static SDL_JoystickID *gamepad_button_swap_list = NULL;
 static int num_gamepad_button_swap_list = 0;
+static SDL_SensorID *sensor_instance_list = NULL;
+static int num_sensor_instances = 0;
 static SDL_SensorID *sensor_list = NULL;
 static int num_sensors = 0;
 static SDL_HapticID *haptic_list = NULL;
@@ -1067,6 +1071,11 @@ static SDL_Finger **TouchFingers = NULL;
 static int NumTouchFingers = 0;
 
 static SDL_PropertiesID timers = 0;
+
+static SDL_JoystickID JoystickID2to3(SDL2_JoystickID id);
+static SDL2_JoystickID JoystickID3to2(SDL_JoystickID id);
+static SDL_SensorID SensorID2to3(SDL2_SensorID id);
+static SDL2_SensorID SensorID3to2(SDL_SensorID id);
 
 /* Functions! */
 
@@ -1618,8 +1627,7 @@ static int GetIndexFromAudioDeviceInstance(SDL_AudioDeviceID devid, bool recordi
 
 static int GetIndexFromJoystickInstance(SDL_JoystickID jid);
 
-static SDL2_Event *
-Event3to2(const SDL_Event *event3, SDL2_Event *event2)
+static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
 {
     SDL_Renderer *renderer;
     SDL_Event cvtevent3;
@@ -1749,27 +1757,27 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
             wheel->mouseY = (Sint32)event3->wheel.mouse_y;
         }
         break;
-    case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
-    case SDL_EVENT_GAMEPAD_BUTTON_UP:
-        if (ShouldSwapGamepadButtons(event2->cbutton.which)) {
-            event2->cbutton.button = SwapGamepadButton(event2->cbutton.button);
-        }
+    case SDL_EVENT_JOYSTICK_AXIS_MOTION:
+        event2->jaxis.which = JoystickID3to2(event3->jaxis.which);
         break;
-    /* sensor timestamps are in nanosecond in SDL3 */
-    case SDL_EVENT_GAMEPAD_SENSOR_UPDATE:
-        event2->csensor.timestamp_us = SDL_NS_TO_US(event3->gsensor.sensor_timestamp);
+    case SDL_EVENT_JOYSTICK_BALL_MOTION:
+        event2->jball.which = JoystickID3to2(event3->jball.which);
         break;
-    case SDL_EVENT_SENSOR_UPDATE:
-        event2->sensor.timestamp_us = SDL_NS_TO_US(event3->sensor.sensor_timestamp);
+    case SDL_EVENT_JOYSTICK_HAT_MOTION:
+        event2->jhat.which = JoystickID3to2(event3->jhat.which);
         break;
-    /* Change SDL3 InstanceID to index */
+    case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
+    case SDL_EVENT_JOYSTICK_BUTTON_UP:
+        event2->jbutton.which = JoystickID3to2(event3->jbutton.which);
+        break;
     case SDL_EVENT_JOYSTICK_ADDED:
         event2->jdevice.which = GetIndexFromJoystickInstance(event3->jdevice.which);
         break;
-    case SDL_EVENT_GAMEPAD_ADDED:
-        event2->cdevice.which = GetIndexFromJoystickInstance(event3->gdevice.which);
+    case SDL_EVENT_JOYSTICK_REMOVED:
+        event2->jdevice.which = JoystickID3to2(event3->jdevice.which);
         break;
     case SDL_EVENT_JOYSTICK_BATTERY_UPDATED:
+        event2->jbattery.which = JoystickID3to2(event3->jbattery.which);
         switch (event3->jbattery.state) {
         case SDL_POWERSTATE_CHARGING:
         case SDL_POWERSTATE_CHARGED:
@@ -1791,8 +1799,40 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
             break;
         }
         break;
+    case SDL_EVENT_GAMEPAD_AXIS_MOTION:
+        event2->caxis.which = JoystickID3to2(event3->gaxis.which);
+        break;
+    case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+    case SDL_EVENT_GAMEPAD_BUTTON_UP:
+        event2->cbutton.which = JoystickID3to2(event3->gbutton.which);
+        if (ShouldSwapGamepadButtons(event2->cbutton.which)) {
+            event2->cbutton.button = SwapGamepadButton(event2->cbutton.button);
+        }
+        break;
+    case SDL_EVENT_GAMEPAD_ADDED:
+        event2->cdevice.which = GetIndexFromJoystickInstance(event3->gdevice.which);
+        break;
+    case SDL_EVENT_GAMEPAD_REMOVED:
+    case SDL_EVENT_GAMEPAD_REMAPPED:
+    case SDL_EVENT_GAMEPAD_STEAM_HANDLE_UPDATED:
+        event2->cdevice.which = JoystickID3to2(event3->gdevice.which);
+        break;
+    case SDL_EVENT_GAMEPAD_TOUCHPAD_DOWN:
+    case SDL_EVENT_GAMEPAD_TOUCHPAD_MOTION:
+    case SDL_EVENT_GAMEPAD_TOUCHPAD_UP:
+        event2->ctouchpad.which = JoystickID3to2(event3->gtouchpad.which);
+        break;
+    /* sensor timestamps are in nanosecond in SDL3 */
+    case SDL_EVENT_GAMEPAD_SENSOR_UPDATE:
+        event2->csensor.which = JoystickID3to2(event3->gsensor.which);
+        event2->csensor.timestamp_us = SDL_NS_TO_US(event3->gsensor.sensor_timestamp);
+        break;
     case SDL_EVENT_AUDIO_DEVICE_ADDED:
         event2->adevice.which = GetIndexFromAudioDeviceInstance(event3->adevice.which, event3->adevice.recording);
+        break;
+    case SDL_EVENT_SENSOR_UPDATE:
+        event2->sensor.which = SensorID3to2(event3->sensor.which);
+        event2->sensor.timestamp_us = SDL_NS_TO_US(event3->sensor.sensor_timestamp);
         break;
     default:
         break;
@@ -1800,8 +1840,7 @@ Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     return event2;
 }
 
-static SDL_Event *
-Event2to3(const SDL2_Event *event2, SDL_Event *event3)
+static SDL_Event *Event2to3(const SDL2_Event *event2, SDL_Event *event3)
 {
     /* currently everything _mostly_ matches up between SDL2 and SDL3, but this might
        drift more as SDL3 development continues. */
@@ -1846,6 +1885,19 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
         event3->wheel.mouse_x = (float)event2->wheel.mouseX;
         event3->wheel.mouse_y = (float)event2->wheel.mouseY;
         break;
+    case SDL_EVENT_JOYSTICK_AXIS_MOTION:
+        event3->jaxis.which = JoystickID2to3(event2->jaxis.which);
+        break;
+    case SDL_EVENT_JOYSTICK_BALL_MOTION:
+        event3->jball.which = JoystickID2to3(event2->jball.which);
+        break;
+    case SDL_EVENT_JOYSTICK_HAT_MOTION:
+        event3->jhat.which = JoystickID2to3(event2->jhat.which);
+        break;
+    case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
+    case SDL_EVENT_JOYSTICK_BUTTON_UP:
+        event3->jbutton.which = JoystickID2to3(event2->jbutton.which);
+        break;
     case SDL_EVENT_JOYSTICK_ADDED:
         if (event2->jdevice.which >= 0 &&
             event2->jdevice.which < num_joysticks) {
@@ -1853,6 +1905,19 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
         } else {
             event3->jdevice.which = 0;
         }
+        break;
+    case SDL_EVENT_JOYSTICK_REMOVED:
+        event3->jdevice.which = JoystickID2to3(event2->jdevice.which);
+        break;
+    case SDL_EVENT_JOYSTICK_BATTERY_UPDATED:
+        /* This should never happen, but see Event3to2() for details */
+        break;
+    case SDL_EVENT_GAMEPAD_AXIS_MOTION:
+        event3->gaxis.which = JoystickID2to3(event2->caxis.which);
+        break;
+    case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+    case SDL_EVENT_GAMEPAD_BUTTON_UP:
+        event3->gbutton.which = JoystickID2to3(event2->cbutton.which);
         break;
     case SDL_EVENT_GAMEPAD_ADDED:
         if (event2->cdevice.which >= 0 &&
@@ -1862,8 +1927,19 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
             event3->gdevice.which = 0;
         }
         break;
-    case SDL_EVENT_JOYSTICK_BATTERY_UPDATED:
-        /* This should never happen, but see Event3to2() for details */
+    case SDL_EVENT_GAMEPAD_REMOVED:
+    case SDL_EVENT_GAMEPAD_REMAPPED:
+    case SDL_EVENT_GAMEPAD_STEAM_HANDLE_UPDATED:
+        event3->gdevice.which = JoystickID2to3(event2->cdevice.which);
+        break;
+    case SDL_EVENT_GAMEPAD_TOUCHPAD_DOWN:
+    case SDL_EVENT_GAMEPAD_TOUCHPAD_MOTION:
+    case SDL_EVENT_GAMEPAD_TOUCHPAD_UP:
+        event3->gtouchpad.which = JoystickID2to3(event2->ctouchpad.which);
+        break;
+    case SDL_EVENT_GAMEPAD_SENSOR_UPDATE:
+        event3->gsensor.which = JoystickID2to3(event2->csensor.which);
+        event3->gsensor.sensor_timestamp = SDL_US_TO_NS(event2->csensor.timestamp_us);
         break;
     case SDL_EVENT_AUDIO_DEVICE_ADDED:
         if (event2->adevice.iscapture) {
@@ -1879,6 +1955,10 @@ Event2to3(const SDL2_Event *event2, SDL_Event *event3)
                 event3->adevice.which = 0;
             }
         }
+        break;
+    case SDL_EVENT_SENSOR_UPDATE:
+        event3->sensor.which = SensorID2to3(event2->sensor.which);
+        event3->sensor.sensor_timestamp = SDL_US_TO_NS(event2->sensor.timestamp_us);
         break;
     default:
         break;
@@ -6197,11 +6277,23 @@ SDL_Quit(void)
         GestureQuit();
     }
 
+    if (joystick_instance_list) {
+        SDL3_free(joystick_instance_list);
+        joystick_instance_list = NULL;
+    }
+    num_joystick_instances = 0;
+
     if (joystick_list) {
         SDL3_free(joystick_list);
         joystick_list = NULL;
     }
     num_joysticks = 0;
+
+    if (sensor_instance_list) {
+        SDL3_free(sensor_instance_list);
+        sensor_instance_list = NULL;
+    }
+    num_sensor_instances = 0;
 
     if (sensor_list) {
         SDL3_free(sensor_list);
@@ -9140,8 +9232,46 @@ SDL_JoystickEventState(int state)
 
 /* SDL3 dumped the index/instance difference for various devices. */
 
-static SDL_JoystickID
-GetJoystickInstanceFromIndex(int idx)
+static void AddJoystickID(SDL_JoystickID id)
+{
+    int i;
+    SDL_JoystickID *new_instance_list;
+
+    for (i = 0; i < num_joystick_instances; ++i) {
+        if (id == joystick_instance_list[i]) {
+            return;
+        }
+    }
+
+    /* Need to add this joystick to the instance list */
+    new_instance_list = (SDL_JoystickID *)SDL_realloc(joystick_instance_list, (num_joystick_instances + 1) * sizeof(*new_instance_list));
+    if (new_instance_list) {
+        joystick_instance_list = new_instance_list;
+        joystick_instance_list[num_joystick_instances++] = id;
+    }
+}
+
+static SDL_JoystickID JoystickID2to3(SDL2_JoystickID id)
+{
+    if (id >= 0 && id < num_joystick_instances) {
+        return joystick_instance_list[id];
+    }
+    return 0;
+}
+
+static SDL2_JoystickID JoystickID3to2(SDL_JoystickID id)
+{
+    SDL2_JoystickID i;
+
+    for (i = 0; i < num_joystick_instances; ++i) {
+        if (joystick_instance_list[i] == id) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+static SDL_JoystickID GetJoystickInstanceFromIndex(int idx)
 {
     if ((idx < 0) || (idx >= num_joysticks)) {
         SDL3_SetError("There are %d joysticks available", num_joysticks);
@@ -9155,17 +9285,21 @@ GetJoystickInstanceFromIndex(int idx)
 SDL_DECLSPEC int SDLCALL
 SDL_NumJoysticks(void)
 {
+    int i;
     SDL3_free(joystick_list);
     joystick_list = SDL3_GetJoysticks(&num_joysticks);
     if (joystick_list == NULL) {
         num_joysticks = 0;
         return -1;
     }
+    for (i = 0; i < num_joysticks; ++i) {
+        AddJoystickID(joystick_list[i]);
+    }
     return num_joysticks;
 }
 
-static int
-GetIndexFromJoystickInstance(SDL_JoystickID jid) {
+static int GetIndexFromJoystickInstance(SDL_JoystickID jid)
+{
     if (jid != 0) {
         int i;
         for (i = 0; i < num_joysticks; i++) {
@@ -9241,7 +9375,7 @@ SDL_JoystickGetDeviceInstanceID(int idx)
     if (!jid) {
         return -1;
     }
-    return (SDL2_JoystickID)jid;
+    return JoystickID3to2(jid);
 }
 
 SDL_DECLSPEC Uint8 SDLCALL
@@ -9257,19 +9391,19 @@ SDL_JoystickInstanceID(SDL_Joystick *joystick)
     if (!jid) {
         return -1;
     }
-    return (SDL2_JoystickID)jid;
+    return JoystickID3to2(jid);
 }
 
 SDL_DECLSPEC SDL_Joystick* SDLCALL
 SDL_JoystickFromInstanceID(SDL2_JoystickID jid)
 {
-    return SDL3_GetJoystickFromID((SDL_JoystickID)jid);
+    return SDL3_GetJoystickFromID(JoystickID2to3(jid));
 }
 
 SDL_DECLSPEC SDL_GameController* SDLCALL
 SDL_GameControllerFromInstanceID(SDL2_JoystickID jid)
 {
-    return SDL3_GetGamepadFromID((SDL_JoystickID)jid);
+    return SDL3_GetGamepadFromID(JoystickID2to3(jid));
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -9693,8 +9827,46 @@ SDL_JoystickDetachVirtual(int device_index)
 }
 
 
-static SDL_SensorID
-GetSensorInstanceFromIndex(int idx)
+static void AddSensorID(SDL_SensorID id)
+{
+    int i;
+    SDL_SensorID *new_instance_list;
+
+    for (i = 0; i < num_sensor_instances; ++i) {
+        if (id == sensor_instance_list[i]) {
+            return;
+        }
+    }
+
+    /* Need to add this sensor to the instance list */
+    new_instance_list = (SDL_SensorID *)SDL_realloc(sensor_instance_list, (num_sensor_instances + 1) * sizeof(*new_instance_list));
+    if (new_instance_list) {
+        sensor_instance_list = new_instance_list;
+        sensor_instance_list[num_sensor_instances++] = id;
+    }
+}
+
+static SDL_SensorID SensorID2to3(SDL2_SensorID id)
+{
+    if (id >= 0 && id < num_sensor_instances) {
+        return sensor_instance_list[id];
+    }
+    return 0;
+}
+
+static SDL2_SensorID SensorID3to2(SDL_SensorID id)
+{
+    SDL2_SensorID i;
+
+    for (i = 0; i < num_sensor_instances; ++i) {
+        if (sensor_instance_list[i] == id) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+static SDL_SensorID GetSensorInstanceFromIndex(int idx)
 {
     if ((idx < 0) || (idx >= num_sensors)) {
         SDL3_SetError("There are %d sensors available", num_sensors);
@@ -9706,11 +9878,16 @@ GetSensorInstanceFromIndex(int idx)
 SDL_DECLSPEC int SDLCALL
 SDL_NumSensors(void)
 {
+    int i;
+
     SDL3_free(sensor_list);
     sensor_list = SDL3_GetSensors(&num_sensors);
     if (sensor_list == NULL) {
         num_sensors = 0;
         return -1;
+    }
+    for (i = 0; i < num_sensors; ++i) {
+        AddSensorID(sensor_list[i]);
     }
     return num_sensors;
 }
@@ -9744,7 +9921,7 @@ SDL_SensorGetDeviceInstanceID(int idx)
     if (!sid) {
         return -1;
     }
-    return (SDL2_SensorID)sid;
+    return SensorID3to2(sid);
 }
 
 SDL_DECLSPEC SDL2_SensorID SDLCALL
@@ -9754,13 +9931,13 @@ SDL_SensorGetInstanceID(SDL_Sensor *sensor)
     if (!sid) {
         return -1;
     }
-    return (SDL2_SensorID)sid;
+    return SensorID3to2(sid);
 }
 
 SDL_DECLSPEC SDL_Sensor* SDLCALL
 SDL_SensorFromInstanceID(SDL2_SensorID sid)
 {
-    return SDL3_GetSensorFromID((SDL_SensorID)sid);
+    return SDL3_GetSensorFromID(SensorID2to3(sid));
 }
 
 SDL_DECLSPEC SDL_Sensor* SDLCALL
