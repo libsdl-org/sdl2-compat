@@ -5739,7 +5739,7 @@ static void SDL2COMPAT_SetEnvironmentVariable(SDL_Environment *env, const char *
     /* Handle environment variables that became hints in SDL3  */
     for (i = 0; i < SDL_arraysize(envvars_to_hints); ++i) {
         if (SDL3_strcmp(name, envvars_to_hints[i].old_envvar) == 0) {
-            const char *value3;
+            const char *value3 = NULL;
 
             switch (envvars_to_hints[i].type) {
             case V2H_BOOL:
