@@ -5334,7 +5334,10 @@ SDL_RenderDrawRect(SDL_Renderer *renderer, const SDL_Rect *rect)
 SDL_DECLSPEC int SDLCALL
 SDL_RenderDrawRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
 {
+    SDL_FRect *frects;
     int i;
+    int retval;
+    int isstack;
 
     if (rects == NULL) {
         SDL3_InvalidParamError("rects");
@@ -5344,12 +5347,23 @@ SDL_RenderDrawRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
         return 0;
     }
 
-    for (i = 0; i < count; ++i) {
-        if (SDL_RenderDrawRect(renderer, &rects[i]) < 0) {
-            return -1;
-        }
+    frects = SDL3_small_alloc(SDL_FRect, count, &isstack);
+    if (frects == NULL) {
+        return -1;
     }
-    return 0;
+
+    for (i = 0; i < count; ++i) {
+        frects[i].x = (float)rects[i].x;
+        frects[i].y = (float)rects[i].y;
+        frects[i].w = (float)rects[i].w;
+        frects[i].h = (float)rects[i].h;
+    }
+
+    retval = SDL3_RenderRects(renderer, frects, count) ? 0 : -1;
+
+    SDL3_small_free(frects, isstack);
+
+    return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
 SDL_DECLSPEC int SDLCALL
