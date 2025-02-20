@@ -5385,9 +5385,10 @@ SDL_RenderFillRect(SDL_Renderer *renderer, const SDL_Rect *rect)
         frect.y = (float)rect->y;
         frect.w = (float)rect->w;
         frect.h = (float)rect->h;
-        return SDL3_RenderFillRect(renderer, &frect) ? 0 : -1;
+        retval = SDL3_RenderFillRect(renderer, &frect) ? 0 : -1;
+    } else {
+        retval = SDL3_RenderFillRect(renderer, NULL) ? 0 : -1;
     }
-    retval = SDL3_RenderFillRect(renderer, NULL) ? 0 : -1;
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
