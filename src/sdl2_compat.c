@@ -1217,23 +1217,12 @@ SDL_GetErrorMsg(char *errstr, int maxlen)
 SDL_DECLSPEC int SDLCALL
 SDL_SetError(const char *fmt, ...)
 {
-    char ch;
-    char *str = NULL;
-    size_t len = 0;
     va_list ap;
 
     va_start(ap, fmt);
-    len = SDL3_vsnprintf(&ch, 1, fmt, ap);
+    SDL3_SetErrorV(fmt, ap);
     va_end(ap);
 
-    str = (char *) SDL3_malloc(len + 1);
-    if (str) {
-        va_start(ap, fmt);
-        SDL3_vsnprintf(str, len + 1, fmt, ap);
-        va_end(ap);
-        SDL3_SetError("%s", str);
-        SDL3_free(str);
-    }
     return -1;
 }
 
