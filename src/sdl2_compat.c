@@ -5222,13 +5222,14 @@ SDL_RenderDrawPoints(SDL_Renderer *renderer,
     SDL_FPoint *fpoints;
     int i;
     int retval;
+    int isstack;
 
     if (points == NULL) {
         SDL3_InvalidParamError("points");
         return -1;
     }
 
-    fpoints = (SDL_FPoint *) SDL3_malloc(sizeof (SDL_FPoint) * count);
+    fpoints = SDL3_small_alloc(SDL_FPoint, count, &isstack);
     if (fpoints == NULL) {
         return -1;
     }
@@ -5240,7 +5241,7 @@ SDL_RenderDrawPoints(SDL_Renderer *renderer,
 
     retval = SDL3_RenderPoints(renderer, fpoints, count) ? 0 : -1;
 
-    SDL3_free(fpoints);
+    SDL3_small_free(fpoints, isstack);
 
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
@@ -5277,6 +5278,7 @@ SDL_RenderDrawLines(SDL_Renderer *renderer, const SDL_Point *points, int count)
     SDL_FPoint *fpoints;
     int i;
     int retval;
+    int isstack;
 
     if (points == NULL) {
         SDL3_InvalidParamError("points");
@@ -5286,7 +5288,7 @@ SDL_RenderDrawLines(SDL_Renderer *renderer, const SDL_Point *points, int count)
         return 0;
     }
 
-    fpoints = (SDL_FPoint *) SDL3_malloc(sizeof (SDL_FPoint) * count);
+    fpoints = SDL3_small_alloc(SDL_FPoint, count, &isstack);
     if (fpoints == NULL) {
         return -1;
     }
@@ -5298,7 +5300,7 @@ SDL_RenderDrawLines(SDL_Renderer *renderer, const SDL_Point *points, int count)
 
     retval = SDL3_RenderLines(renderer, fpoints, count) ? 0 : -1;
 
-    SDL3_free(fpoints);
+    SDL3_small_free(fpoints, isstack);
 
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
@@ -5387,6 +5389,7 @@ SDL_RenderFillRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
     SDL_FRect *frects;
     int i;
     int retval;
+    int isstack;
 
     if (rects == NULL) {
         SDL3_InvalidParamError("rects");
@@ -5396,7 +5399,7 @@ SDL_RenderFillRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
         return 0;
     }
 
-    frects = (SDL_FRect *) SDL3_malloc(sizeof (SDL_FRect) * count);
+    frects = SDL3_small_alloc(SDL_FRect, count, &isstack);
     if (frects == NULL) {
         return -1;
     }
@@ -5410,7 +5413,7 @@ SDL_RenderFillRects(SDL_Renderer *renderer, const SDL_Rect *rects, int count)
 
     retval = SDL3_RenderFillRects(renderer, frects, count) ? 0 : -1;
 
-    SDL3_free(frects);
+    SDL3_small_free(frects, isstack);
 
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
@@ -5565,7 +5568,7 @@ SDL_RenderGeometryRaw(SDL_Renderer *renderer, SDL_Texture *texture, const float 
         return -1;
     }
 
-    color3 = (SDL_FColor *) SDL3_small_alloc(SDL_FColor, num_vertices, &isstack);
+    color3 = SDL3_small_alloc(SDL_FColor, num_vertices, &isstack);
     if (!color3) {
         SDL3_OutOfMemory();
         return -1;
