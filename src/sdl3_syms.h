@@ -47,6 +47,7 @@
 #endif
 
 SDL3_SYM_VARARGS(bool,SetError,(SDL_PRINTF_FORMAT_STRING const char *a, ...))
+SDL3_SYM(bool,SetErrorV,(SDL_PRINTF_FORMAT_STRING const char *a, va_list b),(a,b),return);
 SDL3_SYM_VARARGS(void,Log,(SDL_PRINTF_FORMAT_STRING const char *a, ...))
 SDL3_SYM_VARARGS(void,LogVerbose,(int a, SDL_PRINTF_FORMAT_STRING const char *b, ...))
 SDL3_SYM_VARARGS(void,LogDebug,(int a, SDL_PRINTF_FORMAT_STRING const char *b, ...))
