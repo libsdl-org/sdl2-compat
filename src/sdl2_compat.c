@@ -6433,7 +6433,7 @@ static int GetNumAudioDevices(int iscapture)
                So if you have two "SoundBlaster Pro 16" devices, one will be
                "SoundBlaster Pro 16" and the other will be "SoundBlaster Pro 16 (2)" */
             for (j = 0; j < i; j++) {
-                if (SDL_strcmp(newname, orignames[j]) == 0) {
+                if (SDL3_strcmp(newname, orignames[j]) == 0) {
                     dupenum++;
                 }
             }
@@ -7349,7 +7349,7 @@ Display_IDToIndex(SDL_DisplayID displayID)
 
     if (list == NULL || count == 0) {
         SDL3_SetError("no displays");
-        SDL_free(list);
+        SDL3_free(list);
         return -1;
     }
 
@@ -7359,7 +7359,7 @@ Display_IDToIndex(SDL_DisplayID displayID)
             break;
         }
     }
-    SDL_free(list);
+    SDL3_free(list);
 
     return displayIndex;
 }
@@ -9984,8 +9984,7 @@ SDL_HapticName(int device_index)
     return instance_id ? SDL3_GetHapticNameForID(instance_id) : NULL;
 }
 
-SDL_DECLSPEC
-SDL_Haptic * SDLCALL
+SDL_DECLSPEC SDL_Haptic * SDLCALL
 SDL_HapticOpen(int device_index)
 {
     const SDL_HapticID instance_id = GetHapticInstanceFromIndex(device_index);
@@ -10298,7 +10297,6 @@ SDL_SIMDRealloc(void *mem, const size_t len)
     }
 
     ptr = (Uint8 *)SDL3_realloc(mem, to_allocate);
-
     if (ptr == NULL) {
         return NULL; /* Out of memory, bail! */
     }
@@ -10312,7 +10310,6 @@ SDL_SIMDRealloc(void *mem, const size_t len)
         ptrdiff = ((size_t)retval) - ((size_t)ptr);
         if (memdiff != ptrdiff) { /* Delta has changed, copy to new offset! */
             oldmem = (void *)(((uintptr_t)ptr) + memdiff);
-
             /* Even though the data past the old `len` is undefined, this is the
              * only length value we have, and it guarantees that we copy all the
              * previous memory anyhow.
