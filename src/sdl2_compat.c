@@ -10408,6 +10408,64 @@ typedef struct {
 #define RESAMPLER_BITS_PER_SAMPLE           16
 #define RESAMPLER_SAMPLES_PER_ZERO_CROSSING (1 << ((RESAMPLER_BITS_PER_SAMPLE / 2) + 1))
 
+static void SDLCALL AudioCVTFilter(SDL_AudioCVT *cvt, SDL2_AudioFormat src_format)
+{
+    SDL2_AudioStream *stream2;
+    SDL2_AudioFormat dst_format;
+    int src_channels, src_rate;
+    int dst_channels, dst_rate;
+    int src_len, dst_len, real_dst_len;
+    int src_samplesize;
+
+    { /* Fetch from the end of filters[], aligned */
+        AudioParam ap;
+
+        SDL3_memcpy(
+            &ap,
+            (Uint8 *)&cvt->filters[SDL_AUDIOCVT_MAX_FILTERS + 1] - (sizeof(AudioParam) & ~3),
+            sizeof(ap));
+
+        src_channels = ap.src_channels;
+        src_rate = ap.src_rate;
+        dst_format = ap.dst_format;
+        dst_channels = ap.dst_channels;
+        dst_rate = ap.dst_rate;
+    }
+
+    /* don't use the SDL3 stream directly or even SDL_ConvertAudioSamples; we want the U16 support in the sdl2-compat layer */
+    stream2 = SDL_NewAudioStream(src_format, src_channels, src_rate,
+                                 dst_format, dst_channels, dst_rate);
+    if (stream2 == NULL) {
+        goto exit;
+    }
+
+    src_samplesize = (SDL_AUDIO_BITSIZE(src_format) / 8) * src_channels;
+
+    src_len = cvt->len_cvt & ~(src_samplesize - 1);
+    dst_len = cvt->len * cvt->len_mult;
+
+    /* Run the audio converter */
+    if (SDL_AudioStreamPut(stream2, cvt->buf, src_len) < 0 ||
+        SDL_AudioStreamFlush(stream2) < 0) {
+        goto exit;
+    }
+
+    /* Get back in the same buffer */
+    real_dst_len = SDL_AudioStreamGet(stream2, cvt->buf, dst_len);
+    if (real_dst_len < 0) {
+        goto exit;
+    }
+
+    cvt->len_cvt = real_dst_len;
+
+exit:
+    SDL_FreeAudioStream(stream2);
+
+    /* Call the next filter in the chain */
+    if (cvt->filters[++cvt->filter_index]) {
+        cvt->filters[cvt->filter_index](cvt, dst_format);
+    }
+}
 
 SDL_DECLSPEC int SDLCALL
 SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
@@ -10489,7 +10547,6 @@ SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
             &ap,
             sizeof(ap));
 
-        cvt->filters[0] = NULL;
         cvt->needed = 1;
         if (src_format == dst_format && src_rate == dst_rate && src_channels == dst_channels) {
             cvt->needed = 0;
@@ -10523,74 +10580,36 @@ SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
         }
     }
 
+    if (cvt->needed) {
+        /* Insert a single filter to perform all necessary audio conversion.
+         * Some apps may examine or modify the filter chain, so we use a real
+         * SDL2-style audio filter function to keep those apps happy. */
+        cvt->filters[0] = AudioCVTFilter;
+        cvt->filters[1] = NULL;
+        cvt->filter_index = 1;
+    }
+
     return cvt->needed;
 }
 
 SDL_DECLSPEC int SDLCALL
 SDL_ConvertAudio(SDL_AudioCVT *cvt)
 {
-    SDL2_AudioStream *stream2;
-    SDL2_AudioFormat dst_format;
-    int src_channels, src_rate;
-    int dst_channels, dst_rate;
-
-    int src_len, dst_len, real_dst_len;
-    int src_samplesize;
-
-    /* Sanity check target pointer */
-    if (cvt == NULL) {
-        SDL3_InvalidParamError("cvt");
-        return -1;
+    /* Make sure there's data to convert */
+    if (!cvt->buf) {
+        return SDL_SetError("No buffer allocated for conversion");
     }
 
-    { /* Fetch from the end of filters[], aligned */
-        AudioParam ap;
-
-        SDL3_memcpy(
-            &ap,
-            (Uint8 *)&cvt->filters[SDL_AUDIOCVT_MAX_FILTERS + 1] - (sizeof(AudioParam) & ~3),
-            sizeof(ap));
-
-        src_channels = ap.src_channels;
-        src_rate = ap.src_rate;
-        dst_format = ap.dst_format;
-        dst_channels = ap.dst_channels;
-        dst_rate = ap.dst_rate;
+    /* Return okay if no conversion is necessary */
+    cvt->len_cvt = cvt->len;
+    if (cvt->filters[0] == NULL) {
+        return 0;
     }
 
-    /* don't use the SDL3 stream directly or even SDL_ConvertAudioSamples; we want the U16 support in the sdl2-compat layer */
-    stream2 = SDL_NewAudioStream(cvt->src_format, src_channels, src_rate,
-                                 dst_format, dst_channels, dst_rate);
-    if (stream2 == NULL) {
-        goto failure;
-    }
-
-    src_samplesize = (SDL_AUDIO_BITSIZE(cvt->src_format) / 8) * src_channels;
-
-    src_len = cvt->len & ~(src_samplesize - 1);
-    dst_len = cvt->len * cvt->len_mult;
-
-    /* Run the audio converter */
-    if (SDL_AudioStreamPut(stream2, cvt->buf, src_len) < 0 ||
-        SDL_AudioStreamFlush(stream2) < 0) {
-        goto failure;
-    }
-
-    /* Get back in the same buffer */
-    real_dst_len = SDL_AudioStreamGet(stream2, cvt->buf, dst_len);
-    if (real_dst_len < 0) {
-        goto failure;
-    }
-
-    cvt->len_cvt = real_dst_len;
-
-    SDL_FreeAudioStream(stream2);
-
+    /* Set up the conversion and go! */
+    cvt->filter_index = 0;
+    cvt->filters[0](cvt, cvt->src_format);
     return 0;
-
-failure:
-    SDL_FreeAudioStream(stream2);
-    return -1;
 }
 
 SDL_DECLSPEC void SDLCALL
