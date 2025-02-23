@@ -10394,7 +10394,7 @@ static bool SDL_IsSupportedChannelCount(const int channels)
 
 
 typedef struct {
-    SDL2_AudioFormat src_format;
+    /* src_format is read directly from the AudioCVT in real SDL2 */
     Uint8 src_channels;
     int src_rate;
     SDL2_AudioFormat dst_format;
@@ -10474,7 +10474,6 @@ SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
 
     { /* Use the filters[] to store some data ... */
         AudioParam ap;
-        ap.src_format = src_format;
         ap.src_channels = src_channels;
         ap.src_rate = src_rate;
         ap.dst_format = dst_format;
@@ -10528,7 +10527,7 @@ SDL_DECLSPEC int SDLCALL
 SDL_ConvertAudio(SDL_AudioCVT *cvt)
 {
     SDL2_AudioStream *stream2;
-    SDL2_AudioFormat src_format, dst_format;
+    SDL2_AudioFormat dst_format;
     int src_channels, src_rate;
     int dst_channels, dst_rate;
 
@@ -10549,7 +10548,6 @@ SDL_ConvertAudio(SDL_AudioCVT *cvt)
             (Uint8 *)&cvt->filters[SDL_AUDIOCVT_MAX_FILTERS + 1] - (sizeof(AudioParam) & ~3),
             sizeof(ap));
 
-        src_format = ap.src_format;
         src_channels = ap.src_channels;
         src_rate = ap.src_rate;
         dst_format = ap.dst_format;
@@ -10558,13 +10556,13 @@ SDL_ConvertAudio(SDL_AudioCVT *cvt)
     }
 
     /* don't use the SDL3 stream directly or even SDL_ConvertAudioSamples; we want the U16 support in the sdl2-compat layer */
-    stream2 = SDL_NewAudioStream(src_format, src_channels, src_rate,
+    stream2 = SDL_NewAudioStream(cvt->src_format, src_channels, src_rate,
                                  dst_format, dst_channels, dst_rate);
     if (stream2 == NULL) {
         goto failure;
     }
 
-    src_samplesize = (SDL_AUDIO_BITSIZE(src_format) / 8) * src_channels;
+    src_samplesize = (SDL_AUDIO_BITSIZE(cvt->src_format) / 8) * src_channels;
 
     src_len = cvt->len & ~(src_samplesize - 1);
     dst_len = cvt->len * cvt->len_mult;
