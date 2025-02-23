@@ -6842,6 +6842,9 @@ static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devicename, int iscap
             return 0;
         }
 
+        /* Some apps may leave the callback buffer unmodified, so initialize it with silence */
+        SDL3_memset(stream2->callback2_buffer, obtained2->silence, stream2->bytes_per_callbacks);
+
         stream2->callback2 = desired2->callback;
         stream2->callback2_userdata = desired2->userdata;
         if (iscapture) {
