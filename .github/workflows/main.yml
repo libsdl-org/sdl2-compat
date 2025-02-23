@@ -20,7 +20,6 @@ jobs:
         - { name: 'MacOS',                    os: macos-latest,   artifact: 'SDL2_compat-macos',            shell: sh }
         - { name: 'Windows msys2 (mingw32)',  os: windows-latest, artifact: 'SDL2_compat-mingw32',          shell: 'msys2 {0}', msystem: mingw32, msys-env: mingw-w64-i686 }
         - { name: 'Windows msys2 (mingw64)',  os: windows-latest, artifact: 'SDL2_compat-mingw64',          shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64 }
-        - { name: 'Windows msys2 (clang32)',  os: windows-latest, artifact: 'SDL2_compat-clang32',          shell: 'msys2 {0}', msystem: clang32, msys-env: mingw-w64-clang-i686 }
         - { name: 'Windows msys2 (clang64)',  os: windows-latest, artifact: 'SDL2_compat-clang64',          shell: 'msys2 {0}', msystem: clang64, msys-env: mingw-w64-clang-x86_64 }
         - { name: 'Windows MSVC (x86)',       os: windows-latest, artifact: 'SDL2_compat-VC-x86',           shell: sh, no-test-pc: true, msvc: true, msvc-arch: x86 }
         - { name: 'Windows MSVC (x64)',       os: windows-latest, artifact: 'SDL2_compat-VC-x64',           shell: sh, no-test-pc: true, msvc: true, msvc-arch: x64 }
