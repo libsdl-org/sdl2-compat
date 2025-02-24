@@ -558,53 +558,58 @@ if(SDL2COMPAT_INSTALL)
   endforeach()
   install(FILES "${PROJECT_BINARY_DIR}/include/SDL2/SDL_revision.h" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/SDL2")
 
-  if(NOT MSVC)
-    if(WIN32)
-      set(SDL_CFLAGS "")
-      set(SDL_RLD_FLAGS "")
-      set(SDL_LIBS "-lmingw32 -lSDL2main -lSDL2 -mwindows")
-      set(SDL_STATIC_LIBS "-lshell32")
-    elseif(APPLE)
-      set(SDL_CFLAGS "-D_THREAD_SAFE")
-      set(SDL_LIBS "-lSDL2main -lSDL2 -Wl,-framework,Cocoa")
+  if(MSVC)
+    set(SDL_CFLAGS "")
+    set(SDL_RLD_FLAGS "")
+    set(SDL_LIBS "-lSDL2main -lSDL2")
+    set(SDL_STATIC_LIBS "-lshell32")
+  elseif(MINGW)
+    set(SDL_CFLAGS "")
+    set(SDL_RLD_FLAGS "")
+    set(SDL_LIBS "-lmingw32 -lSDL2main -lSDL2 -mwindows")
+    set(SDL_STATIC_LIBS "-lshell32")
+  elseif(APPLE)
+    set(SDL_CFLAGS "-D_THREAD_SAFE")
+    set(SDL_RLD_FLAGS "")  # !!! FIXME: this forces rpath, which we might want?
+    set(SDL_LIBS "-lSDL2main -lSDL2 -Wl,-framework,Cocoa")
+    set(SDL_STATIC_LIBS "")
+  else() # unix
+    set(SDL_CFLAGS "-D_GNU_SOURCE=1 -D_REENTRANT")
+    set(SDL_RLD_FLAGS "")  # !!! FIXME: this forces rpath, which we might want?
+    set(SDL_LIBS "-lSDL2")
+    set(SDL_STATIC_LIBS "")
+    foreach(lib ${CMAKE_DL_LIBS})
+      set(SDL_STATIC_LIBS "-l${lib}")
+    endforeach()
+    if(NOT SDL2COMPAT_STATIC)
       set(SDL_STATIC_LIBS "")
-      set(SDL_RLD_FLAGS "")  # !!! FIXME: this forces rpath, which we might want?
-    else() # unix
-      set(SDL_CFLAGS "-D_GNU_SOURCE=1 -D_REENTRANT")
-      set(SDL_RLD_FLAGS "")  # !!! FIXME: this forces rpath, which we might want?
-      set(SDL_LIBS "-lSDL2")
-      set(SDL_STATIC_LIBS "")
-      foreach(lib ${CMAKE_DL_LIBS})
-        set(SDL_STATIC_LIBS "-l${lib}")
-      endforeach()
-      if(NOT SDL2COMPAT_STATIC)
-        set(SDL_STATIC_LIBS "")
-      endif()
     endif()
+  endif()
 
-    # !!! FIXME: do we _want_ static builds?
-    if(SDL2COMPAT_STATIC)
-      set(ENABLE_STATIC_TRUE "")
-      set(ENABLE_STATIC_FALSE "#")
-    else()
-      set(ENABLE_STATIC_TRUE "#")
-      set(ENABLE_STATIC_FALSE "")
-    endif()
-    set(ENABLE_SHARED_TRUE "")
-    set(ENABLE_SHARED_FALSE "#")
+  # !!! FIXME: do we _want_ static builds?
+  if(SDL2COMPAT_STATIC)
+    set(ENABLE_STATIC_TRUE "")
+    set(ENABLE_STATIC_FALSE "#")
+  else()
+    set(ENABLE_STATIC_TRUE "#")
+    set(ENABLE_STATIC_FALSE "")
+  endif()
+  set(ENABLE_SHARED_TRUE "")
+  set(ENABLE_SHARED_FALSE "#")
 
-    configure_file(sdl2_compat.pc.in sdl2_compat.pc @ONLY)
-    install(FILES ${CMAKE_BINARY_DIR}/sdl2_compat.pc
-      DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
-    )
+  configure_file(sdl2_compat.pc.in sdl2_compat.pc @ONLY)
+  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/sdl2_compat.pc"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+  )
 
-    configure_file("${CMAKE_SOURCE_DIR}/sdl2-config.in" "${CMAKE_BINARY_DIR}/sdl2-config" @ONLY)
-    install(PROGRAMS "${CMAKE_BINARY_DIR}/sdl2-config" DESTINATION "${CMAKE_INSTALL_BINDIR}")
+  configure_file(sdl2-config.in "${CMAKE_CURRENT_BINARY_DIR}/sdl2-config" @ONLY)
+  install(PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/sdl2-config" DESTINATION "${CMAKE_INSTALL_BINDIR}")
 
-    # uninstall
-    configure_file(cmake/cmake_uninstall.cmake.in cmake_uninstall.cmake IMMEDIATE @ONLY)
+  # uninstall
+  if(NOT TARGET uninstall)
+    configure_file(cmake/cmake_uninstall.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" IMMEDIATE @ONLY)
     add_custom_target(uninstall
-            COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
+      COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
   endif()
 
   set(SOEXT ${CMAKE_SHARED_LIBRARY_SUFFIX})
@@ -613,8 +618,8 @@ if(SDL2COMPAT_INSTALL)
     install(CODE "
       execute_process(COMMAND \"${CMAKE_COMMAND}\" -E create_symlink
         \"lib${SONAME}${SOPOSTFIX}${SOEXT}\" \"libSDL2${SOPOSTFIX}${SOEXT}\"
-        WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}\")")
-    install(FILES ${CMAKE_BINARY_DIR}/libSDL2${SOPOSTFIX}${SOEXT} DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+        WORKING_DIRECTORY \"${CMAKE_CURRENT_BINARY_DIR}\")")
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libSDL2${SOPOSTFIX}${SOEXT} DESTINATION "${CMAKE_INSTALL_LIBDIR}")
   endif()
 
   install(FILES "${PROJECT_SOURCE_DIR}/sdl2.m4" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/aclocal")
@@ -631,7 +636,7 @@ if(SDL2COMPAT_INSTALL)
     set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/CPackProjectConfig.cmake")
     # CPACK_SOURCE_PACKAGE_FILE_NAME must end with "-src" (so we can block creating a source archive)
     set(CPACK_SOURCE_PACKAGE_FILE_NAME "SDL${PROJECT_VERSION_MAJOR}-${PROJECT_VERSION}-src")
-    set(CPACK_PACKAGE_DIRECTORY "${CMAKE_BINARY_DIR}/dist")
+    set(CPACK_PACKAGE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/dist")
     include(CPack)
   endif()
 endif()
