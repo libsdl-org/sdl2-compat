@@ -6745,6 +6745,7 @@ static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devicename, int iscap
     SDL2_AudioStream *stream2;
     SDL_AudioDeviceID device3 = 0;
     SDL_AudioSpec spec3;
+    char samples_str[32];
     int id;
 
     SDL_assert(obtained2 != NULL);  /* we checked this before locking. */
@@ -6805,6 +6806,9 @@ static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devicename, int iscap
     } else if (spec3.format == SDL2_AUDIO_U16MSB) {
         spec3.format = SDL_AUDIO_S16BE;
     }
+
+    SDL3_snprintf(samples_str, sizeof (samples_str), "%u", (unsigned int) desired2->samples);
+    SDL3_SetHint(SDL_HINT_AUDIO_DEVICE_SAMPLE_FRAMES, samples_str);
 
     device3 = SDL3_OpenAudioDevice(device3, &spec3);
     if (device3 == 0) {
