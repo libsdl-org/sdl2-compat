@@ -6814,7 +6814,7 @@ static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devicename, int iscap
         obtained2->format = (SDL2_AudioFormat)spec3.format;
     }
     if ((spec3.channels != obtained2->channels) && (allowed_changes & SDL2_AUDIO_ALLOW_CHANNELS_CHANGE)) {
-        obtained2->freq = spec3.channels;
+        obtained2->channels = spec3.channels;
     }
     if ((spec3.freq != obtained2->freq) && (allowed_changes & SDL2_AUDIO_ALLOW_FREQUENCY_CHANGE)) {
         obtained2->freq = spec3.freq;
