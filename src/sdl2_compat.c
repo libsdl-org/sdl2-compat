@@ -2091,6 +2091,13 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
     SDL2_Event event2;  /* note that event filters do not receive events as const! So we have to convert or copy it for each one! */
     bool post_event = true;
 
+    /* Drop SDL3 events which have no SDL2 equivalent and may incorrectly overlap with SDL2 event numbers. */
+    switch (event3->type) {
+        case SDL_EVENT_KEYBOARD_ADDED: /* Overlaps with SDL_TEXTEDITING_EXT */
+        case SDL_EVENT_KEYBOARD_REMOVED:
+            return false;
+    }
+
     GestureProcessEvent(event3);  /* this might need to generate new gesture events from touch input. */
 
     /* Ensure joystick and haptic IDs are updated before calling Event3to2() */
