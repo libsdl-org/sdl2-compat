@@ -3,8 +3,6 @@ name: Build
 on:
   pull_request:
   push:
-  schedule:
-    - cron: '5 1 * * *' # Build every day at 1:05am
 
 jobs:
   Build:
