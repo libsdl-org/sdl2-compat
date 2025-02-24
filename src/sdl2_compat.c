@@ -6000,8 +6000,6 @@ static void PostInitSubsystem(SDL_InitFlags new_flags)
     new_flags &= SDL_WasInit(new_flags);
 
     if (new_flags & SDL_INIT_EVENTS) {
-        (void)SDL_EventState(SDL_EVENT_TEXT_INPUT, SDL2_DISABLE);
-        (void)SDL_EventState(SDL_EVENT_TEXT_EDITING, SDL2_DISABLE);
         (void)SDL_EventState(SDL2_SYSWMEVENT, SDL2_DISABLE);
 
         /* SDL_GetRelativeMouseState() resets when the event subsystem initializes */
@@ -6015,6 +6013,12 @@ static void PostInitSubsystem(SDL_InitFlags new_flags)
         SDL_GL_SetAttribute(SDL2_GL_GREEN_SIZE, 3);
         SDL_GL_SetAttribute(SDL2_GL_BLUE_SIZE, 2);
         SDL_GL_SetAttribute(SDL2_GL_ALPHA_SIZE, 0);
+
+#if !defined(SDL_PLATFORM_IOS) && !defined(SDL_PLATFORM_ANDROID)  // (and maybe others...?)
+        /* SDL2 enables text input during video subsystem init on desktop platforms */
+        (void)SDL_EventState(SDL_EVENT_TEXT_INPUT, SDL2_ENABLE);
+        (void)SDL_EventState(SDL_EVENT_TEXT_EDITING, SDL2_ENABLE);
+#endif
     }
 
     /* if audio was initialized and there are no devices enumerated yet, build some initial device lists. */
@@ -8025,6 +8029,27 @@ WindowPos2To3(int *x, int *y)
     }
 }
 
+static void StartTextInputForWindow(SDL_Window *window)
+{
+    SDL_PropertiesID props = SDL3_CreateProperties();
+
+    SDL3_SetNumberProperty(props, SDL_PROP_TEXTINPUT_TYPE_NUMBER, SDL_TEXTINPUT_TYPE_TEXT);
+    SDL3_SetNumberProperty(props, SDL_PROP_TEXTINPUT_CAPITALIZATION_NUMBER, SDL_CAPITALIZE_NONE);
+    SDL3_SetBooleanProperty(props, SDL_PROP_TEXTINPUT_AUTOCORRECT_BOOLEAN, false);
+
+    SDL3_StartTextInputWithProperties(window, props);
+
+    SDL3_DestroyProperties(props);
+}
+
+static void FinishWindowCreation(SDL_Window *window)
+{
+    /* SDL3 has per-window text input, so we must enable on this window if it's active */
+    if (SDL_IsTextInputActive()) {
+        StartTextInputForWindow(window);
+    }
+}
+
 SDL_DECLSPEC SDL_Window * SDLCALL
 SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
 {
@@ -8083,9 +8108,7 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
         }
     }
 
-    #if !defined(SDL_PLATFORM_IOS) && !defined(SDL_PLATFORM_ANDROID)  // (and maybe others...?)
-    SDL_StartTextInput();
-    #endif
+    FinishWindowCreation(window);
 
     return window;
 }
@@ -8149,6 +8172,9 @@ SDL_CreateWindowFrom(const void *data)
     SDL3_SetPointerProperty(props, "sdl2-compat.external_window", (void *)data);
     window = SDL3_CreateWindowWithProperties(props);
     SDL3_DestroyProperties(props);
+
+    FinishWindowCreation(window);
+
     return window;
 }
 
@@ -8272,16 +8298,10 @@ SDL_StartTextInput(void)
     windows = SDL3_GetWindows(NULL);
     if (windows) {
         int i;
-        SDL_PropertiesID props = SDL3_CreateProperties();
-
-        SDL3_SetNumberProperty(props, SDL_PROP_TEXTINPUT_TYPE_NUMBER, SDL_TEXTINPUT_TYPE_TEXT);
-        SDL3_SetNumberProperty(props, SDL_PROP_TEXTINPUT_CAPITALIZATION_NUMBER, SDL_CAPITALIZE_NONE);
-        SDL3_SetBooleanProperty(props, SDL_PROP_TEXTINPUT_AUTOCORRECT_BOOLEAN, false);
 
         for (i = 0; windows[i]; ++i) {
-            SDL3_StartTextInputWithProperties(windows[i], props);
+            StartTextInputForWindow(windows[i]);
         }
-        SDL3_DestroyProperties(props);
 
         SDL3_free(windows);
     }
