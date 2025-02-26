@@ -1605,6 +1605,26 @@ static int GetIndexFromAudioDeviceInstance(SDL_AudioDeviceID devid, bool recordi
     return -1;
 }
 
+static SDL_AudioDeviceID AudioDeviceID3to2(SDL_AudioDeviceID id)
+{
+    int i;
+
+    /* SDL2 only reserved IDs for open devices. Devices that aren't
+     * open will appear as ID 0 in SDL_EVENT_AUDIO_DEVICE_REMOVED. */
+    for (i = 0; i < (int)SDL_arraysize(AudioOpenDevices); i++) {
+        SDL2_AudioStream *stream = AudioOpenDevices[i];
+        if (!stream) {
+            continue;
+        }
+
+        if (SDL3_GetAudioStreamDevice(stream->stream3) == id) {
+            return i + 1;
+        }
+    }
+
+    return 0;
+}
+
 static int AccumulateFloatValueToInteger(float *frac, float value)
 {
     float intval;
@@ -1848,6 +1868,9 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     case SDL_EVENT_AUDIO_DEVICE_ADDED:
         event2->adevice.which = GetIndexFromAudioDeviceInstance(event3->adevice.which, event3->adevice.recording);
         break;
+    case SDL_EVENT_AUDIO_DEVICE_REMOVED:
+        event2->adevice.which = AudioDeviceID3to2(event3->adevice.which);
+        break;
     case SDL_EVENT_SENSOR_UPDATE:
         event2->sensor.which = SensorID3to2(event3->sensor.which);
         event2->sensor.timestamp_us = SDL_NS_TO_US(event3->sensor.sensor_timestamp);
@@ -1972,6 +1995,14 @@ static SDL_Event *Event2to3(const SDL2_Event *event2, SDL_Event *event3)
             } else {
                 event3->adevice.which = 0;
             }
+        }
+        break;
+    case SDL_EVENT_AUDIO_DEVICE_REMOVED:
+        if (event2->adevice.which > 0 && event2->adevice.which <= SDL_arraysize(AudioOpenDevices)) {
+            SDL2_AudioStream *stream = AudioOpenDevices[event2->adevice.which - 1];
+            event3->adevice.which = stream ? SDL3_GetAudioStreamDevice(stream->stream3) : 0;
+        } else {
+            event3->adevice.which = 0;
         }
         break;
     case SDL_EVENT_SENSOR_UPDATE:
