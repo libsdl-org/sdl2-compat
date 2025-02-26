@@ -2085,6 +2085,39 @@ RemoveSupercededWindowEvents(void *userdata, SDL2_Event *event)
     return 1;
 }
 
+#define SDL_PROP_SENSOR_TIMESTAMP "sdl2-compat.sensor.timestamp"
+
+#define SDL_PROP_GAMEPAD_UNKNOWN_TIMESTAMP "sdl2-compat.gamepad.timestamp.unknown"
+#define SDL_PROP_GAMEPAD_ACCEL_TIMESTAMP "sdl2-compat.gamepad.timestamp.accel"
+#define SDL_PROP_GAMEPAD_GYRO_TIMESTAMP "sdl2-compat.gamepad.timestamp.gyro"
+#define SDL_PROP_GAMEPAD_ACCEL_L_TIMESTAMP "sdl2-compat.gamepad.timestamp.accel_l"
+#define SDL_PROP_GAMEPAD_GYRO_L_TIMESTAMP "sdl2-compat.gamepad.timestamp.gyro_l"
+#define SDL_PROP_GAMEPAD_ACCEL_R_TIMESTAMP "sdl2-compat.gamepad.timestamp.accel_r"
+#define SDL_PROP_GAMEPAD_GYRO_R_TIMESTAMP "sdl2-compat.gamepad.timestamp.gyro_r"
+
+static const char *GetGamepadSensorTimestampPropertyName(SDL_SensorType type)
+{
+    switch (type)
+    {
+        case SDL_SENSOR_UNKNOWN:
+            return SDL_PROP_GAMEPAD_UNKNOWN_TIMESTAMP;
+        case SDL_SENSOR_ACCEL:
+            return SDL_PROP_GAMEPAD_ACCEL_TIMESTAMP;
+        case SDL_SENSOR_GYRO:
+            return SDL_PROP_GAMEPAD_GYRO_TIMESTAMP;
+        case SDL_SENSOR_ACCEL_L:
+            return SDL_PROP_GAMEPAD_ACCEL_L_TIMESTAMP;
+        case SDL_SENSOR_GYRO_L:
+            return SDL_PROP_GAMEPAD_GYRO_L_TIMESTAMP;
+        case SDL_SENSOR_ACCEL_R:
+            return SDL_PROP_GAMEPAD_ACCEL_R_TIMESTAMP;
+        case SDL_SENSOR_GYRO_R:
+            return SDL_PROP_GAMEPAD_GYRO_R_TIMESTAMP;
+        default:
+            return NULL;
+    }
+}
+
 static bool SDLCALL
 EventFilter3to2(void *userdata, SDL_Event *event3)
 {
@@ -2100,8 +2133,8 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
 
     GestureProcessEvent(event3);  /* this might need to generate new gesture events from touch input. */
 
-    /* Ensure joystick and haptic IDs are updated before calling Event3to2() */
     switch (event3->type) {
+        /* Ensure joystick and haptic IDs are updated before calling Event3to2() */
         case SDL_EVENT_JOYSTICK_ADDED:
         case SDL_EVENT_GAMEPAD_ADDED:
         case SDL_EVENT_GAMEPAD_REMOVED:
@@ -2113,6 +2146,18 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
         case SDL_EVENT_AUDIO_DEVICE_ADDED:
         case SDL_EVENT_AUDIO_DEVICE_REMOVED:
             SDL_GetNumAudioDevices(event3->adevice.recording ? SDL2_TRUE : SDL2_FALSE); /* Refresh */
+            break;
+
+        /* Save the timestamp for the most recent sensor values */
+        case SDL_EVENT_SENSOR_UPDATE:
+            SDL3_SetNumberProperty(SDL3_GetSensorProperties(SDL3_GetSensorFromID(event3->sensor.which)),
+                                   SDL_PROP_SENSOR_TIMESTAMP,
+                                   SDL_NS_TO_US(event3->sensor.sensor_timestamp));
+            break;
+        case SDL_EVENT_GAMEPAD_SENSOR_UPDATE:
+            SDL3_SetNumberProperty(SDL3_GetGamepadProperties(SDL3_GetGamepadFromID(event3->gsensor.which)),
+                                   GetGamepadSensorTimestampPropertyName((SDL_SensorType)event3->gsensor.sensor),
+                                   SDL_NS_TO_US(event3->gsensor.sensor_timestamp));
             break;
     }
 
@@ -4030,20 +4075,26 @@ SDL_GameControllerSetSensorEnabled(SDL_GameController *gamecontroller, SDL_Senso
     return SDL3_SetGamepadSensorEnabled(gamecontroller, type, enabled) ? 0 : -1;
 }
 
-/* this API was removed in SDL3; use sensor event timestamps instead! */
 SDL_DECLSPEC int SDLCALL
 SDL_GameControllerGetSensorDataWithTimestamp(SDL_GameController *gamecontroller, SDL_SensorType type, Uint64 *timestamp, float *data, int num_values)
 {
-    SDL3_Unsupported();  /* !!! FIXME: maybe try to track this from SDL3 events if something needs this? I can't imagine this was widely used. */
-    return -1;
+    if (!SDL3_GetGamepadSensorData(gamecontroller, type, data, num_values)) {
+        return -1;
+    }
+
+    *timestamp = SDL3_GetNumberProperty(SDL3_GetGamepadProperties(gamecontroller), GetGamepadSensorTimestampPropertyName(type), 0);
+    return 0;
 }
 
-/* this API was removed in SDL3; use sensor event timestamps instead! */
 SDL_DECLSPEC int SDLCALL
 SDL_SensorGetDataWithTimestamp(SDL_Sensor *sensor, Uint64 *timestamp, float *data, int num_values)
 {
-    SDL3_Unsupported();  /* !!! FIXME: maybe try to track this from SDL3 events if something needs this? I can't imagine this was widely used. */
-    return -1;
+    if (!SDL3_GetSensorData(sensor, data, num_values)) {
+        return -1;
+    }
+
+    *timestamp = SDL3_GetNumberProperty(SDL3_GetSensorProperties(sensor), SDL_PROP_SENSOR_TIMESTAMP, 0);
+    return 0;
 }
 
 SDL_DECLSPEC int SDLCALL
