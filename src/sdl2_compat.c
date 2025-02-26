@@ -7171,27 +7171,7 @@ SDL_AudioStreamClear(SDL2_AudioStream *stream2)
 SDL_DECLSPEC int SDLCALL
 SDL_AudioStreamAvailable(SDL2_AudioStream *stream2)
 {
-    SDL_AudioSpec src_spec, dst_spec;
-    int src_size, dst_size;
-    Sint64 available;
-
-    if (!stream2) {
-        return 0;
-    }
-
-    if (!SDL3_GetAudioStreamFormat(stream2->stream3, &src_spec, &dst_spec)) {
-        return 0;
-    }
-
-    available = SDL3_GetAudioStreamAvailable(stream2->stream3);
-    if (available < 0) {
-        return 0;
-    }
-
-    src_size = src_spec.channels * src_spec.freq * SDL_AUDIO_BYTESIZE(src_spec.format);
-    dst_size = dst_spec.channels * dst_spec.freq * SDL_AUDIO_BYTESIZE(dst_spec.format);
-
-    return (int)(available * src_size / dst_size);
+    return (stream2 && stream2->stream3) ? SDL3_GetAudioStreamAvailable(stream2->stream3) : 0;
 }
 
 SDL_DECLSPEC void SDLCALL
@@ -7259,7 +7239,27 @@ SDL_DECLSPEC Uint32 SDLCALL
 SDL_GetQueuedAudioSize(SDL_AudioDeviceID dev)
 {
     SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
-    return (stream2 && (stream2->callback2 == NULL)) ? SDL_AudioStreamAvailable(stream2) : 0;
+    SDL_AudioSpec src_spec, dst_spec;
+    int src_size, dst_size;
+    Sint64 available;
+
+    if (!stream2 || stream2->callback2) {
+        return 0;
+    }
+
+    if (!SDL3_GetAudioStreamFormat(stream2->stream3, &src_spec, &dst_spec)) {
+        return 0;
+    }
+
+    available = SDL3_GetAudioStreamAvailable(stream2->stream3);
+    if (available < 0) {
+        return 0;
+    }
+
+    src_size = src_spec.channels * src_spec.freq * SDL_AUDIO_BYTESIZE(src_spec.format);
+    dst_size = dst_spec.channels * dst_spec.freq * SDL_AUDIO_BYTESIZE(dst_spec.format);
+
+    return (Uint32)(available * src_size / dst_size);
 }
 
 SDL_DECLSPEC int SDLCALL
