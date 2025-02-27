@@ -6147,6 +6147,37 @@ static int InitSubsystemInternal(SDL_InitFlags flags)
     return result;
 }
 
+static void PostQuitSubsystem(SDL_InitFlags quit_flags)
+{
+    /* Mask out the subsystems that didn't actually quit */
+    quit_flags &= ~SDL_WasInit(quit_flags);
+
+    if (quit_flags & SDL_INIT_VIDEO) {
+        GestureQuit();
+    }
+
+    if (quit_flags & SDL_INIT_AUDIO) {
+        int i;
+
+        /* Close all open audio devices like SDL2 did */
+        for (i = 0; i < (int)SDL_arraysize(AudioOpenDevices); i++) {
+            SDL_FreeAudioStream(AudioOpenDevices[i]);
+            AudioOpenDevices[i] = NULL;
+        }
+    }
+}
+
+static void QuitSubsystemInternal(SDL_InitFlags flags)
+{
+    SDL_InitFlags old_flags;
+
+    old_flags = SDL_WasInit(flags);
+
+    SDL3_QuitSubSystem(flags);
+
+    PostQuitSubsystem(old_flags);
+}
+
 SDL_DECLSPEC int SDLCALL
 SDL_AudioInit(const char *driver_name)
 {
@@ -6162,7 +6193,7 @@ SDL_AudioInit(const char *driver_name)
 SDL_DECLSPEC void SDLCALL
 SDL_AudioQuit(void)
 {
-    SDL3_QuitSubSystem(SDL_INIT_AUDIO);
+    SDL_QuitSubSystem(SDL_INIT_AUDIO);
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -6402,13 +6433,11 @@ SDL_Quit(void)
 {
     int i;
     SDL_LogPriority priorities[SDL_LOG_CATEGORY_CUSTOM];
+    SDL_InitFlags old_flags;
+
     relative_mouse_mode = SDL2_FALSE;
 
     timer_init = 0;
-
-    if (SDL3_WasInit(SDL_INIT_VIDEO)) {
-        GestureQuit();
-    }
 
     if (joystick_instance_list) {
         SDL3_free(joystick_instance_list);
@@ -6469,7 +6498,9 @@ SDL_Quit(void)
 
     SDL2Compat_Quit();
 
+    old_flags = SDL_WasInit(0);
     SDL3_Quit();
+    PostQuitSubsystem(old_flags);
 
     for (i = 0; i < SDL_LOG_CATEGORY_CUSTOM; i++) {
         SDL3_SetLogPriority(i, priorities[i]);
@@ -6483,13 +6514,9 @@ SDL_QuitSubSystem(Uint32 flags)
         --timer_init;
     }
 
-    if (flags & SDL_INIT_VIDEO) {
-        GestureQuit();
-    }
-
     // !!! FIXME: there's cleanup in SDL_Quit that probably needs to be done here, too.
 
-    SDL3_QuitSubSystem(flags);
+    QuitSubsystemInternal(flags);
 }
 
 SDL_DECLSPEC int SDLCALL
