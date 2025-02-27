@@ -802,7 +802,7 @@ SDL2Compat_ApplyQuirks(bool force_x11)
 }
 
 
-/* DO NOT CALL THINGS THAT USE SDL ALLOCATORS HERE. It runs before main(), so app-supplied allocators are not set at this point.
+/* DO NOT USE SDL3 FUNCTIONS IN HERE! It runs before main(), so app-supplied allocators are not set at this point.
    This means no SDL_Log, no hint subsystem, nothing that might call SDL_SetError! In fact, favor code in this file, using
    platform-specific #ifdefs, to calling into SDL3 at all, if you can help it. */
 static int
