@@ -6193,7 +6193,10 @@ SDL_AudioInit(const char *driver_name)
 SDL_DECLSPEC void SDLCALL
 SDL_AudioQuit(void)
 {
-    SDL_QuitSubSystem(SDL_INIT_AUDIO);
+    /* SDL_AudioQuit() ignores subsystem refcounting */
+    while (SDL_WasInit(SDL_INIT_AUDIO)) {
+        SDL_QuitSubSystem(SDL_INIT_AUDIO);
+    }
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -6401,7 +6404,10 @@ SDL_VideoInit(const char *driver_name)
 SDL_DECLSPEC void SDLCALL
 SDL_VideoQuit(void)
 {
-    SDL_QuitSubSystem(SDL_INIT_VIDEO);
+    /* SDL_VideoQuit() ignores subsystem refcounting */
+    while (SDL_WasInit(SDL_INIT_VIDEO)) {
+        SDL_QuitSubSystem(SDL_INIT_VIDEO);
+    }
 }
 
 SDL_DECLSPEC int SDLCALL
