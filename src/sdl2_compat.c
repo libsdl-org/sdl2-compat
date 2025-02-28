@@ -6183,6 +6183,11 @@ SDL_AudioInit(const char *driver_name)
 {
     SynchronizeEnvironmentVariables();
 
+    if (SDL3_GetCurrentAudioDriver()) {
+        /* Shutdown the current driver before starting again */
+        SDL_AudioQuit();
+    }
+
     if (driver_name) {
         SDL3_SetHintWithPriority(SDL_HINT_AUDIO_DRIVER, driver_name, SDL_HINT_OVERRIDE);
     }
@@ -6393,6 +6398,11 @@ SDL_DECLSPEC int SDLCALL
 SDL_VideoInit(const char *driver_name)
 {
     SynchronizeEnvironmentVariables();
+
+    if (SDL3_GetCurrentVideoDriver()) {
+        /* Shutdown the current driver before starting again */
+        SDL_VideoQuit();
+    }
 
     if (driver_name) {
         SDL3_SetHintWithPriority(SDL_HINT_VIDEO_DRIVER, driver_name, SDL_HINT_OVERRIDE);
