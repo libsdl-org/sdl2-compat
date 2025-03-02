@@ -58,7 +58,7 @@ This breaks the build when creating SDL_ ## DisableScreenSaver
  * The number might increment past 90 if there are a ton of releases.
  */
 #define SDL2_COMPAT_VERSION_MINOR 32
-#define SDL2_COMPAT_VERSION_PATCH 51
+#define SDL2_COMPAT_VERSION_PATCH 52
 
 #ifndef SDL2COMPAT_REVISION
 #define SDL2COMPAT_REVISION "SDL-2." STRINGIFY(SDL2_COMPAT_VERSION_MINOR) "." STRINGIFY(SDL2_COMPAT_VERSION_PATCH) "-no-vcs"
@@ -419,7 +419,7 @@ static char loaderror[256];
 #endif
 
 #ifndef SDL3_REQUIRED_VER
-#define SDL3_REQUIRED_VER SDL_VERSIONNUM(3,2,4)
+#define SDL3_REQUIRED_VER SDL_VERSIONNUM(3,2,6)
 #endif
 
 #ifndef DIRSEP

@@ -14,7 +14,7 @@ LDFLAGS = -shared -Wl,-soname,libSDL2-2.0.so.0
 LDFLAGS+= -Wl,--no-undefined
 LDLIBS  = -ldl
 
-SHLIB = libSDL2-2.0.so.0.3200.51
+SHLIB = libSDL2-2.0.so.0.3200.52
 
 OBJ = sdl2_compat.o dynapi/SDL_dynapi.o
 
