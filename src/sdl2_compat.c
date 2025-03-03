@@ -1507,7 +1507,6 @@ static void LogEvent2(const SDL2_Event *event)
 #define SDL_EVENT_CASE(name2, name3) \
     case name3:                      \
         SDL_strlcpy(name, #name2, sizeof(name));
-        break;
         SDL_EVENT_CASE(SDL_QUIT, SDL_EVENT_QUIT)
         (void)SDL3_snprintf(details, sizeof(details), " (timestamp=%u)", (uint)event->quit.timestamp);
         break;
