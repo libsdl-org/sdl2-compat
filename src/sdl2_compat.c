@@ -1170,6 +1170,7 @@ SDL2Compat_InitOnStartupInternal(void)
     SDL3_SetHint("SDL_WINDOWS_DPI_AWARENESS", "unaware");
     SDL3_SetHint("SDL_BORDERLESS_WINDOWED_STYLE", "0");
     SDL3_SetHint("SDL_VIDEO_SYNC_WINDOW_OPERATIONS", "1");
+    SDL3_SetHint("SDL_VIDEO_X11_EXTERNAL_WINDOW_INPUT", "0");
 
     // Pretend Wayland doesn't have fractional scaling by default.
     // This is more compatible with applications that have only been tested under X11 without high DPI support.
