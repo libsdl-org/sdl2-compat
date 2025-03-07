@@ -1266,6 +1266,10 @@
 #define SDL_ClickTrayEntry IGNORE_THIS_VERSION_OF_SDL_ClickTrayEntry
 #define SDL_UpdateTrays IGNORE_THIS_VERSION_OF_SDL_UpdateTrays
 #define SDL_StretchSurface IGNORE_THIS_VERSION_OF_SDL_StretchSurface
+#define SDL_SetRelativeMouseTransform IGNORE_THIS_VERSION_OF_SDL_SetRelativeMouseTransform
+#define SDL_RenderTexture9GridTiled IGNORE_THIS_VERSION_OF_SDL_RenderTexture9GridTiled
+#define SDL_SetDefaultTextureScaleMode IGNORE_THIS_VERSION_OF_SDL_SetDefaultTextureScaleMode
+#define SDL_GetDefaultTextureScaleMode IGNORE_THIS_VERSION_OF_SDL_GetDefaultTextureScaleMode
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6222,6 +6226,22 @@
 
 #ifdef SDL_StretchSurface
 #undef SDL_StretchSurface
+#endif
+
+#ifdef SDL_SetRelativeMouseTransform
+#undef SDL_SetRelativeMouseTransform
+#endif
+
+#ifdef SDL_RenderTexture9GridTiled
+#undef SDL_RenderTexture9GridTiled
+#endif
+
+#ifdef SDL_SetDefaultTextureScaleMode
+#undef SDL_SetDefaultTextureScaleMode
+#endif
+
+#ifdef SDL_GetDefaultTextureScaleMode
+#undef SDL_GetDefaultTextureScaleMode
 #endif
 
 #undef SDL_ThreadID /* see at top. */
