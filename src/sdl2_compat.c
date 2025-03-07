@@ -464,6 +464,11 @@ static QuirkEntryType quirks[] = {
     /* TODO: Add any quirks needed for various systems. */
     /*{ "my_game_name", "SDL_RENDER_BATCHING", "0" },*/
 
+#ifdef SDL_PLATFORM_WIN32
+    /* Half-Life handles WM_MOUSEMOVE when raw input is disabled */
+    { "hl.exe", SDL_HINT_MOUSE_EMULATE_WARP_WITH_RELATIVE, "0" },
+#endif
+
     /* Moonlight supports high DPI properly under Wayland */
     { "moonlight", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
     { "moonlight-qt", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
