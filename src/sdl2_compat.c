@@ -1309,6 +1309,10 @@ SDL2Compat_InitOnStartupInternal(void)
     SDL3_SetHint("SDL_VIDEO_SYNC_WINDOW_OPERATIONS", "1");
     SDL3_SetHint("SDL_VIDEO_X11_EXTERNAL_WINDOW_INPUT", "0");
 
+    /* Emulate both integer mouse coordinates and integer mouse wheel deltas for maximum compatibility.
+       Apps that use preciseX/Y for smooth scrolling can be quirked to get fractional wheel deltas. */
+    SDL3_SetHint("SDL_MOUSE_INTEGER_MODE", "3");
+
     // Pretend Wayland doesn't have fractional scaling by default.
     // This is more compatible with applications that have only been tested under X11 without high DPI support.
     // For apps that support high DPI on Wayland, add a SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY=0 quirk for them.
