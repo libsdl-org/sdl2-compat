@@ -2211,9 +2211,17 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
         event2->jbutton.which = JoystickID3to2(event3->jbutton.which);
         break;
     case SDL_EVENT_JOYSTICK_ADDED:
+        SDL_NumJoysticks(); /* Refresh */
+        SDL_NumHaptics(); /* Refresh */
         event2->jdevice.which = GetIndexFromJoystickInstance(event3->jdevice.which);
+        if (event2->jdevice.which < 0) {
+            /* Applications like RetroArch assume the index is always valid */
+            event2->jdevice.which = 0;
+        }
         break;
     case SDL_EVENT_JOYSTICK_REMOVED:
+        SDL_NumJoysticks(); /* Refresh */
+        SDL_NumHaptics(); /* Refresh */
         event2->jdevice.which = JoystickID3to2(event3->jdevice.which);
         break;
     case SDL_EVENT_JOYSTICK_BATTERY_UPDATED:
@@ -2250,9 +2258,17 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
         }
         break;
     case SDL_EVENT_GAMEPAD_ADDED:
+        /* Refresh the joystick list here in case the joystick added event is ignored */
+        SDL_NumJoysticks(); /* Refresh */
+        SDL_NumHaptics(); /* Refresh */
         event2->cdevice.which = GetIndexFromJoystickInstance(event3->gdevice.which);
         break;
     case SDL_EVENT_GAMEPAD_REMOVED:
+        /* Refresh the joystick list here in case the joystick removed event is ignored */
+        SDL_NumJoysticks(); /* Refresh */
+        SDL_NumHaptics(); /* Refresh */
+        event2->cdevice.which = JoystickID3to2(event3->gdevice.which);
+        break;
     case SDL_EVENT_GAMEPAD_REMAPPED:
     case SDL_EVENT_GAMEPAD_STEAM_HANDLE_UPDATED:
         event2->cdevice.which = JoystickID3to2(event3->gdevice.which);
@@ -2268,9 +2284,11 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
         event2->csensor.timestamp_us = SDL_NS_TO_US(event3->gsensor.sensor_timestamp);
         break;
     case SDL_EVENT_AUDIO_DEVICE_ADDED:
+        SDL_GetNumAudioDevices(event3->adevice.recording ? SDL2_TRUE : SDL2_FALSE); /* Refresh */
         event2->adevice.which = GetIndexFromAudioDeviceInstance(event3->adevice.which, event3->adevice.recording);
         break;
     case SDL_EVENT_AUDIO_DEVICE_REMOVED:
+        SDL_GetNumAudioDevices(event3->adevice.recording ? SDL2_TRUE : SDL2_FALSE); /* Refresh */
         event2->adevice.which = AudioDeviceID3to2(event3->adevice.which);
         break;
     case SDL_EVENT_SENSOR_UPDATE:
@@ -2804,21 +2822,6 @@ SDL_WaitEventTimeout(SDL2_Event *event2, int timeout)
     SDL_Event event3;
     const int retval = SDL3_WaitEventTimeout(event2 ? &event3 : NULL, timeout);
     if ((retval == 1) && event2) {
-        /* Ensure joystick and haptic IDs are updated before calling Event3to2() */
-        switch (event3.type) {
-            case SDL_EVENT_JOYSTICK_ADDED:
-            case SDL_EVENT_GAMEPAD_ADDED:
-            case SDL_EVENT_GAMEPAD_REMOVED:
-            case SDL_EVENT_JOYSTICK_REMOVED:
-                SDL_NumJoysticks(); /* Refresh */
-                SDL_NumHaptics(); /* Refresh */
-                break;
-
-            case SDL_EVENT_AUDIO_DEVICE_ADDED:
-            case SDL_EVENT_AUDIO_DEVICE_REMOVED:
-                SDL_GetNumAudioDevices(event3.adevice.recording ? SDL2_TRUE : SDL2_FALSE); /* Refresh */
-                break;
-        }
         Event3to2(&event3, event2);
     }
     return retval;
