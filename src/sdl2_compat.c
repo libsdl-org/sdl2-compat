@@ -6133,11 +6133,22 @@ SDL_DECLSPEC int SDLCALL
 SDL_RenderReadPixels(SDL_Renderer * renderer, const SDL_Rect * rect, Uint32 format, void *pixels, int pitch)
 {
     int result = -1;
+    SDL_Texture* target;
 
     SDL_Surface *surface = SDL3_RenderReadPixels(renderer, rect);
     if (!surface) {
         return -1;
     }
+   
+    if (!format) {
+        target = SDL3_GetRenderTarget(renderer);
+        if (!target) {
+            format = SDL3_GetWindowPixelFormat(SDL3_GetPointerProperty(SDL3_GetRendererProperties(renderer), SDL_PROP_RENDERER_WINDOW_POINTER, NULL));
+        }           
+        else {  
+            format = SDL3_GetNumberProperty(SDL3_GetTextureProperties(target), SDL_PROP_TEXTURE_FORMAT_NUMBER, 0);
+        }       
+    }        
 
     if (SDL3_ConvertPixelsAndColorspace(surface->w, surface->h, surface->format, SDL3_GetSurfaceColorspace(surface), SDL3_GetSurfaceProperties(surface), surface->pixels, surface->pitch, (SDL_PixelFormat)format, SDL_COLORSPACE_SRGB, 0, pixels, pitch)) {
         result = 0;
