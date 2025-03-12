@@ -539,6 +539,8 @@ if(SDL2COMPAT_INSTALL)
   )
   install(
     FILES
+      cmake/sdl2-config.cmake
+      cmake/sdl2-config-version.cmake
       ${CMAKE_CURRENT_BINARY_DIR}/SDL2Config.cmake
       ${CMAKE_CURRENT_BINARY_DIR}/SDL2ConfigVersion.cmake
     DESTINATION "${SDL2COMPAT_INSTALL_CMAKEDIR}"
