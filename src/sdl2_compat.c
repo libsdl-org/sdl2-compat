@@ -6142,13 +6142,12 @@ SDL_RenderReadPixels(SDL_Renderer * renderer, const SDL_Rect * rect, Uint32 form
    
     if (!format) {
         target = SDL3_GetRenderTarget(renderer);
-        if (!target) {
-            format = SDL3_GetWindowPixelFormat(SDL3_GetPointerProperty(SDL3_GetRendererProperties(renderer), SDL_PROP_RENDERER_WINDOW_POINTER, NULL));
-        }           
-        else {  
+        if (target) {
             format = SDL3_GetNumberProperty(SDL3_GetTextureProperties(target), SDL_PROP_TEXTURE_FORMAT_NUMBER, 0);
-        }       
-    }        
+        } else {
+            format = SDL3_GetWindowPixelFormat((SDL_Window *)SDL3_GetPointerProperty(SDL3_GetRendererProperties(renderer), SDL_PROP_RENDERER_WINDOW_POINTER, NULL));
+        }
+    }
 
     if (SDL3_ConvertPixelsAndColorspace(surface->w, surface->h, surface->format, SDL3_GetSurfaceColorspace(surface), SDL3_GetSurfaceProperties(surface), surface->pixels, surface->pitch, (SDL_PixelFormat)format, SDL_COLORSPACE_SRGB, 0, pixels, pitch)) {
         result = 0;
