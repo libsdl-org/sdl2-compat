@@ -7000,7 +7000,7 @@ static int GetNumAudioDevices(int iscapture)
         newlist.num_devices = num_devices;
         newlist.devices = (AudioDeviceInfo *) SDL3_malloc(sizeof (AudioDeviceInfo) * num_devices);
         if (!newlist.devices) {
-            SDL3_free(orignames);
+            SDL3_free((void*) orignames);
             SDL3_free(devices);
             return list->num_devices;  /* just return the existing one for now. Oh well. */
         }
@@ -7040,7 +7040,7 @@ static int GetNumAudioDevices(int iscapture)
                 for (j = 0; j < (i-1); j++) {
                     SDL3_free(newlist.devices[j].name);
                 }
-                SDL3_free(orignames);
+                SDL3_free((void*) orignames);
                 SDL3_free(devices);
                 return list->num_devices;  /* just return the existing one for now. Oh well. */
             }
@@ -7049,7 +7049,7 @@ static int GetNumAudioDevices(int iscapture)
             newlist.devices[i].name = fullname;
         }
 
-        SDL3_free(orignames);
+        SDL3_free((void*) orignames);
     }
 
     for (i = 0; i < list->num_devices; i++) {
