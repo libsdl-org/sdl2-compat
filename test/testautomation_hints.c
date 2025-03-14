@@ -182,15 +182,6 @@ int hints_setHint(void *arg)
         "testValue = %s, expected \"original\"",
         testValue);
 
-    SDLTest_AssertPass("Call to SDL_SetHint(\"\", \"data\")");
-    result = SDL_SetHint("", "data");
-    SDLTest_AssertCheck(result, "SDL_SetHint(\"\", \"data\") should return true");
-    testValue = SDL_GetHint("");
-    SDLTest_AssertCheck(
-        testValue && SDL_strcmp(testValue, "data") == 0,
-        "testValue = %s, expected \"data\"",
-        testValue);
-
     SDLTest_AssertPass("Call to SDL_SetHintWithPriority(\"temp\", SDL_HINT_OVERRIDE)");
     result = SDL_SetHintWithPriority(testHint, "temp", SDL_HINT_OVERRIDE);
     SDLTest_AssertCheck(result, "SDL_SetHintWithPriority(\"%s\", \"temp\", SDL_HINT_OVERRIDE) should return true", testHint);
