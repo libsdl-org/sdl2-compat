@@ -224,6 +224,13 @@ do { \
 static bool WantDebugLogging = false;
 static SDL_InitState InitSDL2CompatGlobals;
 
+typedef struct HintCallbackInfo
+{
+    char *name;
+    SDL_HintCallback callback;
+    void *userdata;
+} HintCallbackInfo;
+static SDL_PropertiesID hint_callbacks = 0;
 
 static char *
 SDL2COMPAT_stpcpy(char *dst, const char *src)
@@ -621,6 +628,7 @@ static const char *SDL2_to_SDL3_hint(const char *name)
     return name;
 }
 
+/* This function must be kept in sync with SDL3_to_SDL2_hint_value */
 static const char *SDL2_to_SDL3_hint_value(const char *name, const char *value, bool *free_value)
 {
     *free_value = false;
@@ -641,6 +649,34 @@ static const char *SDL2_to_SDL3_hint_value(const char *name, const char *value, 
             return value3;
         } else if (SDL3_strcmp(name, "SDL_WINDOWS_NO_CLOSE_ON_ALT_F4") == 0) {
             /* Invert the boolean value for SDL3 */
+            return (*value == '0' || SDL3_strcasecmp(value, "false") == 0) ? "1" : "0";
+        }
+    }
+
+    return value;
+}
+
+/* This function must be kept in sync with SDL2_to_SDL3_hint_value */
+static const char *SDL3_to_SDL2_hint_value(const char *name, const char *value, bool *free_value)
+{
+    *free_value = false;
+
+    if (name && value && *value) {
+        if (SDL3_strcmp(name, SDL_HINT_LOGGING) == 0) {
+            /* Rewrite numeric priorities for SDL3 */
+            char *value2 = SDL3_strdup(value);
+            if (value2) {
+                char *sep;
+                for (sep = SDL3_strchr(value2, '='); sep; sep = SDL3_strchr(sep + 1, '=')) {
+                    if (SDL3_isdigit(sep[1]) && sep[1] != '0') {
+                        sep[1] = '0' + SDL3_atoi(&sep[1]) - 1;
+                    }
+                }
+            }
+            *free_value = true;
+            return value2;
+        } else if (SDL3_strcmp(name, "SDL_WINDOWS_NO_CLOSE_ON_ALT_F4") == 0) {
+            /* Invert the boolean value for SDL2 */
             return (*value == '0' || SDL3_strcasecmp(value, "false") == 0) ? "1" : "0";
         }
     }
@@ -684,10 +720,79 @@ SDL_GetHintBoolean(const char *name, SDL2_bool default_value)
     return SDL3_GetHintBoolean(SDL2_to_SDL3_hint(name), default_value) ? SDL2_TRUE : SDL2_FALSE;
 }
 
-/* FIXME: callbacks may need tweaking ... */
+static void SDLCALL
+hint_callback_wrapper(void *userdata, const char *name, const char *oldValue, const char *newValue)
+{
+    HintCallbackInfo *callback_info = (HintCallbackInfo *) userdata;
+    const char *sdl2OldValue, *sdl2NewValue;
+    bool freeSdl2OldValue, freeSdl2NewValue;
+
+    sdl2OldValue = SDL3_to_SDL2_hint_value(callback_info->name, oldValue, &freeSdl2OldValue);
+    sdl2NewValue = SDL3_to_SDL2_hint_value(callback_info->name, newValue, &freeSdl2NewValue);
+    callback_info->callback(callback_info->userdata, callback_info->name, sdl2OldValue, sdl2NewValue);
+    if (freeSdl2OldValue) {
+        SDL3_free((void *)sdl2OldValue);
+    }
+    if (freeSdl2NewValue) {
+        SDL3_free((void *)sdl2NewValue);
+    }
+}
+
+static char *
+CreateHintCallbackPropertyName(const char *name, SDL_HintCallback callback, void *userdata) {
+    size_t len_property_name = SDL_strlen(name) + 1 + 2 * sizeof(callback) + 1 + 2 * sizeof(userdata) + 1;
+    char *property_name = (char *)SDL3_malloc(len_property_name);
+    if (!property_name) {
+        return NULL;
+    }
+    SDL3_snprintf(property_name, len_property_name, "%s_%x_%x", name, (void *)callback, (void *)userdata);
+    return property_name;
+}
+
+static void SDLCALL
+HintCallbackInfoPropertyCleanup(void *userdata, void *value)
+{
+    HintCallbackInfo *callback_info = (HintCallbackInfo *) value;
+    SDL3_free(callback_info->name);
+    SDL3_free(callback_info);
+}
+
 SDL_DECLSPEC void SDLCALL
 SDL_AddHintCallback(const char *name, SDL_HintCallback callback, void *userdata)
 {
+    const char *sdl2_name = SDL2_to_SDL3_hint(name);
+    if (name && callback && sdl2_name != name) {
+        HintCallbackInfo *callback_info;
+        char *property_name;
+
+        if (!hint_callbacks) {
+            hint_callbacks = SDL3_CreateProperties();
+        }
+        property_name = CreateHintCallbackPropertyName(name, callback, userdata);
+        if (!property_name) {
+            return;
+        }
+        callback_info = (HintCallbackInfo *) SDL3_malloc(sizeof(*callback_info));
+        if (!callback_info) {
+            SDL3_free(property_name);
+            return;
+        }
+        callback_info->name = SDL3_strdup(name);
+        if (!callback_info->name) {
+            SDL3_free(property_name);
+            SDL3_free(callback_info);
+            return;
+        }
+        callback_info->callback = callback;
+        callback_info->userdata = userdata;
+        SDL3_SetPointerPropertyWithCleanup(hint_callbacks, property_name, callback_info, HintCallbackInfoPropertyCleanup, NULL);
+
+        callback = hint_callback_wrapper;
+        userdata = callback_info;
+
+        SDL3_free(property_name);
+    }
+
     /* this returns an int of 0 or -1 in SDL3, but SDL2 it was void (even if it failed). */
     (void) SDL3_AddHintCallback(SDL2_to_SDL3_hint(name), callback, userdata);
 }
@@ -695,7 +800,20 @@ SDL_AddHintCallback(const char *name, SDL_HintCallback callback, void *userdata)
 SDL_DECLSPEC void SDLCALL
 SDL_DelHintCallback(const char *name, SDL_HintCallback callback, void *userdata)
 {
-    SDL3_RemoveHintCallback(SDL2_to_SDL3_hint(name), callback, userdata);
+    const char *sdl3_name = SDL2_to_SDL3_hint(name);
+    if (name && callback && name != sdl3_name) {
+        char *property_name = CreateHintCallbackPropertyName(name, callback, userdata);
+        HintCallbackInfo *callback_info;
+        if (!property_name) {
+            return;
+        }
+        callback_info = (HintCallbackInfo *) SDL3_GetPointerProperty(hint_callbacks, property_name, NULL);
+        SDL3_RemoveHintCallback(sdl3_name, hint_callback_wrapper, callback_info);
+        SDL3_SetPointerProperty(hint_callbacks, property_name, NULL);
+        SDL3_free(property_name);
+    } else {
+        SDL3_RemoveHintCallback(sdl3_name, callback, userdata);
+    }
 }
 
 SDL_DECLSPEC void SDLCALL
@@ -7005,6 +7123,11 @@ SDL_Quit(void)
     if (timers) {
         SDL3_DestroyProperties(timers);
         timers = 0;
+    }
+
+    if (hint_callbacks) {
+        SDL3_DestroyProperties(hint_callbacks);
+        hint_callbacks = 0;
     }
 
     for (i = 0; i < SDL_LOG_CATEGORY_CUSTOM; i++) {
