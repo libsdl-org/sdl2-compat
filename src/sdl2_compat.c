@@ -221,6 +221,15 @@ do { \
 
 static bool WantDebugLogging = false;
 
+typedef struct HintCallbackInfo
+{
+    char *name;
+    SDL_HintCallback callback;
+    void *userdata;
+    struct HintCallbackInfo *next;
+} HintCallbackInfo;
+static SDL_PropertiesID hint_callbacks = 0;
+
 
 static char *
 SDL2COMPAT_stpcpy(char *dst, const char *src)
@@ -681,10 +690,50 @@ SDL_GetHintBoolean(const char *name, SDL2_bool default_value)
     return SDL3_GetHintBoolean(SDL2_to_SDL3_hint(name), default_value) ? SDL2_TRUE : SDL2_FALSE;
 }
 
-/* FIXME: callbacks may need tweaking ... */
+static void SDLCALL hint_callback_wrapper(void *userdata, const char *name, const char *oldValue, const char *newValue)
+{
+    HintCallbackInfo *info = (HintCallbackInfo *) userdata;
+    info->callback(info->userdata, info->name, oldValue, newValue);
+}
+
+static HintCallbackInfo *GetHintCallbackInfo(const char *name, SDL_HintCallback callback, void *userdata, HintCallbackInfo ***prev_next_ptr) {
+    HintCallbackInfo *callback_info = (HintCallbackInfo *) SDL3_GetPointerProperty(hint_callbacks, name, NULL);
+    while (callback_info) {
+        if (SDL_strcmp(name, callback_info->name) == 0
+                && callback == callback_info->callback
+                && userdata == callback_info->userdata) {
+            return callback_info;
+        }
+        *prev_next_ptr = &callback_info->next;
+        callback_info = callback_info->next;
+    }
+    return NULL;
+}
+
 SDL_DECLSPEC void SDLCALL
 SDL_AddHintCallback(const char *name, SDL_HintCallback callback, void *userdata)
 {
+    const char *sdl2_name = SDL2_to_SDL3_hint(name);
+    if (name && callback && sdl2_name != name) {
+        HintCallbackInfo *callback_info;
+
+        if (!hint_callbacks) {
+            hint_callbacks = SDL3_CreateProperties();
+        }
+        callback_info = (HintCallbackInfo *) SDL3_malloc(sizeof(*callback_info));
+        if (!callback_info) {
+            return;
+        }
+        callback_info->name = SDL_strdup(name);
+        callback_info->callback = callback;
+        callback_info->userdata = userdata;
+        callback_info->next = (HintCallbackInfo *) SDL3_GetPointerProperty(hint_callbacks, name, NULL);
+        SDL3_SetPointerProperty(hint_callbacks, name, callback_info);
+
+        callback = hint_callback_wrapper;
+        userdata = callback_info;
+    }
+
     /* this returns an int of 0 or -1 in SDL3, but SDL2 it was void (even if it failed). */
     (void) SDL3_AddHintCallback(SDL2_to_SDL3_hint(name), callback, userdata);
 }
@@ -692,7 +741,29 @@ SDL_AddHintCallback(const char *name, SDL_HintCallback callback, void *userdata)
 SDL_DECLSPEC void SDLCALL
 SDL_DelHintCallback(const char *name, SDL_HintCallback callback, void *userdata)
 {
-    SDL3_RemoveHintCallback(SDL2_to_SDL3_hint(name), callback, userdata);
+    const char *sdl2_name = SDL2_to_SDL3_hint(name);
+    if (name && callback && name != sdl2_name) {
+        HintCallbackInfo **prev_next = NULL;
+        HintCallbackInfo *callback_info = GetHintCallbackInfo(name, callback, userdata, &prev_next);
+
+        SDL3_RemoveHintCallback(SDL2_to_SDL3_hint(name), hint_callback_wrapper, callback_info);
+
+        if (callback_info) {
+            name = callback_info->name;
+            if (prev_next) {
+                *prev_next = callback_info->next;
+            } else if (callback_info->next) {
+                SDL3_SetPointerProperty(hint_callbacks, name, callback_info->next);
+            } else {
+                /* FIXME: Cannot remove a property */
+                SDL3_SetPointerProperty(hint_callbacks, name, NULL);
+            }
+            SDL_free(callback_info->name);
+            SDL_free(callback_info);
+        }
+    } else {
+        SDL3_RemoveHintCallback(sdl2_name, callback, userdata);
+    }
 }
 
 SDL_DECLSPEC void SDLCALL
@@ -6925,6 +6996,11 @@ SDL_Quit(void)
     if (timers) {
         SDL3_DestroyProperties(timers);
         timers = 0;
+    }
+
+    if (hint_callbacks) {
+        SDL3_DestroyProperties(hint_callbacks);
+        hint_callbacks = 0;
     }
 
     for (i = 0; i < SDL_LOG_CATEGORY_CUSTOM; i++) {
