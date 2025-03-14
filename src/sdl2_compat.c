@@ -9063,12 +9063,6 @@ SDL_UnionRect(const SDL_Rect *A, const SDL_Rect *B, SDL_Rect *result)
 }
 
 SDL_DECLSPEC void SDLCALL
-SDL_UnionFRect(const SDL_FRect *A, const SDL_FRect *B, SDL_FRect *result)
-{
-    SDL3_GetRectUnionFloat(A, B, result);
-}
-
-SDL_DECLSPEC void SDLCALL
 SDL_SetWindowPosition(SDL_Window *window, int x, int y)
 {
     /* Popup windows need to be transformed from global to relative coordinates. */
@@ -11436,6 +11430,425 @@ static SDL_Thread *SDL2_CreateThread(SDL_ThreadFunction fn, const char *name, vo
         stacksize = (size_t)SDL3_strtoul(hint, NULL, 0);
     }
     return SDL2_CreateThreadWithStackSize(fn, name, stacksize, userdata, pfnBeginThread, pfnEndThread);
+}
+
+static SDL2_bool SDL_FRectEmpty(const SDL_FRect *r)
+{
+    return ((!r) || (r->w <= 0.0f) || (r->h <= 0.0f)) ? SDL2_TRUE : SDL2_FALSE;
+}
+
+SDL_DECLSPEC SDL2_bool SDLCALL
+SDL_HasIntersectionF(const SDL_FRect *A, const SDL_FRect *B)
+{
+    float Amin, Amax, Bmin, Bmax;
+
+    if (!A) {
+        SDL3_InvalidParamError("A");
+        return SDL2_FALSE;
+    } else if (!B) {
+        SDL3_InvalidParamError("B");
+        return SDL2_FALSE;
+    } else if (SDL_FRectEmpty(A) || SDL_FRectEmpty(B)) {
+        return SDL2_FALSE; /* Special cases for empty rects */
+    }
+
+    /* Horizontal intersection */
+    Amin = A->x;
+    Amax = Amin + A->w;
+    Bmin = B->x;
+    Bmax = Bmin + B->w;
+    if (Bmin > Amin) {
+        Amin = Bmin;
+    }
+    if (Bmax < Amax) {
+        Amax = Bmax;
+    }
+    if (Amax <= Amin) {
+        return SDL2_FALSE;
+    }
+    /* Vertical intersection */
+    Amin = A->y;
+    Amax = Amin + A->h;
+    Bmin = B->y;
+    Bmax = Bmin + B->h;
+    if (Bmin > Amin) {
+        Amin = Bmin;
+    }
+    if (Bmax < Amax) {
+        Amax = Bmax;
+    }
+    if (Amax <= Amin) {
+        return SDL2_FALSE;
+    }
+    return SDL2_TRUE;
+}
+
+SDL_DECLSPEC SDL2_bool SDLCALL
+SDL_IntersectFRect(const SDL_FRect *A, const SDL_FRect *B, SDL_FRect *result)
+{
+    float Amin, Amax, Bmin, Bmax;
+
+    if (!A) {
+        SDL3_InvalidParamError("A");
+        return SDL2_FALSE;
+    } else if (!B) {
+        SDL3_InvalidParamError("B");
+        return SDL2_FALSE;
+    } else if (!result) {
+        SDL3_InvalidParamError("result");
+        return SDL2_FALSE;
+    } else if (SDL_FRectEmpty(A) || SDL_FRectEmpty(B)) { /* Special cases for empty rects */
+        result->w = 0;
+        result->h = 0;
+        return SDL2_FALSE;
+    }
+
+    /* Horizontal intersection */
+    Amin = A->x;
+    Amax = Amin + A->w;
+    Bmin = B->x;
+    Bmax = Bmin + B->w;
+    if (Bmin > Amin) {
+        Amin = Bmin;
+    }
+    result->x = Amin;
+    if (Bmax < Amax) {
+        Amax = Bmax;
+    }
+    result->w = Amax - Amin;
+
+    /* Vertical intersection */
+    Amin = A->y;
+    Amax = Amin + A->h;
+    Bmin = B->y;
+    Bmax = Bmin + B->h;
+    if (Bmin > Amin) {
+        Amin = Bmin;
+    }
+    result->y = Amin;
+    if (Bmax < Amax) {
+        Amax = Bmax;
+    }
+    result->h = Amax - Amin;
+
+    return SDL_FRectEmpty(result) ? SDL2_FALSE : SDL2_TRUE;
+}
+
+SDL_DECLSPEC void SDLCALL
+SDL_UnionFRect(const SDL_FRect *A, const SDL_FRect *B, SDL_FRect *result)
+{
+    float Amin, Amax, Bmin, Bmax;
+
+    if (!A) {
+        SDL3_InvalidParamError("A");
+        return;
+    } else if (!B) {
+        SDL3_InvalidParamError("B");
+        return;
+    } else if (!result) {
+        SDL3_InvalidParamError("result");
+        return;
+    } else if (SDL_FRectEmpty(A)) { /* Special cases for empty Rects */
+        if (SDL_FRectEmpty(B)) {    /* A and B empty */
+            SDL_zerop(result);
+        } else { /* A empty, B not empty */
+            *result = *B;
+        }
+        return;
+    } else if (SDL_FRectEmpty(B)) { /* A not empty, B empty */
+        *result = *A;
+        return;
+    }
+
+    /* Horizontal union */
+    Amin = A->x;
+    Amax = Amin + A->w;
+    Bmin = B->x;
+    Bmax = Bmin + B->w;
+    if (Bmin < Amin) {
+        Amin = Bmin;
+    }
+    result->x = Amin;
+    if (Bmax > Amax) {
+        Amax = Bmax;
+    }
+    result->w = Amax - Amin;
+
+    /* Vertical union */
+    Amin = A->y;
+    Amax = Amin + A->h;
+    Bmin = B->y;
+    Bmax = Bmin + B->h;
+    if (Bmin < Amin) {
+        Amin = Bmin;
+    }
+    result->y = Amin;
+    if (Bmax > Amax) {
+        Amax = Bmax;
+    }
+    result->h = Amax - Amin;
+}
+
+SDL_DECLSPEC SDL2_bool SDLCALL
+SDL_EncloseFPoints(const SDL_FPoint *points, int count, const SDL_FRect *clip, SDL_FRect *result)
+{
+    float minx = 0;
+    float miny = 0;
+    float maxx = 0;
+    float maxy = 0;
+    float x, y;
+    int i;
+
+    if (!points) {
+        SDL3_InvalidParamError("points");
+        return SDL2_FALSE;
+    } else if (count < 1) {
+        SDL3_InvalidParamError("count");
+        return SDL2_FALSE;
+    }
+
+    if (clip) {
+        SDL2_bool added = SDL2_FALSE;
+        const float clip_minx = clip->x;
+        const float clip_miny = clip->y;
+        const float clip_maxx = clip->x + clip->w - 1;
+        const float clip_maxy = clip->y + clip->h - 1;
+
+        /* Special case for empty rectangle */
+        if (SDL_FRectEmpty(clip)) {
+            return SDL2_FALSE;
+        }
+
+        for (i = 0; i < count; ++i) {
+            x = points[i].x;
+            y = points[i].y;
+
+            if (x < clip_minx || x > clip_maxx ||
+                y < clip_miny || y > clip_maxy) {
+                continue;
+            }
+            if (!added) {
+                /* Special case: if no result was requested, we are done */
+                if (!result) {
+                    return SDL2_TRUE;
+                }
+
+                /* First point added */
+                minx = maxx = x;
+                miny = maxy = y;
+                added = SDL2_TRUE;
+                continue;
+            }
+            if (x < minx) {
+                minx = x;
+            } else if (x > maxx) {
+                maxx = x;
+            }
+            if (y < miny) {
+                miny = y;
+            } else if (y > maxy) {
+                maxy = y;
+            }
+        }
+        if (!added) {
+            return SDL2_FALSE;
+        }
+    } else {
+        /* Special case: if no result was requested, we are done */
+        if (!result) {
+            return SDL2_TRUE;
+        }
+
+        /* No clipping, always add the first point */
+        minx = maxx = points[0].x;
+        miny = maxy = points[0].y;
+
+        for (i = 1; i < count; ++i) {
+            x = points[i].x;
+            y = points[i].y;
+
+            if (x < minx) {
+                minx = x;
+            } else if (x > maxx) {
+                maxx = x;
+            }
+            if (y < miny) {
+                miny = y;
+            } else if (y > maxy) {
+                maxy = y;
+            }
+        }
+    }
+
+    if (result) {
+        result->x = minx;
+        result->y = miny;
+        result->w = (maxx - minx) + 1;
+        result->h = (maxy - miny) + 1;
+    }
+    return SDL2_TRUE;
+}
+
+#define CODE_BOTTOM 1
+#define CODE_TOP    2
+#define CODE_LEFT   4
+#define CODE_RIGHT  8
+
+/* Use the Cohen-Sutherland algorithm for line clipping */
+static int ComputeOutCodeF(const SDL_FRect *rect, float x, float y)
+{
+    int code = 0;
+    if (y < rect->y) {
+        code |= CODE_TOP;
+    } else if (y >= rect->y + rect->h) {
+        code |= CODE_BOTTOM;
+    }
+    if (x < rect->x) {
+        code |= CODE_LEFT;
+    } else if (x >= rect->x + rect->w) {
+        code |= CODE_RIGHT;
+    }
+    return code;
+}
+
+SDL_DECLSPEC SDL2_bool SDLCALL
+SDL_IntersectFRectAndLine(const SDL_FRect *rect, float *X1, float *Y1, float *X2, float *Y2)
+{
+    float x = 0;
+    float y = 0;
+    float x1, y1;
+    float x2, y2;
+    float rectx1;
+    float recty1;
+    float rectx2;
+    float recty2;
+    int outcode1, outcode2;
+
+    if (!rect) {
+        SDL3_InvalidParamError("rect");
+        return SDL2_FALSE;
+    } else if (!X1) {
+        SDL3_InvalidParamError("X1");
+        return SDL2_FALSE;
+    } else if (!Y1) {
+        SDL3_InvalidParamError("Y1");
+        return SDL2_FALSE;
+    } else if (!X2) {
+        SDL3_InvalidParamError("X2");
+        return SDL2_FALSE;
+    } else if (!Y2) {
+        SDL3_InvalidParamError("Y2");
+        return SDL2_FALSE;
+    } else if (SDL_FRectEmpty(rect)) {
+        return SDL2_FALSE; /* Special case for empty rect */
+    }
+
+    x1 = *X1;
+    y1 = *Y1;
+    x2 = *X2;
+    y2 = *Y2;
+    rectx1 = rect->x;
+    recty1 = rect->y;
+    rectx2 = rect->x + rect->w - 1;
+    recty2 = rect->y + rect->h - 1;
+
+    /* Check to see if entire line is inside rect */
+    if (x1 >= rectx1 && x1 <= rectx2 && x2 >= rectx1 && x2 <= rectx2 &&
+        y1 >= recty1 && y1 <= recty2 && y2 >= recty1 && y2 <= recty2) {
+        return SDL2_TRUE;
+    }
+
+    /* Check to see if entire line is to one side of rect */
+    if ((x1 < rectx1 && x2 < rectx1) || (x1 > rectx2 && x2 > rectx2) ||
+        (y1 < recty1 && y2 < recty1) || (y1 > recty2 && y2 > recty2)) {
+        return SDL2_FALSE;
+    }
+
+    if (y1 == y2) { /* Horizontal line, easy to clip */
+        if (x1 < rectx1) {
+            *X1 = rectx1;
+        } else if (x1 > rectx2) {
+            *X1 = rectx2;
+        }
+        if (x2 < rectx1) {
+            *X2 = rectx1;
+        } else if (x2 > rectx2) {
+            *X2 = rectx2;
+        }
+        return SDL2_TRUE;
+    }
+
+    if (x1 == x2) { /* Vertical line, easy to clip */
+        if (y1 < recty1) {
+            *Y1 = recty1;
+        } else if (y1 > recty2) {
+            *Y1 = recty2;
+        }
+        if (y2 < recty1) {
+            *Y2 = recty1;
+        } else if (y2 > recty2) {
+            *Y2 = recty2;
+        }
+        return SDL2_TRUE;
+    }
+
+    /* More complicated Cohen-Sutherland algorithm */
+    outcode1 = ComputeOutCodeF(rect, x1, y1);
+    outcode2 = ComputeOutCodeF(rect, x2, y2);
+    while (outcode1 || outcode2) {
+        if (outcode1 & outcode2) {
+            return SDL2_FALSE;
+        }
+
+        if (outcode1) {
+            if (outcode1 & CODE_TOP) {
+                y = recty1;
+                x = (float) (x1 + ((double)(x2 - x1) * (y - y1)) / (y2 - y1));
+            } else if (outcode1 & CODE_BOTTOM) {
+                y = recty2;
+                x = (float) (x1 + ((double)(x2 - x1) * (y - y1)) / (y2 - y1));
+            } else if (outcode1 & CODE_LEFT) {
+                x = rectx1;
+                y = (float) (y1 + ((double)(y2 - y1) * (x - x1)) / (x2 - x1));
+            } else if (outcode1 & CODE_RIGHT) {
+                x = rectx2;
+                y = (float) (y1 + ((double)(y2 - y1) * (x - x1)) / (x2 - x1));
+            }
+            x1 = x;
+            y1 = y;
+            outcode1 = ComputeOutCodeF(rect, x, y);
+        } else {
+            if (outcode2 & CODE_TOP) {
+                SDL_assert(y2 != y1); /* if equal: division by zero. */
+                y = recty1;
+                x = (float) (x1 + ((double)(x2 - x1) * (y - y1)) / (y2 - y1));
+            } else if (outcode2 & CODE_BOTTOM) {
+                SDL_assert(y2 != y1); /* if equal: division by zero. */
+                y = recty2;
+                x = (float) (x1 + ((double)(x2 - x1) * (y - y1)) / (y2 - y1));
+            } else if (outcode2 & CODE_LEFT) {
+                /* If this assertion ever fires, here's the static analysis that warned about it:
+                   http://buildbot.libsdl.org/sdl-static-analysis/sdl-macosx-static-analysis/sdl-macosx-static-analysis-1101/report-b0d01a.html#EndPath */
+                SDL_assert(x2 != x1); /* if equal: division by zero. */
+                x = rectx1;
+                y = (float) (y1 + ((double)(y2 - y1) * (x - x1)) / (x2 - x1));
+            } else if (outcode2 & CODE_RIGHT) {
+                /* If this assertion ever fires, here's the static analysis that warned about it:
+                   http://buildbot.libsdl.org/sdl-static-analysis/sdl-macosx-static-analysis/sdl-macosx-static-analysis-1101/report-39b114.html#EndPath */
+                SDL_assert(x2 != x1); /* if equal: division by zero. */
+                x = rectx2;
+                y = (float) (y1 + ((double)(y2 - y1) * (x - x1)) / (x2 - x1));
+            }
+            x2 = x;
+            y2 = y;
+            outcode2 = ComputeOutCodeF(rect, x, y);
+        }
+    }
+    *X1 = x1;
+    *Y1 = y1;
+    *X2 = x2;
+    *Y2 = y2;
+    return SDL2_TRUE;
 }
 
 #if defined(SDL_PLATFORM_WINDOWS)
