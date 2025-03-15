@@ -395,7 +395,7 @@ SDL3_SYM_PASSTHROUGH_RETCODE(bool,GetTextureAlphaMod,(SDL_Texture *a, Uint8 *b),
 SDL3_SYM_PASSTHROUGH_RETCODE(bool,GetTextureBlendMode,(SDL_Texture *a, SDL_BlendMode *b),(a,b),return)
 SDL3_SYM_PASSTHROUGH_RETCODE(bool,GetTextureColorMod,(SDL_Texture *a, Uint8 *b, Uint8 *c, Uint8 *d),(a,b,c,d),return)
 SDL3_SYM(SDL_PropertiesID,GetTextureProperties,(SDL_Texture *a),(a),return)
-SDL3_SYM_PASSTHROUGH_RETCODE(bool,GetTextureScaleMode,(SDL_Texture *a, SDL_ScaleMode *b),(a,b),return)
+SDL3_SYM(bool,GetTextureScaleMode,(SDL_Texture *a, SDL_ScaleMode *b),(a,b),return)
 SDL3_SYM(Uint64,GetThreadID,(SDL_Thread *a),(a),return)
 SDL3_SYM_PASSTHROUGH(const char*,GetThreadName,(SDL_Thread *a),(a),return)
 SDL3_SYM(Uint64,GetTicks,(void),(),return)
