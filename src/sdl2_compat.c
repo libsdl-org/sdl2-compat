@@ -6857,6 +6857,9 @@ SDL_DECLSPEC Uint32 SDLCALL
 SDL_WasInit(Uint32 flags)
 {
     Uint32 result = SDL3_WasInit(flags);
+    if (flags == 0) {
+        flags = SDL2_INIT_EVERYTHING;
+    }
     if ((flags & SDL2_INIT_TIMER) && timer_init) {
         result |= SDL2_INIT_TIMER;
     }
