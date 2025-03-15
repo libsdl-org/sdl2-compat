@@ -41,6 +41,7 @@ typedef enum
 
 /* removed in SDL3 */
 #define SDL2_INIT_TIMER 0x00000001u
+#define SDL2_INIT_EVERYTHING 0x0000f231u
 
 /* removed in SDL3 (which only uses SDL_WINDOW_HIDDEN now). */
 #define SDL2_WINDOW_SHOWN 0x000000004
