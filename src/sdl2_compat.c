@@ -216,6 +216,7 @@ do { \
 #define PROP_RENDERER_INTEGER_SCALE "sdl2-compat.renderer.integer_scale"
 #define PROP_SURFACE2 "sdl2-compat.surface2"
 #define PROP_STREAM2 "sdl2-compat.stream2"
+#define PROP_TEXTURE_SCALE_MODE "sdl2-compat.texture.scale-mode"
 
 
 
@@ -6225,10 +6226,30 @@ SDL_QueryTexture(SDL_Texture *texture, Uint32 *format, int *access, int *w, int 
 SDL_DECLSPEC int SDLCALL
 SDL_SetTextureScaleMode(SDL_Texture *texture, SDL_ScaleMode scaleMode)
 {
+    SDL_PropertiesID texture_properties = SDL3_GetTextureProperties(texture);
+    SDL3_SetNumberProperty(texture_properties, PROP_TEXTURE_SCALE_MODE, scaleMode);
     if (scaleMode > SDL_SCALEMODE_LINEAR) {
         scaleMode = SDL_SCALEMODE_LINEAR;
     }
     return SDL3_SetTextureScaleMode(texture, scaleMode) ? 0 : -1;
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_GetTextureScaleMode(SDL_Texture *texture, SDL_ScaleMode *scaleMode)
+{
+    SDL_PropertiesID texture_properties = SDL3_GetTextureProperties(texture);
+    int cached_scale_mode;
+    if (texture_properties == 0) {
+        return 0;
+    }
+    cached_scale_mode = SDL3_GetNumberProperty(texture_properties, PROP_TEXTURE_SCALE_MODE, -99);
+    if (cached_scale_mode == -99) {
+        bool result = SDL3_GetTextureScaleMode(texture, scaleMode);
+        return result ? 0 : -1;
+    } else if (scaleMode) {
+        *scaleMode = (SDL_ScaleMode) cached_scale_mode;
+    }
+    return 0;
 }
 
 SDL_DECLSPEC int SDLCALL
