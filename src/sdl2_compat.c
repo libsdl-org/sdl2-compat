@@ -9172,7 +9172,7 @@ SDL_RaiseWindow(SDL_Window *window)
 SDL_DECLSPEC int SDLCALL
 SDL_SetWindowInputFocus(SDL_Window *window)
 {
-    return SDL3_RaiseWindow(window);
+    return SDL3_RaiseWindow(window) ? 0 : -1;
 }
 
 SDL_DECLSPEC void SDLCALL
