@@ -5535,26 +5535,16 @@ SDL_CreateRenderer(SDL_Window *window, int idx, Uint32 flags)
                 SDL3_SetHint(SDL_HINT_RENDER_DRIVER, NULL);
             }
         }
+
+        /* A valid render driver specified by idx or hint takes precedence over flags */
+        if (!name && (flags & SDL2_RENDERER_SOFTWARE)) {
+            name = SDL_SOFTWARE_RENDERER;
+        }
     } else {
         name = SDL3_GetRenderDriver(idx);
         if (!name) {
             return NULL;  /* assume SDL3_GetRenderDriver set the SDL error. */
         }
-    }
-
-    if (flags & SDL2_RENDERER_ACCELERATED) {
-        if (name && SDL3_strcmp(name, SDL_SOFTWARE_RENDERER) == 0) {
-            SDL3_SetError("Couldn't find matching render driver");
-            return NULL;
-        }
-    }
-
-    if (flags & SDL2_RENDERER_SOFTWARE) {
-        if (name && SDL3_strcmp(name, SDL_SOFTWARE_RENDERER) != 0) {
-            SDL3_SetError("Couldn't find matching render driver");
-            return NULL;
-        }
-        name = SDL_SOFTWARE_RENDERER;
     }
 
     renderer = SDL3_CreateRenderer(window, name);
