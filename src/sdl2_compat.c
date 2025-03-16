@@ -481,9 +481,12 @@ static QuirkEntryType quirks[] = {
     { "hl.exe", SDL_HINT_MOUSE_EMULATE_WARP_WITH_RELATIVE, "0" },
 #endif
 
-    /* Moonlight supports high DPI properly under Wayland */
+    /* Moonlight supports high DPI properly under Wayland.
+       It also reads fractional values in wheel events. */
     { "moonlight", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
     { "moonlight-qt", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
+    { "moonlight", "SDL_MOUSE_INTEGER_MODE", "1" },
+    { "moonlight-qt", "SDL_MOUSE_INTEGER_MODE", "1" },
 
     /* Pragtical code editor supports high DPI properly under Wayland */
     { "pragtical", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
@@ -497,6 +500,13 @@ static QuirkEntryType quirks[] = {
 
     /* Stylus Labs Write does its own X11 input handling */
     { "Write", "SDL_VIDEO_X11_XINPUT2", "0" },
+
+    /* PPSSPP reads fractional values in wheel events */
+    { "PPSSPP", "SDL_MOUSE_INTEGER_MODE", "1" },
+    { "PPSSPPSDL", "SDL_MOUSE_INTEGER_MODE", "1" },
+
+    /* Lite-XL reads fractional values in wheel events */
+    { "lite-xl", "SDL_MOUSE_INTEGER_MODE", "1" },
 
     /* The UE5 editor has input issues and broken toast notification positioning on Wayland */
     { "UnrealEditor", SDL_HINT_VIDEO_DRIVER, "x11" },
