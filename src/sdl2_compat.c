@@ -5440,7 +5440,8 @@ SDL_GetRenderDriverInfo(int idx, SDL2_RendererInfo *info)
     SDL3_zerop(info);
     info->name = name;
 
-    /* these are the values that SDL2 returns. */
+    /* For render drivers present in SDL2, these are the exact values SDL2 returns.
+       For render drivers new to SDL3, we return only the subset of formats SDL2 supports. */
     if ((SDL3_strcmp(name, "opengl") == 0) || (SDL3_strcmp(name, "opengles2") == 0)) {
         info->flags = SDL2_RENDERER_ACCELERATED | SDL2_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
         info->num_texture_formats = 4;
@@ -5485,8 +5486,62 @@ SDL_GetRenderDriverInfo(int idx, SDL2_RendererInfo *info)
         info->texture_formats[3] = SDL_PIXELFORMAT_IYUV;
         info->texture_formats[4] = SDL_PIXELFORMAT_NV12;
         info->texture_formats[5] = SDL_PIXELFORMAT_NV21;
+    } else if (SDL3_strcmp(name, "PS2 gsKit") == 0) {
+        info->flags = SDL2_RENDERER_ACCELERATED | SDL2_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
+        info->num_texture_formats = 2;
+        info->texture_formats[0] = SDL_PIXELFORMAT_ABGR1555;
+        info->texture_formats[1] = SDL_PIXELFORMAT_ABGR8888;
+        info->max_texture_width = 1024;
+        info->max_texture_height = 1024;
+    } else if (SDL3_strcmp(name, "PSP") == 0) {
+        info->flags = SDL2_RENDERER_ACCELERATED | SDL2_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
+        info->num_texture_formats = 4;
+        info->texture_formats[0] = SDL_PIXELFORMAT_BGR565;
+        info->texture_formats[1] = SDL_PIXELFORMAT_ABGR1555;
+        info->texture_formats[2] = SDL_PIXELFORMAT_ABGR4444;
+        info->texture_formats[3] = SDL_PIXELFORMAT_ABGR8888;
+        info->max_texture_width = 512;
+        info->max_texture_height = 512;
+    } else if (SDL3_strcmp(name, "VITA gxm") == 0) {
+        info->flags = SDL2_RENDERER_ACCELERATED | SDL2_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
+        info->num_texture_formats = 8;
+        info->texture_formats[0] = SDL_PIXELFORMAT_ABGR8888;
+        info->texture_formats[1] = SDL_PIXELFORMAT_ARGB8888;
+        info->texture_formats[2] = SDL_PIXELFORMAT_RGB565;
+        info->texture_formats[3] = SDL_PIXELFORMAT_BGR565;
+        info->texture_formats[4] = SDL_PIXELFORMAT_YV12;
+        info->texture_formats[5] = SDL_PIXELFORMAT_IYUV;
+        info->texture_formats[6] = SDL_PIXELFORMAT_NV12;
+        info->texture_formats[7] = SDL_PIXELFORMAT_NV21;
+        info->max_texture_width = 4096;
+        info->max_texture_height = 4096;
+    } else if (SDL3_strcmp(name, "vulkan") == 0) {
+        info->flags = SDL2_RENDERER_ACCELERATED | SDL2_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
+        info->num_texture_formats = 2;
+        info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
+        info->texture_formats[1] = SDL_PIXELFORMAT_ABGR8888;
+        info->max_texture_width = 16384;
+        info->max_texture_height = 16384;
+    } else if (SDL3_strcmp(name, "gpu") == 0) {
+        info->flags = SDL2_RENDERER_ACCELERATED | SDL2_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
+        info->num_texture_formats = 4;
+        info->texture_formats[0] = SDL_PIXELFORMAT_BGRA32;
+        info->texture_formats[1] = SDL_PIXELFORMAT_RGBA32;
+        info->texture_formats[2] = SDL_PIXELFORMAT_BGRX32;
+        info->texture_formats[3] = SDL_PIXELFORMAT_RGBX32;
+        info->max_texture_width = 16384;
+        info->max_texture_height = 16384;
     } else if (SDL3_strcmp(name, "software") == 0) {
         info->flags = SDL2_RENDERER_SOFTWARE | SDL2_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
+        info->num_texture_formats = 8;
+        info->texture_formats[0] = SDL_PIXELFORMAT_ARGB8888;
+        info->texture_formats[1] = SDL_PIXELFORMAT_ABGR8888;
+        info->texture_formats[2] = SDL_PIXELFORMAT_RGBA8888;
+        info->texture_formats[3] = SDL_PIXELFORMAT_BGRA8888;
+        info->texture_formats[4] = SDL_PIXELFORMAT_XRGB8888;
+        info->texture_formats[5] = SDL_PIXELFORMAT_XBGR8888;
+        info->texture_formats[6] = SDL_PIXELFORMAT_RGB565;
+        info->texture_formats[7] = SDL_PIXELFORMAT_XRGB1555;
     } else {  /* this seems reasonable if something currently-unknown shows up in SDL3. */
         info->flags = SDL2_RENDERER_ACCELERATED | SDL2_RENDERER_PRESENTVSYNC | SDL2_RENDERER_TARGETTEXTURE;
         info->num_texture_formats = 1;
