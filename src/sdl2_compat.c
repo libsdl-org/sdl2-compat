@@ -220,6 +220,7 @@ do { \
 
 
 static bool WantDebugLogging = false;
+static SDL_InitState InitSDL2CompatGlobals;
 
 
 static char *
@@ -977,6 +978,17 @@ static void dllinit(void)
 static void dllquit(void) __attribute__((destructor));
 static void dllquit(void)
 {
+    /* Some misbehaving applications may not join threads calling SDL2 functions
+       before exit handlers run and invoke the library destructor, which unloads
+       SDL3. As a workaround to avoid crashing those applications, we will skip
+       unloading SDL3 if SDL was used but SDL_Quit() was never called. */
+    if (SDL3_ShouldQuit(&InitSDL2CompatGlobals)) {
+        if (WantDebugLogging) {
+            SDL2Compat_LogAtStartup("sdl2-compat: Leaking SDL3 library reference due to missing call to SDL_Quit()");
+        }
+        return;
+    }
+
     UnloadSDL3();
 }
 
@@ -1089,8 +1101,6 @@ static SDL_SensorID SensorID2to3(SDL2_SensorID id);
 static SDL2_SensorID SensorID3to2(SDL_SensorID id);
 
 /* Functions! */
-
-static SDL_InitState InitSDL2CompatGlobals;
 
 /**
  * Verbosity of logged events as defined in SDL_HINT_EVENT_LOGGING:
