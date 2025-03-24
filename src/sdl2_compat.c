@@ -492,6 +492,9 @@ static QuirkEntryType quirks[] = {
 
     /* Stylus Labs Write does its own X11 input handling */
     { "Write", "SDL_VIDEO_X11_XINPUT2", "0" },
+
+    /* The UE5 editor has input issues and broken toast notification positioning on Wayland */
+    { "UnrealEditor", SDL_HINT_VIDEO_DRIVER, "x11" },
 };
 
 #ifdef __linux__
