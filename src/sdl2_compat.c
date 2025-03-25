@@ -208,9 +208,11 @@ do { \
 #include <SDL3/SDL_opengl_glext.h>
 
 /* !!! FIXME: collect all the properties in one place near the top of the source file */
+#define PROP_WINDOW_BRIGHTNESS "sdl2-compat.window.brightness"
 #define PROP_WINDOW_EXPECTED_WIDTH "sdl2-compat.window.expected_width"
 #define PROP_WINDOW_EXPECTED_HEIGHT "sdl2-compat.window.expected_height"
 #define PROP_WINDOW_EXPECTED_SCALE "sdl2-compat.window.expected_scale"
+#define PROP_WINDOW_GAMMA_RAMP "sdl2-compat.window.gamma_ramp"
 #define PROP_RENDERER_BATCHING "sdl2-compat.renderer.batching"
 #define PROP_RENDERER_RELATIVE_SCALING "sdl2-compat.renderer.relative-scaling"
 #define PROP_RENDERER_INTEGER_SCALE "sdl2-compat.renderer.integer_scale"
@@ -3959,16 +3961,23 @@ SDL_GameControllerAddMappingsFromRW(SDL2_RWops *rwops2, int freerw)
     return retval;
 }
 
-
-/* All gamma stuff was removed from SDL3 because it affects the whole system
-   in intrusive ways, and often didn't work on various platforms. These all
-   just return failure now. */
-
 SDL_DECLSPEC int SDLCALL
 SDL_SetWindowBrightness(SDL_Window *window, float brightness)
 {
-    SDL3_Unsupported();
-    return -1;
+    Uint16 ramp[256];
+    int status;
+
+    if (!window) {
+        SDL3_SetError("Invalid window");
+        return -1;
+    }
+
+    SDL_CalculateGammaRamp(brightness, ramp);
+    status = SDL_SetWindowGammaRamp(window, ramp, ramp, ramp);
+    if (status == 0) {
+        SDL3_SetFloatProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_BRIGHTNESS, brightness);
+    }
+    return status;
 }
 
 SDL_DECLSPEC float SDLCALL
@@ -3976,15 +3985,10 @@ SDL_GetWindowBrightness(SDL_Window *window)
 {
     if (!window) {
         SDL3_SetError("Invalid window");
+        return 1.0f;
     }
-    return 1.0f;
-}
 
-SDL_DECLSPEC int SDLCALL
-SDL_SetWindowGammaRamp(SDL_Window *window, const Uint16 *r, const Uint16 *g, const Uint16 *b)
-{
-    SDL3_Unsupported();
-    return -1;
+    return SDL3_GetFloatProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_BRIGHTNESS, 1.0f);
 }
 
 SDL_DECLSPEC void SDLCALL
@@ -4029,27 +4033,78 @@ SDL_CalculateGammaRamp(float gamma, Uint16 *ramp)
 }
 
 SDL_DECLSPEC int SDLCALL
-SDL_GetWindowGammaRamp(SDL_Window *window, Uint16 *red, Uint16 *blue, Uint16 *green)
+SDL_SetWindowGammaRamp(SDL_Window *window, const Uint16 *r, const Uint16 *g, const Uint16 *b)
 {
-    Uint16 *buf;
+    Uint16 *gamma;
 
     if (!window) {
         SDL3_SetError("Invalid window");
         return -1;
     }
 
-    buf = red ? red : (green ? green : blue);
-    if (buf) {
-        SDL_CalculateGammaRamp(1.0f, buf);
-        if (red && (red != buf)) {
-            SDL3_memcpy(red, buf, 256 * sizeof (Uint16));
+    gamma = (Uint16 *)SDL3_GetPointerProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_GAMMA_RAMP, NULL);
+    if (!gamma) {
+        if (SDL_GetWindowGammaRamp(window, NULL, NULL, NULL) < 0) {
+            return -1;
         }
-        if (green && (green != buf)) {
-            SDL3_memcpy(green, buf, 256 * sizeof (Uint16));
+        gamma = (Uint16 *)SDL3_GetPointerProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_GAMMA_RAMP, NULL);
+    }
+
+    if (r) {
+        SDL_memcpy(&gamma[0*256], r, 256*sizeof(Uint16));
+    }
+    if (g) {
+        SDL_memcpy(&gamma[1*256], g, 256*sizeof(Uint16));
+    }
+    if (b) {
+        SDL_memcpy(&gamma[2*256], b, 256*sizeof(Uint16));
+    }
+    return 0;
+}
+
+static void SDLCALL CleanupFreeableProperty(void *userdata, void *value)
+{
+    SDL3_free(value);
+}
+
+SDL_DECLSPEC int SDLCALL
+SDL_GetWindowGammaRamp(SDL_Window *window, Uint16 *red, Uint16 *blue, Uint16 *green)
+{
+    Uint16 *gamma;
+
+    if (!window) {
+        SDL3_SetError("Invalid window");
+        return -1;
+    }
+
+    gamma = (Uint16 *)SDL3_GetPointerProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_GAMMA_RAMP, NULL);
+    if (!gamma) {
+        int i;
+
+        gamma = (Uint16 *)SDL3_malloc(256*3*sizeof(Uint16));
+        if (!gamma) {
+            return -1;
         }
-        if (blue && (blue != buf)) {
-            SDL3_memcpy(blue, buf, 256 * sizeof (Uint16));
+
+        /* Create an identity gamma ramp */
+        for (i = 0; i < 256; ++i) {
+            Uint16 value = (Uint16)((i << 8) | i);
+
+            gamma[0*256+i] = value;
+            gamma[1*256+i] = value;
+            gamma[2*256+i] = value;
         }
+        SDL3_SetPointerPropertyWithCleanup(SDL3_GetWindowProperties(window), PROP_WINDOW_GAMMA_RAMP, gamma, CleanupFreeableProperty, NULL);
+    }
+
+    if (red) {
+        SDL_memcpy(red, &gamma[0*256], 256*sizeof(Uint16));
+    }
+    if (green) {
+        SDL_memcpy(green, &gamma[1*256], 256*sizeof(Uint16));
+    }
+    if (blue) {
+        SDL_memcpy(blue, &gamma[2*256], 256*sizeof(Uint16));
     }
     return 0;
 }
@@ -5455,11 +5510,6 @@ SDL_IsShapedWindow(const SDL_Window *window)
 }
 
 #define PROP_WINDOW_SHAPE_MODE_POINTER "sdl2-compat.window.shape_mode"
-
-static void SDLCALL CleanupFreeableProperty(void *userdata, void *value)
-{
-    SDL3_free(value);
-}
 
 SDL_DECLSPEC int SDLCALL
 SDL_SetWindowShape(SDL_Window *window, SDL2_Surface *shape, SDL_WindowShapeMode *shape_mode)
