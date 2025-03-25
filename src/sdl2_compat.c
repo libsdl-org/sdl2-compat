@@ -9696,10 +9696,19 @@ SDL_SetPixelFormatPalette(SDL2_PixelFormat *format, SDL_Palette *palette)
     return 0;
 }
 
+static const SDL_PixelFormatDetails *GetPixelFormatDetails(const SDL2_PixelFormat *format2)
+{
+    SDL_PixelFormat format = (SDL_PixelFormat)format2->format;
+    if (format == SDL_PIXELFORMAT_UNKNOWN) {
+        format = SDL3_GetPixelFormatForMasks(format2->BitsPerPixel, format2->Rmask, format2->Gmask, format2->Bmask, format2->Amask);
+    }
+    return SDL3_GetPixelFormatDetails(format);
+}
+
 SDL_DECLSPEC Uint32 SDLCALL
 SDL_MapRGB(const SDL2_PixelFormat *format2, Uint8 r, Uint8 g, Uint8 b)
 {
-    const SDL_PixelFormatDetails *format = SDL3_GetPixelFormatDetails((SDL_PixelFormat)format2->format);
+    const SDL_PixelFormatDetails *format = GetPixelFormatDetails(format2);
     if (!format) {
         return 0;
     }
@@ -9709,7 +9718,7 @@ SDL_MapRGB(const SDL2_PixelFormat *format2, Uint8 r, Uint8 g, Uint8 b)
 SDL_DECLSPEC Uint32 SDLCALL
 SDL_MapRGBA(const SDL2_PixelFormat *format2, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
 {
-    const SDL_PixelFormatDetails *format = SDL3_GetPixelFormatDetails((SDL_PixelFormat)format2->format);
+    const SDL_PixelFormatDetails *format = GetPixelFormatDetails(format2);
     if (!format) {
         return 0;
     }
@@ -9719,7 +9728,7 @@ SDL_MapRGBA(const SDL2_PixelFormat *format2, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
 SDL_DECLSPEC void SDLCALL
 SDL_GetRGB(Uint32 pixel, const SDL2_PixelFormat *format2, Uint8 * r, Uint8 * g, Uint8 * b)
 {
-    const SDL_PixelFormatDetails *format = SDL3_GetPixelFormatDetails((SDL_PixelFormat)format2->format);
+    const SDL_PixelFormatDetails *format = GetPixelFormatDetails(format2);
     if (!format) {
         *r = *g = *b = 0;
         return;
@@ -9730,7 +9739,7 @@ SDL_GetRGB(Uint32 pixel, const SDL2_PixelFormat *format2, Uint8 * r, Uint8 * g, 
 SDL_DECLSPEC void SDLCALL
 SDL_GetRGBA(Uint32 pixel, const SDL2_PixelFormat *format2, Uint8 * r, Uint8 * g, Uint8 * b, Uint8 *a)
 {
-    const SDL_PixelFormatDetails *format = SDL3_GetPixelFormatDetails((SDL_PixelFormat)format2->format);
+    const SDL_PixelFormatDetails *format = GetPixelFormatDetails(format2);
     if (!format) {
         *r = *g = *b = *a = 0;
         return;
