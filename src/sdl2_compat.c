@@ -483,6 +483,9 @@ static QuirkEntryType quirks[] = {
     { "moonlight", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
     { "moonlight-qt", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
 
+    /* Pragtical code editor supports high DPI properly under Wayland */
+    { "pragtical", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
+
     /* Tauon Music Box supports high DPI properly under Wayland.
      * It also pumps events off the main thread, which causes crashes in libdecor.
      * It draws its own window border, so we don't actually need window decorations.
@@ -6317,7 +6320,7 @@ SDL_RenderReadPixels(SDL_Renderer * renderer, const SDL_Rect * rect, Uint32 form
     if (!surface) {
         return -1;
     }
-   
+
     if (!format) {
         target = SDL3_GetRenderTarget(renderer);
         if (target) {
