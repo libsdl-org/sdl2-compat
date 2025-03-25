@@ -5509,13 +5509,25 @@ SDL_SetWindowShape(SDL_Window *window, SDL2_Surface *shape, SDL_WindowShapeMode 
 SDL_DECLSPEC int SDLCALL
 SDL_GetShapedWindowMode(SDL_Window *window, SDL_WindowShapeMode *shape_mode)
 {
-    SDL_WindowShapeMode *property = (SDL_WindowShapeMode *)SDL3_GetPointerProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_SHAPE_MODE_POINTER, NULL);
-    if (!property) {
+    SDL_WindowShapeMode *property;
+
+    if (!SDL_IsShapedWindow(window)) {
         return SDL_NONSHAPEABLE_WINDOW;
     }
 
+    property = (SDL_WindowShapeMode *)SDL3_GetPointerProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_SHAPE_MODE_POINTER, NULL);
+    if (!shape_mode && !property) {
+        return SDL_WINDOW_LACKS_SHAPE;
+    }
     if (shape_mode) {
-        SDL3_copyp(shape_mode, property);
+        if (property) {
+            SDL3_copyp(shape_mode, property);
+        } else {
+            /* Default parameters */
+            SDL_zerop(shape_mode);
+            shape_mode->mode = ShapeModeDefault;
+            shape_mode->parameters.binarizationCutoff = 1;
+        }
     }
     return 0;
 }
