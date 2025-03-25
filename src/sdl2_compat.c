@@ -2391,7 +2391,7 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
     case SDL_EVENT_GAMEPAD_BUTTON_UP:
         event2->cbutton.which = JoystickID3to2(event3->gbutton.which);
-        if (ShouldSwapGamepadButtons(event2->cbutton.which)) {
+        if (ShouldSwapGamepadButtons(event3->gbutton.which)) {
             event2->cbutton.button = SwapGamepadButton(event2->cbutton.button);
         }
         break;
