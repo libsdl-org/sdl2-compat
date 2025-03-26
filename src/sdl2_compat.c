@@ -8789,7 +8789,7 @@ SDL_GetWindowFlags(SDL_Window *window)
     }
     if ((flags3 & SDL_WINDOW_FULLSCREEN)) {
         if (SDL3_GetWindowFullscreenMode(window)) {
-            flags |= SDL_WINDOW_FULLSCREEN;
+            flags |= SDL2_WINDOW_FULLSCREEN;
         } else {
             flags |= SDL2_WINDOW_FULLSCREEN_DESKTOP;
         }
@@ -8906,12 +8906,12 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
 
     if ((flags & SDL2_WINDOW_FULLSCREEN_DESKTOP) == SDL2_WINDOW_FULLSCREEN_DESKTOP) {
         flags &= ~SDL2_WINDOW_FULLSCREEN_DESKTOP;
-        flags |= SDL_WINDOW_FULLSCREEN; /* This is fullscreen desktop for new windows */
-    } else if (flags & SDL_WINDOW_FULLSCREEN) {
+        flags |= SDL2_WINDOW_FULLSCREEN; /* This is fullscreen desktop for new windows */
+    } else if (flags & SDL2_WINDOW_FULLSCREEN) {
         /* We'll set the fullscreen mode after window creation */
         exclusive_fullscreen = true;
 
-        flags &= ~SDL_WINDOW_FULLSCREEN;
+        flags &= ~SDL2_WINDOW_FULLSCREEN;
         if (!(flags & SDL_WINDOW_HIDDEN)) {
             flags |= SDL_WINDOW_HIDDEN;
             manually_show = true;
@@ -8919,7 +8919,7 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
     }
     if (flags & SDL2_WINDOW_SKIP_TASKBAR) {
         flags &= ~SDL2_WINDOW_SKIP_TASKBAR;
-        flags |= SDL_WINDOW_UTILITY;
+        flags |= SDL2_WINDOW_UTILITY;
     }
 
     /* whoops, this changed values in SDL3. */
@@ -8928,8 +8928,8 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
         flags |= SDL_WINDOW_ALWAYS_ON_TOP;
     }
 
-    if ((flags & SDL_WINDOW_HIGH_PIXEL_DENSITY) && SDL3_GetHintBoolean("SDL_VIDEO_HIGHDPI_DISABLED", false)) {
-        flags &= ~SDL_WINDOW_HIGH_PIXEL_DENSITY;
+    if ((flags & SDL2_WINDOW_ALLOW_HIGHDPI) && SDL3_GetHintBoolean("SDL_VIDEO_HIGHDPI_DISABLED", false)) {
+        flags &= ~SDL2_WINDOW_ALLOW_HIGHDPI;
     }
 
     if (!is_popup) {
@@ -8956,7 +8956,7 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
 
         if (parent) {
             /* UE5 mixes the utility flag with popup flags, which SDL3 does not allow. */
-            flags &= ~SDL_WINDOW_UTILITY;
+            flags &= ~SDL2_WINDOW_UTILITY;
 
             window = SDL3_CreatePopupWindow(parent, x, y, w, h, flags);
             SDL_SetWindowData(window, PROP_WINDOW_PARENT_POINTER, parent);
@@ -9055,7 +9055,7 @@ SDL_SetWindowFullscreen(SDL_Window *window, Uint32 flags)
     if (flags == SDL2_WINDOW_FULLSCREEN_DESKTOP) {
         fullscreen = true;
         ret = SDL3_SetWindowFullscreenMode(window, NULL) ? 0 : -1;
-    } else if (flags == SDL_WINDOW_FULLSCREEN) {
+    } else if (flags == SDL2_WINDOW_FULLSCREEN) {
         fullscreen = true;
         ret = ApplyFullscreenMode(window);
     }
