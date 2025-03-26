@@ -5495,7 +5495,7 @@ static void SDL_CalculateShapeBitmap(SDL_WindowShapeMode mode, SDL2_Surface *sha
 SDL_DECLSPEC SDL_Window * SDLCALL
 SDL_CreateShapedWindow(const char *title, unsigned int x, unsigned int y, unsigned int w, unsigned int h, Uint32 flags)
 {
-    flags |= (SDL_WINDOW_HIDDEN | SDL_WINDOW_TRANSPARENT);
+    flags |= (SDL2_WINDOW_HIDDEN | SDL3_WINDOW_TRANSPARENT);
 
     return SDL_CreateWindow(title, (int)x, (int)y, (int)w, (int)h, flags);
 }
@@ -8782,22 +8782,22 @@ SDL_DECLSPEC Uint32 SDLCALL
 SDL_GetWindowFlags(SDL_Window *window)
 {
     Uint32 flags3 = (Uint32) SDL3_GetWindowFlags(window);
-    Uint32 flags = (flags3 & ~(SDL2_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN | SDL2_WINDOW_FULLSCREEN_DESKTOP | SDL2_WINDOW_SKIP_TASKBAR | SDL2_WINDOW_ALWAYS_ON_TOP));
+    Uint32 flags = (flags3 & ~(SDL2_WINDOW_SHOWN | SDL2_WINDOW_FULLSCREEN | SDL2_WINDOW_FULLSCREEN_DESKTOP | SDL2_WINDOW_SKIP_TASKBAR | SDL2_WINDOW_ALWAYS_ON_TOP));
 
-    if ((flags3 & SDL_WINDOW_HIDDEN) == 0) {
+    if ((flags3 & SDL2_WINDOW_HIDDEN) == 0) {
         flags |= SDL2_WINDOW_SHOWN;
     }
-    if ((flags3 & SDL_WINDOW_FULLSCREEN)) {
+    if ((flags3 & SDL2_WINDOW_FULLSCREEN)) {
         if (SDL3_GetWindowFullscreenMode(window)) {
             flags |= SDL2_WINDOW_FULLSCREEN;
         } else {
             flags |= SDL2_WINDOW_FULLSCREEN_DESKTOP;
         }
     }
-    if (flags3 & SDL_WINDOW_UTILITY) {
+    if (flags3 & SDL2_WINDOW_UTILITY) {
         flags |= SDL2_WINDOW_SKIP_TASKBAR;
     }
-    if (flags3 & SDL_WINDOW_ALWAYS_ON_TOP) {
+    if (flags3 & SDL3_WINDOW_ALWAYS_ON_TOP) {
         flags |= SDL2_WINDOW_ALWAYS_ON_TOP;
     }
     return flags;
@@ -8898,7 +8898,7 @@ SDL_DECLSPEC SDL_Window * SDLCALL
 SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
 {
     SDL_Window *window = NULL;
-    const Uint32 is_popup = flags & (SDL_WINDOW_POPUP_MENU | SDL_WINDOW_TOOLTIP);
+    const Uint32 is_popup = flags & (SDL2_WINDOW_POPUP_MENU | SDL2_WINDOW_TOOLTIP);
     bool exclusive_fullscreen = false;
     bool manually_show = false;
 
@@ -8912,8 +8912,8 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
         exclusive_fullscreen = true;
 
         flags &= ~SDL2_WINDOW_FULLSCREEN;
-        if (!(flags & SDL_WINDOW_HIDDEN)) {
-            flags |= SDL_WINDOW_HIDDEN;
+        if (!(flags & SDL2_WINDOW_HIDDEN)) {
+            flags |= SDL2_WINDOW_HIDDEN;
             manually_show = true;
         }
     }
@@ -8925,7 +8925,7 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
     /* whoops, this changed values in SDL3. */
     if (flags & SDL2_WINDOW_ALWAYS_ON_TOP) {
         flags &= ~SDL2_WINDOW_ALWAYS_ON_TOP;
-        flags |= SDL_WINDOW_ALWAYS_ON_TOP;
+        flags |= SDL3_WINDOW_ALWAYS_ON_TOP;
     }
 
     if ((flags & SDL2_WINDOW_ALLOW_HIGHDPI) && SDL3_GetHintBoolean("SDL_VIDEO_HIGHDPI_DISABLED", false)) {

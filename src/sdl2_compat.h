@@ -46,13 +46,19 @@ typedef enum
 /* removed in SDL3 (which only uses SDL_WINDOW_HIDDEN now). */
 #define SDL2_WINDOW_SHOWN 0x000000004
 #define SDL2_WINDOW_FULLSCREEN 0x00000001 /* same as SDL3 but 32 bits */
+#define SDL2_WINDOW_HIDDEN 0x00000008
 #define SDL2_WINDOW_FULLSCREEN_DESKTOP (0x00001000 | SDL2_WINDOW_FULLSCREEN)
 #define SDL2_WINDOW_SKIP_TASKBAR 0x00010000
 #define SDL2_WINDOW_UTILITY 0x00020000
 #define SDL2_WINDOW_ALLOW_HIGHDPI 0x00002000
+#define SDL2_WINDOW_TOOLTIP 0x00040000
+#define SDL2_WINDOW_POPUP_MENU 0x00080000
 
 /* has a different bit set for SDL3. */
 #define SDL2_WINDOW_ALWAYS_ON_TOP 0x00008000
+/* SDL3-specific values in 32 bits : */
+#define SDL3_WINDOW_ALWAYS_ON_TOP 0x00010000
+#define SDL3_WINDOW_TRANSPARENT 0x40000000
 
 /* removed in SDL3 (APIs like this were split into getter/setter functions). */
 #define SDL2_QUERY   -1
