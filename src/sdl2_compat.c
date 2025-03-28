@@ -6773,6 +6773,10 @@ static void PostInitSubsystem(SDL_InitFlags new_flags)
     if (new_flags & SDL_INIT_EVENTS) {
         (void)SDL_EventState(SDL2_SYSWMEVENT, SDL2_DISABLE);
 
+        /* These are potentially noisy and have no SDL2 equivalent */
+        SDL3_SetEventEnabled(SDL_EVENT_JOYSTICK_UPDATE_COMPLETE, false);
+        SDL3_SetEventEnabled(SDL_EVENT_GAMEPAD_UPDATE_COMPLETE, false);
+
         /* SDL_GetRelativeMouseState() resets when the event subsystem initializes */
         relative_mouse_state_x_frac = 0.0f;
         relative_mouse_state_y_frac = 0.0f;
