@@ -5962,6 +5962,37 @@ SDL_RenderSetClipRect(SDL_Renderer *renderer, const SDL_Rect *rect)
 }
 
 SDL_DECLSPEC int SDLCALL
+SDL_SetRenderTarget(SDL_Renderer *renderer, SDL_Texture *texture)
+{
+    if (!SDL3_SetRenderTarget(renderer, texture)) {
+        return -1;
+    }
+
+    /* SDL2 reset the viewport, scale, and logical presentation for textures.
+        If moving from the backbuffer to a texture, it makes a backup of that
+        state and restores it when moving back to the backbuffer...but SDL3
+        already tracks this state (its "view") separately, so we don't need
+        to reproduce the backup efforts here; the backbuffer view state isn't
+        lost. */
+    if (texture) {
+        SDL_Rect viewport;
+        float w = 0.0f;
+        float h = 0.0f;
+        SDL3_GetTextureSize(texture, &w, &h);
+        viewport.x = 0;
+        viewport.y = 0;
+        viewport.w = (int) w;
+        viewport.h = (int) h;
+        SDL3_SetRenderViewport(renderer, &viewport);
+        SDL3_SetRenderClipRect(renderer, NULL);
+        SDL3_SetRenderScale(renderer, 1.0f, 1.0f);
+        SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_DISABLED);
+    }
+
+    return FlushRendererIfNotBatching(renderer);
+}
+
+SDL_DECLSPEC int SDLCALL
 SDL_RenderClear(SDL_Renderer *renderer)
 {
     const int retval = SDL3_RenderClear(renderer) ? 0 : -1;
