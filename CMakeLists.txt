@@ -599,8 +599,8 @@ if(SDL2COMPAT_INSTALL)
   set(ENABLE_SHARED_TRUE "")
   set(ENABLE_SHARED_FALSE "#")
 
-  configure_file(sdl2_compat.pc.in sdl2_compat.pc @ONLY)
-  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/sdl2_compat.pc"
+  configure_file(sdl2-compat.pc.in sdl2-compat.pc @ONLY)
+  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/sdl2-compat.pc"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
   )
 

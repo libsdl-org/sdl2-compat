@@ -30,10 +30,10 @@ fi
 
 # Get the canonical path of the folder containing this script
 testdir=$(cd -P -- "$(dirname -- "$0")" && printf '%s\n' "$(pwd -P)")
-SDL_CFLAGS="$( pkg-config sdl2_compat --cflags )"
-SDL_LDFLAGS="$( pkg-config sdl2_compat --libs )"
+SDL_CFLAGS="$( pkg-config sdl2-compat --cflags )"
+SDL_LDFLAGS="$( pkg-config sdl2-compat --libs )"
 if [ "x$test_static" = "xyes" ]; then
-    SDL_STATIC_LDFLAGS="$( pkg-config sdl2_compat --libs --static )"
+    SDL_STATIC_LDFLAGS="$( pkg-config sdl2-compat --libs --static )"
 fi
 
 compile_cmd="$CC -c "$testdir/main_gui.c" -o main_gui_pkgconfig.c.o $SDL_CFLAGS $CFLAGS"
