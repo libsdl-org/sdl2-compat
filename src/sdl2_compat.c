@@ -481,9 +481,12 @@ static QuirkEntryType quirks[] = {
     { "hl.exe", SDL_HINT_MOUSE_EMULATE_WARP_WITH_RELATIVE, "0" },
 #endif
 
-    /* Moonlight supports high DPI properly under Wayland */
+    /* Moonlight supports high DPI properly under Wayland.
+       It also reads fractional values in wheel events. */
     { "moonlight", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
     { "moonlight-qt", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
+    { "moonlight", "SDL_MOUSE_INTEGER_MODE", "1" },
+    { "moonlight-qt", "SDL_MOUSE_INTEGER_MODE", "1" },
 
     /* Pragtical code editor supports high DPI properly under Wayland */
     { "pragtical", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
@@ -497,6 +500,13 @@ static QuirkEntryType quirks[] = {
 
     /* Stylus Labs Write does its own X11 input handling */
     { "Write", "SDL_VIDEO_X11_XINPUT2", "0" },
+
+    /* PPSSPP reads fractional values in wheel events */
+    { "PPSSPP", "SDL_MOUSE_INTEGER_MODE", "1" },
+    { "PPSSPPSDL", "SDL_MOUSE_INTEGER_MODE", "1" },
+
+    /* Lite-XL reads fractional values in wheel events */
+    { "lite-xl", "SDL_MOUSE_INTEGER_MODE", "1" },
 
     /* The UE5 editor has input issues and broken toast notification positioning on Wayland */
     { "UnrealEditor", SDL_HINT_VIDEO_DRIVER, "x11" },
@@ -1173,12 +1183,6 @@ static SDL_mutex *EventWatchListMutex = NULL;
 static SDL2_LogOutputFunction LogOutputFunction2 = NULL;
 static EventFilterWrapperData *EventWatchers2 = NULL;
 static SDL2_bool relative_mouse_mode = SDL2_FALSE;
-static float relative_mouse_state_x_frac = 0.0f;
-static float relative_mouse_state_y_frac = 0.0f;
-static float relative_mouse_event_x_frac = 0.0f;
-static float relative_mouse_event_y_frac = 0.0f;
-static float mouse_wheel_event_x_frac = 0.0f;
-static float mouse_wheel_event_y_frac = 0.0f;
 static SDL_JoystickID *joystick_instance_list = NULL;
 static int num_joystick_instances = 0;
 static SDL_JoystickID *joystick_list = NULL;
@@ -1314,6 +1318,10 @@ SDL2Compat_InitOnStartupInternal(void)
     SDL3_SetHint("SDL_BORDERLESS_WINDOWED_STYLE", "0");
     SDL3_SetHint("SDL_VIDEO_SYNC_WINDOW_OPERATIONS", "1");
     SDL3_SetHint("SDL_VIDEO_X11_EXTERNAL_WINDOW_INPUT", "0");
+
+    /* Emulate both integer mouse coordinates and integer mouse wheel deltas for maximum compatibility.
+       Apps that use preciseX/Y for smooth scrolling can be quirked to get fractional wheel deltas. */
+    SDL3_SetHint("SDL_MOUSE_INTEGER_MODE", "3");
 
     // Pretend Wayland doesn't have fractional scaling by default.
     // This is more compatible with applications that have only been tested under X11 without high DPI support.
@@ -2165,22 +2173,6 @@ static SDL_AudioDeviceID AudioDeviceID3to2(SDL_AudioDeviceID id)
     return 0;
 }
 
-static int AccumulateFloatValueToInteger(float *frac, float value)
-{
-    float intval;
-
-    /* Reset the accumulated fractional value if the sign changes */
-    if ((*frac < 0.0f && value > 0.0f) || (*frac > 0.0f && value < 0.0f)) {
-        *frac = 0.0f;
-    }
-
-    /* Accumulate the fractional portion that is truncated by integer conversion */
-    *frac += value;
-    *frac = SDL3_modff(*frac, &intval);
-
-    return (int)intval;
-}
-
 /* (current) strategy for SDL_Events:
    in sdl12-compat, we built our own event queue, so when the SDL2 queue is pumped, we
    took the events we cared about and added them to the sdl12-compat queue, and otherwise
@@ -2246,13 +2238,6 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     case SDL_EVENT_DROP_COMPLETE:
         event2->drop.windowID = event3->drop.windowID;
         break;
-    case SDL_EVENT_WINDOW_MOUSE_ENTER:
-        /* Reset accumulated fractional mouse data when mouse focus changes */
-        relative_mouse_event_x_frac = 0.0f;
-        relative_mouse_event_y_frac = 0.0f;
-        mouse_wheel_event_x_frac = 0.0f;
-        mouse_wheel_event_y_frac = 0.0f;
-        break;
     case SDL_EVENT_MOUSE_MOTION:
         renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->motion.windowID));
         if (renderer) {
@@ -2274,14 +2259,14 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
             motion->state = (Uint8)event3->motion.state;
             motion->x = (Sint32)event3->motion.x;
             motion->y = (Sint32)event3->motion.y;
-            motion->xrel = AccumulateFloatValueToInteger(&relative_mouse_event_x_frac, event3->motion.xrel);
-            motion->yrel = AccumulateFloatValueToInteger(&relative_mouse_event_y_frac, event3->motion.yrel);
+            motion->xrel = (Sint32)event3->motion.xrel;
+            motion->yrel = (Sint32)event3->motion.yrel;
         } else {
             SDL2_MouseMotionEvent *motion = &event2->motion;
             motion->x = (Sint32)event3->motion.x;
             motion->y = (Sint32)event3->motion.y;
-            motion->xrel = AccumulateFloatValueToInteger(&relative_mouse_event_x_frac, event3->motion.xrel);
-            motion->yrel = AccumulateFloatValueToInteger(&relative_mouse_event_y_frac, event3->motion.yrel);
+            motion->xrel = (Sint32)event3->motion.xrel;
+            motion->yrel = (Sint32)event3->motion.yrel;
         }
         break;
     case SDL_EVENT_MOUSE_BUTTON_DOWN:
@@ -2327,8 +2312,8 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
             wheel->y = (Sint32)(event3->wheel.x * 120);
         } else {
             SDL2_MouseWheelEvent *wheel = &event2->wheel;
-            wheel->x = AccumulateFloatValueToInteger(&mouse_wheel_event_x_frac, event3->wheel.x);
-            wheel->y = AccumulateFloatValueToInteger(&mouse_wheel_event_y_frac, event3->wheel.y);
+            wheel->x = (Sint32)event3->wheel.x;
+            wheel->y = (Sint32)event3->wheel.y;
             wheel->preciseX = event3->wheel.x;
             wheel->preciseY = event3->wheel.y;
             wheel->mouseX = (Sint32)event3->wheel.mouse_x;
@@ -3310,8 +3295,8 @@ SDL_GetRelativeMouseState(int *x, int *y)
 {
     float fx, fy;
     Uint32 ret = SDL3_GetRelativeMouseState(&fx, &fy);
-    if (x) *x = AccumulateFloatValueToInteger(&relative_mouse_state_x_frac, fx);
-    if (y) *y = AccumulateFloatValueToInteger(&relative_mouse_state_y_frac, fy);
+    if (x) *x = (int)fx;
+    if (y) *y = (int)fy;
     return ret;
 }
 
@@ -6807,10 +6792,6 @@ static void PostInitSubsystem(SDL_InitFlags new_flags)
         /* These are potentially noisy and have no SDL2 equivalent */
         SDL3_SetEventEnabled(SDL_EVENT_JOYSTICK_UPDATE_COMPLETE, false);
         SDL3_SetEventEnabled(SDL_EVENT_GAMEPAD_UPDATE_COMPLETE, false);
-
-        /* SDL_GetRelativeMouseState() resets when the event subsystem initializes */
-        relative_mouse_state_x_frac = 0.0f;
-        relative_mouse_state_y_frac = 0.0f;
     }
 
     if (new_flags & SDL_INIT_VIDEO) {
