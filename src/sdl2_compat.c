@@ -9111,6 +9111,7 @@ SDL_DECLSPEC void SDLCALL
 SDL_SetWindowIcon(SDL_Window *window, SDL2_Surface *icon)
 {
     SDL3_SetWindowIcon(window, Surface2to3(icon));
+    SDL3_ClearError();  // py-sdl2's test suite checks the error string here incorrectly, so clear it.
 }
 
 SDL_DECLSPEC void SDLCALL
