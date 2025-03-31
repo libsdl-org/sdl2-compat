@@ -2024,14 +2024,14 @@ int video_setWindowCenteredOnDisplay(void *arg)
     }
 
     /* Get display bounds */
-    result = SDL_GetDisplayUsableBounds(0 % displayNum, &display0);
+    result = SDL_GetDisplayUsableBounds(0 % displayNum, &display0); /* SDL2-COMPAT change -- was SDL_GetDisplayBounds() */
     SDLTest_AssertPass("SDL_GetDisplayBounds()");
     SDLTest_AssertCheck(result == 0, "Verify return value; expected: 0, got: %d", result);
     if (result != 0) {
         return TEST_ABORTED;
     }
 
-    result = SDL_GetDisplayUsableBounds(1 % displayNum, &display1);
+    result = SDL_GetDisplayUsableBounds(1 % displayNum, &display1); /* SDL2-COMPAT change -- was SDL_GetDisplayBounds() */
     SDLTest_AssertPass("SDL_GetDisplayBounds()");
     SDLTest_AssertCheck(result == 0, "Verify return value; expected: 0, got: %d", result);
     if (result != 0) {
@@ -2045,7 +2045,8 @@ int video_setWindowCenteredOnDisplay(void *arg)
             int expectedX = 0, expectedY = 0;
             int currentDisplay;
             int expectedDisplay;
-            SDL_Rect expectedDisplayRect, expectedFullscreenRect;
+            SDL_Rect expectedFullscreenRect; /* Added for SDL2-COMPAT -- see below */
+            SDL_Rect expectedDisplayRect;
             SDL_bool video_driver_is_wayland = SDL_strcmp(SDL_GetCurrentVideoDriver(), "wayland") == 0;
 
             /* xVariation is the display we start on */
@@ -2108,7 +2109,7 @@ int video_setWindowCenteredOnDisplay(void *arg)
             SDL_GetWindowSize(window, &currentW, &currentH);
             SDL_GetWindowPosition(window, &currentX, &currentY);
 
-            /* Get the expected fullscreen rect.
+            /* SDL2-COMPAT addition: Get the expected fullscreen rect.
              * This needs to be queried after window creation and positioning as some drivers can alter the
              * usable bounds based on the window scaling mode.
              */
@@ -2121,6 +2122,7 @@ int video_setWindowCenteredOnDisplay(void *arg)
             } else {
                 SDLTest_Log("Skipping display index validation: Wayland driver does not support window positioning");
             }
+            /* The following four checks changed from expectedDisplayRect to expectedFullscreenRect for SDL2-COMPAT: */
             SDLTest_AssertCheck(currentW == expectedFullscreenRect.w, "Validate width (current: %d, expected: %d)", currentW, expectedFullscreenRect.w);
             SDLTest_AssertCheck(currentH == expectedFullscreenRect.h, "Validate height (current: %d, expected: %d)", currentH, expectedFullscreenRect.h);
             if (!video_driver_is_wayland) {
