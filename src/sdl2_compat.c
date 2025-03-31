@@ -431,7 +431,7 @@ static char loaderror[256];
 #endif
 
 #ifndef SDL3_REQUIRED_VER
-#define SDL3_REQUIRED_VER SDL_VERSIONNUM(3,2,6)
+#define SDL3_REQUIRED_VER SDL_VERSIONNUM(3,2,10)
 #endif
 
 #ifndef DIRSEP
