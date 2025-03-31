@@ -1270,6 +1270,16 @@
 #define SDL_RenderTexture9GridTiled IGNORE_THIS_VERSION_OF_SDL_RenderTexture9GridTiled
 #define SDL_SetDefaultTextureScaleMode IGNORE_THIS_VERSION_OF_SDL_SetDefaultTextureScaleMode
 #define SDL_GetDefaultTextureScaleMode IGNORE_THIS_VERSION_OF_SDL_GetDefaultTextureScaleMode
+#define SDL_CreateGPURenderState IGNORE_THIS_VERSION_OF_SDL_CreateGPURenderState
+#define SDL_SetGPURenderStateFragmentUniforms IGNORE_THIS_VERSION_OF_SDL_SetGPURenderStateFragmentUniforms
+#define SDL_SetRenderGPUState IGNORE_THIS_VERSION_OF_SDL_SetRenderGPUState
+#define SDL_DestroyGPURenderState IGNORE_THIS_VERSION_OF_SDL_DestroyGPURenderState
+#define SDL_SetWindowProgressState IGNORE_THIS_VERSION_OF_SDL_SetWindowProgressState
+#define SDL_SetWindowProgressValue IGNORE_THIS_VERSION_OF_SDL_SetWindowProgressValue
+#define SDL_GetWindowProgressState IGNORE_THIS_VERSION_OF_SDL_GetWindowProgressState
+#define SDL_GetWindowProgressValue IGNORE_THIS_VERSION_OF_SDL_GetWindowProgressValue
+#define SDL_SetRenderTextureAddressMode IGNORE_THIS_VERSION_OF_SDL_SetRenderTextureAddressMode
+#define SDL_GetRenderTextureAddressMode IGNORE_THIS_VERSION_OF_SDL_GetRenderTextureAddressMode
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6242,6 +6252,46 @@
 
 #ifdef SDL_GetDefaultTextureScaleMode
 #undef SDL_GetDefaultTextureScaleMode
+#endif
+
+#ifdef SDL_CreateGPURenderState
+#undef SDL_CreateGPURenderState
+#endif
+
+#ifdef SDL_SetGPURenderStateFragmentUniforms
+#undef SDL_SetGPURenderStateFragmentUniforms
+#endif
+
+#ifdef SDL_SetRenderGPUState
+#undef SDL_SetRenderGPUState
+#endif
+
+#ifdef SDL_DestroyGPURenderState
+#undef SDL_DestroyGPURenderState
+#endif
+
+#ifdef SDL_SetWindowProgressState
+#undef SDL_SetWindowProgressState
+#endif
+
+#ifdef SDL_SetWindowProgressValue
+#undef SDL_SetWindowProgressValue
+#endif
+
+#ifdef SDL_GetWindowProgressState
+#undef SDL_GetWindowProgressState
+#endif
+
+#ifdef SDL_GetWindowProgressValue
+#undef SDL_GetWindowProgressValue
+#endif
+
+#ifdef SDL_SetRenderTextureAddressMode
+#undef SDL_SetRenderTextureAddressMode
+#endif
+
+#ifdef SDL_GetRenderTextureAddressMode
+#undef SDL_GetRenderTextureAddressMode
 #endif
 
 #undef SDL_ThreadID /* see at top. */
