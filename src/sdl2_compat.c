@@ -4020,14 +4020,16 @@ SDL_CalculateGammaRamp(float gamma, Uint16 *ramp)
 SDL_DECLSPEC int SDLCALL
 SDL_SetWindowGammaRamp(SDL_Window *window, const Uint16 *r, const Uint16 *g, const Uint16 *b)
 {
-    Uint16 *gamma;
-
     if (!window) {
         SDL3_SetError("Invalid window");
         return -1;
     }
 
-    gamma = (Uint16 *)SDL3_GetPointerProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_GAMMA_RAMP, NULL);
+    SDL3_Unsupported();
+    return -1;
+
+#if 0 /* Leaving this code here in case we need it for a compatibility quirk */
+    Uint16 *gamma = (Uint16 *)SDL3_GetPointerProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_GAMMA_RAMP, NULL);
     if (!gamma) {
         if (SDL_GetWindowGammaRamp(window, NULL, NULL, NULL) < 0) {
             return -1;
@@ -4045,6 +4047,7 @@ SDL_SetWindowGammaRamp(SDL_Window *window, const Uint16 *r, const Uint16 *g, con
         SDL_memcpy(&gamma[2*256], b, 256*sizeof(Uint16));
     }
     return 0;
+#endif
 }
 
 static void SDLCALL CleanupFreeableProperty(void *userdata, void *value)
