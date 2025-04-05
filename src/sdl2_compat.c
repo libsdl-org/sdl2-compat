@@ -3811,6 +3811,21 @@ SDL_LoadWAV_RW(SDL2_RWops *rwops2, int freesrc, SDL2_AudioSpec *spec2, Uint8 **a
     return retval;
 }
 
+static void FreeSurface2(SDL2_Surface *surface)
+{
+    if (surface->format) {
+        SDL_SetPixelFormatPalette(surface->format, NULL);
+        SDL_FreeFormat(surface->format);
+    }
+
+    SDL3_free(surface);
+}
+
+static void SDLCALL CleanupSurface2(void *userdata, void *value)
+{
+    FreeSurface2((SDL2_Surface *)value);
+}
+
 static SDL2_Surface *CreateSurface2from3(SDL_Surface *surface3)
 {
     /* Allocate the surface */
@@ -3820,13 +3835,9 @@ static SDL2_Surface *CreateSurface2from3(SDL_Surface *surface3)
         return NULL;
     }
 
-    /* Link the surfaces */
-    surface->map = (SDL_BlitMap *)surface3;
-    SDL3_SetPointerProperty(SDL3_GetSurfaceProperties(surface3), PROP_SURFACE2, surface);
-
     surface->format = SDL_AllocFormat(surface3->format);
     if (!surface->format) {
-        SDL_FreeSurface(surface);
+        FreeSurface2(surface);
         return NULL;
     }
     surface->flags = (surface3->flags & SHARED_SURFACE_FLAGS);
@@ -3842,7 +3853,7 @@ static SDL2_Surface *CreateSurface2from3(SDL_Surface *surface3)
         if (!palette) {
             palette = SDL3_CreateSurfacePalette(surface3);
             if (!palette) {
-                SDL_FreeSurface(surface);
+                FreeSurface2(surface);
                 return NULL;
             }
         }
@@ -3863,6 +3874,11 @@ static SDL2_Surface *Surface3to2(SDL_Surface *surface)
         surface2 = (SDL2_Surface *)SDL3_GetPointerProperty(SDL3_GetSurfaceProperties(surface), PROP_SURFACE2, NULL);
         if (!surface2) {
             surface2 = CreateSurface2from3(surface);
+            if (surface2) {
+                /* Link the surfaces */
+                surface2->map = (SDL_BlitMap *)surface;
+                SDL3_SetPointerPropertyWithCleanup(SDL3_GetSurfaceProperties(surface), PROP_SURFACE2, surface2, CleanupSurface2, NULL);
+            }
         }
     }
     return surface2;
@@ -4268,18 +4284,12 @@ SDL_FreeSurface(SDL2_Surface *surface)
     }
 
     if (surface->map) {
+        /* The SDL2 surface will be destroyed during property cleanup */
         SDL_Surface *surface3 = (SDL_Surface *)surface->map;
         SDL3_DestroySurface(surface3);
-        surface->map = NULL;
+    } else {
+        FreeSurface2(surface);
     }
-
-    if (surface->format) {
-        SDL_SetPixelFormatPalette(surface->format, NULL);
-        SDL_FreeFormat(surface->format);
-        surface->format = NULL;
-    }
-
-    SDL3_free(surface);
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -9971,14 +9981,6 @@ SDL_GetSurfaceBlendMode(SDL2_Surface *surface, SDL_BlendMode *blendMode)
     return SDL3_GetSurfaceBlendMode(Surface2to3(surface), blendMode) ? 0 : -1;
 }
 
-static void SDLCALL CleanupWindowSurface(void *userdata, void *value)
-{
-    SDL2_Surface *surface = (SDL2_Surface *)value;
-    surface->flags &= ~SDL_DONTFREE;
-    surface->map = NULL;
-    SDL_FreeSurface(surface);
-}
-
 SDL_DECLSPEC SDL2_Surface * SDLCALL
 SDL_GetWindowSurface(SDL_Window *window)
 {
@@ -10004,9 +10006,14 @@ SDL_GetWindowSurface(SDL_Window *window)
             } else {
                 surface2 = CreateSurface2from3(surface);
                 if (surface2) {
+                    surface2->map = (SDL_BlitMap *)surface;
                     surface2->flags |= SDL_DONTFREE;
 
-                    SDL3_SetPointerPropertyWithCleanup(SDL3_GetWindowProperties(window), PROP_SURFACE2, surface2, CleanupWindowSurface, NULL);
+                    /* Unlike normal SDL2 surfaces which have their lifetime managed by the SDL3 surface, we use a
+                     * shared SDL2 window surface associated with the SDL3 window lifetime to handle apps that try
+                     * to free their window surface (which is a bug but didn't crash under SDL2) */
+                    SDL3_SetPointerProperty(SDL3_GetSurfaceProperties(surface), PROP_SURFACE2, surface2);
+                    SDL3_SetPointerPropertyWithCleanup(SDL3_GetWindowProperties(window), PROP_SURFACE2, surface2, CleanupSurface2, NULL);
                 }
             }
         }
