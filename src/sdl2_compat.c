@@ -5450,27 +5450,26 @@ static void SDL_CalculateShapeBitmap(SDL_WindowShapeMode mode, SDL2_Surface *sha
     int x = 0;
     int y = 0;
     Uint8 r = 0, g = 0, b = 0, alpha = 0;
-    Uint8 *pixel = NULL;
     Uint32 pixel_value = 0, mask_value = 0;
     SDL_Color key;
 
     for (y = 0; y < shape->h; y++) {
         for (x = 0; x < shape->w; x++) {
+            const Uint8 *shape_pixels = (Uint8 *)(shape->pixels) + (y * shape->pitch) + (x * shape->format->BytesPerPixel);
             alpha = 0;
             pixel_value = 0;
-            pixel = (Uint8 *)(shape->pixels) + (y * shape->pitch) + (x * shape->format->BytesPerPixel);
             switch (shape->format->BytesPerPixel) {
             case 1:
-                pixel_value = *pixel;
+                pixel_value = *shape_pixels;
                 break;
             case 2:
-                pixel_value = *(Uint16 *)pixel;
+                pixel_value = *(Uint16 *)shape_pixels;
                 break;
             case 3:
-                pixel_value = *(Uint32 *)pixel & (~shape->format->Amask);
+                pixel_value = *(Uint32 *)shape_pixels & (~shape->format->Amask);
                 break;
             case 4:
-                pixel_value = *(Uint32 *)pixel;
+                pixel_value = *(Uint32 *)shape_pixels;
                 break;
             }
             SDL_GetRGBA(pixel_value, shape->format, &r, &g, &b, &alpha);
@@ -9824,25 +9823,25 @@ SDL_MapRGBA(const SDL2_PixelFormat *format2, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
 }
 
 SDL_DECLSPEC void SDLCALL
-SDL_GetRGB(Uint32 pixel, const SDL2_PixelFormat *format2, Uint8 * r, Uint8 * g, Uint8 * b)
+SDL_GetRGB(Uint32 pixelvalue, const SDL2_PixelFormat *format2, Uint8 *r, Uint8 *g, Uint8 *b)
 {
     const SDL_PixelFormatDetails *format = GetPixelFormatDetails(format2);
     if (!format) {
         *r = *g = *b = 0;
         return;
     }
-    SDL3_GetRGB(pixel, format, format2->palette, r, g, b);
+    SDL3_GetRGB(pixelvalue, format, format2->palette, r, g, b);
 }
 
 SDL_DECLSPEC void SDLCALL
-SDL_GetRGBA(Uint32 pixel, const SDL2_PixelFormat *format2, Uint8 * r, Uint8 * g, Uint8 * b, Uint8 *a)
+SDL_GetRGBA(Uint32 pixelvalue, const SDL2_PixelFormat *format2, Uint8 *r, Uint8 *g, Uint8 *b, Uint8 *a)
 {
     const SDL_PixelFormatDetails *format = GetPixelFormatDetails(format2);
     if (!format) {
         *r = *g = *b = *a = 0;
         return;
     }
-    SDL3_GetRGBA(pixel, format, format2->palette, r, g, b, a);
+    SDL3_GetRGBA(pixelvalue, format, format2->palette, r, g, b, a);
 }
 
 SDL_DECLSPEC SDL_Renderer * SDLCALL
