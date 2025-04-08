@@ -111,6 +111,13 @@ This breaks the build when creating SDL_ ## DisableScreenSaver
 #define SDL2COMPAT_MAXPATH 1024
 #endif
 
+#if defined(SDL_PLATFORM_UNIX) && !defined(SDL_PLATFORM_ANDROID)
+/* We don't know whether SDL3 was really compiled with X11 support on this
+ * platform, but probably it was */
+#define SDL2COMPAT_HAVE_X11
+#else
+#undef SDL2COMPAT_HAVE_X11
+#endif
 
 /* SDL2 function prototypes:  */
 #include "sdl2_protos.h"
@@ -10111,7 +10118,7 @@ SDL_SetWindowsMessageHook(SDL2_WindowsMessageHook callback, void *userdata)
 }
 #endif /* SDL_PLATFORM_WINDOWS */
 
-#if defined(SDL_PLATFORM_UNIX) && !defined(SDL_PLATFORM_ANDROID)
+#ifdef SDL2COMPAT_HAVE_X11
 static bool SDLCALL SDL2COMPAT_X11EventHook(void *userdata, XEvent *xevent)
 {
     SDL2_Event event;
@@ -10127,7 +10134,7 @@ static bool SDLCALL SDL2COMPAT_X11EventHook(void *userdata, XEvent *xevent)
     SDL_PushEvent(&event);
     return true;
 }
-#endif /* SDL_PLATFORM_UNIX */
+#endif /* SDL2COMPAT_HAVE_X11 */
 
 /* SDL3 split this into getter/setter functions. */
 SDL_DECLSPEC Uint8 SDLCALL
@@ -10139,7 +10146,7 @@ SDL_EventState(Uint32 type, int state)
 #ifdef SDL_PLATFORM_WINDOWS
             SDL3_SetWindowsMessageHook(SDL3to2_WindowsMessageHook, NULL);
 #endif
-#if defined(SDL_PLATFORM_UNIX) && !defined(SDL_PLATFORM_ANDROID)
+#ifdef SDL2COMPAT_HAVE_X11
             SDL3_SetX11EventHook(SDL2COMPAT_X11EventHook, NULL);
 #endif
         }
@@ -10151,7 +10158,7 @@ SDL_EventState(Uint32 type, int state)
                 SDL_SetWindowsMessageHook(NULL, NULL);
             }
 #endif
-#if defined(SDL_PLATFORM_UNIX) && !defined(SDL_PLATFORM_ANDROID)
+#ifdef SDL2COMPAT_HAVE_X11
             SDL3_SetX11EventHook(NULL, NULL);
 #endif
         }
