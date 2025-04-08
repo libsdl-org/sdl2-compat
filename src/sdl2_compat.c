@@ -510,6 +510,22 @@ static QuirkEntryType quirks[] = {
 
     /* The UE5 editor has input issues and broken toast notification positioning on Wayland */
     { "UnrealEditor", SDL_HINT_VIDEO_DRIVER, "x11" },
+
+    /* Darkest Dungeon assumes X11 and crashes otherwise
+     * https://github.com/libsdl-org/SDL/issues/12751 */
+    { "darkest.bin.x86", SDL_HINT_VIDEO_DRIVER, "x11" },
+    { "darkest.bin.x86_64", SDL_HINT_VIDEO_DRIVER, "x11" },
+
+    /* World of Goo 2 assumes X11 and crashes otherwise
+     * https://github.com/libsdl-org/SDL/issues/12752 */
+    { "WorldOfGoo2", SDL_HINT_VIDEO_DRIVER, "x11" },
+
+    /* Infinity Engine Enhanced Edition assumes X11 and crashes otherwise
+     * https://github.com/libsdl-org/SDL/issues/12753 */
+    { "BaldursGate", SDL_HINT_VIDEO_DRIVER, "x11" },
+    { "BaldursGateII", SDL_HINT_VIDEO_DRIVER, "x11" },
+    { "IcewindDale", SDL_HINT_VIDEO_DRIVER, "x11" },
+    { "Torment64", SDL_HINT_VIDEO_DRIVER, "x11" },
 };
 
 #ifdef __linux__
