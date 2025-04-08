@@ -505,8 +505,10 @@ static QuirkEntryType quirks[] = {
     { "tauon/__main__.py", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
     { "tauon/__main__.py", SDL_HINT_VIDEO_WAYLAND_ALLOW_LIBDECOR, "0" },
 
+#ifdef SDL2COMPAT_HAVE_X11
     /* Stylus Labs Write does its own X11 input handling */
     { "Write", "SDL_VIDEO_X11_XINPUT2", "0" },
+#endif
 
     /* PPSSPP reads fractional values in wheel events */
     { "PPSSPP", "SDL_MOUSE_INTEGER_MODE", "1" },
@@ -515,6 +517,7 @@ static QuirkEntryType quirks[] = {
     /* Lite-XL reads fractional values in wheel events */
     { "lite-xl", "SDL_MOUSE_INTEGER_MODE", "1" },
 
+#ifdef SDL2COMPAT_HAVE_X11
     /* The UE5 editor has input issues and broken toast notification positioning on Wayland */
     { "UnrealEditor", SDL_HINT_VIDEO_DRIVER, "x11" },
 
@@ -533,6 +536,7 @@ static QuirkEntryType quirks[] = {
     { "BaldursGateII", SDL_HINT_VIDEO_DRIVER, "x11" },
     { "IcewindDale", SDL_HINT_VIDEO_DRIVER, "x11" },
     { "Torment64", SDL_HINT_VIDEO_DRIVER, "x11" },
+#endif
 };
 
 #ifdef __linux__
