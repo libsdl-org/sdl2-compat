@@ -9987,7 +9987,8 @@ SDL_GetSurfaceBlendMode(SDL2_Surface *surface, SDL_BlendMode *blendMode)
     return SDL3_GetSurfaceBlendMode(Surface2to3(surface), blendMode) ? 0 : -1;
 }
 
-static void SDLCALL CleanupWindowSurface(void *userdata, void *value)
+/* Cleanup callback for SDL2 surfaces that are retained by an SDL3 object */
+static void SDLCALL CleanupRetainedSurface2(void *userdata, void *value)
 {
     SDL2_Surface *surface = (SDL2_Surface *)value;
     surface->flags &= ~SDL_DONTFREE;
@@ -10022,7 +10023,7 @@ SDL_GetWindowSurface(SDL_Window *window)
                 if (surface2) {
                     surface2->flags |= SDL_DONTFREE;
 
-                    SDL3_SetPointerPropertyWithCleanup(SDL3_GetWindowProperties(window), PROP_SURFACE2, surface2, CleanupWindowSurface, NULL);
+                    SDL3_SetPointerPropertyWithCleanup(SDL3_GetWindowProperties(window), PROP_SURFACE2, surface2, CleanupRetainedSurface2, NULL);
                 }
             }
         }
@@ -10037,7 +10038,15 @@ SDL_LockTextureToSurface(SDL_Texture *texture, const SDL_Rect *rect, SDL2_Surfac
     if (!SDL3_LockTextureToSurface(texture, rect, &surface3)) {
         return -1;
     }
-    *surface = Surface3to2(surface3);
+    *surface = CreateSurface2from3(surface3);
+    if (!*surface) {
+        SDL_UnlockTexture(texture);
+        return -1;
+    }
+
+    /* This surface is freed by SDL_UnlockTexture() or SDL_DestroyTexture(), not by SDL_FreeSurface() */
+    (*surface)->flags |= SDL_DONTFREE;
+    SDL3_SetPointerPropertyWithCleanup(SDL3_GetSurfaceProperties(surface3), PROP_SURFACE2, *surface, CleanupRetainedSurface2, NULL);
     return 0;
 }
 
