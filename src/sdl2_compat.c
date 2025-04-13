@@ -8454,6 +8454,14 @@ static int ApplyFullscreenMode(SDL_Window *window)
         mode.h = property->h;
         mode.refresh_rate = (float)property->refresh_rate;
     } else {
+        int count = 0;
+        SDL3_free(SDL3_GetFullscreenDisplayModes(displayID, &count));
+
+        /* If the video driver has no fullscreen modes, transition to fullscreen desktop mode */
+        if (count == 0) {
+            return 0;
+        }
+
         SDL3_GetWindowSize(window, &mode.w, &mode.h);
     }
 
@@ -8463,6 +8471,15 @@ static int ApplyFullscreenMode(SDL_Window *window)
     if (mode.displayID && SDL3_SetWindowFullscreenMode(window, &mode)) {
         return 0;
     }
+    else if (property) {
+        const SDL_DisplayMode *desktop = SDL3_GetDesktopDisplayMode(displayID);
+
+        /* It's possible that this was an attempted transition to the desktop display mode on a driver without modesetting support */
+        if (desktop && desktop->w == property->w && desktop->h == property->h) {
+            return 0;
+        }
+    }
+
     return -1;
 }
 
