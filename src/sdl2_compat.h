@@ -1129,10 +1129,17 @@ SDL_COMPILE_TIME_ASSERT(SDL2_Event, sizeof(SDL2_Event) == sizeof(((SDL2_Event *)
 typedef SDL_EventAction SDL_eventaction;
 typedef int (SDLCALL *SDL2_EventFilter) (void *userdata, SDL2_Event *event);
 
+typedef struct EventConversionState
+{
+    float residual_scroll_x;
+    float residual_scroll_y;
+} EventConversionState;
+
 typedef struct EventFilterWrapperData
 {
     SDL2_EventFilter filter2;
     void *userdata;
+    EventConversionState *eventstate;
     struct EventFilterWrapperData *next;
 } EventFilterWrapperData;
 
