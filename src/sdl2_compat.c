@@ -8209,6 +8209,14 @@ DisplayMode_3to2(const SDL_DisplayMode *in, SDL2_DisplayMode *out) {
         out->h = in->h;
         out->refresh_rate = (int) SDL3_lroundf(in->refresh_rate);
         out->driverdata = in->internal;
+
+        /* Make sure the returned refresh rate and format are something valid */
+        if (!out->refresh_rate) {
+            out->refresh_rate = 60;
+        }
+        if (!out->format) {
+            out->format = SDL_PIXELFORMAT_XRGB8888;
+        }
     }
 }
 
@@ -8495,11 +8503,6 @@ SDL_GetWindowDisplayMode(SDL_Window *window, SDL2_DisplayMode *mode)
         if (SDL_GetDesktopDisplayMode(display, mode) < 0) {
             return -1;
         }
-
-        /* When returning the desktop mode, make sure the refresh is some nonzero value. */
-        if (mode->refresh_rate == 0) {
-            mode->refresh_rate = 60;
-        }
     } else {
         if (!SDL_GetClosestDisplayMode(display, mode, mode)) {
             SDL_zerop(mode);
@@ -8533,14 +8536,6 @@ SDL_GetClosestDisplayMode(int displayIndex, const SDL2_DisplayMode *mode, SDL2_D
     }
 
     DisplayMode_3to2(ret3, closest);
-
-    /* Make sure the returned refresh rate and format are something valid */
-    if (!closest->refresh_rate) {
-        closest->refresh_rate = mode->refresh_rate ? mode->refresh_rate : 60;
-    }
-    if (!closest->format) {
-        closest->format = SDL_PIXELFORMAT_XRGB8888;
-    }
     return closest;
 }
 
