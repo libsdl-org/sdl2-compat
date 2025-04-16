@@ -8440,12 +8440,15 @@ SDL_GetDesktopDisplayMode(int displayIndex, SDL2_DisplayMode *mode)
 }
 
 #define PROP_WINDOW_FULLSCREEN_MODE "sdl2-compat.window.fullscreen-mode"
+#define PROP_WINDOW_FULLSCREEN_RESIZE_W "sdl2-compat.window.fullscreen_resize_w"
+#define PROP_WINDOW_FULLSCREEN_RESIZE_H "sdl2-compat.window.fullscreen_resize_h"
 
 static int ApplyFullscreenMode(SDL_Window *window)
 {
     /* Always try to enter fullscreen on the current display */
     const SDL_DisplayID displayID = SDL3_GetDisplayForWindow(window);
-    SDL2_DisplayMode *property = (SDL2_DisplayMode *)SDL3_GetPointerProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_FULLSCREEN_MODE, NULL);
+    const SDL_PropertiesID window_props = SDL3_GetWindowProperties(window);
+    SDL2_DisplayMode *property = (SDL2_DisplayMode *)SDL3_GetPointerProperty(window_props, PROP_WINDOW_FULLSCREEN_MODE, NULL);
     SDL_DisplayMode mode;
 
     SDL3_zero(mode);
@@ -8455,6 +8458,7 @@ static int ApplyFullscreenMode(SDL_Window *window)
         mode.refresh_rate = (float)property->refresh_rate;
     } else {
         int count = 0;
+        int w, h;
         SDL3_free(SDL3_GetFullscreenDisplayModes(displayID, &count));
 
         /* If the video driver has no fullscreen modes, transition to fullscreen desktop mode */
@@ -8462,7 +8466,10 @@ static int ApplyFullscreenMode(SDL_Window *window)
             return 0;
         }
 
-        SDL3_GetWindowSize(window, &mode.w, &mode.h);
+        /* If no mode was explicitly set, the window dimensions will determine it. */
+        SDL3_GetWindowSize(window, &w, &h);
+        mode.w = (int)SDL3_GetNumberProperty(window_props, PROP_WINDOW_FULLSCREEN_RESIZE_W, w);
+        mode.h = (int)SDL3_GetNumberProperty(window_props, PROP_WINDOW_FULLSCREEN_RESIZE_H, h);
     }
 
     /* The SDL2 refresh rate is rounded off, and SDL3 checks that the mode parameters match exactly, so try to find the closest matching SDL3 mode. */
@@ -9108,6 +9115,7 @@ SDL_SetWindowFullscreen(SDL_Window *window, Uint32 flags)
 {
     int ret = 0;
     bool fullscreen = false;
+    SDL_WindowFlags old_flags = SDL_GetWindowFlags(window);
 
     if (flags == SDL2_WINDOW_FULLSCREEN_DESKTOP) {
         fullscreen = true;
@@ -9119,6 +9127,20 @@ SDL_SetWindowFullscreen(SDL_Window *window, Uint32 flags)
 
     if (ret == 0) {
         ret = SDL3_SetWindowFullscreen(window, fullscreen) ? 0 : -1;
+        if (!ret && !fullscreen && (old_flags & SDL2_WINDOW_FULLSCREEN)) {
+            /* SDL2 applied size changes while in fullscreen to the non-fullscreen size as well. */
+            int w, h;
+            SDL_PropertiesID props = SDL3_GetWindowProperties(window);
+            w = SDL3_GetNumberProperty(props, PROP_WINDOW_FULLSCREEN_RESIZE_W, 0);
+            h = SDL3_GetNumberProperty(props, PROP_WINDOW_FULLSCREEN_RESIZE_H, 0);
+
+            if (w && h) {
+                SDL_SetWindowSize(window, w, h);
+            }
+
+            SDL3_ClearProperty(props, PROP_WINDOW_FULLSCREEN_RESIZE_W);
+            SDL3_ClearProperty(props, PROP_WINDOW_FULLSCREEN_RESIZE_H);
+        }
     }
     return ret;
 }
@@ -9139,10 +9161,22 @@ SDL_SetWindowIcon(SDL_Window *window, SDL2_Surface *icon)
 SDL_DECLSPEC void SDLCALL
 SDL_SetWindowSize(SDL_Window *window, int w, int h)
 {
+    SDL_WindowFlags flags = SDL_GetWindowFlags(window);
+
     SDL_PropertiesID props = SDL3_GetWindowProperties(window);
-    SDL3_SetNumberProperty(props, PROP_WINDOW_EXPECTED_WIDTH, w);
-    SDL3_SetNumberProperty(props, PROP_WINDOW_EXPECTED_HEIGHT, h);
-    SDL3_SetWindowSize(window, w, h);
+    if (!(flags & SDL2_WINDOW_FULLSCREEN)) {
+        SDL3_SetNumberProperty(props, PROP_WINDOW_EXPECTED_WIDTH, w);
+        SDL3_SetNumberProperty(props, PROP_WINDOW_EXPECTED_HEIGHT, h);
+        SDL3_SetWindowSize(window, w, h);
+    } else {
+        /* SDL2 can change the video mode of exclusive fullscreen windows by setting the size. */
+        SDL3_SetNumberProperty(props, PROP_WINDOW_FULLSCREEN_RESIZE_W, w);
+        SDL3_SetNumberProperty(props, PROP_WINDOW_FULLSCREEN_RESIZE_H, h);
+
+        if ((flags & SDL2_WINDOW_FULLSCREEN_DESKTOP) != SDL2_WINDOW_FULLSCREEN_DESKTOP) {
+            ApplyFullscreenMode(window);
+        }
+    }
 }
 
 SDL_DECLSPEC void SDLCALL
