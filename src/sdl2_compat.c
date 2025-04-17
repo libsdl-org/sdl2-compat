@@ -488,12 +488,9 @@ static QuirkEntryType quirks[] = {
     { "hl.exe", SDL_HINT_MOUSE_EMULATE_WARP_WITH_RELATIVE, "0" },
 #endif
 
-    /* Moonlight supports high DPI properly under Wayland.
-       It also reads fractional values in wheel events. */
+    /* Moonlight supports high DPI properly under Wayland */
     { "moonlight", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
     { "moonlight-qt", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
-    { "moonlight", "SDL_MOUSE_INTEGER_MODE", "1" },
-    { "moonlight-qt", "SDL_MOUSE_INTEGER_MODE", "1" },
 
     /* Pragtical code editor supports high DPI properly under Wayland */
     { "pragtical", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
@@ -508,16 +505,7 @@ static QuirkEntryType quirks[] = {
 #ifdef SDL2COMPAT_HAVE_X11
     /* Stylus Labs Write does its own X11 input handling */
     { "Write", "SDL_VIDEO_X11_XINPUT2", "0" },
-#endif
 
-    /* PPSSPP reads fractional values in wheel events */
-    { "PPSSPP", "SDL_MOUSE_INTEGER_MODE", "1" },
-    { "PPSSPPSDL", "SDL_MOUSE_INTEGER_MODE", "1" },
-
-    /* Lite-XL reads fractional values in wheel events */
-    { "lite-xl", "SDL_MOUSE_INTEGER_MODE", "1" },
-
-#ifdef SDL2COMPAT_HAVE_X11
     /* The UE5 editor has input issues and broken toast notification positioning on Wayland */
     { "UnrealEditor", SDL_HINT_VIDEO_DRIVER, "x11" },
 
@@ -1346,9 +1334,8 @@ SDL2Compat_InitOnStartupInternal(void)
     SDL3_SetHint("SDL_VIDEO_SYNC_WINDOW_OPERATIONS", "1");
     SDL3_SetHint("SDL_VIDEO_X11_EXTERNAL_WINDOW_INPUT", "0");
 
-    /* Emulate both integer mouse coordinates and integer mouse wheel deltas for maximum compatibility.
-       Apps that use preciseX/Y for smooth scrolling can be quirked to get fractional wheel deltas. */
-    SDL3_SetHint("SDL_MOUSE_INTEGER_MODE", "3");
+    /* Emulate integer mouse coordinates */
+    SDL3_SetHint("SDL_MOUSE_INTEGER_MODE", "1");
 
     // Pretend Wayland doesn't have fractional scaling by default.
     // This is more compatible with applications that have only been tested under X11 without high DPI support.
@@ -2217,7 +2204,29 @@ static SDL_AudioDeviceID AudioDeviceID3to2(SDL_AudioDeviceID id)
 
 static int GetIndexFromJoystickInstance(SDL_JoystickID jid);
 
-static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
+/* We have to keep the accumulated state separate for filter and peep contexts to ensure
+   that each place retains a consistent view of this accumulated state for each event */
+static EventConversionState FilterEventState;
+static EventConversionState PeepEventState;
+
+static int AccumulateFloatValueToInteger(float *residual, float value)
+{
+    float intval;
+
+    /* Reset the accumulated residual value if the sign changes */
+    if ((*residual < 0.0f && value > 0.0f) || (*residual > 0.0f && value < 0.0f)) {
+        *residual = 0.0f;
+    }
+
+    /* Accumulate the residual portion that is truncated by integer conversion */
+    *residual += value;
+    *residual = SDL3_modff(*residual, &intval);
+
+    return (int)intval;
+}
+
+/* This function must always produce the same result for a given event and state because events can be converted multiple times */
+static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2, EventConversionState *state)
 {
     SDL_Renderer *renderer;
     SDL_Event cvtevent3;
@@ -2264,6 +2273,11 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     case SDL_EVENT_DROP_BEGIN:
     case SDL_EVENT_DROP_COMPLETE:
         event2->drop.windowID = event3->drop.windowID;
+        break;
+    case SDL_EVENT_WINDOW_MOUSE_ENTER:
+        /* Reset residual mouse data when mouse focus changes */
+        state->residual_scroll_x = 0.0f;
+        state->residual_scroll_y = 0.0f;
         break;
     case SDL_EVENT_MOUSE_MOTION:
         renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->motion.windowID));
@@ -2339,8 +2353,8 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
             wheel->y = (Sint32)(event3->wheel.x * 120);
         } else {
             SDL2_MouseWheelEvent *wheel = &event2->wheel;
-            wheel->x = (Sint32)event3->wheel.x;
-            wheel->y = (Sint32)event3->wheel.y;
+            wheel->x = AccumulateFloatValueToInteger(&state->residual_scroll_x, event3->wheel.x);
+            wheel->y = AccumulateFloatValueToInteger(&state->residual_scroll_y, event3->wheel.y);
             wheel->preciseX = event3->wheel.x;
             wheel->preciseY = event3->wheel.y;
             wheel->mouseX = (Sint32)event3->wheel.mouse_x;
@@ -2724,6 +2738,7 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
 {
     SDL2_Event event2;  /* note that event filters do not receive events as const! So we have to convert or copy it for each one! */
     bool post_event = true;
+    EventConversionState initial_state = FilterEventState;
 
     /* Drop SDL3 events which have no SDL2 equivalent and may incorrectly overlap with SDL2 event numbers. */
     switch (event3->type) {
@@ -2763,18 +2778,22 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
     }
 
     if (SDL2_EventLoggingVerbosity > 0) {
-        LogEvent2(Event3to2(event3, &event2));
+        FilterEventState = initial_state;
+        LogEvent2(Event3to2(event3, &event2, &FilterEventState));
     }
 
     if (EventFilter2) {
-        post_event = !!EventFilter2(EventFilterUserData2, Event3to2(event3, &event2));
+        FilterEventState = initial_state;
+        post_event = !!EventFilter2(EventFilterUserData2, Event3to2(event3, &event2, &FilterEventState));
     }
 
     if (post_event && EventWatchers2 != NULL) {
         EventFilterWrapperData *i;
         SDL3_LockMutex(EventWatchListMutex);
         for (i = EventWatchers2; i != NULL; i = i->next) {
-            i->filter2(i->userdata, Event3to2(event3, &event2));
+            SDL_assert(i->eventstate == NULL);
+            FilterEventState = initial_state;
+            i->filter2(i->userdata, Event3to2(event3, &event2, &FilterEventState));
         }
         SDL3_UnlockMutex(EventWatchListMutex);
     }
@@ -2953,8 +2972,14 @@ SDL_PeepEvents(SDL2_Event *events2, int numevents, SDL_eventaction action, Uint3
     } else {  /* SDL2 assumes it's SDL_PEEKEVENT if it isn't SDL_ADDEVENT or SDL_GETEVENT. */
         retval = SDL3_PeepEvents(events3, numevents, action, minType, maxType);
         if (events3) {
+            EventConversionState origstate = PeepEventState;
             for (i = 0; i < retval; i++) {
-                Event3to2(&events3[i], &events2[i]);
+                Event3to2(&events3[i], &events2[i], &PeepEventState);
+            }
+
+            if (action == SDL_PEEKEVENT) {
+                /* Roll back the conversion state since these weren't actually consumed */
+                PeepEventState = origstate;
             }
         }
     }
@@ -2972,7 +2997,7 @@ SDL_WaitEventTimeout(SDL2_Event *event2, int timeout)
     SDL_Event event3;
     const int retval = SDL3_WaitEventTimeout(event2 ? &event3 : NULL, timeout);
     if ((retval == 1) && event2) {
-        Event3to2(&event3, event2);
+        Event3to2(&event3, event2, &PeepEventState);
     }
     return retval;
 }
@@ -3003,6 +3028,7 @@ SDL_AddEventWatch(SDL2_EventFilter filter2, void *userdata)
     }
     wrapperdata->filter2 = filter2;
     wrapperdata->userdata = userdata;
+    wrapperdata->eventstate = NULL;
     SDL3_LockMutex(EventWatchListMutex);
     wrapperdata->next = EventWatchers2;
     EventWatchers2 = wrapperdata;
@@ -3036,15 +3062,17 @@ EventFilterWrapper3to2(void *userdata, SDL_Event *event)
 {
     const EventFilterWrapperData *wrapperdata = (const EventFilterWrapperData *) userdata;
     SDL2_Event event2;
-    return wrapperdata->filter2(wrapperdata->userdata, Event3to2(event, &event2));
+    return wrapperdata->filter2(wrapperdata->userdata, Event3to2(event, &event2, wrapperdata->eventstate));
 }
 
 SDL_DECLSPEC void SDLCALL
 SDL_FilterEvents(SDL2_EventFilter filter2, void *userdata)
 {
+    EventConversionState eventstate = PeepEventState; /* Start with the conversion state of the event queue head */
     EventFilterWrapperData wrapperdata;
     wrapperdata.filter2 = filter2;
     wrapperdata.userdata = userdata;
+    wrapperdata.eventstate = &eventstate;
     wrapperdata.next = NULL;
     SDL3_FilterEvents(EventFilterWrapper3to2, &wrapperdata);
 }
