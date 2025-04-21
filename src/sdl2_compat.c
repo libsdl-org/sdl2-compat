@@ -11555,7 +11555,12 @@ SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
         }
 
         if (src_channels < dst_channels) {
-            cvt->len_mult = ((cvt->len_mult * dst_channels) + (src_channels - 1)) / src_channels;
+            const double mult = ((double)dst_channels / (double)src_channels);
+            cvt->len_mult *= (int)SDL_ceil(mult);
+            cvt->len_ratio *= mult;
+        } else {
+            const double divisor = ((double)src_channels / (double)dst_channels);
+            cvt->len_ratio /= divisor;
         }
 
         if (src_rate < dst_rate) {
