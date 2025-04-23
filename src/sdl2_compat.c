@@ -6275,6 +6275,10 @@ SDL_RenderCopy(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect *src
         srcfrect.w = (float)srcrect->w;
         srcfrect.h = (float)srcrect->h;
         psrcfrect = &srcfrect;
+
+        if (srcrect->w == 0 || srcrect->h == 0) {
+            return 0;
+        }
     }
     if (dstrect) {
         dstfrect.x = (float)dstrect->x;
@@ -6299,6 +6303,10 @@ SDL_RenderCopyF(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect *sr
         srcfrect.w = (float)srcrect->w;
         srcfrect.h = (float)srcrect->h;
         psrcfrect = &srcfrect;
+
+        if (srcrect->w == 0 || srcrect->h == 0) {
+            return 0;
+        }
     }
     retval = SDL3_RenderTexture(renderer, texture, psrcfrect, dstrect) ? 0 : -1;
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
