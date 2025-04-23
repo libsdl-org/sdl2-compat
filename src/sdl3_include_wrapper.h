@@ -1280,6 +1280,9 @@
 #define SDL_GetWindowProgressValue IGNORE_THIS_VERSION_OF_SDL_GetWindowProgressValue
 #define SDL_SetRenderTextureAddressMode IGNORE_THIS_VERSION_OF_SDL_SetRenderTextureAddressMode
 #define SDL_GetRenderTextureAddressMode IGNORE_THIS_VERSION_OF_SDL_GetRenderTextureAddressMode
+#define SDL_GetGPUDeviceProperties IGNORE_THIS_VERSION_OF_SDL_GetGPUDeviceProperties
+#define SDL_CreateGPURenderer IGNORE_THIS_VERSION_OF_SDL_CreateGPURenderer
+#define SDL_PutAudioStreamPlanarData IGNORE_THIS_VERSION_OF_SDL_PutAudioStreamPlanarData
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6292,6 +6295,18 @@
 
 #ifdef SDL_GetRenderTextureAddressMode
 #undef SDL_GetRenderTextureAddressMode
+#endif
+
+#ifdef SDL_GetGPUDeviceProperties
+#undef SDL_GetGPUDeviceProperties
+#endif
+
+#ifdef SDL_CreateGPURenderer
+#undef SDL_CreateGPURenderer
+#endif
+
+#ifdef SDL_PutAudioStreamPlanarData
+#undef SDL_PutAudioStreamPlanarData
 #endif
 
 #undef SDL_ThreadID /* see at top. */
