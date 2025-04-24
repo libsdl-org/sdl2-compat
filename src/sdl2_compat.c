@@ -6331,6 +6331,10 @@ SDL_RenderCopyEx(SDL_Renderer *renderer, SDL_Texture *texture,
         srcfrect.w = (float)srcrect->w;
         srcfrect.h = (float)srcrect->h;
         psrcfrect = &srcfrect;
+
+        if (srcrect->w == 0 || srcrect->h == 0) {
+            return 0;
+        }
     }
 
     if (dstrect) {
@@ -6366,6 +6370,10 @@ SDL_RenderCopyExF(SDL_Renderer *renderer, SDL_Texture *texture,
         srcfrect.w = (float)srcrect->w;
         srcfrect.h = (float)srcrect->h;
         psrcfrect = &srcfrect;
+
+        if (srcrect->w == 0 || srcrect->h == 0) {
+            return 0;
+        }
     }
 
     retval = SDL3_RenderTextureRotated(renderer, texture, psrcfrect, dstrect, angle, center, flip) ? 0 : -1;
