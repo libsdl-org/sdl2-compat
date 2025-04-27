@@ -1283,6 +1283,8 @@
 #define SDL_GetGPUDeviceProperties IGNORE_THIS_VERSION_OF_SDL_GetGPUDeviceProperties
 #define SDL_CreateGPURenderer IGNORE_THIS_VERSION_OF_SDL_CreateGPURenderer
 #define SDL_PutAudioStreamPlanarData IGNORE_THIS_VERSION_OF_SDL_PutAudioStreamPlanarData
+#define SDL_SetAudioIterationCallbacks IGNORE_THIS_VERSION_OF_SDL_SetAudioIterationCallbacks
+#define SDL_GetEventDescription IGNORE_THIS_VERSION_OF_SDL_GetEventDescription
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6307,6 +6309,14 @@
 
 #ifdef SDL_PutAudioStreamPlanarData
 #undef SDL_PutAudioStreamPlanarData
+#endif
+
+#ifdef SDL_SetAudioIterationCallbacks
+#undef SDL_SetAudioIterationCallbacks
+#endif
+
+#ifdef SDL_GetEventDescription
+#undef SDL_GetEventDescription
 #endif
 
 #undef SDL_ThreadID /* see at top. */
