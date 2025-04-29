@@ -633,6 +633,16 @@ SDL2Compat_GetExeName(void)
     return exename;
 }
 
+SDL_DECLSPEC const char * SDLCALL
+SDL_GetPlatform(void)
+{
+#ifdef SDL_PLATFORM_MACOS
+    return "Mac OS X";
+#else
+    return SDL3_GetPlatform();
+#endif
+}
+
 static struct {
     const char *old_hint;
     const char *new_hint;
