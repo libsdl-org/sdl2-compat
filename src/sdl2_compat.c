@@ -9948,8 +9948,7 @@ SDL_LockSurface(SDL2_Surface *surface)
         if (!SDL3_LockSurface(surface3)) {
             return -1;
         }
-        surface->pixels = surface3->pixels;
-        surface->pitch = surface3->pitch;
+        SynchronizeSurface3to2(surface3, surface);
     }
 
     /* Increment the surface lock count, for recursive locks */
@@ -9971,8 +9970,7 @@ SDL_UnlockSurface(SDL2_Surface *surface)
 
     SDL3_UnlockSurface(surface3);
 
-    surface->pixels = surface3->pixels;
-    surface->pitch = surface3->pitch;
+    SynchronizeSurface3to2(surface3, surface);
 }
 
 SDL_DECLSPEC int SDLCALL
