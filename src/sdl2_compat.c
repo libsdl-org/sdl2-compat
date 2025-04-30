@@ -8468,14 +8468,21 @@ SDL_GetDesktopDisplayMode(int displayIndex, SDL2_DisplayMode *mode)
 #define PROP_WINDOW_FULLSCREEN_MODE "sdl2-compat.window.fullscreen-mode"
 #define PROP_WINDOW_FULLSCREEN_RESIZE_W "sdl2-compat.window.fullscreen_resize_w"
 #define PROP_WINDOW_FULLSCREEN_RESIZE_H "sdl2-compat.window.fullscreen_resize_h"
+#define PROP_WINDOW_FULLSCREEN_DISPLAY "sdl2-compat.window.preferred_fullscreen_display"
 
 static int ApplyFullscreenMode(SDL_Window *window)
 {
     /* Always try to enter fullscreen on the current display */
-    const SDL_DisplayID displayID = SDL3_GetDisplayForWindow(window);
+    SDL_DisplayID displayID = SDL3_GetDisplayForWindow(window);
     const SDL_PropertiesID window_props = SDL3_GetWindowProperties(window);
     SDL2_DisplayMode *property = (SDL2_DisplayMode *)SDL3_GetPointerProperty(window_props, PROP_WINDOW_FULLSCREEN_MODE, NULL);
     SDL_DisplayMode mode;
+
+    /* Calling SDL3_GetDisplayForWindow supplies the display where the window currently is, but not necessarily
+     * the display on which the window should become fullscreen, particularly in cases where the backend can't
+     * actually reposition the window. This must only be queried *after* calling SDL3_GetDisplayForWindow().
+     */
+    displayID = SDL3_GetNumberProperty(window_props, PROP_WINDOW_FULLSCREEN_DISPLAY, displayID);
 
     SDL3_zero(mode);
     if (property) {
