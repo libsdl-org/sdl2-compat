@@ -8874,6 +8874,12 @@ SDL_GetWindowFlags(SDL_Window *window)
     Uint32 flags3 = (Uint32) SDL3_GetWindowFlags(window);
     Uint32 flags = (flags3 & ~(SDL2_WINDOW_SHOWN | SDL2_WINDOW_FULLSCREEN | SDL2_WINDOW_FULLSCREEN_DESKTOP | SDL2_WINDOW_SKIP_TASKBAR | SDL2_WINDOW_ALWAYS_ON_TOP));
 
+    /* If we get no flags back from SDL3, check if the window is actually valid */
+    if (flags3 == 0 && SDL3_GetWindowID(window) == 0) {
+        /* SDL2 always returns 0 for an invalid window */
+        return 0;
+    }
+
     if ((flags3 & SDL2_WINDOW_HIDDEN) == 0) {
         flags |= SDL2_WINDOW_SHOWN;
     }
