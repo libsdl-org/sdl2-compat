@@ -488,12 +488,9 @@ static QuirkEntryType quirks[] = {
     { "hl.exe", SDL_HINT_MOUSE_EMULATE_WARP_WITH_RELATIVE, "0" },
 #endif
 
-    /* Moonlight supports high DPI properly under Wayland.
-       It also reads fractional values in wheel events. */
+    /* Moonlight supports high DPI properly under Wayland */
     { "moonlight", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
     { "moonlight-qt", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
-    { "moonlight", "SDL_MOUSE_INTEGER_MODE", "1" },
-    { "moonlight-qt", "SDL_MOUSE_INTEGER_MODE", "1" },
 
     /* Pragtical code editor supports high DPI properly under Wayland */
     { "pragtical", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
@@ -508,16 +505,7 @@ static QuirkEntryType quirks[] = {
 #ifdef SDL2COMPAT_HAVE_X11
     /* Stylus Labs Write does its own X11 input handling */
     { "Write", "SDL_VIDEO_X11_XINPUT2", "0" },
-#endif
 
-    /* PPSSPP reads fractional values in wheel events */
-    { "PPSSPP", "SDL_MOUSE_INTEGER_MODE", "1" },
-    { "PPSSPPSDL", "SDL_MOUSE_INTEGER_MODE", "1" },
-
-    /* Lite-XL reads fractional values in wheel events */
-    { "lite-xl", "SDL_MOUSE_INTEGER_MODE", "1" },
-
-#ifdef SDL2COMPAT_HAVE_X11
     /* The UE5 editor has input issues and broken toast notification positioning on Wayland */
     { "UnrealEditor", SDL_HINT_VIDEO_DRIVER, "x11" },
 
@@ -1356,9 +1344,8 @@ SDL2Compat_InitOnStartupInternal(void)
     SDL3_SetHint("SDL_VIDEO_SYNC_WINDOW_OPERATIONS", "1");
     SDL3_SetHint("SDL_VIDEO_X11_EXTERNAL_WINDOW_INPUT", "0");
 
-    /* Emulate both integer mouse coordinates and integer mouse wheel deltas for maximum compatibility.
-       Apps that use preciseX/Y for smooth scrolling can be quirked to get fractional wheel deltas. */
-    SDL3_SetHint("SDL_MOUSE_INTEGER_MODE", "3");
+    /* Emulate integer mouse coordinates */
+    SDL3_SetHint("SDL_MOUSE_INTEGER_MODE", "1");
 
     // Pretend Wayland doesn't have fractional scaling by default.
     // This is more compatible with applications that have only been tested under X11 without high DPI support.
@@ -2349,8 +2336,8 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
             wheel->y = (Sint32)(event3->wheel.x * 120);
         } else {
             SDL2_MouseWheelEvent *wheel = &event2->wheel;
-            wheel->x = (Sint32)event3->wheel.x;
-            wheel->y = (Sint32)event3->wheel.y;
+            wheel->x = event3->wheel.integer_x;
+            wheel->y = event3->wheel.integer_y;
             wheel->preciseX = event3->wheel.x;
             wheel->preciseY = event3->wheel.y;
             wheel->mouseX = (Sint32)event3->wheel.mouse_x;
