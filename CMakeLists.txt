@@ -223,15 +223,16 @@ set(SDL2COMPAT_SRCS
   src/dynapi/SDL_dynapi.c
 )
 
+if(UNIX AND NOT ANDROID)
+  find_package(X11 REQUIRED)
+  include_directories(${X11_INCLUDE_DIR})
+endif()
+
 if(APPLE)
   list(APPEND SDL2COMPAT_SRCS
     "src/sdl2_compat_objc.m"
   )
 
-  find_package(X11)
-  if(X11_FOUND)
-    include_directories("${X11_INCLUDE_DIR}")
-  endif()
   if(POLICY CMP0068)
     cmake_policy(SET CMP0068 NEW)  # on macOS, don't let RPATH affect install_name.
   endif()
