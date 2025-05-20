@@ -3924,6 +3924,7 @@ static SDL_Surface *Surface2to3(SDL2_Surface *surface)
         surface3->flags |= (surface->flags & SHARED_SURFACE_FLAGS);
         surface3->pixels = surface->pixels;
         surface3->pitch = surface->pitch;
+        SDL3_SetSurfacePalette(surface3, surface->format->palette);
     }
     return surface3;
 }
