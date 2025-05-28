@@ -1285,6 +1285,7 @@
 #define SDL_PutAudioStreamPlanarData IGNORE_THIS_VERSION_OF_SDL_PutAudioStreamPlanarData
 #define SDL_SetAudioIterationCallbacks IGNORE_THIS_VERSION_OF_SDL_SetAudioIterationCallbacks
 #define SDL_GetEventDescription IGNORE_THIS_VERSION_OF_SDL_GetEventDescription
+#define SDL_PutAudioStreamDataNoCopy IGNORE_THIS_VERSION_OF_SDL_PutAudioStreamDataNoCopy
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6317,6 +6318,10 @@
 
 #ifdef SDL_GetEventDescription
 #undef SDL_GetEventDescription
+#endif
+
+#ifdef SDL_PutAudioStreamDataNoCopy
+#undef SDL_PutAudioStreamDataNoCopy
 #endif
 
 #undef SDL_ThreadID /* see at top. */
