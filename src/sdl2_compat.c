@@ -8993,6 +8993,13 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
     bool exclusive_fullscreen = false;
     bool manually_show = false;
 
+    /* This needs to be called from within sdl2-compat to initialize the hints and globals. */
+    if (!SDL_WasInit(SDL_INIT_VIDEO)) {
+        if (SDL_Init(SDL_INIT_VIDEO)) {
+            return NULL;
+        }
+    }
+
     CheckEventFilter();
 
     if ((flags & SDL2_WINDOW_FULLSCREEN_DESKTOP) == SDL2_WINDOW_FULLSCREEN_DESKTOP) {
