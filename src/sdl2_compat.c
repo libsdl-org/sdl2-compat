@@ -2184,12 +2184,10 @@ static SDL_AudioDeviceID AudioDeviceID3to2(SDL_AudioDeviceID id)
     /* SDL2 only reserved IDs for open devices. Devices that aren't
      * open will appear as ID 0 in SDL_EVENT_AUDIO_DEVICE_REMOVED. */
     for (i = 0; i < (int)SDL_arraysize(AudioOpenDevices); i++) {
-        SDL2_AudioStream *stream = AudioOpenDevices[i];
-        if (!stream) {
+        const SDL2_AudioStream *stream2 = AudioOpenDevices[i];
+        if (!stream2) {
             continue;
-        }
-
-        if (SDL3_GetAudioStreamDevice(stream->stream3) == id) {
+        } else if (stream2->device3 == id) {
             return i + 1;
         }
     }
@@ -2566,8 +2564,8 @@ static SDL_Event *Event2to3(const SDL2_Event *event2, SDL_Event *event3)
         break;
     case SDL_EVENT_AUDIO_DEVICE_REMOVED:
         if (event2->adevice.which > 0 && event2->adevice.which <= SDL_arraysize(AudioOpenDevices)) {
-            SDL2_AudioStream *stream = AudioOpenDevices[event2->adevice.which - 1];
-            event3->adevice.which = stream ? SDL3_GetAudioStreamDevice(stream->stream3) : 0;
+            SDL2_AudioStream *stream2 = AudioOpenDevices[event2->adevice.which - 1];
+            event3->adevice.which = stream2 ? stream2->device3 : 0;
         } else {
             event3->adevice.which = 0;
         }
@@ -7722,6 +7720,10 @@ static SDL_AudioDeviceID OpenAudioDeviceLocked(const char *devicename, int iscap
         return 0;
     }
 
+    SDL3_SetAtomicInt(&stream2->device_lock_count, 0);
+    stream2->device_pause_latch = 0;
+    stream2->device3 = device3;
+
     if (desired2->callback) {
         stream2->bytes_per_callbacks = obtained2->size;
         stream2->callback2_buffer = SDL3_malloc(stream2->bytes_per_callbacks);
@@ -8103,15 +8105,21 @@ SDL_PauseAudioDevice(SDL_AudioDeviceID dev, int pause_on)
 {
     SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
     if (stream2) {
-        const SDL_AudioDeviceID device3 = SDL3_GetAudioStreamDevice(stream2->stream3);
-        if (stream2->callback2) {  // don't clear the stream for queued audio, just callback audio.
-            SDL3_ClearAudioStream(stream2->stream3);
-        }
+        const SDL_AudioDeviceID device3 = stream2->device3;
+        const bool want_pause = (pause_on != 0);
         if (device3) {
-            if (pause_on) {
-                SDL3_PauseAudioDevice(device3);
+            // prevent deadlocks in complicated threaded scenarios, like https://github.com/libsdl-org/sdl2-compat/issues/499#issuecomment-3024917721
+            if (SDL3_GetAtomicInt(&stream2->device_lock_count)) {
+                stream2->device_pause_latch = want_pause ? -1 : 1;
             } else {
-                SDL3_ResumeAudioDevice(device3);
+                if (want_pause) {
+                    SDL3_PauseAudioDevice(device3);
+                    if (stream2->callback2) {  // don't clear the stream for queued audio, just callback audio.
+                        SDL3_ClearAudioStream(stream2->stream3);
+                    }
+                } else {
+                    SDL3_ResumeAudioDevice(device3);
+                }
             }
         }
     }
@@ -8123,7 +8131,7 @@ SDL_GetAudioDeviceStatus(SDL_AudioDeviceID dev)
     SDL2_AudioStatus retval = SDL2_AUDIO_STOPPED;
     SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
     if (stream2) {
-        const SDL_AudioDeviceID device3 = SDL3_GetAudioStreamDevice(stream2->stream3);
+        const SDL_AudioDeviceID device3 = stream2->device3;
         if (device3) {
             retval = SDL3_AudioDevicePaused(device3) ? SDL2_AUDIO_PAUSED : SDL2_AUDIO_PLAYING;
         }
@@ -8137,6 +8145,7 @@ SDL_LockAudioDevice(SDL_AudioDeviceID dev)
     SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
     if (stream2) {
         SDL3_LockAudioStream(stream2->stream3);
+        SDL3_AddAtomicInt(&stream2->device_lock_count, 1);
     }
 }
 
@@ -8145,7 +8154,20 @@ SDL_UnlockAudioDevice(SDL_AudioDeviceID dev)
 {
     SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
     if (stream2) {
-        SDL3_UnlockAudioStream(stream2->stream3);
+        const int prevval = SDL3_AddAtomicInt(&stream2->device_lock_count, -1);
+        if (prevval <= 0) {
+            SDL3_SetAtomicInt(&stream2->device_lock_count, 0);   // uh, whoops?
+        } else if (prevval == 1) {
+            // prevent deadlocks in complicated threaded scenarios, like https://github.com/libsdl-org/sdl2-compat/issues/499#issuecomment-3024917721
+            const int need_pause_or_resume = stream2->device_pause_latch;
+            stream2->device_pause_latch = 0;
+            SDL3_UnlockAudioStream(stream2->stream3);
+            if (need_pause_or_resume) {
+                SDL_PauseAudioDevice(dev, (need_pause_or_resume < 0) ? 1 : 0);
+            }
+        } else {
+            SDL3_UnlockAudioStream(stream2->stream3);
+        }
     }
 }
 
@@ -8154,7 +8176,7 @@ SDL_CloseAudioDevice(SDL_AudioDeviceID dev)
 {
     SDL2_AudioStream *stream2 = GetOpenAudioDevice(dev);
     if (stream2) {
-        SDL3_CloseAudioDevice(SDL3_GetAudioStreamDevice(stream2->stream3));
+        SDL3_CloseAudioDevice(stream2->device3);
         SDL_FreeAudioStream(stream2);
         AudioOpenDevices[dev - 1] = NULL;  /* this doesn't hold a lock in SDL2, either; the lock only prevents two racing opens from getting the same id. We can NULL it whenever, though. */
     }

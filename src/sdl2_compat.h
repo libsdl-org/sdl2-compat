@@ -1225,6 +1225,9 @@ typedef struct SDL2_AudioStream
     SDL2_AudioCallback callback2;
     void *callback2_userdata;
     SDL2_bool iscapture;
+    SDL_AudioDeviceID device3;
+    SDL_AtomicInt device_lock_count;
+    int device_pause_latch;
 } SDL2_AudioStream;
 
 #define SDL2_AUDIO_ALLOW_FREQUENCY_CHANGE    0x00000001
