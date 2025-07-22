@@ -998,6 +998,10 @@ LoadSDL3(void)
         #endif
 
         WantDebugLogging = SDL2Compat_CheckDebugLogging();
+        if (WantDebugLogging) {
+            // force on the SDL3 debug logging, too, so we get info on backend choices, etc.
+            SDL2Compat_SetEnvAtStartup("SDL_DEBUG_LOGGING", "1");
+        }
 
         okay = LoadSDL3Library();
         if (!okay) {
