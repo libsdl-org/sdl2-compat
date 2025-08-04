@@ -32,7 +32,7 @@
 #define SDL_SLOW_MEMMOVE
 #define SDL_SLOW_MEMSET
 
-#define SDL_ThreadID SDL3_ThreadID /* avoid clash with SDL_ThreadID() of SDL2 */
+#define SDL_ThreadID SDL3_ThreadID  /* avoid clash with SDL_ThreadID() of SDL2 */
 
 #define SDL_AcquireCameraFrame IGNORE_THIS_VERSION_OF_SDL_AcquireCameraFrame
 #define SDL_AcquireGPUCommandBuffer IGNORE_THIS_VERSION_OF_SDL_AcquireGPUCommandBuffer
@@ -1285,7 +1285,6 @@
 #define SDL_PutAudioStreamPlanarData IGNORE_THIS_VERSION_OF_SDL_PutAudioStreamPlanarData
 #define SDL_GetEventDescription IGNORE_THIS_VERSION_OF_SDL_GetEventDescription
 #define SDL_PutAudioStreamDataNoCopy IGNORE_THIS_VERSION_OF_SDL_PutAudioStreamDataNoCopy
-#define SDL_IsTraySupported IGNORE_THIS_VERSION_OF_SDL_IsTraySupported
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6320,22 +6319,15 @@
 #undef SDL_PutAudioStreamDataNoCopy
 #endif
 
-#ifdef SDL_IsTraySupported
-#undef SDL_IsTraySupported
-#endif
-
 #undef SDL_ThreadID /* see at top. */
-
-/* dump the macro CreateThread versions, too. */
 #ifdef SDL_CreateThread
 #undef SDL_CreateThread
 #endif
-
 #ifdef SDL_CreateThreadWithProperties
 #undef SDL_CreateThreadWithProperties
 #endif
 
-/* undefine these macros, too: redefine as SDL3_xxx, if needed
+/* undefine these macros, too: redefine as SDL3_xxx, if needed.
  */
 #ifdef SDL_enabled_assert
 #undef SDL_enabled_assert
