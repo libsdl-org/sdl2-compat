@@ -6728,7 +6728,7 @@ static void SDL2COMPAT_SetEnvironmentVariable(SDL_Environment *env, const char *
     }
 }
 
-static void SynchronizeEnvironmentVariables()
+static void SynchronizeEnvironmentVariables(void)
 {
     SDL_Environment *env = SDL3_GetEnvironment();
     SDL_Environment *fresh_env = SDL3_CreateEnvironment(true);
@@ -9362,7 +9362,7 @@ SDL_ClearComposition(void)
 }
 
 SDL_DECLSPEC SDL2_bool SDLCALL
-SDL_IsTextInputShown()
+SDL_IsTextInputShown(void)
 {
     return SDL_IsTextInputActive();
 }
