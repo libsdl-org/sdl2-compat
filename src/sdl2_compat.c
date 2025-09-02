@@ -2884,6 +2884,9 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
 
                 SDL_PushEvent(&event2);
             }
+
+            /* Don't post the SDL3 version of this event */
+            post_event = false;
             break;
 
         default: break;
