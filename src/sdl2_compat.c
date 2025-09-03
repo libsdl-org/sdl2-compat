@@ -2724,10 +2724,40 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
     SDL2_Event event2;  /* note that event filters do not receive events as const! So we have to convert or copy it for each one! */
     bool post_event = true;
 
-    /* Drop SDL3 events which have no SDL2 equivalent and may incorrectly overlap with SDL2 event numbers. */
+    /* Drop SDL3 events which have no SDL2 equivalent */
     switch (event3->type) {
+        case SDL_EVENT_SYSTEM_THEME_CHANGED:
+        case SDL_EVENT_DISPLAY_DESKTOP_MODE_CHANGED:
+        case SDL_EVENT_DISPLAY_CURRENT_MODE_CHANGED:
+        case SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED:
+        case SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED:
+        case SDL_EVENT_WINDOW_SAFE_AREA_CHANGED:
+        case SDL_EVENT_WINDOW_OCCLUDED:
+        case SDL_EVENT_WINDOW_ENTER_FULLSCREEN:
+        case SDL_EVENT_WINDOW_LEAVE_FULLSCREEN:
+        case SDL_EVENT_WINDOW_DESTROYED:
+        case SDL_EVENT_WINDOW_HDR_STATE_CHANGED:
         case SDL_EVENT_KEYBOARD_ADDED: /* Overlaps with SDL_TEXTEDITING_EXT */
         case SDL_EVENT_KEYBOARD_REMOVED:
+        case SDL_EVENT_TEXT_EDITING_CANDIDATES:
+        case SDL_EVENT_MOUSE_ADDED:
+        case SDL_EVENT_MOUSE_REMOVED:
+        case SDL_EVENT_FINGER_CANCELED:
+        case SDL_EVENT_DROP_POSITION:
+        case SDL_EVENT_AUDIO_DEVICE_FORMAT_CHANGED:
+        case SDL_EVENT_PEN_PROXIMITY_IN:
+        case SDL_EVENT_PEN_PROXIMITY_OUT:
+        case SDL_EVENT_PEN_DOWN:
+        case SDL_EVENT_PEN_UP:
+        case SDL_EVENT_PEN_BUTTON_DOWN:
+        case SDL_EVENT_PEN_BUTTON_UP:
+        case SDL_EVENT_PEN_MOTION:
+        case SDL_EVENT_PEN_AXIS:
+        case SDL_EVENT_CAMERA_DEVICE_ADDED:
+        case SDL_EVENT_CAMERA_DEVICE_REMOVED:
+        case SDL_EVENT_CAMERA_DEVICE_APPROVED:
+        case SDL_EVENT_CAMERA_DEVICE_DENIED:
+        case SDL_EVENT_RENDER_DEVICE_LOST:
             return false;
     }
 
@@ -2785,6 +2815,7 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
         case SDL_EVENT_DISPLAY_ORIENTATION:
         case SDL_EVENT_DISPLAY_ADDED:
         case SDL_EVENT_DISPLAY_REMOVED:
+        case SDL_EVENT_DISPLAY_MOVED:
             if (SDL3_EventEnabled(SDL2_DISPLAYEVENT)) {
                 event2.display.type = SDL2_DISPLAYEVENT;
                 event2.display.timestamp = (Uint32) SDL_NS_TO_MS(event3->display.timestamp);
@@ -2796,6 +2827,9 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
                 event2.display.data1 = event3->display.data1;
                 SDL_PushEvent(&event2);
             }
+
+            /* Don't post the SDL3 version of this event */
+            post_event = false;
             break;
 
         /* window events moved to the top level in SDL3. */
