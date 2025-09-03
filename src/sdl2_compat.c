@@ -3903,7 +3903,7 @@ static void SynchronizeSurface3to2(SDL_Surface *surface, SDL2_Surface *surface2)
      * SDL might have changed flags or freed the pixels, e.g.:
      * https://github.com/libsdl-org/SDL/blob/be991239d9bc6df06b0ca7a9ae9dbb7251e93c12/src/video/SDL_RLEaccel.c#L1180-L1189
      */
-    if (surface && surface->pixels != surface2->pixels) {
+    if (surface) {
         surface2->flags &= ~SHARED_SURFACE_FLAGS;
         surface2->flags |= (surface->flags & SHARED_SURFACE_FLAGS);
         surface2->pixels = surface->pixels;
@@ -10036,12 +10036,6 @@ SDL_SetSurfaceRLE(SDL2_Surface *surface, int flag)
 
     if (!SDL3_SetSurfaceRLE(surface3, flag ? true : false)) {
         return -1;
-    }
-
-    if (SDL3_SurfaceHasRLE(surface3)) {
-        surface->flags |= SDL_RLEACCEL;
-    } else {
-        surface->flags &= ~SDL_RLEACCEL;
     }
     return 0;
 }
