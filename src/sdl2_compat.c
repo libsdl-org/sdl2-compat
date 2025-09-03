@@ -4261,7 +4261,12 @@ SDL_PremultiplyAlpha(int width, int height, Uint32 src_format, const void * src,
 SDL_DECLSPEC SDL2_Surface * SDLCALL
 SDL_CreateRGBSurface(Uint32 flags, int width, int height, int depth, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
 {
-    return Surface3to2(SDL3_CreateSurface(width, height, SDL3_GetPixelFormatForMasks(depth, Rmask, Gmask, Bmask, Amask)));
+    SDL_PixelFormat format = SDL3_GetPixelFormatForMasks(depth, Rmask, Gmask, Bmask, Amask);
+    if (format == SDL_PIXELFORMAT_UNKNOWN) {
+        SDL3_SetError("Unknown pixel format");
+        return NULL;
+    }
+    return Surface3to2(SDL3_CreateSurface(width, height, format));
 }
 
 SDL_DECLSPEC SDL2_Surface * SDLCALL
