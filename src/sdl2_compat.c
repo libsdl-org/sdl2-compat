@@ -5886,6 +5886,17 @@ SDL_DECLSPEC void SDLCALL
 SDL_RenderGetViewport(SDL_Renderer *renderer, SDL_Rect *rect)
 {
     SDL3_GetRenderViewport(renderer, rect);
+
+    if (rect) {
+        float scale_x = 1.0f, scale_y = 1.0f;
+        SDL_FRect logical_rect;
+
+        /* Include the logical scale and offset */
+        SDL_RenderGetScale(renderer, &scale_x, &scale_y);
+        SDL3_GetRenderLogicalPresentationRect(renderer, &logical_rect);
+        rect->x += (int)SDL3_lroundf(logical_rect.x / scale_x);
+        rect->y += (int)SDL3_lroundf(logical_rect.y / scale_y);
+    }
 }
 
 SDL_DECLSPEC SDL2_bool SDLCALL
@@ -6006,7 +6017,25 @@ SDL_RenderGetIntegerScale(SDL_Renderer *renderer)
 SDL_DECLSPEC int SDLCALL
 SDL_RenderSetViewport(SDL_Renderer *renderer, const SDL_Rect *rect)
 {
-    const int retval = SDL3_SetRenderViewport(renderer, rect) ? 0 : -1;
+    int retval;
+    SDL_Rect adjusted_viewport;
+
+    if (rect) {
+        float scale_x = 1.0f, scale_y = 1.0f;
+        SDL_FRect logical_rect;
+
+        SDL3_copyp(&adjusted_viewport, rect);
+
+        /* Remove the logical scale and offset */
+        SDL_RenderGetScale(renderer, &scale_x, &scale_y);
+        SDL3_GetRenderLogicalPresentationRect(renderer, &logical_rect);
+        adjusted_viewport.x -= (int)SDL3_lroundf(logical_rect.x / scale_x);
+        adjusted_viewport.y -= (int)SDL3_lroundf(logical_rect.y / scale_y);
+
+        rect = &adjusted_viewport;
+    }
+
+    retval = SDL3_SetRenderViewport(renderer, rect) ? 0 : -1;
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
 }
 
