@@ -153,6 +153,7 @@ SDL3_SYM(SDL_Surface*,CreateSurfaceFrom,(int a, int b, SDL_PixelFormat c, void *
 SDL3_SYM(SDL_Palette *,CreateSurfacePalette,(SDL_Surface *a),(a),return)
 SDL3_SYM_PASSTHROUGH(SDL_Cursor*,CreateSystemCursor,(SDL_SystemCursor a),(a),return)
 SDL3_SYM(SDL_Texture*,CreateTexture,(SDL_Renderer *a, SDL_PixelFormat b, SDL_TextureAccess c, int d, int e),(a,b,c,d,e),return)
+SDL3_SYM(SDL_Texture*,CreateTextureWithProperties,(SDL_Renderer *a, SDL_PropertiesID b),(a,b),return)
 SDL3_SYM(SDL_Texture*,CreateTextureFromSurface,(SDL_Renderer *a, SDL_Surface *b),(a,b),return)
 SDL3_SYM(SDL_Window*,CreateWindow,(const char *a, int b, int c, SDL_WindowFlags d),(a,b,c,d),return)
 SDL3_SYM(SDL_Window*,CreateWindowWithProperties,(SDL_PropertiesID a),(a),return)
