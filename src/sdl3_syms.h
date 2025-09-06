@@ -65,28 +65,23 @@ SDL3_SYM_PASSTHROUGH_RETCODE(bool,RegisterApp,(const char *a, Uint32 b, void *c)
 SDL3_SYM_PASSTHROUGH(void,UnregisterApp,(void),(),)
 SDL3_SYM(void,SetWindowsMessageHook,(SDL_WindowsMessageHook a, void *b),(a,b),)
 #endif
-
 #if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_WINGDK)
 SDL3_SYM(int,GetDirect3D9AdapterIndex,(SDL_DisplayID a),(a),return)
 SDL3_SYM(bool,GetDXGIOutputInfo,(SDL_DisplayID a,int *b, int *c),(a,b,c),return)
 #endif
-
 #ifdef SDL_PLATFORM_GDK
 SDL3_SYM_RENAMED_RETCODE(bool,GDKGetTaskQueue,GetGDKTaskQueue,(XTaskQueueHandle *a),(a),return)
 SDL3_SYM_RENAMED_RETCODE(bool,GDKGetDefaultUser,GetGDKDefaultUser,(XUserHandle *a),(a),return)
 #endif
-
 #ifdef SDL_PLATFORM_IOS
 SDL3_SYM_RENAMED_RETCODE(bool,iPhoneSetAnimationCallback,SetiOSAnimationCallback,(SDL_Window *a, int b, SDL_iOSAnimationCallback c, void *d),(a,b,c,d),return)
 SDL3_SYM(void,iPhoneSetEventPump,SetiOSEventPump,(bool a),(a),)
 SDL3_SYM_PASSTHROUGH(void,OnApplicationDidChangeStatusBarOrientation,(void),(),)
 #endif
-
 #ifdef SDL_PLATFORM_LINUX
 SDL3_SYM_RENAMED_RETCODE(bool,LinuxSetThreadPriority,SetLinuxThreadPriority,(Sint64 a, int b),(a,b),return)
 SDL3_SYM_RENAMED_RETCODE(bool,LinuxSetThreadPriorityAndPolicy,SetLinuxThreadPriorityAndPolicy,(Sint64 a, int b, int c),(a,b,c),return)
 #endif
-
 #ifdef SDL_PLATFORM_ANDROID
 SDL3_SYM_RENAMED(void*,AndroidGetJNIEnv,GetAndroidJNIEnv,(void),(),return)
 SDL3_SYM_RENAMED(void*,AndroidGetActivity,GetAndroidActivity,(void),(),return)

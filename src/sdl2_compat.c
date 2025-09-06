@@ -4287,7 +4287,7 @@ SDL_ConvertPixels(int width, int height, Uint32 src_format, const void *src, int
 }
 
 SDL_DECLSPEC int SDLCALL
-SDL_PremultiplyAlpha(int width, int height, Uint32 src_format, const void * src, int src_pitch, Uint32 dst_format, void * dst, int dst_pitch)
+SDL_PremultiplyAlpha(int width, int height, Uint32 src_format, const void *src, int src_pitch, Uint32 dst_format, void *dst, int dst_pitch)
 {
     return SDL3_PremultiplyAlpha(width, height, (SDL_PixelFormat)src_format, src, src_pitch, (SDL_PixelFormat)dst_format, dst, dst_pitch, false) ? 0 : -1;
 }
@@ -6505,7 +6505,7 @@ SDL_RenderGeometryRaw(SDL_Renderer *renderer, SDL_Texture *texture, const float 
 }
 
 SDL_DECLSPEC int SDLCALL
-SDL_RenderReadPixels(SDL_Renderer * renderer, const SDL_Rect * rect, Uint32 format, void *pixels, int pitch)
+SDL_RenderReadPixels(SDL_Renderer *renderer, const SDL_Rect *rect, Uint32 format, void *pixels, int pitch)
 {
     int result = -1;
     SDL_Texture* target;
@@ -6554,7 +6554,7 @@ static SDL_ScaleMode SDL_GetScaleMode(void)
 }
 
 SDL_DECLSPEC SDL_Texture * SDLCALL
-SDL_CreateTexture(SDL_Renderer * renderer, Uint32 format, int access, int w, int h)
+SDL_CreateTexture(SDL_Renderer *renderer, Uint32 format, int access, int w, int h)
 {
     SDL_Texture *texture;
     SDL_PropertiesID props = SDL3_CreateProperties();
@@ -9002,7 +9002,7 @@ SDL_GetWindowFlags(SDL_Window *window)
 #define PROP_WINDOW_PARENT_POINTER "sdl2-compat.window.parent"
 
 SDL_DECLSPEC void* SDLCALL
-SDL_GetWindowData(SDL_Window * window, const char *name)
+SDL_GetWindowData(SDL_Window *window, const char *name)
 {
     if (!window) {
         SDL3_SetError("Invalid window");
@@ -9018,7 +9018,7 @@ SDL_GetWindowData(SDL_Window * window, const char *name)
 }
 
 SDL_DECLSPEC void* SDLCALL
-SDL_SetWindowData(SDL_Window * window, const char *name, void *userdata)
+SDL_SetWindowData(SDL_Window *window, const char *name, void *userdata)
 {
     void *prev;
 
@@ -9040,13 +9040,13 @@ SDL_SetWindowData(SDL_Window * window, const char *name, void *userdata)
 #define PROP_TEXTURE_USERDATA_POINTER "sdl2-compat.texture.userdata"
 
 SDL_DECLSPEC int SDLCALL
-SDL_SetTextureUserData(SDL_Texture * texture, void *userdata)
+SDL_SetTextureUserData(SDL_Texture *texture, void *userdata)
 {
     return SDL3_SetPointerProperty(SDL3_GetTextureProperties(texture), PROP_TEXTURE_USERDATA_POINTER, userdata) ? 0 : -1;
 }
 
 SDL_DECLSPEC void * SDLCALL
-SDL_GetTextureUserData(SDL_Texture * texture)
+SDL_GetTextureUserData(SDL_Texture *texture)
 {
     return SDL3_GetPointerProperty(SDL3_GetTextureProperties(texture), PROP_TEXTURE_USERDATA_POINTER, NULL);
 }
@@ -9468,13 +9468,13 @@ SDL_SetTextInputRect(const SDL_Rect *rect)
 }
 
 SDL_DECLSPEC void SDLCALL
-SDL_SetCursor(SDL_Cursor * cursor)
+SDL_SetCursor(SDL_Cursor *cursor)
 {
     SDL3_SetCursor(cursor);
 }
 
 SDL_DECLSPEC SDL2_bool SDLCALL
-SDL_PixelFormatEnumToMasks(Uint32 format, int *bpp, Uint32 * Rmask, Uint32 * Gmask, Uint32 * Bmask, Uint32 * Amask)
+SDL_PixelFormatEnumToMasks(Uint32 format, int *bpp, Uint32 *Rmask, Uint32 *Gmask, Uint32 *Bmask, Uint32 *Amask)
 {
     return SDL3_GetMasksForPixelFormat((SDL_PixelFormat)format, bpp, Rmask, Gmask, Bmask, Amask) ? SDL2_TRUE : SDL2_FALSE;
 }
@@ -11346,7 +11346,7 @@ SDL_HapticUpdateEffect(SDL_Haptic *haptic, int effect, SDL_HapticEffect *data)
 }
 
 SDL_DECLSPEC int SDLCALL
-SDL_HapticGetEffectStatus(SDL_Haptic * haptic, int effect)
+SDL_HapticGetEffectStatus(SDL_Haptic *haptic, int effect)
 {
     SDL3_ClearError();
 
@@ -11813,7 +11813,7 @@ SDL_hid_open_path(const char *path, int bExclusive)
 }
 
 SDL_DECLSPEC void SDLCALL
-SDL_hid_close(SDL_hid_device * dev)
+SDL_hid_close(SDL_hid_device *dev)
 {
     SDL3_hid_close(dev);
 }
@@ -12418,7 +12418,7 @@ SDL_DECLSPEC void SDLCALL SDL_hid_ble_scan(SDL2_bool active)
 }
 
 
-/* SDL_loadso Replaced void * with SDL_SharedObject * in SDL3. */
+/* SDL_loadso replaced void* with SDL_SharedObject* in SDL3. */
 
 SDL_DECLSPEC void * SDLCALL
 SDL_LoadObject(const char *soname)
@@ -12438,7 +12438,6 @@ SDL_UnloadObject(void *lib)
     SDL3_UnloadObject((SDL_SharedObject *) lib);
 }
 
-
 #if defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_WINGDK)
 SDL_DECLSPEC int SDLCALL
 SDL_Direct3D9GetAdapterIndex(int displayIndex)
@@ -12452,19 +12451,19 @@ SDL_DXGIGetOutputInfo(int displayIndex, int *adapterIndex, int *outputIndex)
     return SDL3_GetDXGIOutputInfo(Display_IndexToID(displayIndex), adapterIndex, outputIndex) ? SDL2_TRUE : SDL2_FALSE;
 }
 
-SDL_DECLSPEC IDirect3DDevice9* SDLCALL SDL_RenderGetD3D9Device(SDL_Renderer *renderer)
+SDL_DECLSPEC IDirect3DDevice9 * SDLCALL SDL_RenderGetD3D9Device(SDL_Renderer *renderer)
 {
     return (IDirect3DDevice9 *)SDL3_GetPointerProperty(SDL3_GetRendererProperties(renderer),
                                                 SDL_PROP_RENDERER_D3D9_DEVICE_POINTER, NULL);
 }
 
-SDL_DECLSPEC ID3D11Device* SDLCALL SDL_RenderGetD3D11Device(SDL_Renderer *renderer)
+SDL_DECLSPEC ID3D11Device * SDLCALL SDL_RenderGetD3D11Device(SDL_Renderer *renderer)
 {
     return (ID3D11Device *)SDL3_GetPointerProperty(SDL3_GetRendererProperties(renderer),
                                             SDL_PROP_RENDERER_D3D11_DEVICE_POINTER, NULL);
 }
 
-SDL_DECLSPEC ID3D12Device* SDLCALL SDL_RenderGetD3D12Device(SDL_Renderer *renderer)
+SDL_DECLSPEC ID3D12Device * SDLCALL SDL_RenderGetD3D12Device(SDL_Renderer *renderer)
 {
     return (ID3D12Device *)SDL3_GetPointerProperty(SDL3_GetRendererProperties(renderer),
                                             SDL_PROP_RENDERER_D3D12_DEVICE_POINTER, NULL);
