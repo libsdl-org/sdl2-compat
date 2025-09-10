@@ -1287,6 +1287,8 @@
 #define SDL_PutAudioStreamDataNoCopy IGNORE_THIS_VERSION_OF_SDL_PutAudioStreamDataNoCopy
 #define SDL_AddAtomicU32 IGNORE_THIS_VERSION_OF_SDL_AddAtomicU32
 #define SDL_hid_get_properties IGNORE_THIS_VERSION_OF_SDL_hid_get_properties
+#define SDL_GetPixelFormatFromGPUTextureFormat IGNORE_THIS_VERSION_OF_SDL_GetPixelFormatFromGPUTextureFormat
+#define SDL_GetGPUTextureFormatFromPixelFormat IGNORE_THIS_VERSION_OF_SDL_GetGPUTextureFormatFromPixelFormat
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6327,6 +6329,14 @@
 
 #ifdef SDL_hid_get_properties
 #undef SDL_hid_get_properties
+#endif
+
+#ifdef SDL_GetPixelFormatFromGPUTextureFormat
+#undef SDL_GetPixelFormatFromGPUTextureFormat
+#endif
+
+#ifdef SDL_GetGPUTextureFormatFromPixelFormat
+#undef SDL_GetGPUTextureFormatFromPixelFormat
 #endif
 
 #undef SDL_ThreadID /* see at top. */
