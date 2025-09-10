@@ -445,7 +445,7 @@ DynApiExitProcess(int exitcode)
 }
 
 
-static void SDL_InitDynamicAPILocked(void)
+static bool SDL_InitDynamicAPILocked(void)
 {
     SDL_DYNAPI_ENTRYFN entry = NULL; /* funcs from here by default. */
     bool use_internal = true;
@@ -507,6 +507,15 @@ static void SDL_InitDynamicAPILocked(void)
     }
 
     /* we intentionally never close the newly-loaded lib, of course. */
+
+    return !use_internal;
+}
+
+static SDLDynamicAPILogAtStartupFunc log_at_startup = NULL;
+
+void SDL_DynamicAPISetLogAtStartup(SDLDynamicAPILogAtStartupFunc func)
+{
+    log_at_startup = func;
 }
 
 static void SDL_InitDynamicAPI(void)
@@ -523,6 +532,7 @@ static void SDL_InitDynamicAPI(void)
      *  new thread).
      */
     static bool already_initialized = false;
+    bool overridden = false;
 
     /* SDL_AtomicLock calls SDL mutex functions to emulate if
        SDL_ATOMIC_DISABLED, which we can't do here, so in such a
@@ -533,13 +543,28 @@ static void SDL_InitDynamicAPI(void)
     #endif
 
     if (!already_initialized) {
-        SDL_InitDynamicAPILocked();
+        overridden = SDL_InitDynamicAPILocked();
         already_initialized = true;
     }
 
     #ifndef SDL_ATOMIC_DISABLED
     SDL_AtomicUnlock_REAL(&lock);
     #endif
+
+    if (log_at_startup) {
+        char message[256];
+
+        if (overridden) {
+            SDL2_version ver;
+
+            SDL_GetVersion(&ver);
+            SDL_snprintf(message, sizeof(message), "%s: Library replaced by SDL %u.%u.%u (%s)", SDL_DYNAMIC_API_ENVVAR, ver.major, ver.minor, ver.patch, SDL_GetRevision());
+        } else {
+            SDL_snprintf(message, sizeof(message), "%s: Not overridden", SDL_DYNAMIC_API_ENVVAR);
+        }
+
+        log_at_startup(message);
+    }
 }
 
 #endif /* SDL_DYNAMIC_API */

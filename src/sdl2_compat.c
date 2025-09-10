@@ -1001,6 +1001,10 @@ LoadSDL3(void)
         if (WantDebugLogging) {
             // force on the SDL3 debug logging, too, so we get info on backend choices, etc.
             SDL2Compat_SetEnvAtStartup("SDL_DEBUG_LOGGING", "1");
+            // if SDL_DYNAMIC_API replaces us with some other SDL2, say so
+#if SDL_DYNAMIC_API
+            SDL_DynamicAPISetLogAtStartup(SDL2Compat_LogAtStartup);
+#endif
         }
 
         okay = LoadSDL3Library();
