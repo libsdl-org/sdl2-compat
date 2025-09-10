@@ -76,4 +76,9 @@
 #define SDL_DYNAMIC_API 1
 #endif
 
+#if SDL_DYNAMIC_API
+typedef void (*SDLDynamicAPILogAtStartupFunc) (const char *);
+void SDL_DynamicAPISetLogAtStartup(SDLDynamicAPILogAtStartupFunc func);
+#endif
+
 #endif
