@@ -428,7 +428,11 @@ static char loaderror[256];
     }
 #elif defined(SDL_PLATFORM_UNIX)
     #include <dlfcn.h>
-    #define SDL3_LIBNAME "libSDL3.so.0"
+    #ifdef __ANDROID__
+        #define SDL3_LIBNAME "libSDL3.so"
+    #else
+        #define SDL3_LIBNAME "libSDL3.so.0"
+    #endif
     static void *Loaded_SDL3 = NULL;
     #define LoadSDL3Library() ((Loaded_SDL3 = dlopen(SDL3_LIBNAME, RTLD_LOCAL|RTLD_NOW)) != NULL)
     #define LookupSDL3Sym(sym) dlsym(Loaded_SDL3, sym)
