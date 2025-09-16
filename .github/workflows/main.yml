@@ -21,9 +21,7 @@ jobs:
         - { name: 'Windows msys2 (clang64)',  os: windows-latest, artifact: 'SDL2_compat-clang64',          shell: 'msys2 {0}', msystem: clang64, msys-env: mingw-w64-clang-x86_64 }
         - { name: 'Windows MSVC (x86)',       os: windows-latest, artifact: 'SDL2_compat-VC-x86',           shell: sh, no-test-pc: true, msvc: true, msvc-arch: x86 }
         - { name: 'Windows MSVC (x64)',       os: windows-latest, artifact: 'SDL2_compat-VC-x64',           shell: sh, no-test-pc: true, msvc: true, msvc-arch: x64 }
-        - { name: 'Windows MSVC (arm32)',     os: windows-latest, artifact: 'SDL2_compat-VC-arm32',         shell: sh, no-test-pc: true, msvc: true, msvc-arch: amd64_arm,    cross: true, windows-sdk-version: '10.0.22621.0' }
         - { name: 'Windows MSVC (arm64)',     os: windows-latest, artifact: 'SDL2_compat-VC-arm64',         shell: sh, no-test-pc: true, msvc: true, msvc-arch: amd64_arm64,  cross: true }
-        # - { name: 'Android',                  os: ubuntu-latest,  artifact: 'SDL2_compat-android-aarch64',  shell: sh, no-test-pc: true, android: true,  android-abi: "arm64-v8a", android-platform: 23, ndk-version: r21e, cross: true, cmake-extra: }
     defaults:
       run:
         shell: ${{ matrix.platform.shell }}
