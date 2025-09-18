@@ -5983,7 +5983,7 @@ SDL_RenderSetLogicalSize(SDL_Renderer *renderer, int w, int h)
     int retval;
     SDL_RendererLogicalPresentation mode;
 
-    if (w == 0 && h == 0) {
+    if (w == 0 || h == 0) {
         mode = SDL_LOGICAL_PRESENTATION_DISABLED;
     } else if (SDL3_GetBooleanProperty(SDL3_GetRendererProperties(renderer), PROP_RENDERER_INTEGER_SCALE, false)) {
         mode = SDL_LOGICAL_PRESENTATION_INTEGER_SCALE;
