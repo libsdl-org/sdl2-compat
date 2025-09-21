@@ -4186,7 +4186,6 @@ SDL_DECLSPEC SDL2_Surface * SDLCALL
 SDL_ConvertSurface(SDL2_Surface *surface, const SDL2_PixelFormat *format, Uint32 flags)
 {
     SDL_Palette *palette = NULL;
-    SDL_PixelFormat pixel_format;
     SDL2_Surface *result;
 
     (void) flags; /* SDL3 removed the (unused) `flags` argument */
@@ -4196,12 +4195,6 @@ SDL_ConvertSurface(SDL2_Surface *surface, const SDL2_PixelFormat *format, Uint32
         return NULL;
     }
     if (!format) {
-        SDL3_InvalidParamError("format");
-        return NULL;
-    }
-
-    pixel_format = SDL3_GetPixelFormatForMasks(format->BitsPerPixel, format->Rmask, format->Gmask, format->Bmask, format->Amask);
-    if (pixel_format == SDL_PIXELFORMAT_UNKNOWN) {
         SDL3_InvalidParamError("format");
         return NULL;
     }
@@ -4218,7 +4211,7 @@ SDL_ConvertSurface(SDL2_Surface *surface, const SDL2_PixelFormat *format, Uint32
         SDL3_SetPaletteColors(palette, format->palette->colors, 0, ncolors);
     }
 
-    result = Surface3to2(SDL3_ConvertSurfaceAndColorspace(Surface2to3(surface), pixel_format, palette, SDL_COLORSPACE_SRGB, 0));
+    result = Surface3to2(SDL3_ConvertSurfaceAndColorspace(Surface2to3(surface), (SDL_PixelFormat)format->format, palette, SDL_COLORSPACE_SRGB, 0));
 
     if (palette) {
         SDL3_DestroyPalette(palette);
@@ -9542,6 +9535,7 @@ SDL_AllocFormat(Uint32 pixel_format)
     format->Bshift = details->Bshift;
     format->Ashift = details->Ashift;
     format->refcount = 1;
+    format->next = (SDL2_PixelFormat *)details;
 
     return format;
 }
@@ -9999,11 +9993,7 @@ SDL_SetPixelFormatPalette(SDL2_PixelFormat *format, SDL_Palette *palette)
 
 static const SDL_PixelFormatDetails *GetPixelFormatDetails(const SDL2_PixelFormat *format2)
 {
-    SDL_PixelFormat format = (SDL_PixelFormat)format2->format;
-    if (format == SDL_PIXELFORMAT_UNKNOWN) {
-        format = SDL3_GetPixelFormatForMasks(format2->BitsPerPixel, format2->Rmask, format2->Gmask, format2->Bmask, format2->Amask);
-    }
-    return SDL3_GetPixelFormatDetails(format);
+    return (SDL_PixelFormatDetails *)format2->next;
 }
 
 SDL_DECLSPEC Uint32 SDLCALL
