@@ -9535,7 +9535,6 @@ SDL_AllocFormat(Uint32 pixel_format)
     format->Bshift = details->Bshift;
     format->Ashift = details->Ashift;
     format->refcount = 1;
-    format->next = (SDL2_PixelFormat *)details;
 
     return format;
 }
@@ -9993,34 +9992,59 @@ SDL_SetPixelFormatPalette(SDL2_PixelFormat *format, SDL_Palette *palette)
 
 static const SDL_PixelFormatDetails *GetPixelFormatDetails(const SDL2_PixelFormat *format2)
 {
-    return (SDL_PixelFormatDetails *)format2->next;
+    SDL_PixelFormat format = (SDL_PixelFormat)format2->format;
+    if (format == SDL_PIXELFORMAT_UNKNOWN) {
+        format = SDL3_GetPixelFormatForMasks(format2->BitsPerPixel, format2->Rmask, format2->Gmask, format2->Bmask, format2->Amask);
+    }
+    return SDL3_GetPixelFormatDetails(format);
 }
 
 SDL_DECLSPEC Uint32 SDLCALL
 SDL_MapRGB(const SDL2_PixelFormat *format2, Uint8 r, Uint8 g, Uint8 b)
 {
-    const SDL_PixelFormatDetails *format;
+    if (!format2) {
+        SDL3_InvalidParamError("format");
+        return 0;
+    }
 
-    switch (format2->format) {
-    case SDL_PIXELFORMAT_XRGB8888:
-        return ((Uint32)r << 24) | ((Uint32)g << 16) | b;
-    default:
-        format = GetPixelFormatDetails(format2);
+    if (format2->palette) {
+        const SDL_PixelFormatDetails *format = GetPixelFormatDetails(format2);
         if (!format) {
             return 0;
         }
         return SDL3_MapRGB(format, format2->palette, r, g, b);
+    }
+
+    switch (format2->format) {
+    case SDL_PIXELFORMAT_XRGB8888:
+        return ((Uint32)r << 16) | ((Uint32)g << 8) | b;
+    default:
+        return (r >> format2->Rloss) << format2->Rshift | (g >> format2->Gloss) << format2->Gshift | (b >> format2->Bloss) << format2->Bshift | format2->Amask;
     }
 }
 
 SDL_DECLSPEC Uint32 SDLCALL
 SDL_MapRGBA(const SDL2_PixelFormat *format2, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
 {
-    const SDL_PixelFormatDetails *format = GetPixelFormatDetails(format2);
-    if (!format) {
+    if (!format2) {
+        SDL3_InvalidParamError("format");
         return 0;
     }
-    return SDL3_MapRGBA(format, format2->palette, r, g, b, a);
+
+    if (format2->palette) {
+        const SDL_PixelFormatDetails *format = GetPixelFormatDetails(format2);
+        if (!format) {
+            return 0;
+        }
+        return SDL3_MapRGBA(format, format2->palette, r, g, b, a);
+    }
+
+    switch (format2->format) {
+    case SDL_PIXELFORMAT_ARGB8888:
+        return ((Uint32)a << 24) | ((Uint32)r << 16) | ((Uint32)g << 8) | b;
+    default:
+        return (r >> format2->Rloss) << format2->Rshift | (g >> format2->Gloss) << format2->Gshift | (b >> format2->Bloss) << format2->Bshift | (a >> format2->Aloss) << format2->Ashift;
+    }
 }
 
 SDL_DECLSPEC void SDLCALL
