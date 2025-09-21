@@ -9999,11 +9999,18 @@ static const SDL_PixelFormatDetails *GetPixelFormatDetails(const SDL2_PixelForma
 SDL_DECLSPEC Uint32 SDLCALL
 SDL_MapRGB(const SDL2_PixelFormat *format2, Uint8 r, Uint8 g, Uint8 b)
 {
-    const SDL_PixelFormatDetails *format = GetPixelFormatDetails(format2);
-    if (!format) {
-        return 0;
+    const SDL_PixelFormatDetails *format;
+
+    switch (format2->format) {
+    case SDL_PIXELFORMAT_XRGB8888:
+        return ((Uint32)r << 24) | ((Uint32)g << 16) | b;
+    default:
+        format = GetPixelFormatDetails(format2);
+        if (!format) {
+            return 0;
+        }
+        return SDL3_MapRGB(format, format2->palette, r, g, b);
     }
-    return SDL3_MapRGB(format, format2->palette, r, g, b);
 }
 
 SDL_DECLSPEC Uint32 SDLCALL
