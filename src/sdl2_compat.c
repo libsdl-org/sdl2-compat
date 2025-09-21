@@ -6074,12 +6074,12 @@ SDL_SetRenderTarget(SDL_Renderer *renderer, SDL_Texture *texture)
         SDL3_GetTextureSize(texture, &w, &h);
         viewport.x = 0;
         viewport.y = 0;
-        viewport.w = (int) w;
-        viewport.h = (int) h;
+        viewport.w = (int)w;
+        viewport.h = (int)h;
         SDL3_SetRenderViewport(renderer, &viewport);
         SDL3_SetRenderClipRect(renderer, NULL);
         SDL3_SetRenderScale(renderer, 1.0f, 1.0f);
-        SDL3_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_DISABLED);
+        SDL3_SetRenderLogicalPresentation(renderer, viewport.w, viewport.h, SDL_LOGICAL_PRESENTATION_DISABLED);
     }
 
     return FlushRendererIfNotBatching(renderer);
@@ -6526,7 +6526,7 @@ SDL_RenderReadPixels(SDL_Renderer *renderer, const SDL_Rect *rect, Uint32 format
     if (!format) {
         target = SDL3_GetRenderTarget(renderer);
         if (target) {
-            format = SDL3_GetNumberProperty(SDL3_GetTextureProperties(target), SDL_PROP_TEXTURE_FORMAT_NUMBER, 0);
+            format = (Uint32)SDL3_GetNumberProperty(SDL3_GetTextureProperties(target), SDL_PROP_TEXTURE_FORMAT_NUMBER, 0);
         } else {
             format = SDL3_GetWindowPixelFormat((SDL_Window *)SDL3_GetPointerProperty(SDL3_GetRendererProperties(renderer), SDL_PROP_RENDERER_WINDOW_POINTER, NULL));
         }
@@ -8583,7 +8583,7 @@ static int ApplyFullscreenMode(SDL_Window *window)
      * the display on which the window should become fullscreen, particularly in cases where the backend can't
      * actually reposition the window. This must only be queried *after* calling SDL3_GetDisplayForWindow().
      */
-    displayID = SDL3_GetNumberProperty(window_props, PROP_WINDOW_FULLSCREEN_DISPLAY, displayID);
+    displayID = (SDL_DisplayID)SDL3_GetNumberProperty(window_props, PROP_WINDOW_FULLSCREEN_DISPLAY, displayID);
 
     SDL3_zero(mode);
     if (property) {
@@ -9278,8 +9278,8 @@ SDL_SetWindowFullscreen(SDL_Window *window, Uint32 flags)
             /* SDL2 applied size changes while in fullscreen to the non-fullscreen size as well. */
             int w, h;
             SDL_PropertiesID props = SDL3_GetWindowProperties(window);
-            w = SDL3_GetNumberProperty(props, PROP_WINDOW_FULLSCREEN_RESIZE_W, 0);
-            h = SDL3_GetNumberProperty(props, PROP_WINDOW_FULLSCREEN_RESIZE_H, 0);
+            w = (int)SDL3_GetNumberProperty(props, PROP_WINDOW_FULLSCREEN_RESIZE_W, 0);
+            h = (int)SDL3_GetNumberProperty(props, PROP_WINDOW_FULLSCREEN_RESIZE_H, 0);
 
             if (w && h) {
                 SDL_SetWindowSize(window, w, h);
