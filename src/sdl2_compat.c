@@ -528,6 +528,9 @@ static QuirkEntryType quirks[] = {
     { "BaldursGateII", SDL_HINT_VIDEO_DRIVER, "x11" },
     { "IcewindDale", SDL_HINT_VIDEO_DRIVER, "x11" },
     { "Torment64", SDL_HINT_VIDEO_DRIVER, "x11" },
+
+    /* SimCity 3000 tries to call SDL_DestroyMutex after we have been unloaded */
+    {"sc3u.dynamic", "SDL2COMPAT_NO_UNLOAD", "1"},
 #endif
 };
 
@@ -1160,6 +1163,12 @@ static void dllquit(void)
     if (SDL3_ShouldQuit(&InitSDL2CompatGlobals)) {
         if (WantDebugLogging) {
             SDL2Compat_LogAtStartup("sdl2-compat: Leaking SDL3 library reference due to missing call to SDL_Quit()");
+        }
+        return;
+    }
+    if (SDL3_GetHintBoolean("SDL2COMPAT_NO_UNLOAD", false)) {
+        if (WantDebugLogging) {
+            SDL2Compat_LogAtStartup("sdl2-compat: Leaking SDL3 library reference due to SDL2COMPAT_NO_UNLOAD");
         }
         return;
     }
