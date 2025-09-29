@@ -3519,7 +3519,7 @@ SDL_RWFromFile(const char *file, const char *mode)
 SDL_DECLSPEC SDL2_RWops *SDLCALL
 SDL_RWFromMem(void *mem, int size)
 {
-    if (size < 0) { /* SDL3 already checks size == 0 */
+    if (size <= 0) {
         SDL3_InvalidParamError("size");
         return NULL;
     }
@@ -3529,7 +3529,7 @@ SDL_RWFromMem(void *mem, int size)
 SDL_DECLSPEC SDL2_RWops *SDLCALL
 SDL_RWFromConstMem(const void *mem, int size)
 {
-    if (size < 0) { /* SDL3 already checks size == 0 */
+    if (size <= 0) {
         SDL3_InvalidParamError("size");
         return NULL;
     }
