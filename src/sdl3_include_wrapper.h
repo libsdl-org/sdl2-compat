@@ -1289,6 +1289,9 @@
 #define SDL_hid_get_properties IGNORE_THIS_VERSION_OF_SDL_hid_get_properties
 #define SDL_GetPixelFormatFromGPUTextureFormat IGNORE_THIS_VERSION_OF_SDL_GetPixelFormatFromGPUTextureFormat
 #define SDL_GetGPUTextureFormatFromPixelFormat IGNORE_THIS_VERSION_OF_SDL_GetGPUTextureFormatFromPixelFormat
+#define JNI_OnLoad IGNORE_THIS_VERSION_OF_JNI_OnLoad
+#define SDL_SetTexturePalette IGNORE_THIS_VERSION_OF_SDL_SetTexturePalette
+#define SDL_GetTexturePalette IGNORE_THIS_VERSION_OF_SDL_GetTexturePalette
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6337,6 +6340,18 @@
 
 #ifdef SDL_GetGPUTextureFormatFromPixelFormat
 #undef SDL_GetGPUTextureFormatFromPixelFormat
+#endif
+
+#ifdef JNI_OnLoad
+#undef JNI_OnLoad
+#endif
+
+#ifdef SDL_SetTexturePalette
+#undef SDL_SetTexturePalette
+#endif
+
+#ifdef SDL_GetTexturePalette
+#undef SDL_GetTexturePalette
 #endif
 
 #undef SDL_ThreadID /* see at top. */
