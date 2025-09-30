@@ -361,9 +361,10 @@ static const char *SDL2Compat_GetEnvAtStartup(const char *name)
 static bool SDL2Compat_CheckDebugLogging(void)
 {
     const char *value = SDL2Compat_GetEnvAtStartup("SDL2COMPAT_DEBUG_LOGGING");
-    if (value == NULL)
+    if (!value) {
         value = SDL2Compat_GetEnvAtStartup("DEBUG_INVOCATION");
-    return (value != NULL) && SDL2Compat_strequal(value, "1");
+    }
+    return value && SDL2Compat_strequal(value, "1");
 }
 
 
