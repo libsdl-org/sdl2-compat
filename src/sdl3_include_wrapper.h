@@ -1272,7 +1272,7 @@
 #define SDL_GetDefaultTextureScaleMode IGNORE_THIS_VERSION_OF_SDL_GetDefaultTextureScaleMode
 #define SDL_CreateGPURenderState IGNORE_THIS_VERSION_OF_SDL_CreateGPURenderState
 #define SDL_SetGPURenderStateFragmentUniforms IGNORE_THIS_VERSION_OF_SDL_SetGPURenderStateFragmentUniforms
-#define SDL_SetRenderGPUState IGNORE_THIS_VERSION_OF_SDL_SetRenderGPUState
+#define SDL_SetGPURenderState IGNORE_THIS_VERSION_OF_SDL_SetGPURenderState
 #define SDL_DestroyGPURenderState IGNORE_THIS_VERSION_OF_SDL_DestroyGPURenderState
 #define SDL_SetWindowProgressState IGNORE_THIS_VERSION_OF_SDL_SetWindowProgressState
 #define SDL_SetWindowProgressValue IGNORE_THIS_VERSION_OF_SDL_SetWindowProgressValue
@@ -1292,6 +1292,7 @@
 #define JNI_OnLoad IGNORE_THIS_VERSION_OF_JNI_OnLoad
 #define SDL_SetTexturePalette IGNORE_THIS_VERSION_OF_SDL_SetTexturePalette
 #define SDL_GetTexturePalette IGNORE_THIS_VERSION_OF_SDL_GetTexturePalette
+#define SDL_GetGPURendererDevice IGNORE_THIS_VERSION_OF_SDL_GetGPURendererDevice
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6274,8 +6275,8 @@
 #undef SDL_SetGPURenderStateFragmentUniforms
 #endif
 
-#ifdef SDL_SetRenderGPUState
-#undef SDL_SetRenderGPUState
+#ifdef SDL_SetGPURenderState
+#undef SDL_SetGPURenderState
 #endif
 
 #ifdef SDL_DestroyGPURenderState
@@ -6352,6 +6353,10 @@
 
 #ifdef SDL_GetTexturePalette
 #undef SDL_GetTexturePalette
+#endif
+
+#ifdef SDL_GetGPURendererDevice
+#undef SDL_GetGPURendererDevice
 #endif
 
 #undef SDL_ThreadID /* see at top. */
