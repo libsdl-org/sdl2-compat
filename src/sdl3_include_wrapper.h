@@ -1293,6 +1293,10 @@
 #define SDL_SetTexturePalette IGNORE_THIS_VERSION_OF_SDL_SetTexturePalette
 #define SDL_GetTexturePalette IGNORE_THIS_VERSION_OF_SDL_GetTexturePalette
 #define SDL_GetGPURendererDevice IGNORE_THIS_VERSION_OF_SDL_GetGPURendererDevice
+#define SDL_LoadPNG_IO IGNORE_THIS_VERSION_OF_SDL_LoadPNG_IO
+#define SDL_LoadPNG IGNORE_THIS_VERSION_OF_SDL_LoadPNG
+#define SDL_SavePNG_IO IGNORE_THIS_VERSION_OF_SDL_SavePNG_IO
+#define SDL_SavePNG IGNORE_THIS_VERSION_OF_SDL_SavePNG
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6357,6 +6361,22 @@
 
 #ifdef SDL_GetGPURendererDevice
 #undef SDL_GetGPURendererDevice
+#endif
+
+#ifdef SDL_LoadPNG_IO
+#undef SDL_LoadPNG_IO
+#endif
+
+#ifdef SDL_LoadPNG
+#undef SDL_LoadPNG
+#endif
+
+#ifdef SDL_SavePNG_IO
+#undef SDL_SavePNG_IO
+#endif
+
+#ifdef SDL_SavePNG
+#undef SDL_SavePNG
 #endif
 
 #undef SDL_ThreadID /* see at top. */
