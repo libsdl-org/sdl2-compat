@@ -532,6 +532,12 @@ static QuirkEntryType quirks[] = {
     { "IcewindDale", SDL_HINT_VIDEO_DRIVER, "x11" },
     { "Torment64", SDL_HINT_VIDEO_DRIVER, "x11" },
 
+    /* HOMM3 mouse moves are sluggish without that */
+    {"heroes3.dynamic", SDL_HINT_MOUSE_RELATIVE_SYSTEM_SCALE, "1"},
+
+    /* Heavy Gear II assumes X11 and segfault otherwise */
+    {"hg2stub", SDL_HINT_VIDEO_DRIVER, "x11"},
+
     /* SimCity 3000 tries to call SDL_DestroyMutex after we have been unloaded */
     {"sc3u.dynamic", "SDL2COMPAT_NO_UNLOAD", "1"},
 #endif
