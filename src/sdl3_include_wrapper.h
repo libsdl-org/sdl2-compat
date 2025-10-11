@@ -1297,6 +1297,7 @@
 #define SDL_LoadPNG IGNORE_THIS_VERSION_OF_SDL_LoadPNG
 #define SDL_SavePNG_IO IGNORE_THIS_VERSION_OF_SDL_SavePNG_IO
 #define SDL_SavePNG IGNORE_THIS_VERSION_OF_SDL_SavePNG
+#define SDL_GetSystemPageSize IGNORE_THIS_VERSION_OF_SDL_GetSystemPageSize
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6379,6 +6380,10 @@
 #undef SDL_SavePNG
 #endif
 
+#ifdef SDL_GetSystemPageSize
+#undef SDL_GetSystemPageSize
+#endif
+
 #undef SDL_ThreadID /* see at top. */
 #ifdef SDL_CreateThread
 #undef SDL_CreateThread
@@ -6470,3 +6475,4 @@
 #endif
 
 #endif /* INCL_SDL3_INCLUDE_WRAPPER_H */
+
