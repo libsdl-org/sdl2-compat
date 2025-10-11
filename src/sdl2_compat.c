@@ -111,14 +111,6 @@ This breaks the build when creating SDL_ ## DisableScreenSaver
 #define SDL2COMPAT_MAXPATH 1024
 #endif
 
-#if defined(SDL_PLATFORM_UNIX) && !defined(SDL_PLATFORM_ANDROID)
-/* We don't know whether SDL3 was really compiled with X11 support on this
- * platform, but probably it was */
-#define SDL2COMPAT_HAVE_X11
-#else
-#undef SDL2COMPAT_HAVE_X11
-#endif
-
 /* SDL2 function prototypes:  */
 #include "sdl2_protos.h"
 

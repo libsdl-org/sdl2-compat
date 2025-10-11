@@ -1288,7 +1288,7 @@ typedef struct _NSWindow NSWindow;
 typedef struct _UIWindow UIWindow;
 #endif
 
-#if defined(SDL_PLATFORM_UNIX) && !defined(SDL_PLATFORM_ANDROID)
+#if defined(SDL_PLATFORM_UNIX) && !defined(SDL_PLATFORM_ANDROID) && defined(SDL2COMPAT_HAVE_X11)
 #include <X11/Xlib.h>
 #endif
 
@@ -1306,7 +1306,7 @@ typedef struct SDL2_SysWMmsg
             LPARAM lParam;              /**< LONG message parameter */
         } win;
 #endif
-#if defined(SDL_PLATFORM_UNIX) && !defined(SDL_PLATFORM_ANDROID)
+#if defined(SDL_PLATFORM_UNIX) && !defined(SDL_PLATFORM_ANDROID) && defined(SDL2COMPAT_HAVE_X11)
         struct {
             XEvent event;
         } x11;
