@@ -220,8 +220,8 @@
 #define SDL_LOADSO_DLOPEN 1
 #define SDL_THREAD_PTHREAD 1
 #define SDL_TIMER_UNIX 1
-/* ...But modern GNU/Linux can be Wayland-only */
-#if defined SDL2COMPAT_HAVE_X11
+/* Allow building without X11 support */
+#ifndef SDL2COMPAT_DISABLE_X11
 #define SDL_VIDEO_DRIVER_X11 1
 #endif
 
