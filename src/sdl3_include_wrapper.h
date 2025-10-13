@@ -1298,6 +1298,7 @@
 #define SDL_SavePNG_IO IGNORE_THIS_VERSION_OF_SDL_SavePNG_IO
 #define SDL_SavePNG IGNORE_THIS_VERSION_OF_SDL_SavePNG
 #define SDL_GetSystemPageSize IGNORE_THIS_VERSION_OF_SDL_GetSystemPageSize
+#define SDL_GetPenDeviceType IGNORE_THIS_VERSION_OF_SDL_GetPenDeviceType
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6382,6 +6383,10 @@
 
 #ifdef SDL_GetSystemPageSize
 #undef SDL_GetSystemPageSize
+#endif
+
+#ifdef SDL_GetPenDeviceType
+#undef SDL_GetPenDeviceType
 #endif
 
 #undef SDL_ThreadID /* see at top. */
