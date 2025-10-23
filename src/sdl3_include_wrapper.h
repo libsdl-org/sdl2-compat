@@ -1300,6 +1300,7 @@
 #define SDL_GetSystemPageSize IGNORE_THIS_VERSION_OF_SDL_GetSystemPageSize
 #define SDL_GetPenDeviceType IGNORE_THIS_VERSION_OF_SDL_GetPenDeviceType
 #define SDL_CreateAnimatedCursor IGNORE_THIS_VERSION_OF_SDL_CreateAnimatedCursor
+#define SDL_RotateSurface IGNORE_THIS_VERSION_OF_SDL_RotateSurface
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6393,6 +6394,11 @@
 #ifdef SDL_CreateAnimatedCursor
 #undef SDL_CreateAnimatedCursor
 #endif
+
+#ifdef SDL_RotateSurface
+#undef SDL_RotateSurface
+#endif
+
 
 /*	see at top.	*/
 #undef SDL_ThreadID
