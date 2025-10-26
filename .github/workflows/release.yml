@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       commit:
-        description: 'Commit of SDL_ttf'
+        description: 'Commit of sdl2-compat'
         required: true
 
 jobs:
