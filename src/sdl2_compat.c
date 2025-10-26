@@ -2302,16 +2302,16 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
         if (UseSDL2PrereleaseEvents) {
             SDL2PRERELEASE_MouseMotionEvent *motion = (SDL2PRERELEASE_MouseMotionEvent *)&event2->motion;
             motion->state = (Uint8)event3->motion.state;
-            motion->x = (Sint32)event3->motion.x;
-            motion->y = (Sint32)event3->motion.y;
-            motion->xrel = (Sint32)event3->motion.xrel;
-            motion->yrel = (Sint32)event3->motion.yrel;
+            motion->x = (Sint32)SDL3_lroundf(event3->motion.x);
+            motion->y = (Sint32)SDL3_lroundf(event3->motion.y);
+            motion->xrel = (Sint32)SDL3_lroundf(event3->motion.xrel);
+            motion->yrel = (Sint32)SDL3_lroundf(event3->motion.yrel);
         } else {
             SDL2_MouseMotionEvent *motion = &event2->motion;
-            motion->x = (Sint32)event3->motion.x;
-            motion->y = (Sint32)event3->motion.y;
-            motion->xrel = (Sint32)event3->motion.xrel;
-            motion->yrel = (Sint32)event3->motion.yrel;
+            motion->x = (Sint32)SDL3_lroundf(event3->motion.x);
+            motion->y = (Sint32)SDL3_lroundf(event3->motion.y);
+            motion->xrel = (Sint32)SDL3_lroundf(event3->motion.xrel);
+            motion->yrel = (Sint32)SDL3_lroundf(event3->motion.yrel);
         }
         break;
     case SDL_EVENT_MOUSE_BUTTON_DOWN:
@@ -2330,12 +2330,12 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
             SDL2PRERELEASE_MouseButtonEvent *button = (SDL2PRERELEASE_MouseButtonEvent *)&event2->button;
             button->button = event3->button.button;
             button->state = event3->button.down;
-            button->x = (Sint32)event3->button.x;
-            button->y = (Sint32)event3->button.y;
+            button->x = (Sint32)SDL3_lroundf(event3->button.x);
+            button->y = (Sint32)SDL3_lroundf(event3->button.y);
         } else {
             SDL2_MouseButtonEvent *button = &event2->button;
-            button->x = (Sint32)event3->button.x;
-            button->y = (Sint32)event3->button.y;
+            button->x = (Sint32)SDL3_lroundf(event3->button.x);
+            button->y = (Sint32)SDL3_lroundf(event3->button.y);
         }
         break;
     case SDL_EVENT_MOUSE_WHEEL:
@@ -2361,8 +2361,8 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
             wheel->y = event3->wheel.integer_y;
             wheel->preciseX = event3->wheel.x;
             wheel->preciseY = event3->wheel.y;
-            wheel->mouseX = (Sint32)event3->wheel.mouse_x;
-            wheel->mouseY = (Sint32)event3->wheel.mouse_y;
+            wheel->mouseX = (Sint32)SDL3_lroundf(event3->wheel.mouse_x);
+            wheel->mouseY = (Sint32)SDL3_lroundf(event3->wheel.mouse_y);
         }
         break;
     case SDL_EVENT_JOYSTICK_AXIS_MOTION:
