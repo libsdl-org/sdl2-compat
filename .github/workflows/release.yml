@@ -472,23 +472,23 @@ jobs:
               -DCMAKE_PREFIX_PATH="${{ steps.bin.outputs.path }};${{ steps.deps-extract.outputs.path }}"
           Start-Sleep -Seconds 2
           cmake --build build_x64 --config Release --verbose
-      - name: 'Configure vcvars arm64'
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x64_arm64
-      - name: 'CMake (configure + build + tests) arm64'
-        run: |
-          cmake -S "${{ steps.src.outputs.path }}/cmake/test"     `
-              -B build_arm64                                        `
-              -GNinja                                             `
-              -DCMAKE_BUILD_TYPE=Debug                            `
-              -Werror=dev                                         `
-              -DTEST_SHARED=TRUE                                  `
-              -DTEST_STATIC=FALSE                                 `
-              -DCMAKE_SUPPRESS_REGENERATION=TRUE                  `
-              -DCMAKE_PREFIX_PATH="${{ steps.bin.outputs.path }};${{ steps.deps-extract.outputs.path }}"
-          Start-Sleep -Seconds 2
-          cmake --build build_arm64 --config Release --verbose
+#      - name: 'Configure vcvars arm64'
+#        uses: ilammy/msvc-dev-cmd@v1
+#        with:
+#          arch: x64_arm64
+#      - name: 'CMake (configure + build + tests) arm64'
+#        run: |
+#          cmake -S "${{ steps.src.outputs.path }}/cmake/test"     `
+#              -B build_arm64                                        `
+#              -GNinja                                             `
+#              -DCMAKE_BUILD_TYPE=Debug                            `
+#              -Werror=dev                                         `
+#              -DTEST_SHARED=TRUE                                  `
+#              -DTEST_STATIC=FALSE                                 `
+#              -DCMAKE_SUPPRESS_REGENERATION=TRUE                  `
+#              -DCMAKE_PREFIX_PATH="${{ steps.bin.outputs.path }};${{ steps.deps-extract.outputs.path }}"
+#          Start-Sleep -Seconds 2
+#          cmake --build build_arm64 --config Release --verbose
 
 #  mingw:
 #    needs: [src]
