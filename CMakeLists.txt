@@ -2,7 +2,7 @@
 #        you can define SDL3_INCLUDE_DIRS on the cmdline.  For example:
 #        cmake -DSDL3_INCLUDE_DIRS=/opt/SDL3/include [other stuff ....]
 
-cmake_minimum_required(VERSION 3.0...3.28)
+cmake_minimum_required(VERSION 3.0...4.1)
 project(sdl2_compat VERSION 2.32.57 LANGUAGES C)
 
 if(POLICY CMP0074)
@@ -398,6 +398,7 @@ if(MSVC)
     set_property(TARGET SDL2 APPEND_STRING PROPERTY LINK_FLAGS " /NODEFAULTLIB")
   endif()
   # Make sure /RTC1 is disabled: (from SDL2 CMake)
+  set_property(TARGET SDL2  PROPERTY MSVC_RUNTIME_CHECKS "")
   foreach(flag_var
     CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
     CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
