@@ -29,8 +29,7 @@
     "cmake": {
       "archs": [
         "x86",
-        "x64",
-        "arm64"
+        "x64"
       ],
       "args": [
         "-DSDL2COMPAT_VENDOR_INFO=libsdl.org",
