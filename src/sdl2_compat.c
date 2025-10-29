@@ -29,7 +29,7 @@
 #if defined(DisableScreenSaver)
 /*
 This breaks the build when creating SDL_ ## DisableScreenSaver
-/usr/include/X11/X.h:#define DisableScreenSaver	0
+/usr/include/X11/X.h:#define DisableScreenSaver    0
 */
 #undef DisableScreenSaver
 #endif
@@ -532,6 +532,9 @@ static QuirkEntryType quirks[] = {
 
     /* SimCity 3000 tries to call SDL_DestroyMutex after we have been unloaded */
     {"sc3u.dynamic", "SDL2COMPAT_NO_UNLOAD", "1"},
+
+    /* Hearts of Iron IV passes a garbage rwops->size pointer to SDL_LoadWAV_RW */
+    {"hoi4", "SDL2COMPAT_BROKEN_LOADWAV_SIZE", "1"},
 #endif
 };
 
@@ -3845,6 +3848,33 @@ RWops2to3(SDL2_RWops *rwops2)
     return iostrm3;
 }
 
+static Sint64 SDLCALL
+RWops2to3_size_broken(void *userdata)
+{
+    return -1;
+}
+
+static SDL_IOStream *
+RWops2to3_BrokenSize(SDL2_RWops *rwops2)
+{
+    SDL_IOStream *iostrm3 = NULL;
+    if (rwops2) {
+        SDL_IOStreamInterface iface;
+        SDL_INIT_INTERFACE(&iface);
+        iface.size = RWops2to3_size_broken;
+        iface.seek = RWops2to3_seek;
+        iface.read = RWops2to3_read;
+        iface.write = RWops2to3_write;
+        iface.close = RWops2to3_close;
+
+        iostrm3 = SDL3_OpenIO(&iface, rwops2);
+        if (!iostrm3) {
+            return NULL;
+        }
+    }
+    return iostrm3;
+}
+
 SDL_DECLSPEC void *SDLCALL
 SDL_LoadFile_RW(SDL2_RWops *rwops2, size_t *datasize, int freesrc)
 {
@@ -3870,7 +3900,12 @@ SDL_LoadWAV_RW(SDL2_RWops *rwops2, int freesrc, SDL2_AudioSpec *spec2, Uint8 **a
     if (spec2 == NULL) {
         SDL3_InvalidParamError("spec");
     } else {
-        SDL_IOStream *iostrm3 = RWops2to3(rwops2);
+        SDL_IOStream *iostrm3;
+        if (SDL3_GetHintBoolean("SDL2COMPAT_BROKEN_LOADWAV_SIZE", false)) {
+            iostrm3 = RWops2to3_BrokenSize(rwops2);
+        } else {
+            iostrm3 = RWops2to3(rwops2);
+        }
         if (iostrm3) {
             SDL_AudioSpec spec3;
             const bool rc = SDL3_LoadWAV_IO(iostrm3, true, &spec3, audio_buf, audio_len);   /* always close the iostrm3 bridge object. */
