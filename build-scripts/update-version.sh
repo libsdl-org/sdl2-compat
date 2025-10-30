@@ -44,13 +44,15 @@ perl -w -pi -e 's/(\#define SDL2_COMPAT_VERSION_PATCH\s+)\d+/${1}'${PATCH}'/;' s
 if [[ "x$((${MINOR}%2))" = "x0" ]]; then
     SOVER="$((100 * ${MINOR})).${PATCH}"
     DYVER="$((100 * ${MINOR} + 1)).${PATCH}"
+    DYCOMPAT="$((100 * ${MINOR} + 1)).0"
 else
     SOVER="$((100 * ${MINOR} + ${PATCH})).0"
     DYVER="$((100 * ${MINOR} + ${PATCH} + 1)).0"
+    DYCOMPAT="$((100 * ${MINOR} + ${PATCH} + 1)).0"
 fi
 
 perl -w -pi -e 's/(SHLIB\s+=\s+libSDL2-2\.0\.so\.0\.)\d+\.\d+/${1}'${SOVER}'/;' src/Makefile.linux
-perl -w -pi -e 's/(-Wl,-compatibility_version,)\d+\.\d+/${1}'${DYVER}'/;' src/Makefile.darwin
+perl -w -pi -e 's/(-Wl,-compatibility_version,)\d+\.\d+/${1}'${DYCOMPAT}'/;' src/Makefile.darwin
 perl -w -pi -e 's/(-Wl,-current_version,)\d+.\d+/${1}'${DYVER}'/;' src/Makefile.darwin
 
 echo "Running build-scripts/test-versioning.sh to verify changes..."
