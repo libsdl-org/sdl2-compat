@@ -9213,14 +9213,16 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
         }
     }
 
-    if (exclusive_fullscreen) {
-        ApplyFullscreenMode(window);
-        SDL3_SetWindowFullscreen(window, true);
+    if (window) {
+        if (exclusive_fullscreen) {
+            ApplyFullscreenMode(window);
+            SDL3_SetWindowFullscreen(window, true);
+        }
+        if (manually_show) {
+            SDL3_ShowWindow(window);
+        }
+        FinishWindowCreation(window);
     }
-    if (manually_show) {
-        SDL3_ShowWindow(window);
-    }
-    FinishWindowCreation(window);
 
     return window;
 }
@@ -9285,7 +9287,9 @@ SDL_CreateWindowFrom(const void *data)
     window = SDL3_CreateWindowWithProperties(props);
     SDL3_DestroyProperties(props);
 
-    FinishWindowCreation(window);
+    if (window) {
+        FinishWindowCreation(window);
+    }
 
     return window;
 }
