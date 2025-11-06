@@ -4246,6 +4246,8 @@ SDL_ConvertSurface(SDL2_Surface *surface, const SDL2_PixelFormat *format, Uint32
         return NULL;
     }
 
+    // SDL2 only relied on the bpp and masks, and Dwarf Fortress doesn't fill out the format field,
+    // so we'll always look up the pixel format from the masks here.
     pixel_format = SDL3_GetPixelFormatForMasks(format->BitsPerPixel, format->Rmask, format->Gmask, format->Bmask, format->Amask);
     if (pixel_format == SDL_PIXELFORMAT_UNKNOWN) {
         SDL3_InvalidParamError("format");
