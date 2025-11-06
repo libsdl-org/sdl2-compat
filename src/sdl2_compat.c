@@ -4232,6 +4232,7 @@ SDL_DECLSPEC SDL2_Surface * SDLCALL
 SDL_ConvertSurface(SDL2_Surface *surface, const SDL2_PixelFormat *format, Uint32 flags)
 {
     SDL_Palette *palette = NULL;
+    SDL_PixelFormat pixel_format;
     SDL2_Surface *result;
 
     (void) flags; /* SDL3 removed the (unused) `flags` argument */
@@ -4241,6 +4242,12 @@ SDL_ConvertSurface(SDL2_Surface *surface, const SDL2_PixelFormat *format, Uint32
         return NULL;
     }
     if (!format) {
+        SDL3_InvalidParamError("format");
+        return NULL;
+    }
+
+    pixel_format = SDL3_GetPixelFormatForMasks(format->BitsPerPixel, format->Rmask, format->Gmask, format->Bmask, format->Amask);
+    if (pixel_format == SDL_PIXELFORMAT_UNKNOWN) {
         SDL3_InvalidParamError("format");
         return NULL;
     }
@@ -4257,7 +4264,7 @@ SDL_ConvertSurface(SDL2_Surface *surface, const SDL2_PixelFormat *format, Uint32
         SDL3_SetPaletteColors(palette, format->palette->colors, 0, ncolors);
     }
 
-    result = Surface3to2(SDL3_ConvertSurfaceAndColorspace(Surface2to3(surface), (SDL_PixelFormat)format->format, palette, SDL_COLORSPACE_SRGB, 0));
+    result = Surface3to2(SDL3_ConvertSurfaceAndColorspace(Surface2to3(surface), pixel_format, palette, SDL_COLORSPACE_SRGB, 0));
 
     if (palette) {
         SDL3_DestroyPalette(palette);
