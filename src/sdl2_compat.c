@@ -532,9 +532,6 @@ static QuirkEntryType quirks[] = {
 
     /* SimCity 3000 tries to call SDL_DestroyMutex after we have been unloaded */
     {"sc3u.dynamic", "SDL2COMPAT_NO_UNLOAD", "1"},
-
-    /* Hearts of Iron IV passes a garbage rwops->size pointer to SDL_LoadWAV_RW */
-    {"hoi4", "SDL2COMPAT_BROKEN_LOADWAV_SIZE", "1"},
 #endif
 };
 
@@ -3900,12 +3897,9 @@ SDL_LoadWAV_RW(SDL2_RWops *rwops2, int freesrc, SDL2_AudioSpec *spec2, Uint8 **a
     if (spec2 == NULL) {
         SDL3_InvalidParamError("spec");
     } else {
-        SDL_IOStream *iostrm3;
-        if (SDL3_GetHintBoolean("SDL2COMPAT_BROKEN_LOADWAV_SIZE", false)) {
-            iostrm3 = RWops2to3_BrokenSize(rwops2);
-        } else {
-            iostrm3 = RWops2to3(rwops2);
-        }
+        // SDL2 didn't call the size function, so Hearts of Iron IV and Stellaris both pass in RWops structures that have garbage size pointers.
+        // SDL3 queries the size to prevent out of bounds loading, but can handle streams that don't implement it, so we'll just proactively prevent crashes here.
+        SDL_IOStream *iostrm3 = RWops2to3_BrokenSize(rwops2);
         if (iostrm3) {
             SDL_AudioSpec spec3;
             const bool rc = SDL3_LoadWAV_IO(iostrm3, true, &spec3, audio_buf, audio_len);   /* always close the iostrm3 bridge object. */
