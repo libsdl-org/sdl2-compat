@@ -2886,6 +2886,7 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
                 event2.window.data2 = event3->window.data2;
 
                 if (event2.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+                    SDL_Renderer *renderer;
                     SDL_Window *window = SDL3_GetWindowFromID(event3->window.windowID);
                     if (!window) {
                         break;
@@ -2893,6 +2894,18 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
 
                     /* The size changed event has the window size, not pixel size */
                     SDL3_GetWindowSize(window, &event2.window.data1, &event2.window.data2);
+
+                    /* SDL2 behavior is to reset the renderer viewport rect when the window is resized and
+                     * logical presentation is disabled.
+                     */
+                    renderer = SDL_GetRenderer(window);
+                    if (renderer) {
+                        SDL_RendererLogicalPresentation mode;
+                        if (SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode) &&
+                            mode == SDL_LOGICAL_PRESENTATION_DISABLED) {
+                            SDL_RenderSetViewport(renderer, NULL);
+                        }
+                    }
 
                     /* Fixes queue overflow with resize events that aren't processed */
                     {
