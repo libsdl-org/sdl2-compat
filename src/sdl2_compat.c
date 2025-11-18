@@ -1231,6 +1231,8 @@ static SDL_mutex *EventWatchListMutex = NULL;
 static SDL2_LogOutputFunction LogOutputFunction2 = NULL;
 static EventFilterWrapperData *EventWatchers2 = NULL;
 static SDL2_bool relative_mouse_mode = SDL2_FALSE;
+static float residual_motion_x = 0.0f;
+static float residual_motion_y = 0.0f;
 static SDL_JoystickID *joystick_instance_list = NULL;
 static int num_joystick_instances = 0;
 static SDL_JoystickID *joystick_list = NULL;
@@ -2283,6 +2285,11 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     case SDL_EVENT_DROP_COMPLETE:
         event2->drop.windowID = event3->drop.windowID;
         break;
+    case SDL_EVENT_WINDOW_MOUSE_ENTER:
+        /* Reset accumulated fractional mouse data when mouse focus changes */
+        residual_motion_x = 0.0f;
+        residual_motion_y = 0.0f;
+        break;
     case SDL_EVENT_MOUSE_MOTION:
         renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->motion.windowID));
         if (renderer) {
@@ -2291,7 +2298,11 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
             if (mode != SDL_LOGICAL_PRESENTATION_DISABLED) {
                 SDL3_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
                 SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
-                if (!SDL3_GetBooleanProperty(SDL3_GetRendererProperties(renderer), PROP_RENDERER_RELATIVE_SCALING, true)) {
+                if (SDL3_GetBooleanProperty(SDL3_GetRendererProperties(renderer), PROP_RENDERER_RELATIVE_SCALING, true)) {
+                    /* Accumulate scaled relative motion */
+                    residual_motion_x = SDL3_modff(residual_motion_x + cvtevent3.motion.xrel, &cvtevent3.motion.xrel);
+                    residual_motion_y = SDL3_modff(residual_motion_y + cvtevent3.motion.yrel, &cvtevent3.motion.yrel);
+                } else {
                     /* Undo the relative scaling that SDL_ConvertEventToRenderCoordinates() performed */
                     cvtevent3.motion.xrel = event3->motion.xrel;
                     cvtevent3.motion.yrel = event3->motion.yrel;
@@ -6979,6 +6990,9 @@ static void PostInitSubsystem(SDL_InitFlags new_flags)
         /* These are potentially noisy and have no SDL2 equivalent */
         SDL3_SetEventEnabled(SDL_EVENT_JOYSTICK_UPDATE_COMPLETE, false);
         SDL3_SetEventEnabled(SDL_EVENT_GAMEPAD_UPDATE_COMPLETE, false);
+
+        residual_motion_x = 0.0f;
+        residual_motion_y = 0.0f;
     }
 
     if (new_flags & SDL_INIT_VIDEO) {
