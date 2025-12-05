@@ -532,6 +532,10 @@ static QuirkEntryType quirks[] = {
 
     /* SimCity 3000 tries to call SDL_DestroyMutex after we have been unloaded */
     {"sc3u.dynamic", "SDL2COMPAT_NO_UNLOAD", "1"},
+
+    /* X4: Foundations assumes X11 and exits with an error otherwise
+     * https://github.com/libsdl-org/sdl2-compat/issues/555 */
+    {"X4", SDL_HINT_VIDEO_DRIVER, "x11"},
 #endif
 };
 
