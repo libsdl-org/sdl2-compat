@@ -6941,6 +6941,15 @@ static SDL_InitFlags PreInitSubsystem(SDL_InitFlags flags)
         const char *old_hint;
         const char *hint;
 
+#if defined(SDL2COMPAT_HAVE_X11) && defined(STEAM_RUNTIME) && STEAM_RUNTIME == 2
+        /* "Classic" SDL 2 games historically defaulted to X11,
+         * and surprisingly many games assume X11 and will crash when
+         * using native Wayland. The Steam Linux Runtime 2 container
+         * is primarily for legacy games, so accommodate their assumptions
+         * by preserving historical behaviour. */
+        SDL3_SetHint(SDL_HINT_VIDEO_DRIVER, "x11");
+#endif
+
         /* Update IME UI hint */
 #if defined(SDL_PLATFORM_WIN32)
         old_hint = SDL3_GetHint("SDL_IME_SHOW_UI");
