@@ -1303,6 +1303,7 @@
 #define SDL_RotateSurface IGNORE_THIS_VERSION_OF_SDL_RotateSurface
 #define SDL_LoadSurface_IO IGNORE_THIS_VERSION_OF_SDL_LoadSurface_IO
 #define SDL_LoadSurface IGNORE_THIS_VERSION_OF_SDL_LoadSurface
+#define SDL_SetWindowFillDocument IGNORE_THIS_VERSION_OF_SDL_SetWindowFillDocument
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6409,8 +6410,13 @@
 #undef SDL_LoadSurface
 #endif
 
+#ifdef SDL_SetWindowFillDocument
+#undef SDL_SetWindowFillDocument
+#endif
 
-/*	see at top.	*/
+
+/* see at top.
+ */
 #undef SDL_ThreadID
 #ifdef SDL_CreateThread
 #undef SDL_CreateThread
