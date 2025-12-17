@@ -179,3 +179,21 @@ program is expecting:
 ```
 SDL_VIDEODRIVER=x11
 ```
+
+Please report this to the game developer as a bug.
+Game developers who know that their game engine requires X11 on Linux can
+arrange for this to happen by including code similar to this at the
+beginning of `main()`:
+```
+#ifdef SDL_VIDEO_DRIVER_X11
+SDL_SetHintWithPriority(SDL_HINT_VIDEODRIVER, "x11", SDL_HINT_OVERRIDE);
+#endif
+```
+
+This is backward-compatible with "classic" SDL 2 version 2.0.12 or later.
+If older versions need to be supported,
+set the `SDL_VIDEODRIVER` environment variable instead.
+
+For unmaintained games where applying this code change is not feasible,
+either a wrapper script can set the `SDL_VIDEODRIVER` environment variable,
+or the game can be added to the `quirks` array in sdl2-compat.
