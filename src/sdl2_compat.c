@@ -96,7 +96,7 @@ This breaks the build when creating SDL_ ## DisableScreenSaver
 #undef snprintf
 #undef vsnprintf
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__GNU__)
 #include <unistd.h> /* for readlink() */
 #endif
 
@@ -539,7 +539,7 @@ static QuirkEntryType quirks[] = {
 #endif
 };
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__GNU__)
 static void OS_GetExeName(char *buf, const unsigned maxpath, bool *use_base_path)
 {
     int ret;
