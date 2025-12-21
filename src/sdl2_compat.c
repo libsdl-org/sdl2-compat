@@ -11958,10 +11958,10 @@ SDL_hid_enumerate(unsigned short vendor_id, unsigned short product_id)
         for (i = list3; i != NULL; i = i->next) {
             SDL2_hid_device_info *info = (SDL2_hid_device_info *) SDL3_calloc(1, sizeof (SDL2_hid_device_info));
             char *path = SDL3_strdup(i->path);
-            wchar_t *serial_number = SDL3_wcsdup(i->serial_number);
-            wchar_t *manufacturer_string = SDL3_wcsdup(i->manufacturer_string);
-            wchar_t *product_string = SDL3_wcsdup(i->product_string);
-            if (!info || !path || !serial_number || !manufacturer_string || !product_string) {
+            wchar_t *serial_number = i->serial_number ? SDL3_wcsdup(i->serial_number) : NULL;
+            wchar_t *manufacturer_string = i->manufacturer_string ? SDL3_wcsdup(i->manufacturer_string) : NULL;
+            wchar_t *product_string = i->product_string ? SDL3_wcsdup(i->product_string) : NULL;
+            if (!info || !path) {
                 SDL_hid_free_enumeration(retval);
                 SDL3_free(info);
                 SDL3_free(path);
