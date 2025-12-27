@@ -1373,6 +1373,12 @@ SDL2Compat_InitOnStartupInternal(void)
     SDL3_SetHint("SDL_VIDEO_SYNC_WINDOW_OPERATIONS", "1");
     SDL3_SetHint("SDL_VIDEO_X11_EXTERNAL_WINDOW_INPUT", "0");
 
+    // Don't use GTK for tray icons. This conflicts with the historical
+    // practice of making game executables be setgid 'games' in order to
+    // write out a shared high score table, and is only used to implement
+    // a feature that SDL 2 didn't have, so it's unnecessary here.
+    SDL3_SetHint("SDL_ENABLE_GTK", "0");
+
     /* Emulate integer mouse coordinates */
     SDL3_SetHint("SDL_MOUSE_INTEGER_MODE", "1");
 
