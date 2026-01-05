@@ -9340,6 +9340,7 @@ SDL_SetWindowFullscreen(SDL_Window *window, Uint32 flags)
     int ret = 0;
     bool fullscreen = false;
     SDL_WindowFlags old_flags = SDL_GetWindowFlags(window);
+    flags &= SDL2_WINDOW_FULLSCREEN_DESKTOP;
 
     if (flags == SDL2_WINDOW_FULLSCREEN_DESKTOP) {
         fullscreen = true;
