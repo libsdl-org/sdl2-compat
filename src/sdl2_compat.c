@@ -212,6 +212,8 @@ do { \
 #define PROP_WINDOW_EXPECTED_HEIGHT "sdl2-compat.window.expected_height"
 #define PROP_WINDOW_EXPECTED_SCALE "sdl2-compat.window.expected_scale"
 #define PROP_WINDOW_GAMMA_RAMP "sdl2-compat.window.gamma_ramp"
+#define PROP_WINDOW_MOUSE_GRABBED "sdl2-compat.window.mouse_grabbed"
+#define PROP_WINDOW_KEYBOARD_GRABBED "sdl2-compat.window.keyboard_grabbed"
 #define PROP_RENDERER_BATCHING "sdl2-compat.renderer.batching"
 #define PROP_RENDERER_RELATIVE_SCALING "sdl2-compat.renderer.relative-scaling"
 #define PROP_RENDERER_INTEGER_SCALE "sdl2-compat.renderer.integer_scale"
@@ -9054,12 +9056,15 @@ SDL_GetWindowFlags(SDL_Window *window)
 {
     Uint32 flags3 = (Uint32) SDL3_GetWindowFlags(window);
     Uint32 flags = (flags3 & ~(SDL2_WINDOW_SHOWN | SDL2_WINDOW_FULLSCREEN | SDL2_WINDOW_FULLSCREEN_DESKTOP | SDL2_WINDOW_SKIP_TASKBAR | SDL2_WINDOW_ALWAYS_ON_TOP));
+    SDL_PropertiesID props;
 
     /* If we get no flags back from SDL3, check if the window is actually valid */
     if (flags3 == 0 && SDL3_GetWindowID(window) == 0) {
         /* SDL2 always returns 0 for an invalid window */
         return 0;
     }
+
+    props = SDL3_GetWindowProperties(window);
 
     if ((flags3 & SDL2_WINDOW_HIDDEN) == 0) {
         flags |= SDL2_WINDOW_SHOWN;
@@ -9077,6 +9082,15 @@ SDL_GetWindowFlags(SDL_Window *window)
     if (flags3 & SDL3_WINDOW_ALWAYS_ON_TOP) {
         flags |= SDL2_WINDOW_ALWAYS_ON_TOP;
     }
+
+    /* SDL2 sets grab flags unconditionally, but SDL3 sets them only on success */
+    if (SDL3_GetBooleanProperty(props, PROP_WINDOW_KEYBOARD_GRABBED, false)) {
+        flags |= SDL_WINDOW_KEYBOARD_GRABBED;
+    }
+    if (SDL3_GetBooleanProperty(props, PROP_WINDOW_MOUSE_GRABBED, false)) {
+        flags |= SDL_WINDOW_MOUSE_GRABBED;
+    }
+
     return flags;
 }
 
@@ -9248,6 +9262,14 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
     }
 
     if (window) {
+        SDL_PropertiesID props = SDL3_GetWindowProperties(window);
+
+        if (flags & SDL_WINDOW_KEYBOARD_GRABBED) {
+            SDL3_SetBooleanProperty(props, PROP_WINDOW_KEYBOARD_GRABBED, true);
+        }
+        if (flags & SDL_WINDOW_MOUSE_GRABBED) {
+            SDL3_SetBooleanProperty(props, PROP_WINDOW_MOUSE_GRABBED, true);
+        }
         if (exclusive_fullscreen) {
             ApplyFullscreenMode(window);
             SDL3_SetWindowFullscreen(window, true);
@@ -9781,28 +9803,65 @@ SDL_RestoreWindow(SDL_Window *window)
 SDL_DECLSPEC void SDLCALL
 SDL_SetWindowGrab(SDL_Window *window, SDL2_bool grabbed)
 {
-    SDL3_SetWindowMouseGrab(window, grabbed);
+    SDL_SetWindowMouseGrab(window, grabbed);
     if (SDL3_GetHintBoolean("SDL_GRAB_KEYBOARD", false)) {
-        SDL3_SetWindowKeyboardGrab(window, grabbed);
+        SDL_SetWindowKeyboardGrab(window, grabbed);
     }
 }
 
 SDL_DECLSPEC SDL2_bool SDLCALL
 SDL_GetWindowGrab(SDL_Window *window)
 {
-    return SDL3_GetWindowKeyboardGrab(window) || SDL3_GetWindowMouseGrab(window) ? SDL2_TRUE : SDL2_FALSE;
+    if (SDL3_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS) {
+        SDL_PropertiesID props = SDL3_GetWindowProperties(window);
+        return SDL3_GetBooleanProperty(props, PROP_WINDOW_KEYBOARD_GRABBED, false) ||
+               SDL3_GetBooleanProperty(props, PROP_WINDOW_MOUSE_GRABBED, false) ? SDL2_TRUE : SDL2_FALSE;
+    }
+
+    /* Input focus is required to be the grab window */
+    return SDL2_FALSE;
 }
 
 SDL_DECLSPEC void SDLCALL
 SDL_SetWindowKeyboardGrab(SDL_Window *window, SDL2_bool grabbed)
 {
+    SDL_Window *prev_grab_wind = SDL3_GetGrabbedWindow();
+
+    if (!window) {
+        SDL3_SetError("Invalid window");
+        return;
+    }
+
     SDL3_SetWindowKeyboardGrab(window, grabbed);
+
+    if (prev_grab_wind && prev_grab_wind != window && grabbed) {
+        /* Stealing grab from another window ends both types of grab */
+        SDL_PropertiesID prev_wind_props = SDL3_GetWindowProperties(prev_grab_wind);
+        SDL3_SetBooleanProperty(prev_wind_props, PROP_WINDOW_KEYBOARD_GRABBED, false);
+        SDL3_SetBooleanProperty(prev_wind_props, PROP_WINDOW_MOUSE_GRABBED, false);
+    }
+    SDL3_SetBooleanProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_KEYBOARD_GRABBED, grabbed);
 }
 
 SDL_DECLSPEC void SDLCALL
 SDL_SetWindowMouseGrab(SDL_Window *window, SDL2_bool grabbed)
 {
+    SDL_Window *prev_grab_wind = SDL3_GetGrabbedWindow();
+
+    if (!window) {
+        SDL3_SetError("Invalid window");
+        return;
+    }
+
     SDL3_SetWindowMouseGrab(window, grabbed);
+
+    if (prev_grab_wind && prev_grab_wind != window && grabbed) {
+        /* Stealing grab from another window ends both types of grab */
+        SDL_PropertiesID prev_wind_props = SDL3_GetWindowProperties(prev_grab_wind);
+        SDL3_SetBooleanProperty(prev_wind_props, PROP_WINDOW_KEYBOARD_GRABBED, false);
+        SDL3_SetBooleanProperty(prev_wind_props, PROP_WINDOW_MOUSE_GRABBED, false);
+    }
+    SDL3_SetBooleanProperty(SDL3_GetWindowProperties(window), PROP_WINDOW_MOUSE_GRABBED, grabbed);
 }
 
 /* SDL3 added a return value and renamed this. We just throw the value away for SDL2. */
