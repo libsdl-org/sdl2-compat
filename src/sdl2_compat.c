@@ -4417,8 +4417,7 @@ SDL_FreeSurface(SDL2_Surface *surface)
     }
 
     if (surface->map) {
-        SDL_Surface *surface3 = (SDL_Surface *)surface->map;
-        SDL3_DestroySurface(surface3);
+        SDL3_DestroySurface(Surface2to3(surface));
         surface->map = NULL;
     }
 
