@@ -88,7 +88,7 @@ option(SDL2COMPAT_ASAN "Use AddressSanitizer to detect memory errors" OFF)
 option(SDL2COMPAT_STATIC "Enable building static SDL2 link library" OFF)
 option(SDL2COMPAT_WERROR "Treat warnings as errors" OFF)
 option(SDL2COMPAT_X11 "Enable X11 support" ON)
-option(SDL2COMPAT_LIBC "Use the system C library" OFF)
+option(SDL2COMPAT_LIBC "Use the system C library (Windows)" OFF)
 set(SDL2COMPAT_VENDOR_INFO "" CACHE STRING "Vendor name and/or version to add to SDL_REVISION")
 set(SDL2COMPAT_FRAMEWORK FALSE)
 #FIXME: should SDL2-compat modify vendor_info/revision information?
