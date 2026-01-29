@@ -88,6 +88,7 @@ option(SDL2COMPAT_ASAN "Use AddressSanitizer to detect memory errors" OFF)
 option(SDL2COMPAT_STATIC "Enable building static SDL2 link library" OFF)
 option(SDL2COMPAT_WERROR "Treat warnings as errors" OFF)
 option(SDL2COMPAT_X11 "Enable X11 support" ON)
+option(SDL2COMPAT_LIBC "Use the system C library" OFF)
 set(SDL2COMPAT_VENDOR_INFO "" CACHE STRING "Vendor name and/or version to add to SDL_REVISION")
 set(SDL2COMPAT_FRAMEWORK FALSE)
 #FIXME: should SDL2-compat modify vendor_info/revision information?
@@ -236,12 +237,17 @@ if(APPLE)
 endif()
 
 if(WIN32)
+  if(NOT SDL2COMPAT_LIBC)
+    list(APPEND SDL2COMPAT_SRCS
+      "src/sdl2_mslibc.c"
+    )
+  endif()
+
   list(APPEND SDL2COMPAT_SRCS
-    "src/sdl2_mslibc.c"
     "src/version.rc"
   )
 endif()
-if(MSVC)
+if(MSVC AND NOT SDL2COMPAT_LIBC)
   if(SDL_CPU_X64)
     list(APPEND SDL2COMPAT_SRCS
       "src/sdl2_mslibc_x64.masm"
@@ -390,7 +396,7 @@ if(MINGW)
     set_property(TARGET SDL2 APPEND_STRING PROPERTY LINK_FALGS " -static-libgcc")
   endif()
 endif()
-if(MSVC)
+if(MSVC AND NOT SDL2COMPAT_LIBC)
   # Don't try to link with the default set of libraries.
   target_compile_options(SDL2 PRIVATE "$<$<COMPILE_LANGUAGE:C>:/GS->")
   if(SDL_CPU_X86)  # don't emit SSE2 in x86 builds
