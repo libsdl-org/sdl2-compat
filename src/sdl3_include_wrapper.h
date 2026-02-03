@@ -1304,6 +1304,14 @@
 #define SDL_LoadSurface_IO IGNORE_THIS_VERSION_OF_SDL_LoadSurface_IO
 #define SDL_LoadSurface IGNORE_THIS_VERSION_OF_SDL_LoadSurface
 #define SDL_SetWindowFillDocument IGNORE_THIS_VERSION_OF_SDL_SetWindowFillDocument
+#define SDL_TryLockJoysticks IGNORE_THIS_VERSION_OF_SDL_TryLockJoysticks
+#define SDL_CreateGPUXRSession IGNORE_THIS_VERSION_OF_SDL_CreateGPUXRSession
+#define SDL_GetGPUXRSwapchainFormats IGNORE_THIS_VERSION_OF_SDL_GetGPUXRSwapchainFormats
+#define SDL_CreateGPUXRSwapchain IGNORE_THIS_VERSION_OF_SDL_CreateGPUXRSwapchain
+#define SDL_DestroyGPUXRSwapchain IGNORE_THIS_VERSION_OF_SDL_DestroyGPUXRSwapchain
+#define SDL_OpenXR_LoadLibrary IGNORE_THIS_VERSION_OF_SDL_OpenXR_LoadLibrary
+#define SDL_OpenXR_UnloadLibrary IGNORE_THIS_VERSION_OF_SDL_OpenXR_UnloadLibrary
+#define SDL_OpenXR_GetXrGetInstanceProcAddr IGNORE_THIS_VERSION_OF_SDL_OpenXR_GetXrGetInstanceProcAddr
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6412,6 +6420,38 @@
 
 #ifdef SDL_SetWindowFillDocument
 #undef SDL_SetWindowFillDocument
+#endif
+
+#ifdef SDL_TryLockJoysticks
+#undef SDL_TryLockJoysticks
+#endif
+
+#ifdef SDL_CreateGPUXRSession
+#undef SDL_CreateGPUXRSession
+#endif
+
+#ifdef SDL_GetGPUXRSwapchainFormats
+#undef SDL_GetGPUXRSwapchainFormats
+#endif
+
+#ifdef SDL_CreateGPUXRSwapchain
+#undef SDL_CreateGPUXRSwapchain
+#endif
+
+#ifdef SDL_DestroyGPUXRSwapchain
+#undef SDL_DestroyGPUXRSwapchain
+#endif
+
+#ifdef SDL_OpenXR_LoadLibrary
+#undef SDL_OpenXR_LoadLibrary
+#endif
+
+#ifdef SDL_OpenXR_UnloadLibrary
+#undef SDL_OpenXR_UnloadLibrary
+#endif
+
+#ifdef SDL_OpenXR_GetXrGetInstanceProcAddr
+#undef SDL_OpenXR_GetXrGetInstanceProcAddr
 #endif
 
 
