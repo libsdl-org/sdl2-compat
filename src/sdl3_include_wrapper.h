@@ -1312,6 +1312,7 @@
 #define SDL_OpenXR_LoadLibrary IGNORE_THIS_VERSION_OF_SDL_OpenXR_LoadLibrary
 #define SDL_OpenXR_UnloadLibrary IGNORE_THIS_VERSION_OF_SDL_OpenXR_UnloadLibrary
 #define SDL_OpenXR_GetXrGetInstanceProcAddr IGNORE_THIS_VERSION_OF_SDL_OpenXR_GetXrGetInstanceProcAddr
+#define SDL_CreateTrayWithProperties IGNORE_THIS_VERSION_OF_SDL_CreateTrayWithProperties
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6452,6 +6453,10 @@
 
 #ifdef SDL_OpenXR_GetXrGetInstanceProcAddr
 #undef SDL_OpenXR_GetXrGetInstanceProcAddr
+#endif
+
+#ifdef SDL_CreateTrayWithProperties
+#undef SDL_CreateTrayWithProperties
 #endif
 
 
