@@ -9845,13 +9845,14 @@ SDL_SetWindowKeyboardGrab(SDL_Window *window, SDL2_bool grabbed)
 SDL_DECLSPEC void SDLCALL
 SDL_SetWindowMouseGrab(SDL_Window *window, SDL2_bool grabbed)
 {
-    SDL_Window *prev_grab_wind = SDL3_GetGrabbedWindow();
+    SDL_Window *prev_grab_wind;
 
     if (!window) {
         SDL3_SetError("Invalid window");
         return;
     }
 
+    prev_grab_wind = SDL3_GetGrabbedWindow();
     SDL3_SetWindowMouseGrab(window, grabbed);
 
     if (prev_grab_wind && prev_grab_wind != window && grabbed) {
