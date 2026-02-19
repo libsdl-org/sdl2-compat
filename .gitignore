@@ -1,1 +1,4 @@
 cmake-build
+build/
+build-*/
+!build-scripts/
