@@ -503,6 +503,11 @@ static QuirkEntryType quirks[] = {
     { "tauon/__main__.py", SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY, "0" },
     { "tauon/__main__.py", SDL_HINT_VIDEO_WAYLAND_ALLOW_LIBDECOR, "0" },
 
+    /* Domino-Chain relies on presented backbuffers having their contents preserved,
+     * which is undefined behavior on all but the software renderer.
+     */
+    { "domino-chain", SDL_HINT_RENDER_DRIVER, "software" },
+
 #ifdef SDL2COMPAT_HAVE_X11
     /* Stylus Labs Write does its own X11 input handling */
     { "Write", "SDL_VIDEO_X11_XINPUT2", "0" },
