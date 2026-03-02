@@ -1313,6 +1313,9 @@
 #define SDL_OpenXR_UnloadLibrary IGNORE_THIS_VERSION_OF_SDL_OpenXR_UnloadLibrary
 #define SDL_OpenXR_GetXrGetInstanceProcAddr IGNORE_THIS_VERSION_OF_SDL_OpenXR_GetXrGetInstanceProcAddr
 #define SDL_CreateTrayWithProperties IGNORE_THIS_VERSION_OF_SDL_CreateTrayWithProperties
+#define SDL_SetGPURenderStateSamplerBindings IGNORE_THIS_VERSION_OF_SDL_SetGPURenderStateSamplerBindings
+#define SDL_SetGPURenderStateStorageTextures IGNORE_THIS_VERSION_OF_SDL_SetGPURenderStateStorageTextures
+#define SDL_SetGPURenderStateStorageBuffers IGNORE_THIS_VERSION_OF_SDL_SetGPURenderStateStorageBuffers
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6457,6 +6460,18 @@
 
 #ifdef SDL_CreateTrayWithProperties
 #undef SDL_CreateTrayWithProperties
+#endif
+
+#ifdef SDL_SetGPURenderStateSamplerBindings
+#undef SDL_SetGPURenderStateSamplerBindings
+#endif
+
+#ifdef SDL_SetGPURenderStateStorageTextures
+#undef SDL_SetGPURenderStateStorageTextures
+#endif
+
+#ifdef SDL_SetGPURenderStateStorageBuffers
+#undef SDL_SetGPURenderStateStorageBuffers
 #endif
 
 
