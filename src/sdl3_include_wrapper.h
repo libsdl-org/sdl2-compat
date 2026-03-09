@@ -1316,6 +1316,8 @@
 #define SDL_SetGPURenderStateSamplerBindings IGNORE_THIS_VERSION_OF_SDL_SetGPURenderStateSamplerBindings
 #define SDL_SetGPURenderStateStorageTextures IGNORE_THIS_VERSION_OF_SDL_SetGPURenderStateStorageTextures
 #define SDL_SetGPURenderStateStorageBuffers IGNORE_THIS_VERSION_OF_SDL_SetGPURenderStateStorageBuffers
+#define SDL_GDKSuspendRenderer IGNORE_THIS_VERSION_OF_SDL_GDKSuspendRenderer
+#define SDL_GDKResumeRenderer IGNORE_THIS_VERSION_OF_SDL_GDKResumeRenderer
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6472,6 +6474,14 @@
 
 #ifdef SDL_SetGPURenderStateStorageBuffers
 #undef SDL_SetGPURenderStateStorageBuffers
+#endif
+
+#ifdef SDL_GDKSuspendRenderer
+#undef SDL_GDKSuspendRenderer
+#endif
+
+#ifdef SDL_GDKResumeRenderer
+#undef SDL_GDKResumeRenderer
 #endif
 
 
