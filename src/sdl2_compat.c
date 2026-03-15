@@ -2949,9 +2949,9 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
                             SDL3_SetNumberProperty(props, PROP_WINDOW_EXPECTED_WIDTH, event2.window.data1);
                             SDL3_SetNumberProperty(props, PROP_WINDOW_EXPECTED_HEIGHT, event2.window.data2);
                             SDL3_SetFloatProperty(props, PROP_WINDOW_EXPECTED_SCALE, SDL3_GetWindowDisplayScale(window));
-                            if (!expected_w || !expected_h) {
-                                /* Don't send the initial size, SDL2 didn't in this case.
-                                 * ffplay breaks if the initial size is sent, see https://github.com/libsdl-org/sdl2-compat/issues/268 for details.
+                            if (!(SDL_GetWindowFlags(window) & SDL2_WINDOW_FULLSCREEN) && (!expected_w || !expected_h)) {
+                                /* Don't send the initial windowed size, SDL2 didn't in this case.
+                                 * ffplay breaks if the initial windowed size is sent, see https://github.com/libsdl-org/sdl2-compat/issues/268 for details.
                                  */
                                 break;
                             }
