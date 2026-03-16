@@ -2927,6 +2927,12 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
                             mode == SDL_LOGICAL_PRESENTATION_DISABLED) {
                             SDL_RenderSetViewport(renderer, NULL);
                         }
+
+                        /* SDL2 overwrites the render scale when the window is resized, however, on SDL3,
+                         * the user set scale and logical presentation scales are separate, and will be
+                         * stacked when applied, so set the scale to 1.0 to avoid double scaling.
+                         */
+                        SDL3_SetRenderScale(renderer, 1.0f, 1.0f);
                     }
 
                     /* Fixes queue overflow with resize events that aren't processed */
@@ -6071,6 +6077,11 @@ SDL_RenderSetLogicalSize(SDL_Renderer *renderer, int w, int h)
             mode = SDL_LOGICAL_PRESENTATION_LETTERBOX;
         }
     }
+
+    /* SDL2 overwrites the user set scale when setting the logical size, while SDL3 tracks it separately.
+     * Set to 1.0 to avoid double scaling within SDL3.
+     */
+    SDL3_SetRenderScale(renderer, 1.0f, 1.0f);
 
     retval = SDL3_SetRenderLogicalPresentation(renderer, w, h, mode) ? 0 : -1;
     return retval < 0 ? retval : FlushRendererIfNotBatching(renderer);
