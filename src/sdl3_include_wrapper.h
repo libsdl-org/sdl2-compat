@@ -1318,6 +1318,7 @@
 #define SDL_SetGPURenderStateStorageBuffers IGNORE_THIS_VERSION_OF_SDL_SetGPURenderStateStorageBuffers
 #define SDL_GDKSuspendRenderer IGNORE_THIS_VERSION_OF_SDL_GDKSuspendRenderer
 #define SDL_GDKResumeRenderer IGNORE_THIS_VERSION_OF_SDL_GDKResumeRenderer
+#define SDL_IsPhone IGNORE_THIS_VERSION_OF_SDL_IsPhone
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6482,6 +6483,10 @@
 
 #ifdef SDL_GDKResumeRenderer
 #undef SDL_GDKResumeRenderer
+#endif
+
+#ifdef SDL_IsPhone
+#undef SDL_IsPhone
 #endif
 
 
