@@ -4068,6 +4068,13 @@ SDL_LoadBMP_RW(SDL2_RWops *rwops2, int freesrc)
     if (rwops2 && freesrc) {
         SDL_RWclose(rwops2);
     }
+
+    if (SDL_BITSPERPIXEL(retval->format) < 8) {  /* SDL3 can provide BMPs that are < 8bpp. In SDL2, these would get converted to 8bpp. */
+        SDL_Surface *cvt = SDL3_ConvertSurface(retval, SDL_PIXELFORMAT_INDEX8);
+        SDL3_DestroySurface(retval);
+        retval = cvt;  /* if conversion failed, Surface3to2(), below, will notice. */
+    }
+
     return Surface3to2(retval);
 }
 
