@@ -1086,6 +1086,7 @@ LoadSDL3(void)
                         SDL2Compat_LogAtStartup(debugmsg);
                     }
                     SDL2Compat_ApplyQuirks(force_x11);  /* Apply and maybe print a list of any enabled quirks. */
+                    SDL2Compat_SetEnvAtStartup("SDL3_VERSION", sdl3verstr);
                 }
             }
             #define SDL3_SYM(rc,fn,params,args,ret) SDL3_##fn = (SDL3_##fn##_t) LoadSDL3Symbol("SDL_" #fn, &okay);
