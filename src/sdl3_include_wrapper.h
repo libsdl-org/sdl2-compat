@@ -1319,6 +1319,9 @@
 #define SDL_GDKSuspendRenderer IGNORE_THIS_VERSION_OF_SDL_GDKSuspendRenderer
 #define SDL_GDKResumeRenderer IGNORE_THIS_VERSION_OF_SDL_GDKResumeRenderer
 #define SDL_IsPhone IGNORE_THIS_VERSION_OF_SDL_IsPhone
+#define SDL_LoadJPG_IO IGNORE_THIS_VERSION_OF_SDL_LoadJPG_IO
+#define SDL_LoadJPG IGNORE_THIS_VERSION_OF_SDL_LoadJPG
+#define SDL_HasSVE2 IGNORE_THIS_VERSION_OF_SDL_HasSVE2
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6487,6 +6490,18 @@
 
 #ifdef SDL_IsPhone
 #undef SDL_IsPhone
+#endif
+
+#ifdef SDL_LoadJPG_IO
+#undef SDL_LoadJPG_IO
+#endif
+
+#ifdef SDL_LoadJPG
+#undef SDL_LoadJPG
+#endif
+
+#ifdef SDL_HasSVE2
+#undef SDL_HasSVE2
 #endif
 
 
