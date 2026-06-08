@@ -9188,15 +9188,23 @@ WindowPos2To3(int *x, int *y)
     }
 }
 
-static void StartTextInputForWindow(SDL_Window *window)
+static void StartTextInputForWindow(SDL_Window *window, bool implicit)
 {
     SDL_PropertiesID props = SDL3_CreateProperties();
+    const char *hint = SDL3_GetHint(SDL_HINT_ENABLE_SCREEN_KEYBOARD);
 
     SDL3_SetNumberProperty(props, SDL_PROP_TEXTINPUT_TYPE_NUMBER, SDL_TEXTINPUT_TYPE_TEXT);
     SDL3_SetNumberProperty(props, SDL_PROP_TEXTINPUT_CAPITALIZATION_NUMBER, SDL_CAPITALIZE_NONE);
     SDL3_SetBooleanProperty(props, SDL_PROP_TEXTINPUT_AUTOCORRECT_BOOLEAN, false);
 
+    /* SDL2 didn't open the screen keyboard when text input was started implicitly via SDL_VideoInit() */
+    if (implicit && !hint) {
+        SDL3_SetHint(SDL_HINT_ENABLE_SCREEN_KEYBOARD, "0");
+    }
     SDL3_StartTextInputWithProperties(window, props);
+    if (implicit && !hint) {
+        SDL3_SetHint(SDL_HINT_ENABLE_SCREEN_KEYBOARD, NULL);
+    }
 
     SDL3_DestroyProperties(props);
 }
@@ -9205,7 +9213,7 @@ static void FinishWindowCreation(SDL_Window *window)
 {
     /* SDL3 has per-window text input, so we must enable on this window if it's active */
     if (SDL_IsTextInputActive()) {
-        StartTextInputForWindow(window);
+        StartTextInputForWindow(window, true);
     }
 }
 
@@ -9527,7 +9535,7 @@ SDL_StartTextInput(void)
         int i;
 
         for (i = 0; windows[i]; ++i) {
-            StartTextInputForWindow(windows[i]);
+            StartTextInputForWindow(windows[i], false);
         }
 
         SDL3_free(windows);
