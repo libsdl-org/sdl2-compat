@@ -4550,6 +4550,7 @@ SDL_LowerBlit(SDL2_Surface *src2, SDL_Rect *srcrect, SDL2_Surface *dst2, SDL_Rec
     SDL_Surface *dst = Surface2to3(dst2);
     int result = SDL3_BlitSurfaceUnchecked(src, srcrect, dst, dstrect) ? 0 : -1;
     SynchronizeSurface3to2(src, src2);
+    SynchronizeSurface3to2(dst, dst2);
     return result;
 }
 
@@ -4720,6 +4721,7 @@ SDL_LowerBlitScaled(SDL2_Surface *src2, SDL_Rect *srcrect, SDL2_Surface *dst2, S
     SDL_Surface *dst = Surface2to3(dst2);
     int result = SDL3_BlitSurfaceUncheckedScaled(src, srcrect, dst, dstrect, SDL_SCALEMODE_NEAREST) ? 0 : -1;
     SynchronizeSurface3to2(src, src2);
+    SynchronizeSurface3to2(dst, dst2);
     return result;
 }
 
