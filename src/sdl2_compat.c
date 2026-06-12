@@ -2802,6 +2802,14 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
         case SDL_EVENT_CAMERA_DEVICE_DENIED:
         case SDL_EVENT_RENDER_DEVICE_LOST:
             return false;
+        case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+        case SDL_EVENT_GAMEPAD_BUTTON_UP:
+            if (event3->gbutton.button >= SDL_CONTROLLER_BUTTON_MAX) {
+                return false;
+            }
+            break;
+        default:
+            break;
     }
 
     GestureProcessEvent(event3);  /* this might need to generate new gesture events from touch input. */
