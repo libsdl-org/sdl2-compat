@@ -272,11 +272,11 @@ SDL2COMPAT_itoa(char *dst, int val)
 /* you can use SDL3_strlen once we're past startup. */
 static int SDL2Compat_strlen(const char *str)
 {
-    volatile int retval = 0;  /* volatile prevents gcc from optimizing this into strlen() */
-    while (str[retval]) {
-        retval++;
+    volatile const char *ptr = str;
+    while (*ptr) {
+        ++ptr;
     }
-    return retval;
+    return (int)(ptr - str);
 }
 
 /* you can use SDL3_strcmp once we're past startup. */
