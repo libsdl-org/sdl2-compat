@@ -272,6 +272,9 @@ SDL2COMPAT_itoa(char *dst, int val)
 /* you can use SDL3_strlen once we're past startup. */
 static int SDL2Compat_strlen(const char *str)
 {
+    /* volatile prevents gcc from optimizing this into a call to the
+     * strlen() library function, which we are intentionally avoiding on
+     * Windows: see #340 */
     volatile const char *ptr = str;
     while (*ptr) {
         ++ptr;
