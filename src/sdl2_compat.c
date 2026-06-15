@@ -272,6 +272,7 @@ SDL2COMPAT_itoa(char *dst, int val)
 /* you can use SDL3_strlen once we're past startup. */
 static size_t SDL2Compat_strlen(const char *str)
 {
+#ifdef SDL_PLATFORM_WINDOWS
     /* volatile prevents gcc from optimizing this into a call to the
      * strlen() library function, which we are intentionally avoiding on
      * Windows: see #340 */
@@ -280,11 +281,16 @@ static size_t SDL2Compat_strlen(const char *str)
         ++ptr;
     }
     return (size_t)(ptr - str);
+#else
+    /* On other platforms we rely on libc */
+    return strlen (str);
+#endif
 }
 
 /* you can use SDL3_strcmp once we're past startup. */
 static bool SDL2Compat_strequal(const char *a, const char *b)
 {
+#ifdef SDL_PLATFORM_WINDOWS
     while (true) {
         const char cha = *a;
         if (cha != *b) {
@@ -296,11 +302,15 @@ static bool SDL2Compat_strequal(const char *a, const char *b)
         b++;
     }
     return true;
+#else
+    return (strcmp (a, b) == 0);
+#endif
 }
 
 /* you can use SDL3_strrchr once we're past startup. */
 static char *SDL2Compat_strrchr(const char *string, int c)
 {
+#ifdef SDL_PLATFORM_WINDOWS
     const char *bufp = string + SDL2Compat_strlen(string);
     while (bufp >= string) {
         if (*bufp == c) {
@@ -309,6 +319,9 @@ static char *SDL2Compat_strrchr(const char *string, int c)
         --bufp;
     }
     return NULL;
+#else
+    return (char *) strrchr (string, c);
+#endif
 }
 
 /* log a string using platform-specific code for before SDL3 is fully available. */
