@@ -270,7 +270,7 @@ SDL2COMPAT_itoa(char *dst, int val)
 }
 
 /* you can use SDL3_strlen once we're past startup. */
-static int SDL2Compat_strlen(const char *str)
+static size_t SDL2Compat_strlen(const char *str)
 {
     /* volatile prevents gcc from optimizing this into a call to the
      * strlen() library function, which we are intentionally avoiding on
@@ -279,7 +279,7 @@ static int SDL2Compat_strlen(const char *str)
     while (*ptr) {
         ++ptr;
     }
-    return (int)(ptr - str);
+    return (size_t)(ptr - str);
 }
 
 /* you can use SDL3_strcmp once we're past startup. */
@@ -898,7 +898,7 @@ SDL2Compat_ApplyQuirks(bool force_x11)
     if (WantDebugLogging) {
         const char *lead = "sdl2-compat: This app appears to be named:";
         char msg[256];
-        if ((SDL2Compat_strlen(lead) + SDL2Compat_strlen(exe_name) + 2) <= (int) (sizeof (msg))) {
+        if ((SDL2Compat_strlen(lead) + SDL2Compat_strlen(exe_name) + 2) <= sizeof (msg)) {
             char *p = msg;
             p = SDL2COMPAT_stpcpy(p, lead);
             p = SDL2COMPAT_stpcpy(p, " ");
