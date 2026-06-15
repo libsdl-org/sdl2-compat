@@ -898,7 +898,7 @@ SDL2Compat_ApplyQuirks(bool force_x11)
     if (WantDebugLogging) {
         const char *lead = "sdl2-compat: This app appears to be named:";
         char msg[256];
-        if ((SDL2Compat_strlen(lead) + SDL2Compat_strlen(exe_name) + 2) <= sizeof (msg)) {
+        if (SDL2Compat_strlen(exe_name) <= sizeof (msg) - (SDL2Compat_strlen(lead) + 2)) {
             char *p = msg;
             p = SDL2COMPAT_stpcpy(p, lead);
             p = SDL2COMPAT_stpcpy(p, " ");
