@@ -1328,6 +1328,10 @@
 #define SDL_wcstoul IGNORE_THIS_VERSION_OF_SDL_wcstoul
 #define SDL_wcstoll IGNORE_THIS_VERSION_OF_SDL_wcstoll
 #define SDL_wcstoull IGNORE_THIS_VERSION_OF_SDL_wcstoull
+#define SDL_RequestNotificationPermission IGNORE_THIS_VERSION_OF_SDL_RequestNotificationPermission
+#define SDL_ShowNotificationWithProperties IGNORE_THIS_VERSION_OF_SDL_ShowNotificationWithProperties
+#define SDL_ShowNotification IGNORE_THIS_VERSION_OF_SDL_ShowNotification
+#define SDL_RemoveNotification IGNORE_THIS_VERSION_OF_SDL_RemoveNotification
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6532,6 +6536,22 @@
 
 #ifdef SDL_wcstoull
 #undef SDL_wcstoull
+#endif
+
+#ifdef SDL_RequestNotificationPermission
+#undef SDL_RequestNotificationPermission
+#endif
+
+#ifdef SDL_ShowNotificationWithProperties
+#undef SDL_ShowNotificationWithProperties
+#endif
+
+#ifdef SDL_ShowNotification
+#undef SDL_ShowNotification
+#endif
+
+#ifdef SDL_RemoveNotification
+#undef SDL_RemoveNotification
 #endif
 
 
