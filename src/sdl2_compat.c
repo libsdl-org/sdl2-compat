@@ -2304,22 +2304,18 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     case SDL_EVENT_MOUSE_MOTION:
         renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->motion.windowID));
         if (renderer) {
-            SDL_RendererLogicalPresentation mode = SDL_LOGICAL_PRESENTATION_DISABLED;
-            SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode);
-            if (mode != SDL_LOGICAL_PRESENTATION_DISABLED) {
-                SDL3_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
-                SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
-                if (SDL3_GetBooleanProperty(SDL3_GetRendererProperties(renderer), PROP_RENDERER_RELATIVE_SCALING, true)) {
-                    /* Accumulate scaled relative motion */
-                    residual_motion_x = SDL3_modff(residual_motion_x + cvtevent3.motion.xrel, &cvtevent3.motion.xrel);
-                    residual_motion_y = SDL3_modff(residual_motion_y + cvtevent3.motion.yrel, &cvtevent3.motion.yrel);
-                } else {
-                    /* Undo the relative scaling that SDL_ConvertEventToRenderCoordinates() performed */
-                    cvtevent3.motion.xrel = event3->motion.xrel;
-                    cvtevent3.motion.yrel = event3->motion.yrel;
-                }
-                event3 = &cvtevent3;
+            SDL3_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
+            SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
+            if (SDL3_GetBooleanProperty(SDL3_GetRendererProperties(renderer), PROP_RENDERER_RELATIVE_SCALING, true)) {
+                /* Accumulate scaled relative motion */
+                residual_motion_x = SDL3_modff(residual_motion_x + cvtevent3.motion.xrel, &cvtevent3.motion.xrel);
+                residual_motion_y = SDL3_modff(residual_motion_y + cvtevent3.motion.yrel, &cvtevent3.motion.yrel);
+            } else {
+                /* Undo the relative scaling that SDL_ConvertEventToRenderCoordinates() performed */
+                cvtevent3.motion.xrel = event3->motion.xrel;
+                cvtevent3.motion.yrel = event3->motion.yrel;
             }
+            event3 = &cvtevent3;
         }
         if (UseSDL2PrereleaseEvents) {
             SDL2PRERELEASE_MouseMotionEvent *motion = (SDL2PRERELEASE_MouseMotionEvent *)&event2->motion;
@@ -2340,13 +2336,9 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     case SDL_EVENT_MOUSE_BUTTON_UP:
         renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->button.windowID));
         if (renderer) {
-            SDL_RendererLogicalPresentation mode = SDL_LOGICAL_PRESENTATION_DISABLED;
-            SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode);
-            if (mode != SDL_LOGICAL_PRESENTATION_DISABLED) {
-                SDL3_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
-                SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
-                event3 = &cvtevent3;
-            }
+            SDL3_memcpy(&cvtevent3, event3, sizeof(SDL_Event));
+            SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
+            event3 = &cvtevent3;
         }
         if (UseSDL2PrereleaseEvents) {
             SDL2PRERELEASE_MouseButtonEvent *button = (SDL2PRERELEASE_MouseButtonEvent *)&event2->button;
@@ -2363,13 +2355,9 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     case SDL_EVENT_MOUSE_WHEEL:
         renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->wheel.windowID));
         if (renderer) {
-            SDL_RendererLogicalPresentation mode = SDL_LOGICAL_PRESENTATION_DISABLED;
-            SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode);
-            if (mode != SDL_LOGICAL_PRESENTATION_DISABLED) {
-                SDL3_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
-                SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
-                event3 = &cvtevent3;
-            }
+            SDL3_memcpy(&cvtevent3, event3, sizeof(SDL_Event));
+            SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
+            event3 = &cvtevent3;
         }
         if (UseSDL2PrereleaseEvents) {
             SDL2PRERELEASE_MouseWheelEvent *wheel = (SDL2PRERELEASE_MouseWheelEvent *)&event2->wheel;
