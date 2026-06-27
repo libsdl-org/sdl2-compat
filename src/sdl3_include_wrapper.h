@@ -1332,6 +1332,9 @@
 #define SDL_ShowNotificationWithProperties IGNORE_THIS_VERSION_OF_SDL_ShowNotificationWithProperties
 #define SDL_ShowNotification IGNORE_THIS_VERSION_OF_SDL_ShowNotification
 #define SDL_RemoveNotification IGNORE_THIS_VERSION_OF_SDL_RemoveNotification
+#define SDL_GetDeviceFormFactor IGNORE_THIS_VERSION_OF_SDL_GetDeviceFormFactor
+#define SDL_GetDeviceFormFactorName IGNORE_THIS_VERSION_OF_SDL_GetDeviceFormFactorName
+#define SDL_IsUbuntuTouch IGNORE_THIS_VERSION_OF_SDL_IsUbuntuTouch
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6552,6 +6555,18 @@
 
 #ifdef SDL_RemoveNotification
 #undef SDL_RemoveNotification
+#endif
+
+#ifdef SDL_GetDeviceFormFactor
+#undef SDL_GetDeviceFormFactor
+#endif
+
+#ifdef SDL_GetDeviceFormFactorName
+#undef SDL_GetDeviceFormFactorName
+#endif
+
+#ifdef SDL_IsUbuntuTouch
+#undef SDL_IsUbuntuTouch
 #endif
 
 
