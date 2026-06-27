@@ -559,6 +559,11 @@ static QuirkEntryType quirks[] = {
     /* X4: Foundations assumes X11 and exits with an error otherwise
      * https://github.com/libsdl-org/sdl2-compat/issues/555 */
     {"X4", SDL_HINT_VIDEO_DRIVER, "x11"},
+
+    /* Payday 2 wants to do most of its video subsystem stuff from a background thread, including
+     * CreateWindow, PollEvent, and GL_SwapWindow, and this upsets Wayland.
+     * https://github.com/libsdl-org/sdl2-compat/issues/537 */
+    {"payday2_release", SDL_HINT_VIDEO_DRIVER, "x11"},
 #endif
 };
 
