@@ -441,6 +441,7 @@ static char loaderror[256];
     }
 #elif defined(SDL_PLATFORM_UNIX)
     #include <dlfcn.h>
+    #include <SDL3/SDL_dlopennote.h>
     #ifdef __ANDROID__
         #define SDL3_LIBNAME "libSDL3.so"
     #else
@@ -450,6 +451,14 @@ static char loaderror[256];
     #define LoadSDL3Library() ((Loaded_SDL3 = dlopen(SDL3_LIBNAME, RTLD_LOCAL|RTLD_NOW)) != NULL)
     #define LookupSDL3Sym(sym) dlsym(Loaded_SDL3, sym)
     #define CloseSDL3Library() { if (Loaded_SDL3) { dlclose(Loaded_SDL3); Loaded_SDL3 = NULL; } }
+    #ifdef SDL_ELF_NOTE_DLOPEN
+        SDL_ELF_NOTE_DLOPEN(
+            "SDL3",
+            "sdl2-compat translates SDL2 API calls into equivalent SDL3 calls",
+            SDL_ELF_NOTE_DLOPEN_PRIORITY_REQUIRED,
+            SDL3_LIBNAME
+        )
+    #endif
 #else
     #error Please define your platform.
 #endif
