@@ -10369,7 +10369,14 @@ SDL_HasColorKey(SDL2_Surface *surface)
 SDL_DECLSPEC int SDLCALL
 SDL_GetColorKey(SDL2_Surface *surface, Uint32 *key)
 {
-    return SDL3_GetSurfaceColorKey(Surface2to3(surface), key) ? 0 : -1;
+    Uint32 local_key;
+    if (SDL3_GetSurfaceColorKey(Surface2to3(surface), &local_key)) {
+        if (key) {
+            *key = local_key;
+        }
+        return 0;
+    }
+    return -1;
 }
 
 SDL_DECLSPEC int SDLCALL
