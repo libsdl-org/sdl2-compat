@@ -217,6 +217,7 @@ do { \
 #define PROP_RENDERER_BATCHING "sdl2-compat.renderer.batching"
 #define PROP_RENDERER_RELATIVE_SCALING "sdl2-compat.renderer.relative-scaling"
 #define PROP_RENDERER_INTEGER_SCALE "sdl2-compat.renderer.integer_scale"
+#define PROP_RENDERER_MAIN_VIEW_LOGICAL_PRESENTATION "sdl2-compat.renderer.main_view_logical_presentation"
 #define PROP_TEXTURE_SCALE_MODE "sdl2-compat.texture.scale_mode"
 #define PROP_SURFACE2 "sdl2-compat.surface2"
 #define PROP_STREAM2 "sdl2-compat.stream2"
@@ -2280,6 +2281,24 @@ static SDL_AudioDeviceID AudioDeviceID3to2(SDL_AudioDeviceID id)
 
 static int GetIndexFromJoystickInstance(SDL_JoystickID jid);
 
+static bool ShouldTransformMouseCoordinates(SDL_Renderer *renderer)
+{
+    /* The mouse coordinates should only be transformed if the main view is using a
+     * logical presentation mode, as it can differ from the mode set on a render target.
+     */
+    SDL_RendererLogicalPresentation mode = SDL_LOGICAL_PRESENTATION_DISABLED;
+    const int propval = (int)SDL3_GetNumberProperty(SDL3_GetRendererProperties(renderer),
+                                                    PROP_RENDERER_MAIN_VIEW_LOGICAL_PRESENTATION, -1);
+    if (propval == -1) {
+        /* No render target bound, query the presentation mode directly. */
+        SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode);
+    } else {
+        mode = (SDL_RendererLogicalPresentation)propval;
+    }
+
+    return mode != SDL_LOGICAL_PRESENTATION_DISABLED;
+}
+
 static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
 {
     SDL_Renderer *renderer;
@@ -2336,18 +2355,20 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     case SDL_EVENT_MOUSE_MOTION:
         renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->motion.windowID));
         if (renderer) {
-            SDL3_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
-            SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
-            if (SDL3_GetBooleanProperty(SDL3_GetRendererProperties(renderer), PROP_RENDERER_RELATIVE_SCALING, true)) {
-                /* Accumulate scaled relative motion */
-                residual_motion_x = SDL3_modff(residual_motion_x + cvtevent3.motion.xrel, &cvtevent3.motion.xrel);
-                residual_motion_y = SDL3_modff(residual_motion_y + cvtevent3.motion.yrel, &cvtevent3.motion.yrel);
-            } else {
-                /* Undo the relative scaling that SDL_ConvertEventToRenderCoordinates() performed */
-                cvtevent3.motion.xrel = event3->motion.xrel;
-                cvtevent3.motion.yrel = event3->motion.yrel;
+            if (ShouldTransformMouseCoordinates(renderer)) {
+                SDL3_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
+                SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
+                if (SDL3_GetBooleanProperty(SDL3_GetRendererProperties(renderer), PROP_RENDERER_RELATIVE_SCALING, true)) {
+                    /* Accumulate scaled relative motion */
+                    residual_motion_x = SDL3_modff(residual_motion_x + cvtevent3.motion.xrel, &cvtevent3.motion.xrel);
+                    residual_motion_y = SDL3_modff(residual_motion_y + cvtevent3.motion.yrel, &cvtevent3.motion.yrel);
+                } else {
+                    /* Undo the relative scaling that SDL_ConvertEventToRenderCoordinates() performed */
+                    cvtevent3.motion.xrel = event3->motion.xrel;
+                    cvtevent3.motion.yrel = event3->motion.yrel;
+                }
+                event3 = &cvtevent3;
             }
-            event3 = &cvtevent3;
         }
         if (UseSDL2PrereleaseEvents) {
             SDL2PRERELEASE_MouseMotionEvent *motion = (SDL2PRERELEASE_MouseMotionEvent *)&event2->motion;
@@ -2368,9 +2389,11 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     case SDL_EVENT_MOUSE_BUTTON_UP:
         renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->button.windowID));
         if (renderer) {
-            SDL3_memcpy(&cvtevent3, event3, sizeof(SDL_Event));
-            SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
-            event3 = &cvtevent3;
+            if (ShouldTransformMouseCoordinates(renderer)) {
+                SDL3_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
+                SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
+                event3 = &cvtevent3;
+            }
         }
         if (UseSDL2PrereleaseEvents) {
             SDL2PRERELEASE_MouseButtonEvent *button = (SDL2PRERELEASE_MouseButtonEvent *)&event2->button;
@@ -2387,9 +2410,11 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     case SDL_EVENT_MOUSE_WHEEL:
         renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->wheel.windowID));
         if (renderer) {
-            SDL3_memcpy(&cvtevent3, event3, sizeof(SDL_Event));
-            SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
-            event3 = &cvtevent3;
+            if (ShouldTransformMouseCoordinates(renderer)) {
+                SDL3_memcpy(&cvtevent3, event3, sizeof (SDL_Event));
+                SDL3_ConvertEventToRenderCoordinates(renderer, &cvtevent3);
+                event3 = &cvtevent3;
+            }
         }
         if (UseSDL2PrereleaseEvents) {
             SDL2PRERELEASE_MouseWheelEvent *wheel = (SDL2PRERELEASE_MouseWheelEvent *)&event2->wheel;
@@ -6181,6 +6206,24 @@ SDL_RenderSetClipRect(SDL_Renderer *renderer, const SDL_Rect *rect)
 SDL_DECLSPEC int SDLCALL
 SDL_SetRenderTarget(SDL_Renderer *renderer, SDL_Texture *texture)
 {
+    if (!renderer) {
+        return -1;
+    }
+
+    if (texture) {
+        /* When initially setting a render target, store the main view logical presentation mode,
+         * as it needs to be queried when potentially transforming mouse coordinates in events.
+         */
+        SDL_Texture *current_target = SDL3_GetRenderTarget(renderer);
+        if (!current_target) {
+            SDL_RendererLogicalPresentation mode = SDL_LOGICAL_PRESENTATION_DISABLED;
+            SDL3_GetRenderLogicalPresentation(renderer, NULL, NULL, &mode);
+            SDL3_SetNumberProperty(SDL3_GetRendererProperties(renderer), PROP_RENDERER_MAIN_VIEW_LOGICAL_PRESENTATION, mode);
+        }
+    } else {
+        SDL3_ClearProperty(SDL3_GetRendererProperties(renderer), PROP_RENDERER_MAIN_VIEW_LOGICAL_PRESENTATION);
+    }
+
     if (!SDL3_SetRenderTarget(renderer, texture)) {
         return -1;
     }
