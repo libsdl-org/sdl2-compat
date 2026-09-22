@@ -238,6 +238,12 @@
 #define SDL_VIDEO_DRIVER_WAYLAND 1
 #endif
 
+#if defined(__QNX__)
+/* Assume SDL on QNX most likely enables these */
+#define SDL_VIDEO_DRIVER_WAYLAND 1
+#define SDL_VIDEO_DRIVER_QNX 1
+#endif
+
 #if defined(__LINUX__)
 /* These are not strictly guaranteed, but probably fine to assume */
 #define SDL_AUDIO_DRIVER_ALSA 1

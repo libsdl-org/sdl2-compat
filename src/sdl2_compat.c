@@ -100,6 +100,10 @@ This breaks the build when creating SDL_ ## DisableScreenSaver
 #include <unistd.h> /* for readlink() */
 #endif
 
+#ifdef __QNX__
+#include <sys/process.h> /* for getprogname() */
+#endif
+
 #if defined(SDL_PLATFORM_UNIX) || defined(__APPLE__)
 #ifndef PATH_MAX
 #define PATH_MAX 1024
@@ -631,7 +635,7 @@ static void OS_GetExeName(char *buf, const unsigned maxpath, bool *use_base_path
     buf[0] = '\0';
     GetModuleFileNameA(NULL, buf, maxpath);
 }
-#elif defined(__APPLE__) || defined(SDL_PLATFORM_FREEBSD)
+#elif defined(__APPLE__) || defined(SDL_PLATFORM_FREEBSD) || defined(__QNX__)
 static void OS_GetExeName(char *buf, const unsigned maxpath, bool *use_base_path)
 {
     const char *progname = getprogname();
@@ -4825,6 +4829,10 @@ SDL_DECLSPEC SDL2_bool SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL2_SysW
         info->subsystem = SDL2_SYSWM_ANDROID;
         info->info.android.window = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_ANDROID_WINDOW_POINTER, NULL);
         info->info.android.surface = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_ANDROID_SURFACE_POINTER, NULL);
+    } else if (SDL3_strcmp(driver, "qnx") == 0) {
+        info->subsystem = SDL2_SYSWM_QNX;
+        info->info.android.window = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_QNX_WINDOW_POINTER, NULL);
+        info->info.android.surface = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_QNX_SURFACE_POINTER, NULL);
     } else if (SDL3_strcmp(driver, "cocoa") == 0) {
         info->subsystem = SDL2_SYSWM_COCOA;
         info->info.cocoa.window = (NSWindow *)SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_COCOA_WINDOW_POINTER, NULL);

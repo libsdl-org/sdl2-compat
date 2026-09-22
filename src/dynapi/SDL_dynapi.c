@@ -379,7 +379,7 @@ static SDL_INLINE void *get_sdlapi_entry(const char *fname, const char *sym)
     return retval;
 }
 
-#elif defined(unix) || defined(__unix__) || defined(__APPLE__) || defined(SDL_PLATFORM_HAIKU) || defined(SDL_PLATFORM_QNX)
+#elif defined(unix) || defined(__unix__) || defined(__APPLE__) || defined(SDL_PLATFORM_HAIKU) || defined(SDL_PLATFORM_QNXNTO)
 #include <stdio.h>
 #include <stdlib.h>
 #include <dlfcn.h>
