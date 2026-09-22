@@ -1348,6 +1348,7 @@
 #define SDL_GetOpenHarmonySDKVersion IGNORE_THIS_VERSION_OF_SDL_GetOpenHarmonySDKVersion
 #define SDL_GetOpenHarmonyInternalStoragePath IGNORE_THIS_VERSION_OF_SDL_GetOpenHarmonyInternalStoragePath
 #define SDL_RequestOpenHarmonyPermission IGNORE_THIS_VERSION_OF_SDL_RequestOpenHarmonyPermission
+#define SDL_GetAudioDeviceProperties IGNORE_THIS_VERSION_OF_SDL_GetAudioDeviceProperties
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6632,6 +6633,10 @@
 
 #ifdef SDL_RequestOpenHarmonyPermission
 #undef SDL_RequestOpenHarmonyPermission
+#endif
+
+#ifdef SDL_GetAudioDeviceProperties
+#undef SDL_GetAudioDeviceProperties
 #endif
 
 
