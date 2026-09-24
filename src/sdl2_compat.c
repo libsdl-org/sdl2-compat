@@ -100,6 +100,10 @@ This breaks the build when creating SDL_ ## DisableScreenSaver
 #include <unistd.h> /* for readlink() */
 #endif
 
+#ifdef SDL_PLATFORM_QNXNTO
+#include <sys/process.h> /* for getprogname() */
+#endif
+
 #if defined(SDL_PLATFORM_UNIX) || defined(__APPLE__)
 #ifndef PATH_MAX
 #define PATH_MAX 1024
@@ -631,7 +635,7 @@ static void OS_GetExeName(char *buf, const unsigned maxpath, bool *use_base_path
     buf[0] = '\0';
     GetModuleFileNameA(NULL, buf, maxpath);
 }
-#elif defined(__APPLE__) || defined(SDL_PLATFORM_FREEBSD)
+#elif defined(__APPLE__) || defined(SDL_PLATFORM_FREEBSD) || defined(SDL_PLATFORM_QNXNTO)
 static void OS_GetExeName(char *buf, const unsigned maxpath, bool *use_base_path)
 {
     const char *progname = getprogname();
