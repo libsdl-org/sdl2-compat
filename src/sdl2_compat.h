@@ -1300,7 +1300,6 @@ typedef enum
   SDL2_SYSWM_MIR,  /* no longer available, left for API/ABI compatibility. */
   SDL2_SYSWM_WINRT,
   SDL2_SYSWM_ANDROID,
-  SDL2_SYSWM_QNX,
   SDL2_SYSWM_VIVANTE,
   SDL2_SYSWM_OS2,
   SDL2_SYSWM_HAIKU,
@@ -1403,11 +1402,6 @@ typedef struct SDL2_SysWMinfo
         void *window;
         void *surface;
       } android;
-
-      struct {
-        void *window;
-        void *surface;
-      } qnx;
 
       struct {
         void *display;
