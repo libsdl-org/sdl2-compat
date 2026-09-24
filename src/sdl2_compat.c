@@ -4831,8 +4831,8 @@ SDL_DECLSPEC SDL2_bool SDLCALL SDL_GetWindowWMInfo(SDL_Window *window, SDL2_SysW
         info->info.android.surface = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_ANDROID_SURFACE_POINTER, NULL);
     } else if (SDL3_strcmp(driver, "qnx") == 0) {
         info->subsystem = SDL2_SYSWM_QNX;
-        info->info.android.window = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_QNX_WINDOW_POINTER, NULL);
-        info->info.android.surface = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_QNX_SURFACE_POINTER, NULL);
+        info->info.qnx.window = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_QNX_WINDOW_POINTER, NULL);
+        info->info.qnx.surface = SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_QNX_SURFACE_POINTER, NULL);
     } else if (SDL3_strcmp(driver, "cocoa") == 0) {
         info->subsystem = SDL2_SYSWM_COCOA;
         info->info.cocoa.window = (NSWindow *)SDL3_GetPointerProperty(props, SDL_PROP_WINDOW_COCOA_WINDOW_POINTER, NULL);
