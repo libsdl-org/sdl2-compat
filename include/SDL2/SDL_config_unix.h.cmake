@@ -270,11 +270,17 @@
 #define SDL_VIDEO_VULKAN 1
 #endif
 
-#if defined(__QNX__)
 /* Enable QNX desktop environment */
+#if defined(__QNX__)
 #define SDL_VIDEO_DRIVER_WAYLAND 1
 #define SDL_VIDEO_DRIVER_QNX 1
+#endif
+
+/* Enable QNX audio */
+#if defined(__QNX__) && (__QNX__ >= 800)
 #define SDL_AUDIO_DRIVER_ALSA 1
+#elif defined(__QNX__)
+#define SDL_AUDIO_DRIVER_QNX 1
 #endif
 
 #endif /* SDL_config_unix_h_ */
