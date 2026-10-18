@@ -788,6 +788,17 @@ SDL_SetHintWithPriority(const char *name, const char *value, SDL_HintPriority pr
     bool free_value = false;
     const char *value3 = SDL2_to_SDL3_hint_value(name, value, &free_value);
     SDL2_bool result = SDL3_SetHintWithPriority(SDL2_to_SDL3_hint(name), value3, priority) ? SDL2_TRUE : SDL2_FALSE;
+#if defined(SDL_PLATFORM_ANDROID) || defined(SDL_PLATFORM_IOS)
+    /* Pen events were delivered as touch events on mobile in SDL2 */
+    if (result && SDL3_strcmp(name, "SDL_TOUCH_MOUSE_EVENTS") == 0) {
+        SDL3_SetHintWithPriority("SDL_PEN_MOUSE_EVENTS", value3, priority);
+    }
+#else
+    /* Pen events were delivered as mouse events on desktop in SDL2 */
+    if (result && SDL3_strcmp(name, "SDL_MOUSE_TOUCH_EVENTS") == 0) {
+        SDL3_SetHintWithPriority("SDL_PEN_TOUCH_EVENTS", value3, priority);
+    }
+#endif
     if (free_value) {
         SDL3_free((void *)value3);
     }
@@ -1416,6 +1427,11 @@ SDL2Compat_InitOnStartupInternal(void)
     SDL3_SetHint("SDL_BORDERLESS_WINDOWED_STYLE", "0");
     SDL3_SetHint("SDL_VIDEO_SYNC_WINDOW_OPERATIONS", "1");
     SDL3_SetHint("SDL_VIDEO_X11_EXTERNAL_WINDOW_INPUT", "0");
+
+#if !defined(SDL_PLATFORM_ANDROID) && !defined(SDL_PLATFORM_IOS)
+    /* SDL2 treated pen events as mouse events on desktop platforms */
+    SDL3_SetHint("SDL_PEN_TOUCH_EVENTS", "0");
+#endif
 
     /* Emulate integer mouse coordinates */
     SDL3_SetHint("SDL_MOUSE_INTEGER_MODE", "1");
@@ -2303,6 +2319,33 @@ static bool ShouldTransformMouseCoordinates(SDL_Renderer *renderer)
     return mode != SDL_LOGICAL_PRESENTATION_DISABLED;
 }
 
+static SDL_MouseID MouseID3to2(SDL_MouseID mouseID3)
+{
+    if (mouseID3 == SDL_PEN_MOUSEID) {
+        /* Pens were touch devices on mobile (SDL_TOUCH_MOUSEID),
+         * but they were "real" mice on desktop (always MouseID 0) */
+#if defined(SDL_PLATFORM_ANDROID) || defined(SDL_PLATFORM_IOS)
+        return SDL_TOUCH_MOUSEID;
+#else
+        return 0;
+#endif
+    }
+
+    return mouseID3;
+}
+
+static SDL_TouchID TouchID3to2(SDL_TouchID touchID3)
+{
+#if !defined(SDL_PLATFORM_ANDROID) && !defined(SDL_PLATFORM_IOS)
+    if (touchID3 == SDL_PEN_TOUCHID) {
+        /* Pens were mice on desktop, so their events should have SDL_MOUSE_TOUCHID */
+        return SDL_MOUSE_TOUCHID;
+    }
+#endif
+
+    return touchID3;
+}
+
 static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
 {
     SDL_Renderer *renderer;
@@ -2383,6 +2426,7 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
             motion->yrel = (Sint32)SDL3_lroundf(event3->motion.yrel);
         } else {
             SDL2_MouseMotionEvent *motion = &event2->motion;
+            motion->which = MouseID3to2(event3->motion.which);
             motion->x = (Sint32)SDL3_lroundf(event3->motion.x);
             motion->y = (Sint32)SDL3_lroundf(event3->motion.y);
             motion->xrel = (Sint32)SDL3_lroundf(event3->motion.xrel);
@@ -2407,6 +2451,7 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
             button->y = (Sint32)SDL3_lroundf(event3->button.y);
         } else {
             SDL2_MouseButtonEvent *button = &event2->button;
+            button->which = MouseID3to2(event3->button.which);
             button->x = (Sint32)SDL3_lroundf(event3->button.x);
             button->y = (Sint32)SDL3_lroundf(event3->button.y);
         }
@@ -2428,6 +2473,7 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
             wheel->y = (Sint32)(event3->wheel.x * 120);
         } else {
             SDL2_MouseWheelEvent *wheel = &event2->wheel;
+            wheel->which = MouseID3to2(event3->wheel.which);
             wheel->x = event3->wheel.integer_x;
             wheel->y = event3->wheel.integer_y;
             wheel->preciseX = event3->wheel.x;
@@ -2533,6 +2579,11 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
     case SDL_EVENT_SENSOR_UPDATE:
         event2->sensor.which = SensorID3to2(event3->sensor.which);
         event2->sensor.timestamp_us = SDL_NS_TO_US(event3->sensor.sensor_timestamp);
+        break;
+    case SDL_EVENT_FINGER_UP:
+    case SDL_EVENT_FINGER_DOWN:
+    case SDL_EVENT_FINGER_MOTION:
+        event2->tfinger.touchId = TouchID3to2(event3->tfinger.touchID);
         break;
     default:
         break;
