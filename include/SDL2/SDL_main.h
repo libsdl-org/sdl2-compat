@@ -83,6 +83,14 @@
 /* We need to export SDL_main so it can be launched from Java */
 #define SDLMAIN_DECLSPEC    DECLSPEC
 
+#elif defined(__OHOS__)
+/* On HarmonyOS SDL calls SDL_main from a background thread.
+ */
+#define SDL_MAIN_NEEDED
+
+/* We need to export SDL_main so SDL can find it in libmain.so */
+#define SDLMAIN_DECLSPEC    DECLSPEC
+
 #elif defined(__NACL__)
 /* On NACL we use ppapi_simple to set up the application helper code,
    then wait for the first PSE_INSTANCE_DIDCHANGEVIEW event before 

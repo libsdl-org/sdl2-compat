@@ -447,7 +447,7 @@ static char loaderror[256];
 #elif defined(SDL_PLATFORM_UNIX)
     #include <dlfcn.h>
     #include <SDL3/SDL_dlopennote.h>
-    #ifdef __ANDROID__
+    #if defined(__ANDROID__) || defined(__OHOS__)
         #define SDL3_LIBNAME "libSDL3.so"
     #else
         #define SDL3_LIBNAME "libSDL3.so.0"
