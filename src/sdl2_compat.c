@@ -2455,6 +2455,14 @@ static SDL2_Event *Event3to2(const SDL_Event *event3, SDL2_Event *event2)
             button->x = (Sint32)SDL3_lroundf(event3->button.x);
             button->y = (Sint32)SDL3_lroundf(event3->button.y);
         }
+        if (event3->button.which == SDL_PEN_MOUSEID && SDL_strcmp(SDL3_GetCurrentVideoDriver(), "x11") == 0) {
+            /* The standard SDL3 pen-to-mouse button mapping is reversed from the X11 mapping that SDL2 passes through. */
+            if (event3->button.button == SDL_BUTTON_MIDDLE) {
+                event2->button.button = SDL_BUTTON_RIGHT;
+            } else if (event3->button.button == SDL_BUTTON_RIGHT) {
+                event2->button.button = SDL_BUTTON_MIDDLE;
+            }
+        }
         break;
     case SDL_EVENT_MOUSE_WHEEL:
         renderer = SDL3_GetRenderer(SDL3_GetWindowFromID(event3->wheel.windowID));
