@@ -492,6 +492,34 @@ if(SDL2COMPAT_STATIC)
   target_compile_definitions(SDL2-static PRIVATE _REENTRANT SDL2COMPAT_STATIC)
   target_compile_definitions(SDL2-static PRIVATE "SDL2COMPAT_REVISION=\"${SDL2COMPAT_REVISION}\"")
   target_link_libraries(SDL2-static PRIVATE ${CMAKE_DL_LIBS})
+  if(MINGW)
+    find_package(SDL3 REQUIRED COMPONENTS SDL3-static)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(SDL3_DEPS REQUIRED sdl3)
+    set(SDL3_PRIVATE_FLAGS ${SDL3_DEPS_STATIC_LDFLAGS})
+    list(REMOVE_ITEM SDL3_PRIVATE_FLAGS -lSDL3)
+    string(JOIN " " SDL3_PRIVATE_FLAGS ${SDL3_PRIVATE_FLAGS})
+    target_compile_definitions(SDL2-static PRIVATE SDL2COMPAT_STATIC_SDL3)
+    get_target_property(SDL3_STATIC_DEPS SDL3::SDL3-static INTERFACE_LINK_LIBRARIES)
+    list(REMOVE_ITEM SDL3_STATIC_DEPS SDL3::Headers)
+    target_link_libraries(SDL2-static PRIVATE ${SDL3_STATIC_DEPS})
+    find_library(SDL3_ARCHIVE NAMES libSDL3.a HINTS ${SDL3_DEPS_STATIC_LIBRARY_DIRS} REQUIRED)
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${SDL3_ARCHIVE}")
+    execute_process(COMMAND "${CMAKE_AR}" t "${SDL3_ARCHIVE}"
+      OUTPUT_VARIABLE SDL3_OBJECTS OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY)
+    string(REPLACE "\n" ";" SDL3_OBJECTS "${SDL3_OBJECTS}")
+    set(SDL3_MEMBERS ${SDL3_OBJECTS})
+    set(SDL3_OBJECT_DIR "${CMAKE_CURRENT_BINARY_DIR}/SDL3-sdl2compat")
+    list(TRANSFORM SDL3_OBJECTS PREPEND "${SDL3_OBJECT_DIR}/SDL3-")
+    configure_file(cmake/SDL2CompatStaticSDL3.cmake.in SDL2CompatStaticSDL3.cmake @ONLY)
+    add_custom_command(OUTPUT ${SDL3_OBJECTS}
+      COMMAND "${CMAKE_COMMAND}" "-DINPUT=${SDL3_ARCHIVE}"
+        -P "${CMAKE_CURRENT_BINARY_DIR}/SDL2CompatStaticSDL3.cmake"
+      DEPENDS "${SDL3_ARCHIVE}" "${CMAKE_CURRENT_BINARY_DIR}/SDL2CompatStaticSDL3.cmake"
+      VERBATIM)
+    set_source_files_properties(${SDL3_OBJECTS} PROPERTIES EXTERNAL_OBJECT TRUE)
+    target_sources(SDL2-static PRIVATE ${SDL3_OBJECTS})
+  endif()
   set_target_properties(SDL2-static PROPERTIES
     VERSION "${PROJECT_VERSION}"
     OUTPUT_NAME "SDL2"
@@ -589,7 +617,7 @@ if(SDL2COMPAT_INSTALL)
     set(SDL_CFLAGS "${sdl2_public_macros}")
     set(SDL_RLD_FLAGS "")
     set(SDL_LIBS "-lmingw32 -lSDL2main -lSDL2 -mwindows")
-    set(SDL_STATIC_LIBS "-lshell32")
+    set(SDL_STATIC_LIBS "-lshell32 ${SDL3_PRIVATE_FLAGS}")
   elseif(APPLE)
     set(SDL_CFLAGS "-D_THREAD_SAFE${sdl2_public_macros}")
     set(SDL_RLD_FLAGS "")  # !!! FIXME: this forces rpath, which we might want?

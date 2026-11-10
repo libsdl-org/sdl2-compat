@@ -1,0 +1,21 @@
+execute_process(COMMAND "@CMAKE_NM@" -g --defined-only --format=posix "${INPUT}"
+  OUTPUT_VARIABLE symbols COMMAND_ERROR_IS_FATAL ANY)
+string(REPLACE "\n" ";" symbols "${symbols}")
+list(REMOVE_DUPLICATES symbols)
+set(renames "")
+foreach(line IN LISTS symbols)
+  if(line MATCHES "^([^ ]*SDL_[^ ]*) [A-Za-z] ")
+    set(symbol "${CMAKE_MATCH_1}")
+    string(REPLACE "SDL_" "SDL3_" renamed "${symbol}")
+    string(APPEND renames "${symbol} ${renamed}\n")
+  endif()
+endforeach()
+file(MAKE_DIRECTORY "@SDL3_OBJECT_DIR@")
+file(WRITE "@SDL3_OBJECT_DIR@/symbols" "${renames}")
+execute_process(COMMAND "@CMAKE_OBJCOPY@" "--redefine-syms=@SDL3_OBJECT_DIR@/symbols" "${INPUT}" "@SDL3_OBJECT_DIR@/SDL3.a"
+  COMMAND_ERROR_IS_FATAL ANY)
+execute_process(COMMAND "@CMAKE_AR@" x SDL3.a WORKING_DIRECTORY "@SDL3_OBJECT_DIR@"
+  COMMAND_ERROR_IS_FATAL ANY)
+foreach(member IN ITEMS @SDL3_MEMBERS@)
+  file(RENAME "@SDL3_OBJECT_DIR@/${member}" "@SDL3_OBJECT_DIR@/SDL3-${member}")
+endforeach()

@@ -129,7 +129,10 @@ extern "C" {
 #ifndef SDL2COMPAT_TEST_SYMS
 #define SDL2COMPAT_TEST_SYMS 0
 #endif
-#if SDL2COMPAT_TEST_SYMS
+#if defined(SDL2COMPAT_STATIC_SDL3)
+#define SDL3_SYM(rc,fn,params,args,ret) \
+    extern rc SDLCALL SDL3_##fn params;
+#elif SDL2COMPAT_TEST_SYMS
 #define SDL3_SYM(rc,fn,params,args,ret) \
     typedef rc (SDLCALL *SDL3_##fn##_t) params; \
     static SDL3_##fn##_t SDL3_##fn = IGNORE_THIS_VERSION_OF_SDL_##fn;
@@ -386,7 +389,14 @@ static bool SDL2Compat_CheckDebugLogging(void)
 /* Obviously we can't use SDL_LoadObject() to load SDL3.  :)  */
 /* FIXME: Updated library names after https://github.com/libsdl-org/SDL/issues/5626 solidifies.  */
 static char loaderror[256];
-#if defined(_WIN32)
+#if defined(SDL2COMPAT_STATIC_SDL3)
+    #ifdef _WIN32
+        #define DIRSEP "\\"
+    #endif
+    static bool Loaded_SDL3 = false;
+    #define LoadSDL3Library() (Loaded_SDL3 = true)
+    #define CloseSDL3Library() (Loaded_SDL3 = false)
+#elif defined(_WIN32)
     static HMODULE Loaded_SDL3 = NULL;
     #define DIRSEP "\\"
     #define SDL3_LIBNAME "SDL3.dll"
@@ -477,6 +487,7 @@ static char loaderror[256];
 #endif
 
 
+#if !defined(SDL2COMPAT_STATIC_SDL3)
 static void *
 LoadSDL3Symbol(const char *fn, bool *okay)
 {
@@ -491,12 +502,15 @@ LoadSDL3Symbol(const char *fn, bool *okay)
     }
     return retval;
 }
+#endif
 
 static void
 UnloadSDL3(void)
 {
+#if !defined(SDL2COMPAT_STATIC_SDL3)
     #define SDL3_SYM(rc,fn,params,args,ret) SDL3_##fn = NULL;
     #include "sdl3_syms.h"
+#endif
     CloseSDL3Library();
 }
 
@@ -1078,7 +1092,9 @@ LoadSDL3(void)
             SDL2COMPAT_stpcpy(loaderror, "Failed loading SDL3 library.");
         } else {
             /* Load SDL_GetVersion() alone first to allow us to check and log the required SDL3 version */
+#if !defined(SDL2COMPAT_STATIC_SDL3)
             SDL3_GetVersion = (SDL3_GetVersion_t) LoadSDL3Symbol("SDL_GetVersion", &okay);
+#endif
             if (okay) {
                 char sdl3verstr[16];
                 char sdl3reqverstr[16];
@@ -1136,8 +1152,10 @@ LoadSDL3(void)
                     SDL2Compat_SetEnvAtStartup("SDL2_COMPAT", "1");
                 }
             }
+#if !defined(SDL2COMPAT_STATIC_SDL3)
             #define SDL3_SYM(rc,fn,params,args,ret) SDL3_##fn = (SDL3_##fn##_t) LoadSDL3Symbol("SDL_" #fn, &okay);
             #include "sdl3_syms.h"
+#endif
             if (!okay) {
                 UnloadSDL3();
             }
