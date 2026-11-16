@@ -1354,6 +1354,7 @@
 #define SDL_EncodeURL IGNORE_THIS_VERSION_OF_SDL_EncodeURL
 #define SDL_SetRenderHDRHeadroom IGNORE_THIS_VERSION_OF_SDL_SetRenderHDRHeadroom
 #define SDL_GetRenderHDRHeadroom IGNORE_THIS_VERSION_OF_SDL_GetRenderHDRHeadroom
+#define SDL_GetCurrentThreadName IGNORE_THIS_VERSION_OF_SDL_GetCurrentThreadName
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6662,6 +6663,10 @@
 
 #ifdef SDL_GetRenderHDRHeadroom
 #undef SDL_GetRenderHDRHeadroom
+#endif
+
+#ifdef SDL_GetCurrentThreadName
+#undef SDL_GetCurrentThreadName
 #endif
 
 
