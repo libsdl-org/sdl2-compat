@@ -1355,6 +1355,10 @@
 #define SDL_SetRenderHDRHeadroom IGNORE_THIS_VERSION_OF_SDL_SetRenderHDRHeadroom
 #define SDL_GetRenderHDRHeadroom IGNORE_THIS_VERSION_OF_SDL_GetRenderHDRHeadroom
 #define SDL_GetCurrentThreadName IGNORE_THIS_VERSION_OF_SDL_GetCurrentThreadName
+#define SDL_LoadTexture_IO IGNORE_THIS_VERSION_OF_SDL_LoadTexture_IO
+#define SDL_LoadTexture IGNORE_THIS_VERSION_OF_SDL_LoadTexture
+#define SDL_GetCachePath IGNORE_THIS_VERSION_OF_SDL_GetCachePath
+#define SDL_SetRenderLogicalPresentationRect IGNORE_THIS_VERSION_OF_SDL_SetRenderLogicalPresentationRect
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6667,6 +6671,22 @@
 
 #ifdef SDL_GetCurrentThreadName
 #undef SDL_GetCurrentThreadName
+#endif
+
+#ifdef SDL_LoadTexture_IO
+#undef SDL_LoadTexture_IO
+#endif
+
+#ifdef SDL_LoadTexture
+#undef SDL_LoadTexture
+#endif
+
+#ifdef SDL_GetCachePath
+#undef SDL_GetCachePath
+#endif
+
+#ifdef SDL_SetRenderLogicalPresentationRect
+#undef SDL_SetRenderLogicalPresentationRect
 #endif
 
 
