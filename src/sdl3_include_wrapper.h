@@ -1359,6 +1359,7 @@
 #define SDL_LoadTexture IGNORE_THIS_VERSION_OF_SDL_LoadTexture
 #define SDL_GetCachePath IGNORE_THIS_VERSION_OF_SDL_GetCachePath
 #define SDL_SetRenderLogicalPresentationRect IGNORE_THIS_VERSION_OF_SDL_SetRenderLogicalPresentationRect
+#define SDL_IsGooglePlayOnPC IGNORE_THIS_VERSION_OF_SDL_IsGooglePlayOnPC
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6687,6 +6688,10 @@
 
 #ifdef SDL_SetRenderLogicalPresentationRect
 #undef SDL_SetRenderLogicalPresentationRect
+#endif
+
+#ifdef SDL_IsGooglePlayOnPC
+#undef SDL_IsGooglePlayOnPC
 #endif
 
 
