@@ -3097,20 +3097,9 @@ EventFilter3to2(void *userdata, SDL_Event *event3)
     return post_event;
 }
 
-static void CheckEventFilter(void)
-{
-    SDL_EventFilter filter = NULL;
-
-    if (!SDL3_GetEventFilter(&filter, NULL) || filter != EventFilter3to2) {
-        SDL3_SetEventFilter(EventFilter3to2, NULL);
-    }
-}
-
 SDL_DECLSPEC void SDLCALL
 SDL_SetEventFilter(SDL2_EventFilter filter2, void *userdata)
 {
-    CheckEventFilter();
-
     EventFilter2 = filter2;
     EventFilterUserData2 = userdata;
 }
@@ -3197,8 +3186,6 @@ SDL_DECLSPEC void SDLCALL
 SDL_AddEventWatch(SDL2_EventFilter filter2, void *userdata)
 {
     EventFilterWrapperData *wrapperdata;
-
-    CheckEventFilter();
 
     /* we set up an SDL3 event filter to manage things already; we will also use it to call all added SDL2 event watchers. Put this new one in that list. */
     wrapperdata = (EventFilterWrapperData *) SDL3_malloc(sizeof (EventFilterWrapperData));
@@ -7088,7 +7075,7 @@ SDL_setenv(const char *name, const char *value, int overwrite)
     return retval;
 }
 
-static SDL_InitFlags PreInitSubsystem(SDL_InitFlags flags)
+static void PreInitSubsystem(SDL_InitFlags flags)
 {
     /* If the subsystem is already initialized, mask out the flag for it */
     flags &= ~SDL_WasInit(flags);
@@ -7115,28 +7102,10 @@ static SDL_InitFlags PreInitSubsystem(SDL_InitFlags flags)
 #endif
         SDL3_SetHint(SDL_HINT_IME_IMPLEMENTED_UI, hint);
     }
-
-    /* Return only the flags that we will expect to change */
-    return flags;
 }
 
 static void PostInitSubsystem(SDL_InitFlags new_flags)
 {
-    /* The timer subsystem flag is gone in SDL3, so we maintain it ourselves */
-    if (new_flags & SDL2_INIT_TIMER) {
-        ++timer_init;
-    }
-
-    /* Gamepads imply the joystick subsystem */
-    if (new_flags & SDL_INIT_GAMEPAD) {
-        new_flags |= SDL_INIT_JOYSTICK;
-    }
-
-    /* Some subsystems imply the events subsystem */
-    if (new_flags & (SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK)) {
-        new_flags |= SDL_INIT_EVENTS;
-    }
-
     /* If the subsystem failed to initialize, mask out the flag for it */
     new_flags &= SDL_WasInit(new_flags);
 
@@ -7149,6 +7118,8 @@ static void PostInitSubsystem(SDL_InitFlags new_flags)
 
         residual_motion_x = 0.0f;
         residual_motion_y = 0.0f;
+
+        SDL3_SetEventFilter(EventFilter3to2, NULL);
     }
 
     if (new_flags & SDL_INIT_VIDEO) {
@@ -7187,17 +7158,25 @@ static void PostInitSubsystem(SDL_InitFlags new_flags)
 static int InitSubsystemInternal(SDL_InitFlags flags)
 {
     int result;
-    SDL_InitFlags new_flags;
+    SDL_InitFlags old_flags;
 
     if (!SDL2Compat_InitOnStartup()) {
         return -1;
     }
 
-    new_flags = PreInitSubsystem(flags);
+    old_flags = SDL_WasInit(0);
+
+    PreInitSubsystem(flags);
 
     result = SDL3_InitSubSystem(flags) ? 0 : -1;
 
-    PostInitSubsystem(new_flags);
+    /* The timer subsystem flag is gone in SDL3, so we maintain it ourselves */
+    if (result == 0 && (flags & SDL2_INIT_TIMER)) {
+        ++timer_init;
+    }
+
+    /* This might have caused a subsystem to implicitly initialize */
+    PostInitSubsystem(~old_flags & SDL_WasInit(0));
 
     return result;
 }
@@ -7226,11 +7205,12 @@ static void QuitSubsystemInternal(SDL_InitFlags flags)
 {
     SDL_InitFlags old_flags;
 
-    old_flags = SDL_WasInit(flags);
+    old_flags = SDL_WasInit(0);
 
     SDL3_QuitSubSystem(flags);
 
-    PostQuitSubsystem(old_flags);
+    /* This might have caused an implicitly initialized subsystem to quit */
+    PostQuitSubsystem(old_flags & ~SDL_WasInit(0));
 }
 
 SDL_DECLSPEC int SDLCALL
@@ -9358,8 +9338,6 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
         }
     }
 
-    CheckEventFilter();
-
     if ((flags & SDL2_WINDOW_FULLSCREEN_DESKTOP) == SDL2_WINDOW_FULLSCREEN_DESKTOP) {
         flags &= ~SDL2_WINDOW_FULLSCREEN_DESKTOP;
         flags |= SDL2_WINDOW_FULLSCREEN; /* This is fullscreen desktop for new windows */
@@ -9471,8 +9449,6 @@ SDL_CreateWindowFrom(const void *data)
     SDL_Window *window;
     const char *hint;
     SDL_PropertiesID props;
-
-    CheckEventFilter();
 
     props = SDL3_CreateProperties();
     if (!props) {
