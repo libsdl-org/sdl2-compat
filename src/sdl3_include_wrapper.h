@@ -1360,6 +1360,7 @@
 #define SDL_GetCachePath IGNORE_THIS_VERSION_OF_SDL_GetCachePath
 #define SDL_SetRenderLogicalPresentationRect IGNORE_THIS_VERSION_OF_SDL_SetRenderLogicalPresentationRect
 #define SDL_IsGooglePlayOnPC IGNORE_THIS_VERSION_OF_SDL_IsGooglePlayOnPC
+#define SDL_SetWindowMousePassthrough IGNORE_THIS_VERSION_OF_SDL_SetWindowMousePassthrough
 
 
 #define SDL_FUNCTION_POINTER_IS_VOID_POINTER 1
@@ -6692,6 +6693,10 @@
 
 #ifdef SDL_IsGooglePlayOnPC
 #undef SDL_IsGooglePlayOnPC
+#endif
+
+#ifdef SDL_SetWindowMousePassthrough
+#undef SDL_SetWindowMousePassthrough
 #endif
 
 
