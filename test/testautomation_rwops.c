@@ -395,7 +395,7 @@ int rwops_testFileWrite(void)
 int
 rwops_testFPRead(void)
 {
-#ifdef HAVE_LIBC
+#if defined(HAVE_LIBC) && !defined(__MINGW32__)
    FILE *fp;
    SDL_RWops *rw;
    int result;
@@ -448,7 +448,7 @@ rwops_testFPRead(void)
 int
 rwops_testFPWrite(void)
 {
-#ifdef HAVE_LIBC
+#if defined(HAVE_LIBC) && !defined(__MINGW32__)
    FILE *fp;
    SDL_RWops *rw;
    int result;

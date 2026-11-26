@@ -120,6 +120,12 @@ typedef unsigned int uintptr_t;
 # endif
 #endif
 
+/* mingw-w64 always links to C runtime and have standard headers.
+ * Besides, some legacy programs may assume SDL.h to include many standard headers. */
+#ifdef __MINGW32__
+#define HAVE_LIBC 1
+#endif
+
 /* This is disabled by default to avoid C runtime dependencies and manifest requirements */
 #ifdef HAVE_LIBC
 /* Useful headers */
